@@ -1,0 +1,68 @@
+#!/usr/bin/env python
+import os
+import logging
+from concurrent.futures import wait
+from datetime import datetime, timedelta
+from argparse import ArgumentParser
+
+from pubtools.pulplib import Client, Criteria
+
+log = logging.getLogger("garbage-collect")
+
+
+def garbage_collect(client, gc_threshold=7):
+    crit = Criteria.and_(
+        Criteria.with_field("notes.created", Criteria.exists),
+        Criteria.with_field("notes.pub_temp_repo", True),
+    )
+
+    repos = client.search_repository(crit).result()
+    for repo in repos.as_iter():
+        created = repo.created
+        if not created:
+            log.warning("Can't check repo %s - no creation time available", repo.id)
+            continue
+
+        repo_age = datetime.utcnow() - created
+        if repo_age > timedelta(days=gc_threshold):
+            log.info("Deleting %s (created on %s)", repo.id, repo.created)
+            repo.delete().result()
+
+    log.info("Temporary repo(s) deletion completed")
+
+
+def make_client(args):
+    auth = None
+
+    if args.username:
+        password = args.password
+        if password is None:
+            password = os.environ.get("PULP_PASSWORD")
+        if not password:
+            log.warning("No password provided for %s", args.username)
+        auth = (args.username, args.password)
+
+    return Client(args.url, auth=auth)
+
+
+def main():
+    log.setLevel(logging.INFO)
+    logging.basicConfig(format="%(message)s")
+
+    parser = ArgumentParser(help="Garbage collect old repositories")
+    parser.add_argument("--url", help="Pulp server URL")
+    parser.add_argument("--username", help="Pulp username")
+    parser.add_argument(
+        "--password", help="Pulp password (or set PULP_PASSWORD in env)"
+    )
+
+    p = parser.parse_args()
+    if not p.url:
+        parser.error("--url is required")
+
+    client = make_client(p)
+    return garbage_collect(client)
+
+
+if __name__ == "__main__":
+    main()

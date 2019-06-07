@@ -1,0 +1,66 @@
+#!/usr/bin/env python
+import os
+import logging
+from argparse import ArgumentParser
+
+from more_executors.futures import f_flat_map
+
+from pubtools.pulplib import Client, Criteria, Page
+
+log = logging.getLogger("publish")
+
+
+def publish(client, repo_id):
+    crit = Criteria.with_id(repo_id)
+
+    repos = client.search_repository(crit).result()
+    publishes = [
+        f_flat_map(repo_f, lambda repo: repo.publish()) for repo_f in repos.as_iter()
+    ]
+
+    # Blocks at result() calls here.
+    publish_tasks = []
+    for publish in publishes:
+        publish_tasks.extend(publish.result())
+
+    log.info(
+        "Published %s repo(s) using %s task(s)", len(publishes), len(publish_tasks)
+    )
+
+
+def make_client(args):
+    auth = None
+
+    if args.username:
+        password = args.password
+        if password is None:
+            password = os.environ.get("PULP_PASSWORD")
+        if not password:
+            log.warning("No password provided for %s", args.username)
+        auth = (args.username, args.password)
+
+    return Client(args.url, auth=auth)
+
+
+def main():
+    log.setLevel(logging.INFO)
+    logging.basicConfig(format="%(message)s")
+
+    parser = ArgumentParser(help="Publish repositories")
+    parser.add_argument("--url", help="Pulp server URL")
+    parser.add_argument("--username", help="Pulp username")
+    parser.add_argument(
+        "--password", help="Pulp password (or set PULP_PASSWORD in env)"
+    )
+    parser.add_argument("repo_id", nargs="+")
+
+    p = parser.parse_args()
+    if not p.url:
+        parser.error("--url is required")
+
+    client = make_client(p)
+    return publish(client, p.repo_id)
+
+
+if __name__ == "__main__":
+    main()
