@@ -1,0 +1,30 @@
+title: pulp2-task
+
+description: >-
+  Schema for a Pulp 2.x task dict, as returned by the
+  /pulp/api/v2/tasks/<task_id>/ API.
+
+$schema: http://json-schema.org/draft-07/schema#
+
+type: object
+
+properties:
+
+  # ID of the task, e.g. "7744e2df-39b9-46f0-bb10-feffa2f7014b"
+  task_id:
+    type: string
+
+  # Task state
+  state:
+    enum:
+    - accepted  # this value has never been observed
+    - running   # task is being worked on
+    - waiting   # task is waiting for a worker to pick it up
+    - finished  # task completed successfully
+    - error     # task completed unsuccessfully
+    - canceled  # task was canceled
+    - skipped   # Pulp decided not to execute this task
+
+required:
+- task_id
+- state

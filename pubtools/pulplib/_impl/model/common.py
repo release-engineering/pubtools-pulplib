@@ -1,3 +1,16 @@
+import logging
+
+import jsonschema
+
+from pubtools.pulplib._impl import compat_attr as attr
+from pubtools.pulplib._impl.util import lookup
+
+from .attr import PULP2_FIELD
+from .convert import get_converter
+
+LOG = logging.getLogger("pubtools.pulplib")
+
+
 class DetachedException(Exception):
     """If an operation is attempted on a Pulp object which requires an active client,
     and the object is not attached to any client, this exception is raised.
@@ -29,9 +42,9 @@ class PulpObject(object):
     Pulp servers.
     """
 
-    # Note: I'm not entirely sure this base class needs to exist.
-    # It would mainly be used as a way of grouping certain documentation,
-    # e.g. a place where we can document from_data only once instead of on each class.
+    # Classes should put a valid JSON schema here. This one will refuse to
+    # validate anything.
+    _SCHEMA = False
 
     @classmethod
     def from_data(cls, data):
@@ -66,8 +79,38 @@ class PulpObject(object):
                 data = requests.get(url).json()
                 repo = Repository.from_data(data)
         """
-        # subclasses will be overriding this
-        raise NotImplementedError("Must call from_data on concrete subclass!")
+
+        try:
+            jsonschema.validate(instance=data, schema=cls._SCHEMA)
+        except jsonschema.exceptions.ValidationError as error:
+            LOG.exception("%s.from_data invoked with invalid Pulp data", cls.__name__)
+            raise InvalidDataException(str(error))
+
+        kwargs = cls._data_to_init_args(data)
+        return cls(**kwargs)
+
+    @classmethod
+    def _data_to_init_args(cls, data):
+        # maps from raw Pulp dict to a kwargs dict used to initialize
+        # a new object of this class.
+        #
+        # The default implementation looks at defined attributes and metadata
+        # (PULP2_FIELD).  If this is not sufficient, subclasses can override
+        # this, and can also call super() to reuse this as needed.
+        out = {}
+        fields = attr.fields(cls)
+        absent = object()
+
+        for field in fields:
+            pulp_field = field.metadata.get(PULP2_FIELD)
+            if pulp_field:
+                value = lookup(data, pulp_field, absent)
+                if value is not absent:
+                    converter = get_converter(field, value)
+                    value = converter(value)
+                    out[field.name] = value
+
+        return out
 
 
 # Design notes

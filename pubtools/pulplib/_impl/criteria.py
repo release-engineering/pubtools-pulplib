@@ -1,6 +1,23 @@
+import collections
+
+import six
+
+# Due to below block:
+# pylint: disable=wrong-import-position
+
+try:
+    # python 3
+    Iterable = collections.abc.Iterable  # pylint: disable=invalid-name
+except AttributeError:  # pragma: no cover
+    # python 2
+    Iterable = collections.Iterable  # pylint: disable=invalid-name
+
+from pubtools.pulplib._impl import compat_attr as attr
+
+
 class Criteria(object):
     """Represents a Pulp search criteria.
-    
+
     This is an opaque class which is not intended to be created
     or used directly. Instances of this class should be obtained and
     composed by calls to the documented class methods.
@@ -45,7 +62,9 @@ class Criteria(object):
             Criteria
                 criteria for finding objects matching the given ID(s)
         """
-        return cls.with_field("id", ids)
+        if isinstance(ids, six.string_types):
+            return cls.with_field("id", ids)
+        return cls.with_field_in("id", ids)
 
     @classmethod
     def with_field(cls, field_name, field_value):
@@ -54,7 +73,7 @@ class Criteria(object):
                 The name of a field.
 
                 Field names may contain a "." to indicate nested fields,
-                such as "notes.created".
+                such as ``notes.created``.
 
             field_value (object)
                 Any value, to be matched against the field.
@@ -64,6 +83,26 @@ class Criteria(object):
                 criteria for finding objects where ``field_name`` is present and
                 matches ``field_value``.
         """
+        return FieldEqCriteria(field_name, field_value)
+
+    @classmethod
+    def with_field_in(cls, field_name, field_value):
+        """Args:
+            field_name (str)
+                The name of a field.
+
+                Field names may contain a "." to indicate nested fields,
+                such as ``notes.created``.
+
+            field_value (object)
+                List of field values, to be matched against the field.
+
+        Returns:
+            Criteria
+                criteria for finding objects where ``field_name`` is present and
+                matches any elements of ``field_value``.
+        """
+        return FieldInCriteria(field_name, field_value)
 
     @classmethod
     def and_(cls, *criteria):
@@ -75,6 +114,7 @@ class Criteria(object):
             :class:`Criteria`
                 criteria for finding objects which satisfy all of the input ``criteria``.
         """
+        return AndCriteria(criteria)
 
     @classmethod
     def or_(cls, *criteria):
@@ -86,6 +126,48 @@ class Criteria(object):
             Criteria
                 criteria for finding objects which satisfy any of the input ``criteria``.
         """
+        return OrCriteria(criteria)
+
+    @classmethod
+    def true(cls):
+        """
+        Returns:
+            Criteria
+                a criteria which always matches any object.
+        """
+        return TrueCriteria()
+
+
+@attr.s
+class FieldEqCriteria(Criteria):
+    _field = attr.ib()
+    _value = attr.ib()
+
+
+@attr.s
+class FieldInCriteria(Criteria):
+    _field = attr.ib()
+    _value = attr.ib()
+
+    @_value.validator
+    def _check_value(self, attribute, value):
+        if isinstance(value, Iterable) and not isinstance(value, six.string_types):
+            return
+        raise ValueError("Must be an iterable: %s" % repr(value))
+
+
+@attr.s
+class AndCriteria(Criteria):
+    _operands = attr.ib()
+
+
+@attr.s
+class OrCriteria(Criteria):
+    _operands = attr.ib()
+
+
+class TrueCriteria(Criteria):
+    pass
 
 
 # Design Notes

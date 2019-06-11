@@ -1,3 +1,7 @@
+from . import compat_attr as attr
+
+
+@attr.s(kw_only=True)
 class Page(object):
     """A page of Pulp search results.
 
@@ -45,20 +49,18 @@ class Page(object):
 
     """
 
-    @property
-    def data(self):
-        """List of Pulp objects in this page.
+    data = attr.ib(default=attr.Factory(list))
+    """List of Pulp objects in this page.
 
-        This list will contain instances of the appropriate Pulp object type
-        (e.g. :class:`~pubtools.pulplib.Repository` for a repository search).
-        """
+    This list will contain instances of the appropriate Pulp object type
+    (e.g. :class:`~pubtools.pulplib.Repository` for a repository search).
+    """
 
-    @property
-    def next(self):
-        """None, if this is the last page of results.
+    next = attr.ib(default=None)
+    """None, if this is the last page of results.
 
-        Otherwise, a Future[:class:`Page`] for the next page of results.
-        """
+    Otherwise, a Future[:class:`Page`] for the next page of results.
+    """
 
     def as_iter(self):
         """Returns an iterator which individually yields each object in this
