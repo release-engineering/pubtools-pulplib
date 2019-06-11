@@ -1,0 +1,213 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>pubtools.pulplib._impl.page &#8212; pubtools-pulplib  documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for pubtools.pulplib._impl.page</h1><div class="highlight"><pre>
+<div class="viewcode-block" id="Page"><a class="viewcode-back" href="../../../../api/searching.html#pubtools.pulplib.Page">[docs]</a><span></span><span class="k">class</span> <span class="nc">Page</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A page of Pulp search results.</span>
+
+<span class="sd">    All Pulp searches issued by this library are paginated.</span>
+<span class="sd">    Instances of this class may be used to iterate through the returned</span>
+<span class="sd">    pages, in both blocking and non-blocking coding styles.</span>
+
+<span class="sd">    Examples:</span>
+
+<span class="sd">        **Non-blocking iteration**</span>
+
+<span class="sd">        This example sets up non-blocking processing of all results from</span>
+<span class="sd">        a search query. Futures are chained and composed using</span>
+<span class="sd">        :func:`~more_executors.futures.f_flat_map` and friends.</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            def handle_results(page):</span>
+<span class="sd">                # Returns a future for handling of a single page</span>
+<span class="sd">                for repo in page.data:</span>
+<span class="sd">                    do_something(repo)</span>
+<span class="sd">                if page.next:</span>
+<span class="sd">                    # There&#39;s more data, handle that too when it&#39;s ready</span>
+<span class="sd">                    return f_flat_map(page.next, handle_results)</span>
+<span class="sd">                # No more data, we&#39;re done</span>
+<span class="sd">                print(&quot;Handled results!&quot;)</span>
+<span class="sd">                return f_return()</span>
+
+<span class="sd">            page_f = client.search_repository(...)</span>
+<span class="sd">            handled_f = f_flat_map(page_f, handle_results)</span>
+<span class="sd">            # handled_f will be resolved when all results are handled</span>
+
+<span class="sd">        **Blocking iteration**</span>
+
+<span class="sd">        This example uses :meth:`as_iter` to loop over all search results.</span>
+<span class="sd">        At certain points during the iteration, blocking may occur to</span>
+<span class="sd">        await more pages from Pulp.</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            page = client.search_repository(...).result()</span>
+<span class="sd">            # processes all data, but may block at page boundaries</span>
+<span class="sd">            for repo in page.as_iter():</span>
+<span class="sd">                do_something(repo)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;List of Pulp objects in this page.</span>
+
+<span class="sd">        This list will contain instances of the appropriate Pulp object type</span>
+<span class="sd">        (e.g. :class:`~pubtools.pulplib.Repository` for a repository search).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">next</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;None, if this is the last page of results.</span>
+
+<span class="sd">        Otherwise, a Future[:class:`Page`] for the next page of results.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Page.as_iter"><a class="viewcode-back" href="../../../../api/searching.html#pubtools.pulplib.Page.as_iter">[docs]</a>    <span class="k">def</span> <span class="nf">as_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns an iterator which individually yields each object in this</span>
+<span class="sd">        page, and all subsequent pages.</span>
+
+<span class="sd">        The iterator will block as needed if the current Pulp search has not</span>
+<span class="sd">        yet completed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># sketch of possible implementation...</span>
+        <span class="n">page</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">page</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="n">elem</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">page</span><span class="o">.</span><span class="n">next</span><span class="p">:</span>
+                <span class="k">return</span>
+            <span class="c1"># blocks here if next page is not yet fetched</span>
+            <span class="n">page</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="n">next</span><span class="o">.</span><span class="n">result</span><span class="p">()</span></div></div>
+
+
+<span class="c1"># Design Notes</span>
+<span class="c1"># ============</span>
+<span class="c1">#</span>
+<span class="c1"># Page is supposed to meet these goals:</span>
+<span class="c1">#</span>
+<span class="c1"># - make it possible for caller to start processing results while the client is</span>
+<span class="c1">#   still searching for more pages</span>
+<span class="c1">#</span>
+<span class="c1"># - allow a completely non-blocking style of processing search results by chaining</span>
+<span class="c1">#   futures</span>
+<span class="c1">#</span>
+<span class="c1"># - also support convenient, traditional blocking style of processing search results</span>
+<span class="c1">#</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../index.html">pubtools-pulplib</a></h1>
+
+
+
+<p class="blurb">A Pulp library for publishing tools</p>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api-reference.html">API Reference</a></li>
+</ul>
+
+
+<hr />
+<ul>
+    
+    <li class="toctree-l1"><a href="https://github.com/release-engineering/pubtools-pulplib">Source</a></li>
+    
+    <li class="toctree-l1"><a href="https://pypi.org/project/pubtools-pulplib">PyPI</a></li>
+    
+    <li class="toctree-l1"><a href="genindex.html">Index</a></li>
+    
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Red Hat.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+    <a href="https://github.com/release-engineering/pubtools-pulplib" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

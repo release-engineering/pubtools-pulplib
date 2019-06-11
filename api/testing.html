@@ -1,0 +1,195 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Testing &#8212; pubtools-pulplib  documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Pulp objects" href="model.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="testing">
+<h1>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="pubtools.pulplib.FakeController">
+<em class="property">class </em><code class="sig-prename descclassname">pubtools.pulplib.</code><code class="sig-name descname">FakeController</code><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/fake.html#FakeController"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.FakeController" title="Permalink to this definition">¶</a></dt>
+<dd><p>A controller for a fake <a class="reference internal" href="client.html#pubtools.pulplib.Client" title="pubtools.pulplib.Client"><code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code></a>, to be used
+within automated tests.</p>
+<p>This class provides a client which has the same public interface as
+<a class="reference internal" href="client.html#pubtools.pulplib.Client" title="pubtools.pulplib.Client"><code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code></a>. This client is fully functional for
+both reads and writes, but uses a simple in-memory implementation rather
+than issuing requests to a remote Pulp server. The client’s data may be
+inspected and modified via the FakeController instance.</p>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># imagine we have a function like this</span>
+<span class="k">def</span> <span class="nf">delete_old_repos</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">days</span><span class="p">):</span>
+    <span class="c1"># code here using client to find/delete all repos older</span>
+    <span class="c1"># than given number of days</span>
+    <span class="o">...</span>
+
+<span class="c1"># then we can use a fake client to test it like this</span>
+<span class="k">def</span> <span class="nf">test_delete_old_repos</span><span class="p">():</span>
+    <span class="n">controller</span> <span class="o">=</span> <span class="n">FakeController</span><span class="p">()</span>
+
+    <span class="c1"># Insert repositories into fake data</span>
+    <span class="n">repo_now</span> <span class="o">=</span> <span class="n">Repository</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;current-repo&#39;</span><span class="p">,</span> <span class="n">created</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">())</span>
+    <span class="n">repo_old</span> <span class="o">=</span> <span class="n">Repository</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;old-repo&#39;</span><span class="p">,</span> <span class="n">created</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">min</span><span class="p">)</span>
+
+    <span class="n">controller</span><span class="o">.</span><span class="n">insert_repository</span><span class="p">(</span><span class="n">repo_now</span><span class="p">)</span>
+    <span class="n">controller</span><span class="o">.</span><span class="n">insert_repository</span><span class="p">(</span><span class="n">repo_old</span><span class="p">)</span>
+
+    <span class="c1"># Run the code under test against the fake client</span>
+
+    <span class="c1"># It should succeed without crashing</span>
+    <span class="n">delete_old_repos</span><span class="p">(</span><span class="n">controller</span><span class="o">.</span><span class="n">client</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+
+    <span class="c1"># The set of repos should now contain only the recent repo</span>
+    <span class="k">assert</span> <span class="n">controller</span><span class="o">.</span><span class="n">repositories</span> <span class="o">==</span> <span class="p">[</span><span class="n">repo_now</span><span class="p">]</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="pubtools.pulplib.FakeController.client">
+<em class="property">property </em><code class="sig-name descname">client</code><a class="headerlink" href="#pubtools.pulplib.FakeController.client" title="Permalink to this definition">¶</a></dt>
+<dd><p>The client instance attached to this controller.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pubtools.pulplib.FakeController.insert_repository">
+<code class="sig-name descname">insert_repository</code><span class="sig-paren">(</span><em class="sig-param">repository</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/fake.html#FakeController.insert_repository"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.FakeController.insert_repository" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a repository to the set of existing repositories in the fake client.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>repository</strong> (<a class="reference internal" href="model.html#pubtools.pulplib.Repository" title="pubtools.pulplib.Repository"><code class="xref py py-class docutils literal notranslate"><span class="pre">Repository</span></code></a>) – A repository object to insert.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pubtools.pulplib.FakeController.repositories">
+<em class="property">property </em><code class="sig-name descname">repositories</code><a class="headerlink" href="#pubtools.pulplib.FakeController.repositories" title="Permalink to this definition">¶</a></dt>
+<dd><p>The list of existing repositories in the fake client.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">pubtools-pulplib</a></h1>
+
+
+
+<p class="blurb">A Pulp library for publishing tools</p>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../api-reference.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="client.html">Client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="searching.html">Searching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html">Pulp objects</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Testing</a></li>
+</ul>
+</li>
+</ul>
+
+
+<hr />
+<ul>
+    
+    <li class="toctree-l1"><a href="https://github.com/release-engineering/pubtools-pulplib">Source</a></li>
+    
+    <li class="toctree-l1"><a href="https://pypi.org/project/pubtools-pulplib">PyPI</a></li>
+    
+    <li class="toctree-l1"><a href="genindex.html">Index</a></li>
+    
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../api-reference.html">API Reference</a><ul>
+      <li>Previous: <a href="model.html" title="previous chapter">Pulp objects</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Red Hat.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/api/testing.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/release-engineering/pubtools-pulplib" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

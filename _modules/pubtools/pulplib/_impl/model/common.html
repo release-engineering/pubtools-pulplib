@@ -1,0 +1,224 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>pubtools.pulplib._impl.model.common &#8212; pubtools-pulplib  documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for pubtools.pulplib._impl.model.common</h1><div class="highlight"><pre>
+<div class="viewcode-block" id="DetachedException"><a class="viewcode-back" href="../../../../../api/model.html#pubtools.pulplib.DetachedException">[docs]</a><span></span><span class="k">class</span> <span class="nc">DetachedException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;If an operation is attempted on a Pulp object which requires an active client,</span>
+<span class="sd">    and the object is not attached to any client, this exception is raised.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="InvalidDataException"><a class="viewcode-back" href="../../../../../api/model.html#pubtools.pulplib.InvalidDataException">[docs]</a><span class="k">class</span> <span class="nc">InvalidDataException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Raised if raw Pulp data appears to be invalid (i.e. not matching expected schema).</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="PulpObject"><a class="viewcode-back" href="../../../../../api/model.html#pubtools.pulplib.PulpObject">[docs]</a><span class="k">class</span> <span class="nc">PulpObject</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class for all modeled Pulp objects.</span>
+
+<span class="sd">    Instances of PulpObject subclasses may be obtained by get and search methods</span>
+<span class="sd">    on :class:`~pubtools.pulplib.Client`, or may be instantiated directly by calls</span>
+<span class="sd">    to :meth:`from_data` when the client is not used.</span>
+
+<span class="sd">    Objects which are created via a client may be used to issue further requests</span>
+<span class="sd">    to Pulp (for example, to update or delete the object).</span>
+
+<span class="sd">    Pulp objects use `attrs &lt;http://www.attrs.org/en/stable/&gt;`_.</span>
+<span class="sd">    Attributes are immutable. Helper functions such as :func:`attr.evolve`</span>
+<span class="sd">    may be used to produce new instances.</span>
+
+<span class="sd">    Attributes exposed on these Pulp objects include some generic attributes</span>
+<span class="sd">    applicable to any Pulp installation, but also some custom attributes</span>
+<span class="sd">    which only make sense for `release-engineering &lt;https://github.com/release-engineering&gt;`_</span>
+<span class="sd">    Pulp servers.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Note: I&#39;m not entirely sure this base class needs to exist.</span>
+    <span class="c1"># It would mainly be used as a way of grouping certain documentation,</span>
+    <span class="c1"># e.g. a place where we can document from_data only once instead of on each class.</span>
+
+<div class="viewcode-block" id="PulpObject.from_data"><a class="viewcode-back" href="../../../../../api/model.html#pubtools.pulplib.PulpObject.from_data">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Obtain a detached instance using data obtained from Pulp.</span>
+
+<span class="sd">        This method is provided so that callers who are not using</span>
+<span class="sd">        :class:`~pubtools.pulplib.Client` may make use of the Pulp object classes.</span>
+
+<span class="sd">        This method must be invoked on the appropriate ``PulpObject`` subclass</span>
+<span class="sd">        matching ``data``.  For example, ``Repository.from_data`` must be invoked</span>
+<span class="sd">        with a repository object provided by Pulp&#39;s API.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data (dict)</span>
+<span class="sd">                A dict containing a raw representation of a Pulp object, as rendered</span>
+<span class="sd">                by Pulp&#39;s API.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            a new instance of ``cls``</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            InvalidDataException</span>
+<span class="sd">                If the provided ``data`` fails validation against an expected schema.</span>
+
+<span class="sd">        Example:</span>
+
+<span class="sd">            Opting-out of using the ``Client`` class and instead doing a plain ``requests.get``:</span>
+
+<span class="sd">            .. code-block:: python</span>
+
+<span class="sd">                url = &#39;https://pulp.example.com/pulp/api/v2/repositories/zoo/&#39;</span>
+<span class="sd">                data = requests.get(url).json()</span>
+<span class="sd">                repo = Repository.from_data(data)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># subclasses will be overriding this</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Must call from_data on concrete subclass!&quot;</span><span class="p">)</span></div></div>
+
+
+<span class="c1"># Design notes</span>
+<span class="c1"># ============</span>
+<span class="c1">#</span>
+<span class="c1"># All classes in this hierarchy are meant to be &quot;attrs&quot; classes. This can reduce</span>
+<span class="c1"># the boilerplate and give us some nice advantages, such as immutability to discourage</span>
+<span class="c1"># spaghetti code in callers.</span>
+<span class="c1">#</span>
+<span class="c1"># The classes are designed following the guideline here:</span>
+<span class="c1"># http://www.attrs.org/en/stable/init.html</span>
+<span class="c1">#</span>
+<span class="c1"># This means that instances of these classes don&#39;t at all store the raw data passed</span>
+<span class="c1"># in by Pulp, which has some implications:</span>
+<span class="c1">#</span>
+<span class="c1"># - there is no way to work around the API - if some attribute you need is missing from</span>
+<span class="c1">#   a class, you can&#39;t peek at the raw data instead. You have to really add the attribute.</span>
+<span class="c1">#</span>
+<span class="c1"># - testing is easier because you can simply create a SomeObject(foo=&#39;a&#39;, bar=&#39;b&#39;) for any</span>
+<span class="c1">#   given attributes, and not have to know/care about what that means in terms of how the</span>
+<span class="c1">#   data is structured in Pulp</span>
+<span class="c1">#</span>
+<span class="c1"># Note that the initial version of these classes is fairly minimal. It is very much</span>
+<span class="c1"># expected that many more attributes need to be added to these classes as we uncover</span>
+<span class="c1"># use-cases for them.</span>
+<span class="c1">#</span>
+<span class="c1"># Regarding the validation of incoming data against schemas: those schemas would cover</span>
+<span class="c1"># some generic Pulp fields, and some site-specific fields. They would be &quot;open&quot; schemas</span>
+<span class="c1"># (i.e. unknown fields are allowed, but bad data in known fields is not allowed).</span>
+<span class="c1">#</span>
+<span class="c1"># It&#39;s hoped that the schemas could be encoded in .yaml files with full commentary,</span>
+<span class="c1"># and those might be included in sphinx-generated docs. This could be used to replace</span>
+<span class="c1"># some internal docs about the custom fields used on our Pulp servers.</span>
+<span class="c1">#</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../../index.html">pubtools-pulplib</a></h1>
+
+
+
+<p class="blurb">A Pulp library for publishing tools</p>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api-reference.html">API Reference</a></li>
+</ul>
+
+
+<hr />
+<ul>
+    
+    <li class="toctree-l1"><a href="https://github.com/release-engineering/pubtools-pulplib">Source</a></li>
+    
+    <li class="toctree-l1"><a href="https://pypi.org/project/pubtools-pulplib">PyPI</a></li>
+    
+    <li class="toctree-l1"><a href="genindex.html">Index</a></li>
+    
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Red Hat.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+    <a href="https://github.com/release-engineering/pubtools-pulplib" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

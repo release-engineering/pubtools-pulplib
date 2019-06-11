@@ -1,0 +1,209 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Client &#8212; pubtools-pulplib  documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Searching" href="searching.html" />
+    <link rel="prev" title="API Reference" href="../api-reference.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="client">
+<h1>Client<a class="headerlink" href="#client" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="pubtools.pulplib.Client">
+<em class="property">class </em><code class="sig-prename descclassname">pubtools.pulplib.</code><code class="sig-name descname">Client</code><span class="sig-paren">(</span><em class="sig-param">url</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client.html#Client"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.Client" title="Permalink to this definition">¶</a></dt>
+<dd><p>A client for the Pulp 2.x API.</p>
+<p>This class provides high-level methods for querying a Pulp server and performing
+actions in Pulp.</p>
+<p><strong>Usage of futures:</strong></p>
+<p>Most values are returned as <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a> objects.
+Returned futures are resolved when:</p>
+<ul class="simple">
+<li><p>a request to Pulp succeeded, if operation is synchronous (e.g. get, search)</p></li>
+<li><p>or a request to Pulp succeeded and any spawned tasks succeeded, if operation
+is asynchronous (e.g. publish)</p></li>
+</ul>
+<p><strong>Retries:</strong></p>
+<p>In general, for all methods which represent an idempotent operation and
+which return a Future, the library may retry operations several times in case
+of failure.</p>
+<p><strong>Throttling:</strong></p>
+<p>This client will internally throttle the number of Pulp tasks allowed to be
+outstanding at any given time, so that no single client can overload the Pulp
+task queue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – URL of a Pulp server, e.g. <a class="reference external" href="https://pulp.example.com/">https://pulp.example.com/</a>.</p></li>
+<li><p><strong>auth</strong><strong>, </strong><strong>cert</strong><strong>, </strong><strong>headers</strong><strong>, </strong><strong>max_redirects</strong><strong>, </strong><strong>params</strong><strong>, </strong><strong>proxies</strong><strong>, </strong><strong>verify</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><em>object</em></a>) – <p>Any of these arguments, if provided, are used to initialize
+<a class="reference external" href="https://2.python-requests.org/en/master/api/#requests.Session" title="(in Requests v2.22.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">requests.Session</span></code></a> objects used by the client.</p>
+<p>These may be used, for example, to configure the credentials
+for the Pulp server or to use an alternative CA bundle.</p>
+</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="pubtools.pulplib.Client.get_repository">
+<code class="sig-name descname">get_repository</code><span class="sig-paren">(</span><em class="sig-param">id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client.html#Client.get_repository"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.Client.get_repository" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a repository by ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The ID of the repository to be fetched.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Future[<a class="reference internal" href="model.html#pubtools.pulplib.Repository" title="pubtools.pulplib.Repository"><code class="xref py py-class docutils literal notranslate"><span class="pre">Repository</span></code></a>]</dt><dd><p>A future holding the fetched Repository.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pubtools.pulplib.Client.search_repository">
+<code class="sig-name descname">search_repository</code><span class="sig-paren">(</span><em class="sig-param">criteria</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client.html#Client.search_repository"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.Client.search_repository" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search for repositories matching the given criteria.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>criteria</strong> (<a class="reference internal" href="searching.html#pubtools.pulplib.Criteria" title="pubtools.pulplib.Criteria"><code class="xref py py-class docutils literal notranslate"><span class="pre">Criteria</span></code></a>) – A criteria object used for this search.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl>
+<dt>Future[<a class="reference internal" href="searching.html#pubtools.pulplib.Page" title="pubtools.pulplib.Page"><code class="xref py py-class docutils literal notranslate"><span class="pre">Page</span></code></a>]</dt><dd><p>A future representing the first page of results.</p>
+<p>Each page will contain a collection of
+<a class="reference internal" href="model.html#pubtools.pulplib.Repository" title="pubtools.pulplib.Repository"><code class="xref py py-class docutils literal notranslate"><span class="pre">Repository</span></code></a> objects.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">pubtools-pulplib</a></h1>
+
+
+
+<p class="blurb">A Pulp library for publishing tools</p>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../api-reference.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="searching.html">Searching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html">Pulp objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testing.html">Testing</a></li>
+</ul>
+</li>
+</ul>
+
+
+<hr />
+<ul>
+    
+    <li class="toctree-l1"><a href="https://github.com/release-engineering/pubtools-pulplib">Source</a></li>
+    
+    <li class="toctree-l1"><a href="https://pypi.org/project/pubtools-pulplib">PyPI</a></li>
+    
+    <li class="toctree-l1"><a href="genindex.html">Index</a></li>
+    
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../api-reference.html">API Reference</a><ul>
+      <li>Previous: <a href="../api-reference.html" title="previous chapter">API Reference</a></li>
+      <li>Next: <a href="searching.html" title="next chapter">Searching</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Red Hat.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/api/client.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/release-engineering/pubtools-pulplib" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>
