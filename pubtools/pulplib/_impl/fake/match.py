@@ -84,7 +84,6 @@ def match_field(obj, field, value):
             obj_value = getattr(obj, cls_field.name, None)
             # TODO: will we need to differentiate between "absent" and
             # "present but None"?
-            # TODO: converter
             if obj_value is not None:
                 pulp_dict[pulp_key] = convert_field_to_pulp(
                     obj, cls_field.name, obj_value
