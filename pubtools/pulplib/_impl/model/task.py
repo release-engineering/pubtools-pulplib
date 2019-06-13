@@ -48,8 +48,78 @@ class Task(PulpObject):
     def _data_to_init_args(cls, data):
         # todo: error_* attribs
         state = data["state"]
-        return {
+        out = {
             "id": data["task_id"],
             "completed": state in ("finished", "error", "canceled", "skipped"),
             "succeeded": state in ("finished", "skipped"),
         }
+        if state == "error":
+            out["error_summary"] = cls._error_summary(data)
+            out["error_details"] = cls._error_details(data)
+
+        return out
+
+    @classmethod
+    def _error_summary(cls, data):
+        error = data.get("error")
+        if not error:
+            return "<unknown error>"
+        return "%s: %s" % (error["code"], error["description"])
+
+    @classmethod
+    def _error_details(cls, data):
+        error = data.get("error")
+        if not error:
+            return "<unknown error>"
+
+        out = cls._error_summary(data)
+
+        # Error looks like this:
+        #
+        # {
+        #   'code': u'PLP0001',
+        #   'data': {
+        #     'message': 'a message'
+        #   },
+        #   'description': 'A general pulp exception occurred',
+        #   'sub_errors': []
+        # }
+        #
+        # See: https://docs.pulpproject.org/en/2.9/dev-guide/conventions/exceptions.html#error-details
+        #
+        # data can contain anything, or nothing.
+        # It's only a convention that it often contains a message.
+        #
+        # sub_errors is currently ignored because I've never seen a non-empty
+        # sub_errors yet.
+
+        error_data = error.get("data") or {}
+        messages = []
+
+        # Message in a general exception
+        if error_data.get("message"):
+            messages.append(error_data["message"])
+
+        # Some exceptions stash additional strings under details.errors
+        if (error_data.get("details") or {}).get("errors"):
+            error_messages = error_data["details"]["errors"]
+            if isinstance(error_messages, list):
+                messages.extend(error_messages)
+
+        # Pulp docs refer to this as deprecated, but actually it's still
+        # used and no alternative is provided.
+        if data.get("traceback"):
+            messages.append(data["traceback"])
+
+        message = "\n".join(messages)
+        if message:
+            # message can have CRLF line endings in rare cases.
+            message = message.replace("\r\n", "\n").strip()
+            out = "%s:\n%s" % (out, _indent(message))
+
+        return out
+
+
+def _indent(text, level=2):
+    spaces = " " * level
+    return spaces + text.replace("\n", "\n" + spaces)

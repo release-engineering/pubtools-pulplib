@@ -7,10 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- n/a
+# Added
+- Task error_summary and error_details are now initialized appropriately
+  with data from Pulp
 
 ## [0.1.1] - 2019-06-13
 
+# Fixed
 - Fixed missing schema files from distribution
 
 ## 0.1.0 - 2019-06-13
