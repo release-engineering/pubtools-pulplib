@@ -1,4 +1,5 @@
 import pytest
+import textwrap
 
 from pubtools.pulplib import Task, InvalidDataException
 
@@ -18,4 +19,55 @@ def test_successful_task():
 def test_failed_task():
     """from_data sets attributes appropriately for a failed task"""
     task = Task.from_data({"task_id": "some-task", "state": "error"})
-    assert task == Task(id="some-task", completed=True, succeeded=False)
+    assert task == Task(
+        id="some-task",
+        completed=True,
+        succeeded=False,
+        error_summary="<unknown error>",
+        error_details="<unknown error>",
+    )
+
+
+def test_task_error():
+    """from_data sets error-related attributes appropriately"""
+    data = {
+        "task_id": "failed-task",
+        "state": "error",
+        "error": {
+            "code": "ABC00123",
+            "description": "Simulated error",
+            "data": {
+                "message": "message from data",
+                "details": {"errors": ["another message", "and another"]},
+            },
+        },
+        "traceback": textwrap.dedent(
+            """
+            Traceback (most recent call last):
+                File "/usr/lib/python2.7/site-packages/celery/app/trace.py", line 367, in trace_task
+                    R = retval = fun(*args, **kwargs)
+                File "/home/vagrant/devel/pulp/server/pulp/server/db/querysets.py", line 119, in get_or_404
+                    raise pulp_exceptions.MissingResource(**kwargs)
+                MissingResource: Missing resource(s): repo_id=zoo, distributor_id=iso_distributor
+            """
+        ).strip(),
+    }
+    task = Task.from_data(data)
+    assert task.error_summary == "ABC00123: Simulated error"
+    assert (
+        task.error_details
+        == textwrap.dedent(
+            """
+            ABC00123: Simulated error:
+              message from data
+              another message
+              and another
+              Traceback (most recent call last):
+                  File "/usr/lib/python2.7/site-packages/celery/app/trace.py", line 367, in trace_task
+                      R = retval = fun(*args, **kwargs)
+                  File "/home/vagrant/devel/pulp/server/pulp/server/db/querysets.py", line 119, in get_or_404
+                      raise pulp_exceptions.MissingResource(**kwargs)
+                  MissingResource: Missing resource(s): repo_id=zoo, distributor_id=iso_distributor
+            """
+        ).strip()
+    )
