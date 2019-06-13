@@ -36,7 +36,7 @@
 <h1>Client<a class="headerlink" href="#client" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="pubtools.pulplib.Client">
-<em class="property">class </em><code class="sig-prename descclassname">pubtools.pulplib.</code><code class="sig-name descname">Client</code><span class="sig-paren">(</span><em class="sig-param">url</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client.html#Client"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.Client" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">pubtools.pulplib.</code><code class="sig-name descname">Client</code><span class="sig-paren">(</span><em class="sig-param">url</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/client.html#Client"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.Client" title="Permalink to this definition">¶</a></dt>
 <dd><p>A client for the Pulp 2.x API.</p>
 <p>This class provides high-level methods for querying a Pulp server and performing
 actions in Pulp.</p>
@@ -69,30 +69,13 @@ for the Pulp server or to use an alternative CA bundle.</p>
 </dd>
 </dl>
 <dl class="method">
-<dt id="pubtools.pulplib.Client.get_repository">
-<code class="sig-name descname">get_repository</code><span class="sig-paren">(</span><em class="sig-param">id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client.html#Client.get_repository"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.Client.get_repository" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get a repository by ID.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The ID of the repository to be fetched.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>Future[<a class="reference internal" href="model.html#pubtools.pulplib.Repository" title="pubtools.pulplib.Repository"><code class="xref py py-class docutils literal notranslate"><span class="pre">Repository</span></code></a>]</dt><dd><p>A future holding the fetched Repository.</p>
-</dd>
-</dl>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
 <dt id="pubtools.pulplib.Client.search_repository">
-<code class="sig-name descname">search_repository</code><span class="sig-paren">(</span><em class="sig-param">criteria</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client.html#Client.search_repository"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.Client.search_repository" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_repository</code><span class="sig-paren">(</span><em class="sig-param">criteria=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/client.html#Client.search_repository"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.Client.search_repository" title="Permalink to this definition">¶</a></dt>
 <dd><p>Search for repositories matching the given criteria.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>criteria</strong> (<a class="reference internal" href="searching.html#pubtools.pulplib.Criteria" title="pubtools.pulplib.Criteria"><code class="xref py py-class docutils literal notranslate"><span class="pre">Criteria</span></code></a>) – A criteria object used for this search.</p>
+<dd class="field-odd"><p><strong>criteria</strong> (<a class="reference internal" href="searching.html#pubtools.pulplib.Criteria" title="pubtools.pulplib.Criteria"><code class="xref py py-class docutils literal notranslate"><span class="pre">Criteria</span></code></a>) – A criteria object used for this search.
+If None, search for all repositories.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><dl>
@@ -106,8 +89,49 @@ for the Pulp server or to use an alternative CA bundle.</p>
 </dl>
 </dd></dl>
 
+<dl class="method">
+<dt id="pubtools.pulplib.Client.get_repository">
+<code class="sig-name descname">get_repository</code><span class="sig-paren">(</span><em class="sig-param">repository_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/client.html#Client.get_repository"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.Client.get_repository" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a repository by ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>repository_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The ID of the repository to be fetched.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Future[<a class="reference internal" href="model.html#pubtools.pulplib.Repository" title="pubtools.pulplib.Repository"><code class="xref py py-class docutils literal notranslate"><span class="pre">Repository</span></code></a>]</dt><dd><p>A future holding the fetched Repository.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
 </dd></dl>
 
+</dd></dl>
+
+<div class="section" id="errors">
+<h2>Errors<a class="headerlink" href="#errors" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pubtools.pulplib.PulpException">
+<em class="property">class </em><code class="sig-prename descclassname">pubtools.pulplib.</code><code class="sig-name descname">PulpException</code><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/errors.html#PulpException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.PulpException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when the Pulp server has responded with an unrecoverable error
+(generally a failed HTTP response which persisted over several retries).</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pubtools.pulplib.TaskFailedException">
+<em class="property">class </em><code class="sig-prename descclassname">pubtools.pulplib.</code><code class="sig-name descname">TaskFailedException</code><span class="sig-paren">(</span><em class="sig-param">task</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/errors.html#TaskFailedException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.TaskFailedException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when a Pulp task has completed with errors.</p>
+<dl class="attribute">
+<dt id="pubtools.pulplib.TaskFailedException.task">
+<code class="sig-name descname">task</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.TaskFailedException.task" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="model.html#pubtools.pulplib.Task" title="pubtools.pulplib.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a> which has failed.
+Error details may be accessed from the task.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
 </div>
 
 
@@ -140,6 +164,7 @@ for the Pulp server or to use an alternative CA bundle.</p>
 <li class="toctree-l2"><a class="reference internal" href="testing.html">Testing</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../schema.html">Schemas</a></li>
 </ul>
 
 

@@ -31,23 +31,61 @@
           <div class="body" role="main">
             
   <h1>Source code for pubtools.pulplib._impl.model.task</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">.common</span> <span class="k">import</span> <span class="n">PulpObject</span>
+<span></span><span class="kn">from</span> <span class="nn">pubtools.pulplib._impl</span> <span class="k">import</span> <span class="n">compat_attr</span> <span class="k">as</span> <span class="n">attr</span>
+
+<span class="kn">from</span> <span class="nn">..schema</span> <span class="k">import</span> <span class="n">load_schema</span>
+<span class="kn">from</span> <span class="nn">.common</span> <span class="k">import</span> <span class="n">PulpObject</span>
+<span class="kn">from</span> <span class="nn">.attr</span> <span class="k">import</span> <span class="n">pulp_attrib</span>
 
 
-<div class="viewcode-block" id="Task"><a class="viewcode-back" href="../../../../../api/model.html#pubtools.pulplib.Task">[docs]</a><span class="k">class</span> <span class="nc">Task</span><span class="p">(</span><span class="n">PulpObject</span><span class="p">):</span>
+<div class="viewcode-block" id="Task"><a class="viewcode-back" href="../../../../../api/model.html#pubtools.pulplib.Task">[docs]</a><span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">Task</span><span class="p">(</span><span class="n">PulpObject</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Represents a Pulp task.&quot;&quot;&quot;</span>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;ID of this task (str).&quot;&quot;&quot;</span>
+    <span class="n">_SCHEMA</span> <span class="o">=</span> <span class="n">load_schema</span><span class="p">(</span><span class="s2">&quot;task&quot;</span><span class="p">)</span>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">completed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;True if this task has completed, successfully or otherwise.&quot;&quot;&quot;</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;ID of this task (str).&quot;&quot;&quot;</span>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">succeeded</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;True if this task has completed successfully.&quot;&quot;&quot;</span></div>
+    <span class="n">completed</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;True if this task has completed, successfully or otherwise.</span>
+
+<span class="sd">    May be `None` if the state of this task is unknown.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">succeeded</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;True if this task has completed successfully.</span>
+
+<span class="sd">    May be `None` if the state of this task is unknown.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">error_summary</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;A summary of the reason for this task&#39;s failure (if any).</span>
+
+<span class="sd">    This is a short string, generally a single line, suitable for display to users.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">error_details</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;Detailed information for this task&#39;s failure (if any).</span>
+
+<span class="sd">    This may be a multi-line string and may include technical information such as</span>
+<span class="sd">    a Python backtrace generated by Pulp.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@succeeded</span><span class="o">.</span><span class="n">validator</span>
+    <span class="k">def</span> <span class="nf">_check_succeeded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">completed</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot have task with completed=False, succeeded=True&quot;</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_data_to_init_args</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="c1"># todo: error_* attribs</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;task_id&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;completed&quot;</span><span class="p">:</span> <span class="n">state</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;finished&quot;</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">,</span> <span class="s2">&quot;canceled&quot;</span><span class="p">,</span> <span class="s2">&quot;skipped&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;succeeded&quot;</span><span class="p">:</span> <span class="n">state</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;finished&quot;</span><span class="p">,</span> <span class="s2">&quot;skipped&quot;</span><span class="p">),</span>
+        <span class="p">}</span></div>
 </pre></div>
 
           </div>
@@ -73,6 +111,7 @@
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../api-reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../schema.html">Schemas</a></li>
 </ul>
 
 

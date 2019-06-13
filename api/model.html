@@ -97,13 +97,26 @@ by Pulp’s API.</p>
 <h2><a class="toc-backref" href="#id2">Repository</a><a class="headerlink" href="#repository" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="pubtools.pulplib.Repository">
-<em class="property">class </em><code class="sig-prename descclassname">pubtools.pulplib.</code><code class="sig-name descname">Repository</code><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository.html#Repository"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.Repository" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">pubtools.pulplib.</code><code class="sig-name descname">Repository</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">id: str</em>, <em class="sig-param">created: datetime.datetime = None</em>, <em class="sig-param">distributors: tuple = NOTHING</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository.html#Repository"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.Repository" title="Permalink to this definition">¶</a></dt>
 <dd><p>Represents a Pulp repository.</p>
-<dl class="method">
+<dl class="attribute">
+<dt id="pubtools.pulplib.Repository.id">
+<code class="sig-name descname">id</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.Repository.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>ID of this repository (str).</p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="pubtools.pulplib.Repository.created">
-<em class="property">property </em><code class="sig-name descname">created</code><a class="headerlink" href="#pubtools.pulplib.Repository.created" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">created</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.Repository.created" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a> in UTC at which this repository was created,
 or None if this information is unavailable.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pubtools.pulplib.Repository.distributors">
+<code class="sig-name descname">distributors</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.Repository.distributors" title="Permalink to this definition">¶</a></dt>
+<dd><p>tuple of <a class="reference internal" href="#pubtools.pulplib.Distributor" title="pubtools.pulplib.Distributor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Distributor</span></code></a> objects belonging to this
+repository.</p>
 </dd></dl>
 
 <dl class="method">
@@ -113,7 +126,9 @@ or None if this information is unavailable.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p><dl>
-<dt>Future</dt><dd><p>A future which is resolved when the repository deletion has completed.</p>
+<dt>Future[list[<a class="reference internal" href="#pubtools.pulplib.Task" title="pubtools.pulplib.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a>]]</dt><dd><p>A future which is resolved when the repository deletion has completed.</p>
+<p>The future contains a list of zero or more tasks triggered and awaited
+during the delete operation.</p>
 <p>This object also becomes detached from the client; no further updates
 are possible.</p>
 </dd>
@@ -127,21 +142,15 @@ are possible.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pubtools.pulplib.Repository.id">
-<em class="property">property </em><code class="sig-name descname">id</code><a class="headerlink" href="#pubtools.pulplib.Repository.id" title="Permalink to this definition">¶</a></dt>
-<dd><p>ID of this repository (str).</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="pubtools.pulplib.Repository.publish">
-<code class="sig-name descname">publish</code><span class="sig-paren">(</span><em class="sig-param">options=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository.html#Repository.publish"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.Repository.publish" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">publish</code><span class="sig-paren">(</span><em class="sig-param">options=PublishOptions(force=None</em>, <em class="sig-param">clean=None)</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository.html#Repository.publish"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.Repository.publish" title="Permalink to this definition">¶</a></dt>
 <dd><p>Publish this repository.</p>
 <p>The specific operations triggered on Pulp in order to publish a repo are not defined,
 but in Pulp 2.x, generally consists of triggering one or more distributors in sequence.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>options</strong> (<a class="reference internal" href="#pubtools.pulplib.PublishOptions" title="pubtools.pulplib.PublishOptions"><em>PublishOptions</em></a>) – <p>Options used to customize the behavior of this publish.</p>
-<p>If omitted, reasonable defaults apply.</p>
+<p>If omitted, the Pulp server’s defaults apply.</p>
 </p>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -162,10 +171,47 @@ during the publish operation.</p>
 </dd></dl>
 
 <dl class="class">
+<dt id="pubtools.pulplib.Distributor">
+<em class="property">class </em><code class="sig-prename descclassname">pubtools.pulplib.</code><code class="sig-name descname">Distributor</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">id: str</em>, <em class="sig-param">type_id: str</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/distributor.html#Distributor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.Distributor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents a Pulp distributor.</p>
+<dl class="attribute">
+<dt id="pubtools.pulplib.Distributor.id">
+<code class="sig-name descname">id</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.Distributor.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>ID of this distributor (str).</p>
+<p>This is an arbitrary string, though often matches exactly the <cite>type_id</cite>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pubtools.pulplib.Distributor.type_id">
+<code class="sig-name descname">type_id</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.Distributor.type_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Type ID of this distributor (str).</p>
+<p>The type ID of a distributor determines which content may be handled and
+which steps may be performed by the distributor. For example, distributors
+of type <cite>yum_distributor</cite> may be used to create yum repositories.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pubtools.pulplib.Distributor.is_rsync">
+<em class="property">property </em><code class="sig-name descname">is_rsync</code><a class="headerlink" href="#pubtools.pulplib.Distributor.is_rsync" title="Permalink to this definition">¶</a></dt>
+<dd><p>True for distributors in the ‘rsync distributor’ family
+(e.g. <code class="docutils literal notranslate"><span class="pre">rpm_rsync_distributor</span></code>).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="pubtools.pulplib.PublishOptions">
-<em class="property">class </em><code class="sig-prename descclassname">pubtools.pulplib.</code><code class="sig-name descname">PublishOptions</code><span class="sig-paren">(</span><em class="sig-param">force=False</em>, <em class="sig-param">clean=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository.html#PublishOptions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.PublishOptions" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">pubtools.pulplib.</code><code class="sig-name descname">PublishOptions</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">force: bool = None</em>, <em class="sig-param">clean: bool = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository.html#PublishOptions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.PublishOptions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Options controlling a repository
 <a class="reference internal" href="#pubtools.pulplib.Repository.publish" title="pubtools.pulplib.Repository.publish"><code class="xref py py-meth docutils literal notranslate"><span class="pre">publish()</span></code></a>.</p>
+<dl class="attribute">
+<dt id="pubtools.pulplib.PublishOptions.force">
+<code class="sig-name descname">force</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.PublishOptions.force" title="Permalink to this definition">¶</a></dt>
+<dd><p>If True, Pulp should publish all data within a repository, rather than attempting
+to publish only changed data (or even skipping the publish).</p>
+<p>Setting <code class="docutils literal notranslate"><span class="pre">force=True</span></code> may have a major performance impact when publishing large repos.</p>
+</dd></dl>
+
 <dl class="attribute">
 <dt id="pubtools.pulplib.PublishOptions.clean">
 <code class="sig-name descname">clean</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.PublishOptions.clean" title="Permalink to this definition">¶</a></dt>
@@ -175,14 +221,6 @@ in the repo.</p>
 <p>Setting <code class="docutils literal notranslate"><span class="pre">clean=True</span></code> generally implies <code class="docutils literal notranslate"><span class="pre">force=True</span></code>.</p>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="pubtools.pulplib.PublishOptions.force">
-<code class="sig-name descname">force</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.PublishOptions.force" title="Permalink to this definition">¶</a></dt>
-<dd><p>If True, Pulp should publish all data within a repository, rather than attempting
-to publish only changed data (or even skipping the publish).</p>
-<p>Setting <code class="docutils literal notranslate"><span class="pre">force=True</span></code> may have a major performance impact when publishing large repos.</p>
-</dd></dl>
-
 </dd></dl>
 
 </div>
@@ -190,24 +228,41 @@ to publish only changed data (or even skipping the publish).</p>
 <h2><a class="toc-backref" href="#id3">Task</a><a class="headerlink" href="#task" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="pubtools.pulplib.Task">
-<em class="property">class </em><code class="sig-prename descclassname">pubtools.pulplib.</code><code class="sig-name descname">Task</code><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/task.html#Task"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.Task" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">pubtools.pulplib.</code><code class="sig-name descname">Task</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">id: str</em>, <em class="sig-param">completed: bool = None</em>, <em class="sig-param">succeeded: bool = None</em>, <em class="sig-param">error_summary: str = None</em>, <em class="sig-param">error_details: str = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/task.html#Task"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.Task" title="Permalink to this definition">¶</a></dt>
 <dd><p>Represents a Pulp task.</p>
-<dl class="method">
-<dt id="pubtools.pulplib.Task.completed">
-<em class="property">property </em><code class="sig-name descname">completed</code><a class="headerlink" href="#pubtools.pulplib.Task.completed" title="Permalink to this definition">¶</a></dt>
-<dd><p>True if this task has completed, successfully or otherwise.</p>
-</dd></dl>
-
-<dl class="method">
+<dl class="attribute">
 <dt id="pubtools.pulplib.Task.id">
-<em class="property">property </em><code class="sig-name descname">id</code><a class="headerlink" href="#pubtools.pulplib.Task.id" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">id</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.Task.id" title="Permalink to this definition">¶</a></dt>
 <dd><p>ID of this task (str).</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="attribute">
+<dt id="pubtools.pulplib.Task.completed">
+<code class="sig-name descname">completed</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.Task.completed" title="Permalink to this definition">¶</a></dt>
+<dd><p>True if this task has completed, successfully or otherwise.</p>
+<p>May be <cite>None</cite> if the state of this task is unknown.</p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="pubtools.pulplib.Task.succeeded">
-<em class="property">property </em><code class="sig-name descname">succeeded</code><a class="headerlink" href="#pubtools.pulplib.Task.succeeded" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">succeeded</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.Task.succeeded" title="Permalink to this definition">¶</a></dt>
 <dd><p>True if this task has completed successfully.</p>
+<p>May be <cite>None</cite> if the state of this task is unknown.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pubtools.pulplib.Task.error_summary">
+<code class="sig-name descname">error_summary</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.Task.error_summary" title="Permalink to this definition">¶</a></dt>
+<dd><p>A summary of the reason for this task’s failure (if any).</p>
+<p>This is a short string, generally a single line, suitable for display to users.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pubtools.pulplib.Task.error_details">
+<code class="sig-name descname">error_details</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.Task.error_details" title="Permalink to this definition">¶</a></dt>
+<dd><p>Detailed information for this task’s failure (if any).</p>
+<p>This may be a multi-line string and may include technical information such as
+a Python backtrace generated by Pulp.</p>
 </dd></dl>
 
 </dd></dl>
@@ -261,6 +316,7 @@ and the object is not attached to any client, this exception is raised.</p>
 <li class="toctree-l2"><a class="reference internal" href="testing.html">Testing</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../schema.html">Schemas</a></li>
 </ul>
 
 

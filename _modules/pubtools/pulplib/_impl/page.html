@@ -31,7 +31,11 @@
           <div class="body" role="main">
             
   <h1>Source code for pubtools.pulplib._impl.page</h1><div class="highlight"><pre>
-<div class="viewcode-block" id="Page"><a class="viewcode-back" href="../../../../api/searching.html#pubtools.pulplib.Page">[docs]</a><span></span><span class="k">class</span> <span class="nc">Page</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span></span><span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">compat_attr</span> <span class="k">as</span> <span class="n">attr</span>
+
+
+<div class="viewcode-block" id="Page"><a class="viewcode-back" href="../../../../api/searching.html#pubtools.pulplib.Page">[docs]</a><span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">Page</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A page of Pulp search results.</span>
 
 <span class="sd">    All Pulp searches issued by this library are paginated.</span>
@@ -78,20 +82,18 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;List of Pulp objects in this page.</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">attr</span><span class="o">.</span><span class="n">Factory</span><span class="p">(</span><span class="nb">list</span><span class="p">))</span>
+    <span class="sd">&quot;&quot;&quot;List of Pulp objects in this page.</span>
 
-<span class="sd">        This list will contain instances of the appropriate Pulp object type</span>
-<span class="sd">        (e.g. :class:`~pubtools.pulplib.Repository` for a repository search).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">    This list will contain instances of the appropriate Pulp object type</span>
+<span class="sd">    (e.g. :class:`~pubtools.pulplib.Repository` for a repository search).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">next</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;None, if this is the last page of results.</span>
+    <span class="nb">next</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;None, if this is the last page of results.</span>
 
-<span class="sd">        Otherwise, a Future[:class:`Page`] for the next page of results.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">    Otherwise, a Future[:class:`Page`] for the next page of results.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="Page.as_iter"><a class="viewcode-back" href="../../../../api/searching.html#pubtools.pulplib.Page.as_iter">[docs]</a>    <span class="k">def</span> <span class="nf">as_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Returns an iterator which individually yields each object in this</span>
@@ -149,6 +151,7 @@
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../api-reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../schema.html">Schemas</a></li>
 </ul>
 
 

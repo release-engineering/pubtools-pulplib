@@ -31,7 +31,20 @@
           <div class="body" role="main">
             
   <h1>Source code for pubtools.pulplib._impl.model.common</h1><div class="highlight"><pre>
-<div class="viewcode-block" id="DetachedException"><a class="viewcode-back" href="../../../../../api/model.html#pubtools.pulplib.DetachedException">[docs]</a><span></span><span class="k">class</span> <span class="nc">DetachedException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">import</span> <span class="nn">jsonschema</span>
+
+<span class="kn">from</span> <span class="nn">pubtools.pulplib._impl</span> <span class="k">import</span> <span class="n">compat_attr</span> <span class="k">as</span> <span class="n">attr</span>
+<span class="kn">from</span> <span class="nn">pubtools.pulplib._impl.util</span> <span class="k">import</span> <span class="n">lookup</span>
+
+<span class="kn">from</span> <span class="nn">.attr</span> <span class="k">import</span> <span class="n">PULP2_FIELD</span>
+<span class="kn">from</span> <span class="nn">.convert</span> <span class="k">import</span> <span class="n">get_converter</span>
+
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;pubtools.pulplib&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="DetachedException"><a class="viewcode-back" href="../../../../../api/model.html#pubtools.pulplib.DetachedException">[docs]</a><span class="k">class</span> <span class="nc">DetachedException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;If an operation is attempted on a Pulp object which requires an active client,</span>
 <span class="sd">    and the object is not attached to any client, this exception is raised.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
@@ -62,9 +75,9 @@
 <span class="sd">    Pulp servers.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1"># Note: I&#39;m not entirely sure this base class needs to exist.</span>
-    <span class="c1"># It would mainly be used as a way of grouping certain documentation,</span>
-    <span class="c1"># e.g. a place where we can document from_data only once instead of on each class.</span>
+    <span class="c1"># Classes should put a valid JSON schema here. This one will refuse to</span>
+    <span class="c1"># validate anything.</span>
+    <span class="n">_SCHEMA</span> <span class="o">=</span> <span class="kc">False</span>
 
 <div class="viewcode-block" id="PulpObject.from_data"><a class="viewcode-back" href="../../../../../api/model.html#pubtools.pulplib.PulpObject.from_data">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
@@ -99,8 +112,38 @@
 <span class="sd">                data = requests.get(url).json()</span>
 <span class="sd">                repo = Repository.from_data(data)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># subclasses will be overriding this</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Must call from_data on concrete subclass!&quot;</span><span class="p">)</span></div></div>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">jsonschema</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">instance</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="n">_SCHEMA</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">jsonschema</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ValidationError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.from_data invoked with invalid Pulp data&quot;</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">InvalidDataException</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">error</span><span class="p">))</span>
+
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_data_to_init_args</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_data_to_init_args</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="c1"># maps from raw Pulp dict to a kwargs dict used to initialize</span>
+        <span class="c1"># a new object of this class.</span>
+        <span class="c1">#</span>
+        <span class="c1"># The default implementation looks at defined attributes and metadata</span>
+        <span class="c1"># (PULP2_FIELD).  If this is not sufficient, subclasses can override</span>
+        <span class="c1"># this, and can also call super() to reuse this as needed.</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+        <span class="n">absent</span> <span class="o">=</span> <span class="nb">object</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">:</span>
+            <span class="n">pulp_field</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">PULP2_FIELD</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">pulp_field</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">lookup</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">pulp_field</span><span class="p">,</span> <span class="n">absent</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">absent</span><span class="p">:</span>
+                    <span class="n">converter</span> <span class="o">=</span> <span class="n">get_converter</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">converter</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                    <span class="n">out</span><span class="p">[</span><span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+        <span class="k">return</span> <span class="n">out</span></div>
 
 
 <span class="c1"># Design notes</span>
@@ -160,6 +203,7 @@
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../api-reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../schema.html">Schemas</a></li>
 </ul>
 
 

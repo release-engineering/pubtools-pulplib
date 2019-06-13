@@ -18,6 +18,9 @@ Repository
 .. autoclass:: pubtools.pulplib.Repository
    :members:
 
+.. autoclass:: pubtools.pulplib.Distributor
+   :members:
+
 .. autoclass:: pubtools.pulplib.PublishOptions
    :members:
 

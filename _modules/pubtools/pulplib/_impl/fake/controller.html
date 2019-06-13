@@ -4,18 +4,18 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>pubtools.pulplib._impl.fake &#8212; pubtools-pulplib  documentation</title>
-    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../../../_static/language_data.js"></script>
-    <link rel="index" title="Index" href="../../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../../search.html" />
+    <title>pubtools.pulplib._impl.fake.controller &#8212; pubtools-pulplib  documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
    
-  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/custom.css" type="text/css" />
   
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
@@ -30,14 +30,17 @@
 
           <div class="body" role="main">
             
-  <h1>Source code for pubtools.pulplib._impl.fake</h1><div class="highlight"><pre>
-<div class="viewcode-block" id="FakeController"><a class="viewcode-back" href="../../../../api/testing.html#pubtools.pulplib.FakeController">[docs]</a><span></span><span class="k">class</span> <span class="nc">FakeController</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+  <h1>Source code for pubtools.pulplib._impl.fake.controller</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">.client</span> <span class="k">import</span> <span class="n">FakeClient</span>
+
+
+<div class="viewcode-block" id="FakeController"><a class="viewcode-back" href="../../../../../api/testing.html#pubtools.pulplib.FakeController">[docs]</a><span class="k">class</span> <span class="nc">FakeController</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A controller for a fake :class:`~pubtools.pulplib.Client`, to be used</span>
 <span class="sd">    within automated tests.</span>
 
 <span class="sd">    This class provides a client which has the same public interface as</span>
-<span class="sd">    :class:`~pubtools.pulplib.Client`. This client is fully functional for</span>
-<span class="sd">    both reads and writes, but uses a simple in-memory implementation rather</span>
+<span class="sd">    :class:`~pubtools.pulplib.Client`. This client can do most of the same</span>
+<span class="sd">    actions as a real client, but uses a simple in-memory implementation rather</span>
 <span class="sd">    than issuing requests to a remote Pulp server. The client&#39;s data may be</span>
 <span class="sd">    inspected and modified via the FakeController instance.</span>
 
@@ -70,28 +73,45 @@
 <span class="sd">                # The set of repos should now contain only the recent repo</span>
 <span class="sd">                assert controller.repositories == [repo_now]</span>
 
+<span class="sd">    **Limitations:**</span>
+
+<span class="sd">        While :class:`~pubtools.pulplib.Client` allows searching on any fields</span>
+<span class="sd">        which exist within Pulp&#39;s database, the fake client only supports searching</span>
+<span class="sd">        on fields known to the :ref:`schemas` used by this library.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="FakeController.insert_repository"><a class="viewcode-back" href="../../../../api/testing.html#pubtools.pulplib.FakeController.insert_repository">[docs]</a>    <span class="k">def</span> <span class="nf">insert_repository</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repository</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">FakeClient</span><span class="p">()</span>
+        <span class="sd">&quot;&quot;&quot;The client instance attached to this controller.&quot;&quot;&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">repositories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The list of existing repositories in the fake client.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">_repositories</span><span class="p">[:]</span>
+
+<div class="viewcode-block" id="FakeController.insert_repository"><a class="viewcode-back" href="../../../../../api/testing.html#pubtools.pulplib.FakeController.insert_repository">[docs]</a>    <span class="k">def</span> <span class="nf">insert_repository</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repository</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Add a repository to the set of existing repositories in the fake client.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            repository (:class:`~pubtools.pulplib.Repository`)</span>
 <span class="sd">                A repository object to insert.</span>
-<span class="sd">        &quot;&quot;&quot;</span></div>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">_repositories</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">repository</span><span class="p">)</span></div>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">repositories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;The list of existing repositories in the fake client.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">publish_history</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A list of repository publishes triggered via this client.</span>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;The client instance attached to this controller.&quot;&quot;&quot;</span></div>
+<span class="sd">        Each element of this list is a named tuple with the following attributes,</span>
+<span class="sd">        in order:</span>
 
-    <span class="c1"># TODO: some kind of publish reports should be exposed here too,</span>
-    <span class="c1"># since the client has publish functionality.</span>
-    <span class="c1"># Or should we rather implement methods in the client to fetch</span>
-    <span class="c1"># a publish report, since Pulp does have API for that?</span>
+<span class="sd">            ``repository``:</span>
+<span class="sd">                :class:`~pubtools.pulplib.Repository` for which publish was triggered</span>
+<span class="sd">            ``tasks``:</span>
+<span class="sd">                list of :class:`~pubtools.pulplib.Task` generated as a result</span>
+<span class="sd">                of this publish</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">_publish_history</span><span class="p">[:]</span></div>
 
 
 <span class="c1"># Design notes</span>
@@ -126,7 +146,7 @@
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../../../../index.html">pubtools-pulplib</a></h1>
+<h1 class="logo"><a href="../../../../../index.html">pubtools-pulplib</a></h1>
 
 
 
@@ -142,7 +162,8 @@
 <h3>Navigation</h3>
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../api-reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api-reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../schema.html">Schemas</a></li>
 </ul>
 
 
@@ -159,8 +180,8 @@
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
-  <li><a href="../../../../index.html">Documentation overview</a><ul>
-  <li><a href="../../../index.html">Module code</a><ul>
+  <li><a href="../../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../../index.html">Module code</a><ul>
   </ul></li>
   </ul></li>
 </ul>
@@ -168,7 +189,7 @@
 <div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
-    <form class="search" action="../../../../search.html" method="get">
+    <form class="search" action="../../../../../search.html" method="get">
       <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
