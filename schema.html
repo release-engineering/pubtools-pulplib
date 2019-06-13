@@ -115,6 +115,29 @@ description: &gt;-
 
 $schema: http://json-schema.org/draft-07/schema#
 
+definitions:
+  # An error object
+  # https://docs.pulpproject.org/dev-guide/conventions/exceptions.html#error-details
+  error:
+    type: object
+    properties:
+
+      # Short identifier of error, e.g. PLP0018
+      code:
+        type: string
+
+      # Summary of error for end-user
+      description:
+        type: string
+
+      # Arbitrary key-value data, different per error code
+      data:
+        type: object
+
+    required:
+    - code
+    - description
+
 type: object
 
 properties:
@@ -133,6 +156,18 @@ properties:
     - error     # task completed unsuccessfully
     - canceled  # task was canceled
     - skipped   # Pulp decided not to execute this task
+
+  # The error - only non-null for failed tasks
+  error:
+    anyOf:
+    - type: &quot;null&quot;
+    - $ref: &quot;#/definitions/error&quot;
+
+  # Python traceback if an exception was raised - a single multi-line string
+  traceback:
+    anyOf:
+    - type: &quot;null&quot;
+    - type: string
 
 required:
 - task_id

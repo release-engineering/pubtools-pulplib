@@ -81,11 +81,81 @@
     <span class="k">def</span> <span class="nf">_data_to_init_args</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
         <span class="c1"># todo: error_* attribs</span>
         <span class="n">state</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">]</span>
-        <span class="k">return</span> <span class="p">{</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;task_id&quot;</span><span class="p">],</span>
             <span class="s2">&quot;completed&quot;</span><span class="p">:</span> <span class="n">state</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;finished&quot;</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">,</span> <span class="s2">&quot;canceled&quot;</span><span class="p">,</span> <span class="s2">&quot;skipped&quot;</span><span class="p">),</span>
             <span class="s2">&quot;succeeded&quot;</span><span class="p">:</span> <span class="n">state</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;finished&quot;</span><span class="p">,</span> <span class="s2">&quot;skipped&quot;</span><span class="p">),</span>
-        <span class="p">}</span></div>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;error&quot;</span><span class="p">:</span>
+            <span class="n">out</span><span class="p">[</span><span class="s2">&quot;error_summary&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_error_summary</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">out</span><span class="p">[</span><span class="s2">&quot;error_details&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_error_details</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">out</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_error_summary</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;error&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">error</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;&lt;unknown error&gt;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">error</span><span class="p">[</span><span class="s2">&quot;code&quot;</span><span class="p">],</span> <span class="n">error</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">])</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_error_details</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;error&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">error</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;&lt;unknown error&gt;&quot;</span>
+
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_error_summary</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="c1"># Error looks like this:</span>
+        <span class="c1">#</span>
+        <span class="c1"># {</span>
+        <span class="c1">#   &#39;code&#39;: u&#39;PLP0001&#39;,</span>
+        <span class="c1">#   &#39;data&#39;: {</span>
+        <span class="c1">#     &#39;message&#39;: &#39;a message&#39;</span>
+        <span class="c1">#   },</span>
+        <span class="c1">#   &#39;description&#39;: &#39;A general pulp exception occurred&#39;,</span>
+        <span class="c1">#   &#39;sub_errors&#39;: []</span>
+        <span class="c1"># }</span>
+        <span class="c1">#</span>
+        <span class="c1"># See: https://docs.pulpproject.org/en/2.9/dev-guide/conventions/exceptions.html#error-details</span>
+        <span class="c1">#</span>
+        <span class="c1"># data can contain anything, or nothing.</span>
+        <span class="c1"># It&#39;s only a convention that it often contains a message.</span>
+        <span class="c1">#</span>
+        <span class="c1"># sub_errors is currently ignored because I&#39;ve never seen a non-empty</span>
+        <span class="c1"># sub_errors yet.</span>
+
+        <span class="n">error_data</span> <span class="o">=</span> <span class="n">error</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="n">messages</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Message in a general exception</span>
+        <span class="k">if</span> <span class="n">error_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;message&quot;</span><span class="p">):</span>
+            <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">error_data</span><span class="p">[</span><span class="s2">&quot;message&quot;</span><span class="p">])</span>
+
+        <span class="c1"># Some exceptions stash additional strings under details.errors</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">error_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;details&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;errors&quot;</span><span class="p">):</span>
+            <span class="n">error_messages</span> <span class="o">=</span> <span class="n">error_data</span><span class="p">[</span><span class="s2">&quot;details&quot;</span><span class="p">][</span><span class="s2">&quot;errors&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">error_messages</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">messages</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">error_messages</span><span class="p">)</span>
+
+        <span class="c1"># Pulp docs refer to this as deprecated, but actually it&#39;s still</span>
+        <span class="c1"># used and no alternative is provided.</span>
+        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;traceback&quot;</span><span class="p">):</span>
+            <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;traceback&quot;</span><span class="p">])</span>
+
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">messages</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">message</span><span class="p">:</span>
+            <span class="c1"># message can have CRLF line endings in rare cases.</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">:</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">_indent</span><span class="p">(</span><span class="n">message</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">out</span></div>
+
+
+<span class="k">def</span> <span class="nf">_indent</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+    <span class="n">spaces</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="n">level</span>
+    <span class="k">return</span> <span class="n">spaces</span> <span class="o">+</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">spaces</span><span class="p">)</span>
 </pre></div>
 
           </div>
