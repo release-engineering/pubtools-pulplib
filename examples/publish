@@ -14,9 +14,7 @@ def publish(client, repo_id):
     crit = Criteria.with_id(repo_id)
 
     repos = client.search_repository(crit).result()
-    publishes = [
-        f_flat_map(repo_f, lambda repo: repo.publish()) for repo_f in repos.as_iter()
-    ]
+    publishes = [repo.publish() for repo in repos.as_iter()]
 
     # Blocks at result() calls here.
     publish_tasks = []
@@ -46,17 +44,21 @@ def main():
     log.setLevel(logging.INFO)
     logging.basicConfig(format="%(message)s")
 
-    parser = ArgumentParser(help="Publish repositories")
+    parser = ArgumentParser(description="Publish repositories")
     parser.add_argument("--url", help="Pulp server URL")
     parser.add_argument("--username", help="Pulp username")
     parser.add_argument(
         "--password", help="Pulp password (or set PULP_PASSWORD in env)"
     )
+    parser.add_argument("--debug", action="store_true")
     parser.add_argument("repo_id", nargs="+")
 
     p = parser.parse_args()
     if not p.url:
         parser.error("--url is required")
+
+    if p.debug:
+        logging.getLogger("pubtools.pulplib").setLevel(logging.DEBUG)
 
     client = make_client(p)
     return publish(client, p.repo_id)

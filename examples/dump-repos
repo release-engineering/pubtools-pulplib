@@ -1,0 +1,91 @@
+#!/usr/bin/env python
+import os
+import logging
+from argparse import ArgumentParser
+
+from pubtools.pulplib import Client, Criteria
+
+log = logging.getLogger("dump-repos")
+
+
+def build_criteria_for_strings(crit_strings):
+    if not crit_strings:
+        return Criteria.true()
+
+    clauses = []
+    for elem in crit_strings:
+        if "=" not in elem:
+            clauses.append(Criteria.with_id(elem))
+            continue
+
+        key, value = elem.split("=", 1)
+
+        try:
+            value = int(value)
+        except ValueError:
+            pass
+
+        clauses.append(Criteria.with_field(key, value))
+
+    return Criteria.and_(*clauses)
+
+
+def dump_repos(client, crit_strings):
+
+    criteria = build_criteria_for_strings(crit_strings)
+
+    log.info("Starting Pulp search with %s", repr(criteria))
+
+    count = 0
+    repos = client.search_repository(criteria).result().as_iter()
+    for repo in repos:
+        count += 1
+        log.info("Repo: %s", repr(repo))
+
+    log.info("Found %d repo(s)", count)
+
+
+def make_client(args):
+    auth = None
+
+    if args.username:
+        password = args.password
+        if password is None:
+            password = os.environ.get("PULP_PASSWORD")
+        if not password:
+            log.warning("No password provided for %s", args.username)
+        auth = (args.username, args.password)
+
+    return Client(args.url, auth=auth)
+
+
+def main():
+    log.setLevel(logging.INFO)
+    logging.basicConfig(format="%(message)s")
+
+    parser = ArgumentParser(
+        description="Dump info on all repositories in a given Pulp server"
+    )
+    parser.add_argument("--url", help="Pulp server URL")
+    parser.add_argument("--username", help="Pulp username")
+    parser.add_argument(
+        "--password", help="Pulp password (or set PULP_PASSWORD in env)"
+    )
+    parser.add_argument("--debug", action="store_true")
+    parser.add_argument(
+        "search", nargs="*", help="Dump repos matching certain criteria only"
+    )
+
+    p = parser.parse_args()
+    if not p.url:
+        parser.error("--url is required")
+
+    if p.debug:
+        logging.getLogger("pubtools.pulplib").setLevel(logging.DEBUG)
+
+    client = make_client(p)
+    return dump_repos(client, p.search)
+
+
+if __name__ == "__main__":
+    main()

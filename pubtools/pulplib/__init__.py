@@ -1,4 +1,4 @@
-from ._impl.client import Client
+from ._impl.client import Client, PulpException, TaskFailedException
 from ._impl.criteria import Criteria
 from ._impl.page import Page
 from ._impl.model import (
@@ -6,6 +6,7 @@ from ._impl.model import (
     DetachedException,
     InvalidDataException,
     Repository,
+    Distributor,
     PublishOptions,
     Task,
 )

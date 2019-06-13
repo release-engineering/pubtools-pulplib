@@ -1,10 +1,13 @@
+from .client import FakeClient
+
+
 class FakeController(object):
     """A controller for a fake :class:`~pubtools.pulplib.Client`, to be used
     within automated tests.
 
     This class provides a client which has the same public interface as
-    :class:`~pubtools.pulplib.Client`. This client is fully functional for
-    both reads and writes, but uses a simple in-memory implementation rather
+    :class:`~pubtools.pulplib.Client`. This client can do most of the same
+    actions as a real client, but uses a simple in-memory implementation rather
     than issuing requests to a remote Pulp server. The client's data may be
     inspected and modified via the FakeController instance.
 
@@ -37,7 +40,21 @@ class FakeController(object):
                 # The set of repos should now contain only the recent repo
                 assert controller.repositories == [repo_now]
 
+    **Limitations:**
+
+        While :class:`~pubtools.pulplib.Client` allows searching on any fields
+        which exist within Pulp's database, the fake client only supports searching
+        on fields known to the :ref:`schemas` used by this library.
     """
+
+    def __init__(self):
+        self.client = FakeClient()
+        """The client instance attached to this controller."""
+
+    @property
+    def repositories(self):
+        """The list of existing repositories in the fake client."""
+        return self.client._repositories[:]
 
     def insert_repository(self, repository):
         """Add a repository to the set of existing repositories in the fake client.
@@ -46,19 +63,22 @@ class FakeController(object):
             repository (:class:`~pubtools.pulplib.Repository`)
                 A repository object to insert.
         """
+        self.client._repositories.append(repository)
 
     @property
-    def repositories(self):
-        """The list of existing repositories in the fake client."""
+    def publish_history(self):
+        """A list of repository publishes triggered via this client.
 
-    @property
-    def client(self):
-        """The client instance attached to this controller."""
+        Each element of this list is a named tuple with the following attributes,
+        in order:
 
-    # TODO: some kind of publish reports should be exposed here too,
-    # since the client has publish functionality.
-    # Or should we rather implement methods in the client to fetch
-    # a publish report, since Pulp does have API for that?
+            ``repository``:
+                :class:`~pubtools.pulplib.Repository` for which publish was triggered
+            ``tasks``:
+                list of :class:`~pubtools.pulplib.Task` generated as a result
+                of this publish
+        """
+        return self.client._publish_history[:]
 
 
 # Design notes
