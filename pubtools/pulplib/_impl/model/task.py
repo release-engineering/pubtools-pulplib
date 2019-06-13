@@ -46,7 +46,6 @@ class Task(PulpObject):
 
     @classmethod
     def _data_to_init_args(cls, data):
-        # todo: error_* attribs
         state = data["state"]
         out = {
             "id": data["task_id"],

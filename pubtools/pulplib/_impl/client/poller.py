@@ -1,5 +1,6 @@
 import os
 import logging
+import datetime
 
 from pubtools.pulplib._impl.model import Task
 from .errors import MissingTaskException, TaskFailedException
@@ -12,16 +13,22 @@ LOG = logging.getLogger("pubtools.pulplib")
 
 
 class TaskPoller(object):
-    # TODO: messages like these if there's no update for a while:
-    # 2019-06-12 06:40:03 +0000 [DEBUG   ] Still waiting on Pulp, load: 1 running, 4 waiting
-
+    # max number of times polling is attempted before errors are considered fatal
     MAX_ATTEMPTS = 60
+
+    # delay in seconds between poll attempts
     DELAY = 5.0
 
-    def __init__(self, session, url):
+    # delay in seconds between "Still waiting" log messages, if Pulp tasks
+    # apparently are not being processed
+    ACTIVITY_DELAY = datetime.timedelta(minutes=5)
+
+    def __init__(self, session, url, timer=datetime.datetime.utcnow):
         self.session = session
         self.url = url
         self.attempt = 1
+        self.timer = timer
+        self.last_activity = self.timer()
 
     def __call__(self, descriptors):
         try:
@@ -34,10 +41,18 @@ class TaskPoller(object):
             tasks = self.search_tasks(all_task_ids)
 
             # Now check all descriptors and decide which have completed
-            self.resolve_descriptors(tasks, descriptor_task_ids)
+            resolved_count = self.resolve_descriptors(tasks, descriptor_task_ids)
 
-            # Any success resets the retry counter
+            # Any successful poll resets the retry counter
             self.attempt = 1
+
+            # We have activity if we resolved at least one thing (or if there was
+            # nothing to do at all)
+            if resolved_count or not descriptors:
+                self.last_activity = self.timer()
+
+            # If nothing's going on for a while, log about it
+            self.log_if_inactive()
         except Exception:
             if self.attempt >= self.MAX_ATTEMPTS:
                 LOG.exception("Pulp task polling repeatedly failed")
@@ -54,8 +69,11 @@ class TaskPoller(object):
         return self.DELAY
 
     def resolve_descriptors(self, tasks, descriptor_task_ids):
+        resolved = 0
         for descriptor, task_ids in descriptor_task_ids:
-            self.resolve_descriptor(tasks, descriptor, task_ids)
+            if self.resolve_descriptor(tasks, descriptor, task_ids):
+                resolved += 1
+        return resolved
 
     def resolve_descriptor(self, tasks, descriptor, task_ids):
         out = []
@@ -70,22 +88,23 @@ class TaskPoller(object):
                 )
                 LOG.warning("%s", exception)
                 descriptor.yield_exception(exception)
-                return
+                return True
 
             if task.completed and not task.succeeded:
                 exception = TaskFailedException(task)
                 descriptor.yield_exception(exception)
-                return
+                return True
 
             out.append(task)
 
         for task in out:
             if not task.completed:
                 # can't resolve the future yet since there's a pending task
-                return
+                return False
 
         # OK, future can be resolved with the completed tasks
         descriptor.yield_result(out)
+        return True
 
     def search_tasks(self, task_ids):
         out = {}
@@ -134,3 +153,41 @@ class TaskPoller(object):
                 descriptor.yield_exception(ex)
 
         return descriptor_tasks, all_tasks
+
+    def log_if_inactive(self):
+        now = self.timer()
+        delta = now - self.last_activity
+
+        if delta < self.ACTIVITY_DELAY:
+            # nothing to do (yet)
+            return
+
+        # We've been idle for too long, log a message to confirm we're not dead
+        search_url = os.path.join(self.url, "pulp/api/v2/tasks/search/")
+        search = {
+            "criteria": {"filters": {"state": {"$in": ["running", "waiting"]}}},
+            "fields": ["state"],
+        }
+
+        response = self.session.post(search_url, json=search)
+        response.raise_for_status()
+        tasks = response.json()
+
+        running_count = len([t for t in tasks if t["state"] == "running"])
+        waiting_count = len([t for t in tasks if t["state"] == "waiting"])
+
+        LOG.info(
+            "Still waiting on Pulp, load: %s running, %s waiting",
+            running_count,
+            waiting_count,
+            extra={
+                "event": {
+                    "type": "awaiting-pulp",
+                    "running-tasks": running_count,
+                    "waiting-tasks": waiting_count,
+                }
+            },
+        )
+
+        # Logging that message counts as "activity"
+        self.last_activity = now

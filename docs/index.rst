@@ -13,6 +13,7 @@ A Pulp library for publishing tools.
    :caption: Contents:
 
    api-reference
+   logging
    schema
 
 Quick Start
