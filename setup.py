@@ -21,8 +21,9 @@ def get_requirements():
 
 setup(
     name="pubtools-pulplib",
-    version="0.1.0",
+    version="0.1.1",
     packages=find_packages(exclude=["tests"]),
+    package_data={"pubtools.pulplib._impl.schema": ["*.yaml"]},
     url="https://github.com/release-engineering/pubtools-pulplib",
     license="GNU General Public License",
     description=get_description(),
