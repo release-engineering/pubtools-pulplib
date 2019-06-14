@@ -154,6 +154,18 @@ class TaskPoller(object):
 
         return descriptor_tasks, all_tasks
 
+    def cancel(self, task_data):
+        task_ids = [t["task_id"] for t in task_data["spawned_tasks"]]
+
+        for task_id in task_ids:
+            url = os.path.join(self.url, "pulp/api/v2/tasks/%s/" % task_id)
+            response = self.session.delete(url)
+            response.raise_for_status()
+
+            LOG.info("Cancelled task: %s", task_id)
+
+        return True
+
     def log_if_inactive(self):
         now = self.timer()
         delta = now - self.last_activity

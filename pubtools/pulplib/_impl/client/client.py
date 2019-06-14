@@ -34,6 +34,9 @@ class Client(object):
     - or a request to Pulp succeeded and any spawned tasks succeeded, if operation
       is asynchronous (e.g. publish)
 
+    If a future is currently awaiting one or more Pulp tasks, cancelling the future
+    will attempt to cancel those tasks.
+
     **Retries:**
 
     In general, for all methods which represent an idempotent operation and
@@ -47,13 +50,10 @@ class Client(object):
     task queue.
     """
 
-    # TODO: customization of retry & throttling logic.
-    # Should the class expose anything for those, or keep all policy internal?
-
     # TODO: timeout all task futures
     _REQUEST_THREADS = int(os.environ.get("PUBTOOLS_PULPLIB_REQUEST_THREADS", "4"))
     _PAGE_SIZE = int(os.environ.get("PUBTOOLS_PULPLIB_PAGE_SIZE", "2000"))
-    _TASK_THROTTLE = int(os.environ.get("PUBTOOLS_PULPLIB_TASK_THROTTLE", "500"))
+    _TASK_THROTTLE = int(os.environ.get("PUBTOOLS_PULPLIB_TASK_THROTTLE", "200"))
     _RETRY_POLICY = lambda *_: retry.PulpRetryPolicy()
 
     def __init__(self, url, **kwargs):
@@ -111,12 +111,11 @@ class Client(object):
         # - waits for tasks to complete
         # - retries whole thing (resubmitting request & making a new task) if needed
         # - throttles number of tasks pending
-        # - TODO: cancel
         poller = TaskPoller(self._new_session(), self._url)
         self._task_executor = (
             Executors.thread_pool(max_workers=self._REQUEST_THREADS)
             .with_map(self._unpack_response)
-            .with_poll(poller)
+            .with_poll(poller, cancel_fn=poller.cancel)
             .with_throttle(self._TASK_THROTTLE)
             .with_retry(retry_policy=self._RETRY_POLICY())
         )
