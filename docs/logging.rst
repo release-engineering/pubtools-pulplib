@@ -30,3 +30,26 @@ These messages will include an ``event`` attribute of the form:
     type: awaiting-pulp
     running-tasks: <count>
     waiting-tasks: <count>
+
+
+Retrying
+--------
+
+Many methods in this library will implicitly retry failing operations a few times.
+When this occurs, a ``WARNING`` message is logged before the retry occurs, as
+in the following examples:
+
+.. code-block::
+
+  [WARNING] Retrying due to error: 401 Client Error: Unauthorized for url: https://pulp.example.com/pulp/api/v2/repositories/search/ [1/10]
+  [WARNING] Retrying due to error: Task e239ae4f-7fad-4004-bfb6-8e06f17d22ef failed [3/10]
+
+The ``[1/10]`` indicator shows the current attempt at the operation and the maximum
+number of attempts before the error will be considered fatal.
+
+These messages will include an ``event`` attribute of the form:
+
+.. code-block:: yaml
+
+  event:
+    type: pulp-retry

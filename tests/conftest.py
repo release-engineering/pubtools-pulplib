@@ -1,9 +1,9 @@
-from more_executors.retry import ExceptionRetryPolicy
 import pytest
 import requests_mock
 
 from pubtools.pulplib import Client
 from pubtools.pulplib._impl.client.poller import TaskPoller
+from pubtools.pulplib._impl.client.retry import PulpRetryPolicy
 
 
 @pytest.fixture
@@ -36,9 +36,10 @@ def fast_poller():
     TaskPoller.DELAY = old_delay
 
 
-def fast_retry_policy(_client):
-    return ExceptionRetryPolicy(max_attempts=6, max_sleep=0.001)
+class FastRetryPolicy(PulpRetryPolicy):
+    def __init__(self):
+        super(FastRetryPolicy, self).__init__(max_attempts=6, max_sleep=0.001)
 
 
 class FastRetryClient(Client):
-    _RETRY_POLICY = fast_retry_policy
+    _RETRY_POLICY = lambda *_: FastRetryPolicy()
