@@ -67,6 +67,9 @@
 <span class="sd">    - or a request to Pulp succeeded and any spawned tasks succeeded, if operation</span>
 <span class="sd">      is asynchronous (e.g. publish)</span>
 
+<span class="sd">    If a future is currently awaiting one or more Pulp tasks, cancelling the future</span>
+<span class="sd">    will attempt to cancel those tasks.</span>
+
 <span class="sd">    **Retries:**</span>
 
 <span class="sd">    In general, for all methods which represent an idempotent operation and</span>
@@ -80,13 +83,10 @@
 <span class="sd">    task queue.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1"># TODO: customization of retry &amp; throttling logic.</span>
-    <span class="c1"># Should the class expose anything for those, or keep all policy internal?</span>
-
     <span class="c1"># TODO: timeout all task futures</span>
     <span class="n">_REQUEST_THREADS</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;PUBTOOLS_PULPLIB_REQUEST_THREADS&quot;</span><span class="p">,</span> <span class="s2">&quot;4&quot;</span><span class="p">))</span>
     <span class="n">_PAGE_SIZE</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;PUBTOOLS_PULPLIB_PAGE_SIZE&quot;</span><span class="p">,</span> <span class="s2">&quot;2000&quot;</span><span class="p">))</span>
-    <span class="n">_TASK_THROTTLE</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;PUBTOOLS_PULPLIB_TASK_THROTTLE&quot;</span><span class="p">,</span> <span class="s2">&quot;500&quot;</span><span class="p">))</span>
+    <span class="n">_TASK_THROTTLE</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;PUBTOOLS_PULPLIB_TASK_THROTTLE&quot;</span><span class="p">,</span> <span class="s2">&quot;200&quot;</span><span class="p">))</span>
     <span class="n">_RETRY_POLICY</span> <span class="o">=</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">_</span><span class="p">:</span> <span class="n">retry</span><span class="o">.</span><span class="n">PulpRetryPolicy</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -144,12 +144,12 @@
         <span class="c1"># - waits for tasks to complete</span>
         <span class="c1"># - retries whole thing (resubmitting request &amp; making a new task) if needed</span>
         <span class="c1"># - throttles number of tasks pending</span>
-        <span class="c1"># - TODO: cancel</span>
         <span class="n">poller</span> <span class="o">=</span> <span class="n">TaskPoller</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_new_session</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_url</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_task_executor</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">Executors</span><span class="o">.</span><span class="n">thread_pool</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_REQUEST_THREADS</span><span class="p">)</span>
             <span class="o">.</span><span class="n">with_map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_unpack_response</span><span class="p">)</span>
-            <span class="o">.</span><span class="n">with_poll</span><span class="p">(</span><span class="n">poller</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">with_map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_log_spawned_tasks</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">with_poll</span><span class="p">(</span><span class="n">poller</span><span class="p">,</span> <span class="n">cancel_fn</span><span class="o">=</span><span class="n">poller</span><span class="o">.</span><span class="n">cancel</span><span class="p">)</span>
             <span class="o">.</span><span class="n">with_throttle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_TASK_THROTTLE</span><span class="p">)</span>
             <span class="o">.</span><span class="n">with_retry</span><span class="p">(</span><span class="n">retry_policy</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_RETRY_POLICY</span><span class="p">())</span>
         <span class="p">)</span>
@@ -243,6 +243,18 @@
             <span class="k">raise</span> <span class="n">PulpException</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">error</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="n">pulp_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_log_spawned_tasks</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">taskdata</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">spawned</span> <span class="o">=</span> <span class="n">taskdata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;spawned_tasks&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">spawned</span><span class="p">:</span>
+                <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Created Pulp task: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">task</span><span class="p">[</span><span class="s2">&quot;task_id&quot;</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># pylint: disable=broad-except</span>
+            <span class="c1"># something wrong with the data, can&#39;t log.</span>
+            <span class="c1"># This error will be raised elsewhere</span>
+            <span class="k">pass</span>
+        <span class="k">return</span> <span class="n">taskdata</span>
 
     <span class="k">def</span> <span class="nf">_handle_page</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">object_class</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">raw_data</span><span class="p">):</span>
         <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Got pulp response for </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2"> elems&quot;</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw_data</span><span class="p">))</span>

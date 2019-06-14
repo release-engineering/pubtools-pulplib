@@ -57,6 +57,16 @@ running and waiting tasks in Pulp, such as:</p>
 </pre></div>
 </div>
 </div>
+<div class="section" id="task-state-changes">
+<h2>Task state changes<a class="headerlink" href="#task-state-changes" title="Permalink to this headline">¶</a></h2>
+<p>A log message will be produced when a Pulp task is created, cancelled,
+succeeds or fails. Failed Pulp tasks produce a <code class="docutils literal notranslate"><span class="pre">WARNING</span></code>; other state
+changes produce an <code class="docutils literal notranslate"><span class="pre">INFO</span></code> message.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">INFO</span><span class="p">]</span> <span class="n">Created</span> <span class="n">Pulp</span> <span class="n">task</span><span class="p">:</span> <span class="mi">54</span><span class="n">ba8e8c</span><span class="o">-</span><span class="mi">10</span><span class="n">aa</span><span class="o">-</span><span class="mi">40</span><span class="n">f9</span><span class="o">-</span><span class="n">a9a9</span><span class="o">-</span><span class="mi">36</span><span class="n">be54431bde</span>
+<span class="p">[</span><span class="n">INFO</span><span class="p">]</span> <span class="n">Pulp</span> <span class="n">task</span> <span class="n">completed</span><span class="p">:</span> <span class="mi">54</span><span class="n">ba8e8c</span><span class="o">-</span><span class="mi">10</span><span class="n">aa</span><span class="o">-</span><span class="mi">40</span><span class="n">f9</span><span class="o">-</span><span class="n">a9a9</span><span class="o">-</span><span class="mi">36</span><span class="n">be54431bde</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="retrying">
 <h2>Retrying<a class="headerlink" href="#retrying" title="Permalink to this headline">¶</a></h2>
 <p>Many methods in this library will implicitly retry failing operations a few times.
@@ -102,6 +112,7 @@ number of attempts before the error will be considered fatal.</p>
 <li class="toctree-l1"><a class="reference internal" href="api-reference.html">API Reference</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Logging</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#waiting-on-pulp">Waiting on Pulp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#task-state-changes">Task state changes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#retrying">Retrying</a></li>
 </ul>
 </li>

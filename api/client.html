@@ -48,6 +48,8 @@ Returned futures are resolved when:</p>
 <li><p>or a request to Pulp succeeded and any spawned tasks succeeded, if operation
 is asynchronous (e.g. publish)</p></li>
 </ul>
+<p>If a future is currently awaiting one or more Pulp tasks, cancelling the future
+will attempt to cancel those tasks.</p>
 <p><strong>Retries:</strong></p>
 <p>In general, for all methods which represent an idempotent operation and
 which return a Future, the library may retry operations several times in case
