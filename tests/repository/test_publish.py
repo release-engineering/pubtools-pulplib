@@ -1,3 +1,4 @@
+import logging
 import datetime
 import pytest
 
@@ -186,8 +187,12 @@ def test_publish_broken_response(fast_poller, requests_mocker, client):
     assert publish_f.exception()
 
 
-def test_publish_retries(fast_poller, requests_mocker, client, caplog):
+def test_publish_retries(fast_poller, requests_mocker, client, caplog_compat):
     """publish retries distributors as they fail"""
+    caplog = caplog_compat
+
+    caplog.set_level(logging.WARNING)
+
     repo = Repository(
         id="some-repo",
         distributors=(

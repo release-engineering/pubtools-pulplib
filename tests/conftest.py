@@ -1,3 +1,4 @@
+import logging
 import pytest
 import requests_mock
 
@@ -15,6 +16,46 @@ def requests_mocker():
     """
     with requests_mock.Mocker() as mocker:
         yield mocker
+
+
+class CaplogCompat(object):
+    def __init__(self, delegate):
+        self._delegate = delegate
+        self._level = logging.INFO
+
+    def __getattr__(self, name):
+        return getattr(self._delegate, name)
+
+    def set_level(self, level, logger=None):
+        self._level = level
+        return self._delegate.setLevel(level, logger)
+
+    def clear(self):
+        import py.io
+
+        handler = self._delegate.handler
+        handler.stream = py.io.TextIO()
+        handler.records = []
+
+    @property
+    def records(self):
+        recs = self._delegate.records()
+        return [rec for rec in recs if rec.levelno >= self._level]
+
+    @property
+    def messages(self):
+        records = self.records
+        return [rec.message for rec in records]
+
+
+@pytest.fixture
+def caplog_compat(caplog):
+    """Just like caplog but also works with pytest-capturelog, patching
+    API slightly to make it compatible
+    """
+    if "set_level" in dir(caplog):
+        return caplog
+    return CaplogCompat(caplog)
 
 
 @pytest.fixture

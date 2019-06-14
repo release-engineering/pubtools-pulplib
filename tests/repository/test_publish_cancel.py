@@ -3,7 +3,9 @@ import time
 from pubtools.pulplib import Repository, Distributor
 
 
-def test_publish_cancel(fast_poller, requests_mocker, client, caplog):
+def test_publish_cancel(fast_poller, requests_mocker, client, caplog_compat):
+    caplog = caplog_compat
+
     repo = Repository(
         id="some-repo",
         distributors=(
