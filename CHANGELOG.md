@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- n/a
+
+## [0.2.0] - 2019-06-14
+
 # Added
 - Task error_summary and error_details are now initialized appropriately
   with data from Pulp
@@ -24,5 +28,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release to PyPI
 
-[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/release-engineering/pubtools-pulplib/compare/v0.1.0...v0.1.1
