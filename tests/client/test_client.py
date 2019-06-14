@@ -1,3 +1,4 @@
+import logging
 import pytest
 import requests_mock
 from pubtools.pulplib import Client, Criteria, Repository, PulpException
@@ -38,7 +39,12 @@ def test_can_search(client, requests_mocker):
     assert requests_mocker.call_count == 1
 
 
-def test_search_retries(client, requests_mocker, caplog):
+def test_search_retries(client, requests_mocker, caplog_compat):
+    caplog = caplog_compat
+
+    logging.getLogger().setLevel(logging.WARNING)
+    caplog.set_level(logging.WARNING)
+
     requests_mocker.post(
         "https://pulp.example.com/pulp/api/v2/repositories/search/",
         [

@@ -7,11 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- n/a
+### Fixed
+- Fixed various compatibility issues with old versions of libraries
 
 ## [0.2.0] - 2019-06-14
 
-# Added
+### Added
 - Task error_summary and error_details are now initialized appropriately
   with data from Pulp
 - Client now logs Pulp load every few minutes when awaiting tasks
@@ -21,7 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.1.1] - 2019-06-13
 
-# Fixed
+### Fixed
 - Fixed missing schema files from distribution
 
 ## 0.1.0 - 2019-06-13
