@@ -2,7 +2,6 @@ requests
 more-executors>=2.1.0
 six
 PyYAML
-# For RefResolver.resolve
-jsonschema>=2.5.0
+jsonschema
 attrs
 six

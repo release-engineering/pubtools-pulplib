@@ -8,7 +8,7 @@ from .. import compat_attr as attr
 class Distributor(PulpObject):
     """Represents a Pulp distributor."""
 
-    _SCHEMA = load_schema("repository", "#/definitions/distributor")
+    _SCHEMA = load_schema("repository", "distributor")
 
     id = pulp_attrib(type=str, pulp_field="id")
     """ID of this distributor (str).
