@@ -41,7 +41,7 @@
 <span class="k">class</span> <span class="nc">Distributor</span><span class="p">(</span><span class="n">PulpObject</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Represents a Pulp distributor.&quot;&quot;&quot;</span>
 
-    <span class="n">_SCHEMA</span> <span class="o">=</span> <span class="n">load_schema</span><span class="p">(</span><span class="s2">&quot;repository&quot;</span><span class="p">,</span> <span class="s2">&quot;#/definitions/distributor&quot;</span><span class="p">)</span>
+    <span class="n">_SCHEMA</span> <span class="o">=</span> <span class="n">load_schema</span><span class="p">(</span><span class="s2">&quot;repository&quot;</span><span class="p">,</span> <span class="s2">&quot;distributor&quot;</span><span class="p">)</span>
 
     <span class="nb">id</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
     <span class="sd">&quot;&quot;&quot;ID of this distributor (str).</span>
