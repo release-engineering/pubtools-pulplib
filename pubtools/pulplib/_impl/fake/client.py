@@ -90,12 +90,8 @@ class FakeClient(object):
                     break
 
             if not found:
-                # TODO: real client should perhaps return successful here
-                # since postcondition is already satisfied. If it's modified to do
-                # so, this will also need updating.
-                return f_return_error(
-                    PulpException("Repository not found: %s" % repo_id)
-                )
+                # Deleting something which already doesn't exist is fine
+                return f_return([])
 
             self._repositories.pop(idx)  # pylint: disable=undefined-loop-variable
             return f_return(
