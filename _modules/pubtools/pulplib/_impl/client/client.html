@@ -238,11 +238,30 @@
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_unpack_response</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">pulp_response</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
+            <span class="n">parsed</span> <span class="o">=</span> <span class="n">pulp_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="c1"># Couldn&#39;t parse as JSON?</span>
+            <span class="c1"># If the response was unsuccessful, raise that.</span>
+            <span class="c1"># Otherwise re-raise parse error.</span>
             <span class="n">pulp_response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
-        <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">HTTPError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">PulpException</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">error</span><span class="p">))</span>
+            <span class="k">raise</span>
 
-        <span class="k">return</span> <span class="n">pulp_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">parsed</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="n">parsed</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;http_status&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">404</span>
+            <span class="ow">and</span> <span class="n">parsed</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;http_request_method&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;DELETE&quot;</span>
+        <span class="p">):</span>
+            <span class="c1"># Special case allowing unsuccessful status:</span>
+            <span class="c1"># If we asked to DELETE something, and we got a 404 response,</span>
+            <span class="c1"># this is not considered an error because the postcondition</span>
+            <span class="c1"># of our request is satisfied.</span>
+            <span class="c1"># Hence, don&#39;t call raise_for_status.</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># In general, we&#39;ll raise if response was unsuccessful.</span>
+            <span class="n">pulp_response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">parsed</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_log_spawned_tasks</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">taskdata</span><span class="p">):</span>
