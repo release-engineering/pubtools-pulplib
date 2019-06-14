@@ -115,6 +115,7 @@ class Client(object):
         self._task_executor = (
             Executors.thread_pool(max_workers=self._REQUEST_THREADS)
             .with_map(self._unpack_response)
+            .with_map(self._log_spawned_tasks)
             .with_poll(poller, cancel_fn=poller.cancel)
             .with_throttle(self._TASK_THROTTLE)
             .with_retry(retry_policy=self._RETRY_POLICY())
@@ -209,6 +210,18 @@ class Client(object):
             raise PulpException(str(error))
 
         return pulp_response.json()
+
+    @classmethod
+    def _log_spawned_tasks(cls, taskdata):
+        try:
+            spawned = taskdata.get("spawned_tasks") or []
+            for task in spawned:
+                LOG.info("Created Pulp task: %s", task["task_id"])
+        except Exception:  # pylint: disable=broad-except
+            # something wrong with the data, can't log.
+            # This error will be raised elsewhere
+            pass
+        return taskdata
 
     def _handle_page(self, object_class, search, raw_data):
         LOG.debug("Got pulp response for %s, %s elems", search, len(raw_data))

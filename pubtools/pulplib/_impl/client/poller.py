@@ -91,6 +91,8 @@ class TaskPoller(object):
                 return True
 
             if task.completed and not task.succeeded:
+                LOG.warning("Pulp task failed: %s", task.id)
+
                 exception = TaskFailedException(task)
                 descriptor.yield_exception(exception)
                 return True
@@ -101,6 +103,8 @@ class TaskPoller(object):
             if not task.completed:
                 # can't resolve the future yet since there's a pending task
                 return False
+
+            LOG.info("Pulp task completed: %s", task.id)
 
         # OK, future can be resolved with the completed tasks
         descriptor.yield_result(out)
@@ -162,7 +166,7 @@ class TaskPoller(object):
             response = self.session.delete(url)
             response.raise_for_status()
 
-            LOG.info("Cancelled task: %s", task_id)
+            LOG.info("Cancelled Pulp task: %s", task_id)
 
         return True
 
