@@ -54,7 +54,7 @@ class Client(object):
     _REQUEST_THREADS = int(os.environ.get("PUBTOOLS_PULPLIB_REQUEST_THREADS", "4"))
     _PAGE_SIZE = int(os.environ.get("PUBTOOLS_PULPLIB_PAGE_SIZE", "2000"))
     _TASK_THROTTLE = int(os.environ.get("PUBTOOLS_PULPLIB_TASK_THROTTLE", "500"))
-    _RETRY_POLICY = lambda *_: retry.new_policy()
+    _RETRY_POLICY = lambda *_: retry.PulpRetryPolicy()
 
     def __init__(self, url, **kwargs):
         """

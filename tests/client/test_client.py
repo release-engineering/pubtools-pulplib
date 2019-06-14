@@ -2,8 +2,6 @@ import pytest
 import requests_mock
 from pubtools.pulplib import Client, Criteria, Repository, PulpException
 
-from more_executors.retry import ExceptionRetryPolicy
-
 
 def test_can_construct(requests_mocker):
     client = Client("https://pulp.example.com/")
@@ -40,7 +38,7 @@ def test_can_search(client, requests_mocker):
     assert requests_mocker.call_count == 1
 
 
-def test_search_retries(client, requests_mocker):
+def test_search_retries(client, requests_mocker, caplog):
     requests_mocker.post(
         "https://pulp.example.com/pulp/api/v2/repositories/search/",
         [
@@ -61,6 +59,23 @@ def test_search_retries(client, requests_mocker):
 
     # But would have needed several attempts
     assert requests_mocker.call_count == 4
+
+    # And those retries should have been logged
+    messages = caplog.messages
+    assert len(messages) == 3
+
+    # Messages have full exception detail. Just check the first line.
+    lines = [m.splitlines()[0] for m in messages]
+
+    assert lines[0].startswith("Retrying due to error: 413")
+    assert lines[0].endswith(" [1/6]")
+    assert lines[1].startswith("Retrying due to error: 500")
+    assert lines[1].endswith(" [2/6]")
+    assert lines[2].startswith("Retrying due to error:")
+    assert lines[2].endswith(" [3/6]")
+
+    # Retry logs should have the pulp-retry event attached.
+    assert caplog.records[-1].event == {"type": "pulp-retry"}
 
 
 def test_search_can_paginate(client, requests_mocker):

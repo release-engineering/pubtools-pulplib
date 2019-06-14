@@ -168,7 +168,7 @@ def test_publish_fail(fast_poller, requests_mocker, client):
     assert "Task task1 failed" in str(error)
 
 
-def test_publish_retries(fast_poller, requests_mocker, client):
+def test_publish_retries(fast_poller, requests_mocker, client, caplog):
     """publish retries distributors as they fail"""
     repo = Repository(
         id="some-repo",
@@ -220,3 +220,9 @@ def test_publish_retries(fast_poller, requests_mocker, client):
         "cdn_distributor",
         "cdn_distributor",
     ]
+
+    # The retry should have been logged
+    messages = caplog.messages
+    assert (
+        messages[0].splitlines()[0] == "Retrying due to error: Task task2 failed [1/6]"
+    )

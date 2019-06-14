@@ -95,4 +95,5 @@ disable=print-statement,
         protected-access,
         # we use black code style and don't need additional checks
         bad-continuation,
+        line-too-long,
 
