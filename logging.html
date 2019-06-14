@@ -57,6 +57,23 @@ running and waiting tasks in Pulp, such as:</p>
 </pre></div>
 </div>
 </div>
+<div class="section" id="retrying">
+<h2>Retrying<a class="headerlink" href="#retrying" title="Permalink to this headline">¶</a></h2>
+<p>Many methods in this library will implicitly retry failing operations a few times.
+When this occurs, a <code class="docutils literal notranslate"><span class="pre">WARNING</span></code> message is logged before the retry occurs, as
+in the following examples:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">WARNING</span><span class="p">]</span> <span class="n">Retrying</span> <span class="n">due</span> <span class="n">to</span> <span class="n">error</span><span class="p">:</span> <span class="mi">401</span> <span class="n">Client</span> <span class="n">Error</span><span class="p">:</span> <span class="n">Unauthorized</span> <span class="k">for</span> <span class="n">url</span><span class="p">:</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">pulp</span><span class="o">.</span><span class="n">example</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">pulp</span><span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">v2</span><span class="o">/</span><span class="n">repositories</span><span class="o">/</span><span class="n">search</span><span class="o">/</span> <span class="p">[</span><span class="mi">1</span><span class="o">/</span><span class="mi">10</span><span class="p">]</span>
+<span class="p">[</span><span class="n">WARNING</span><span class="p">]</span> <span class="n">Retrying</span> <span class="n">due</span> <span class="n">to</span> <span class="n">error</span><span class="p">:</span> <span class="n">Task</span> <span class="n">e239ae4f</span><span class="o">-</span><span class="mi">7</span><span class="n">fad</span><span class="o">-</span><span class="mi">4004</span><span class="o">-</span><span class="n">bfb6</span><span class="o">-</span><span class="mf">8e06</span><span class="n">f17d22ef</span> <span class="n">failed</span> <span class="p">[</span><span class="mi">3</span><span class="o">/</span><span class="mi">10</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">[1/10]</span></code> indicator shows the current attempt at the operation and the maximum
+number of attempts before the error will be considered fatal.</p>
+<p>These messages will include an <code class="docutils literal notranslate"><span class="pre">event</span></code> attribute of the form:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">event</span><span class="p">:</span>
+  <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">pulp-retry</span>
+</pre></div>
+</div>
+</div>
 </div>
 
 
@@ -85,6 +102,7 @@ running and waiting tasks in Pulp, such as:</p>
 <li class="toctree-l1"><a class="reference internal" href="api-reference.html">API Reference</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Logging</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#waiting-on-pulp">Waiting on Pulp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#retrying">Retrying</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="schema.html">Schemas</a></li>
