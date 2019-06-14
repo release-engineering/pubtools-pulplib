@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   with data from Pulp
 - Client now logs Pulp load every few minutes when awaiting tasks
 - Client now logs warnings when Pulp operations are being retried
+- Cancelling a future now attempts to cancel underlying Pulp task(s)
 
 ## [0.1.1] - 2019-06-13
 

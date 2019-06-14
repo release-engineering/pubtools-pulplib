@@ -42,7 +42,7 @@ def make_client(args):
 
 def main():
     log.setLevel(logging.INFO)
-    logging.basicConfig(format="%(message)s")
+    logging.basicConfig(format="%(message)s", level=logging.INFO)
 
     parser = ArgumentParser(description="Publish repositories")
     parser.add_argument("--url", help="Pulp server URL")

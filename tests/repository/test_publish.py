@@ -168,6 +168,24 @@ def test_publish_fail(fast_poller, requests_mocker, client):
     assert "Task task1 failed" in str(error)
 
 
+def test_publish_broken_response(fast_poller, requests_mocker, client):
+    repo = Repository(
+        id="some-repo",
+        distributors=(Distributor(id="yum_distributor", type_id="yum_distributor"),),
+    )
+    repo.__dict__["_client"] = client
+
+    requests_mocker.post(
+        "https://pulp.example.com/pulp/api/v2/repositories/some-repo/actions/publish/",
+        json={"spawned_tasks": ["oops, not a valid response"]},
+    )
+
+    publish_f = repo.publish()
+
+    # It should raise some kind of exception due to the invalid spawned_tasks structure
+    assert publish_f.exception()
+
+
 def test_publish_retries(fast_poller, requests_mocker, client, caplog):
     """publish retries distributors as they fail"""
     repo = Repository(
@@ -224,5 +242,5 @@ def test_publish_retries(fast_poller, requests_mocker, client, caplog):
     # The retry should have been logged
     messages = caplog.messages
     assert (
-        messages[0].splitlines()[0] == "Retrying due to error: Task task2 failed [1/6]"
+        messages[-1].splitlines()[0] == "Retrying due to error: Task task2 failed [1/6]"
     )

@@ -32,6 +32,19 @@ These messages will include an ``event`` attribute of the form:
     waiting-tasks: <count>
 
 
+Task state changes
+------------------
+
+A log message will be produced when a Pulp task is created, cancelled,
+succeeds or fails. Failed Pulp tasks produce a ``WARNING``; other state
+changes produce an ``INFO`` message.
+
+.. code-block::
+
+  [INFO] Created Pulp task: 54ba8e8c-10aa-40f9-a9a9-36be54431bde
+  [INFO] Pulp task completed: 54ba8e8c-10aa-40f9-a9a9-36be54431bde
+
+
 Retrying
 --------
 
