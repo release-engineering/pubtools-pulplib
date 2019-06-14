@@ -29,7 +29,7 @@ def test_can_delete():
     assert controller.repositories == [Repository(id="repo2")]
 
 
-def test_delete_missing_repo_fails():
+def test_delete_missing_repo_succeeds():
     controller = FakeController()
 
     controller.insert_repository(Repository(id="repo"))
@@ -42,10 +42,9 @@ def test_delete_missing_repo_fails():
     repo_copy1 = client.get_repository("repo").result()
     repo_copy2 = client.get_repository("repo").result()
 
-    # First delete succeeds
+    # First delete succeeds, with some tasks
     assert repo_copy1.delete().result()
 
-    # Second delete should give an error since repo no longer exists
-    exception = repo_copy2.delete().exception()
-    assert isinstance(exception, PulpException)
-    assert "Repository not found: repo" in str(exception)
+    # Second delete also succeeds, but there are no tasks since repo
+    # already doesn't exist
+    assert repo_copy2.delete().result() == []

@@ -205,11 +205,30 @@ class Client(object):
     @classmethod
     def _unpack_response(cls, pulp_response):
         try:
+            parsed = pulp_response.json()
+        except Exception:
+            # Couldn't parse as JSON?
+            # If the response was unsuccessful, raise that.
+            # Otherwise re-raise parse error.
             pulp_response.raise_for_status()
-        except requests.HTTPError as error:
-            raise PulpException(str(error))
+            raise
 
-        return pulp_response.json()
+        if (
+            isinstance(parsed, dict)
+            and parsed.get("http_status") == 404
+            and parsed.get("http_request_method") == "DELETE"
+        ):
+            # Special case allowing unsuccessful status:
+            # If we asked to DELETE something, and we got a 404 response,
+            # this is not considered an error because the postcondition
+            # of our request is satisfied.
+            # Hence, don't call raise_for_status.
+            pass
+        else:
+            # In general, we'll raise if response was unsuccessful.
+            pulp_response.raise_for_status()
+
+        return parsed
 
     @classmethod
     def _log_spawned_tasks(cls, taskdata):
