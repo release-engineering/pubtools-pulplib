@@ -74,7 +74,7 @@ the desired methods to perform actions on Pulp.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pubtools.pulplib</span> <span class="kn">import</span> <span class="n">Client</span>
 
 <span class="c1"># Make a client pointing at this Pulp server</span>
-<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;https://pulp.example.com/&#39;</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="s1">&#39;admin&#39;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s1">&#39;admin&#39;</span><span class="p">)</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;https://pulp.example.com/&#39;</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;admin&#39;</span><span class="p">,</span> <span class="s1">&#39;some-password&#39;</span><span class="p">))</span>
 
 <span class="c1"># Get a particular repo by ID.</span>
 <span class="c1"># All methods return Future instances; .result() blocks</span>
