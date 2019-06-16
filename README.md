@@ -29,7 +29,7 @@ Usage Example
 from pubtools.pulplib import Client
 
 # Make a client pointing at this Pulp server
-client = Client(url='https://pulp.example.com/', user='admin', password='admin')
+client = Client(url='https://pulp.example.com/', auth=('admin', 'some-password'))
 
 # Get a particular repo by ID.
 # All methods return Future instances; .result() blocks
