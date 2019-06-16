@@ -284,7 +284,7 @@ class Client(object):
         return self._session.request(**kwargs)
 
     def _do_search(self, resource_type, search):
-        url = os.path.join(self._url, "pulp/api/v2/{}/search/".format(resource_type))
+        url = os.path.join(self._url, "pulp/api/v2/{0}/search/".format(resource_type))
 
         LOG.debug("Submitting %s search: %s", url, search)
 
