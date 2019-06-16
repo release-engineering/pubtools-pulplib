@@ -39,9 +39,7 @@ def test_can_search(client, requests_mocker):
     assert requests_mocker.call_count == 1
 
 
-def test_search_retries(client, requests_mocker, caplog_compat):
-    caplog = caplog_compat
-
+def test_search_retries(client, requests_mocker, caplog):
     logging.getLogger().setLevel(logging.WARNING)
     caplog.set_level(logging.WARNING)
 

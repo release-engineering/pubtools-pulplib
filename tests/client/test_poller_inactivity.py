@@ -18,11 +18,8 @@ class Timer(object):
         return self.next_time
 
 
-def test_logs_if_inactive(requests_mocker, caplog_compat):
+def test_logs_if_inactive(requests_mocker, caplog):
     """Poller produces log messages showing Pulp's load if it seems inactive"""
-
-    caplog = caplog_compat
-
     caplog.set_level(logging.INFO, "pubtools.pulplib")
 
     descriptor = mock.Mock()
