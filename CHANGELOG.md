@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Changed formatting of task error text; now includes a header with the ID of
+  the failed task
+
 ### Fixed
 - Fixed a crash on Python 2.6
 

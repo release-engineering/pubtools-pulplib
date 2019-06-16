@@ -23,8 +23,20 @@ def test_failed_task():
         id="some-task",
         completed=True,
         succeeded=False,
-        error_summary="<unknown error>",
-        error_details="<unknown error>",
+        error_summary="Pulp task [some-task] failed: <unknown error>",
+        error_details="Pulp task [some-task] failed: <unknown error>",
+    )
+
+
+def test_canceled_task():
+    """from_data sets attributes appropriately for a canceled task"""
+    task = Task.from_data({"task_id": "some-task", "state": "canceled"})
+    assert task == Task(
+        id="some-task",
+        completed=True,
+        succeeded=False,
+        error_summary="Pulp task [some-task] was canceled",
+        error_details="Pulp task [some-task] was canceled",
     )
 
 
@@ -53,12 +65,15 @@ def test_task_error():
         ).strip(),
     }
     task = Task.from_data(data)
-    assert task.error_summary == "ABC00123: Simulated error"
+    assert (
+        task.error_summary
+        == "Pulp task [failed-task] failed: ABC00123: Simulated error"
+    )
     assert (
         task.error_details
         == textwrap.dedent(
             """
-            ABC00123: Simulated error:
+            Pulp task [failed-task] failed: ABC00123: Simulated error:
               message from data
               another message
               and another
