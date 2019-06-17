@@ -1,4 +1,9 @@
+import logging
+import weakref
+
 from . import compat_attr as attr
+
+LOG = logging.getLogger("pubtools.pulplib")
 
 
 @attr.s(kw_only=True)
@@ -61,6 +66,25 @@ class Page(object):
 
     Otherwise, a Future[:class:`Page`] for the next page of results.
     """
+
+    def __attrs_post_init__(self):
+        if self.next:
+            # If *this* page disappears, it's pointless to keep querying for
+            # the next page, so we could cancel that future.
+            #
+            # Note: when we are Py3-only, this could be better rewritten
+            # using weakref.finalize or even just plain __del__
+
+            to_cancel = self.next
+
+            def do_cancel(*_):
+                if not to_cancel.done():
+                    cancel_result = to_cancel.cancel()
+                    LOG.debug("Cancel next page due to GC: %s", cancel_result)
+
+            # Just stash a weakref anywhere it'll stay alive for as long
+            # as the page itself.
+            self.__dict__["_cancel_ref"] = weakref.ref(self, do_cancel)
 
     def as_iter(self):
         """Returns an iterator which individually yields each object in this
