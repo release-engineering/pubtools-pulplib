@@ -80,9 +80,11 @@ definitions:
 
       # An ISO8601 timestamp for the last time this distributor was published.
       last_publish:
-        type: string
-        # example: 2019-06-05T11:56:50Z
-        pattern: &quot;^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z&quot;
+        anyOf:
+        - type: &quot;null&quot;
+        - type: string
+          # example: 2019-06-05T11:56:50Z
+          pattern: &quot;^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z&quot;
 
     required:
     - id
