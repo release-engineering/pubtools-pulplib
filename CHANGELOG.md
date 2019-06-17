@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Changed formatting of task error text; now includes a header with the ID of
   the failed task
+- Client now stops paginated searches if the caller is not holding any references
+  to the search result
 
 ### Fixed
 - Fixed a crash on Python 2.6

@@ -261,9 +261,6 @@ class Client(object):
         limit = search["criteria"]["limit"]
         if len(raw_data) == limit:
             # Yeah, we might...
-            # TODO: is there some way we can avoid continuing with the search
-            # if we know the client doesn't care about it?  Like holding a weakref
-            # to the next page and cancelling it if the ref goes away?
             search = search.copy()
             search["criteria"] = search["criteria"].copy()
             search["criteria"]["skip"] = search["criteria"]["skip"] + limit
