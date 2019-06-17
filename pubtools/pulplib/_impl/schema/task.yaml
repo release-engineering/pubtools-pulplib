@@ -60,6 +60,34 @@ properties:
     - type: "null"
     - type: string
 
+  # Tags of a task; a list of arbitrary strings
+  tags:
+    type: array
+    items:
+      type: string
+
+  # Task result. The content depends on the task type.
+  result:
+    anyOf:
+    - type: "null"
+    - type: array
+    - type: object
+      properties:
+        # For tasks operating on units (e.g. assoc/unassoc), this element
+        # in the result will record which unit(s) were affected.
+        units_successful:
+          type: array
+          items:
+            type: object
+            properties:
+              type_id:
+                type: string
+              unit_key:
+                type: object
+            required:
+            - type_id
+            - unit_key
+
 required:
 - task_id
 - state

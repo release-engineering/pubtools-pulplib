@@ -129,6 +129,7 @@ html_sidebars = {
 # -- Extension configuration -------------------------------------------------
 autoclass_content = "both"
 autodoc_member_order = "bysource"
+autodoc_inherit_docstrings = False
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
     "requests": ("https://2.python-requests.org/en/master/", None),

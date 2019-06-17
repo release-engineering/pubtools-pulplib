@@ -8,26 +8,35 @@ Pulp objects
 Common functionality
 --------------------
 
-.. autoclass:: pubtools.pulplib.PulpObject
+.. autoclass:: pubtools.pulplib.PulpObject()
    :members:
 
 
 Repository
 ----------
 
-.. autoclass:: pubtools.pulplib.Repository
+.. autoclass:: pubtools.pulplib.Repository()
    :members:
 
-.. autoclass:: pubtools.pulplib.Distributor
+.. autoclass:: pubtools.pulplib.YumRepository()
    :members:
 
-.. autoclass:: pubtools.pulplib.PublishOptions
+.. autoclass:: pubtools.pulplib.FileRepository()
+   :members:
+
+.. autoclass:: pubtools.pulplib.ContainerImageRepository()
+   :members:
+
+.. autoclass:: pubtools.pulplib.Distributor()
+   :members:
+
+.. autoclass:: pubtools.pulplib.PublishOptions()
    :members:
 
 
 Task
 ----
-.. autoclass:: pubtools.pulplib.Task
+.. autoclass:: pubtools.pulplib.Task()
    :members:
 
 

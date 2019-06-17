@@ -3,7 +3,7 @@ import datetime
 
 from pubtools.pulplib import (
     FakeController,
-    Repository,
+    YumRepository,
     Distributor,
     Criteria,
     PulpException,
@@ -14,7 +14,7 @@ def test_can_publish():
     controller = FakeController()
 
     controller.insert_repository(
-        Repository(
+        YumRepository(
             id="repo1",
             distributors=[
                 Distributor(id="yum_distributor", type_id="yum_distributor"),
@@ -22,7 +22,7 @@ def test_can_publish():
             ],
         )
     )
-    controller.insert_repository(Repository(id="repo2"))
+    controller.insert_repository(YumRepository(id="repo2"))
 
     client = controller.client
     repo1 = client.get_repository("repo1").result()
@@ -50,7 +50,7 @@ def test_publish_absent_raises():
     controller = FakeController()
 
     controller.insert_repository(
-        Repository(
+        YumRepository(
             id="repo1",
             distributors=[
                 Distributor(id="yum_distributor", type_id="yum_distributor"),

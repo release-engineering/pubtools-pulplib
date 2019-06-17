@@ -1,3 +1,5 @@
+import datetime
+
 from .common import PulpObject
 from .attr import pulp_attrib
 from ..schema import load_schema
@@ -24,13 +26,23 @@ class Distributor(PulpObject):
     of type `yum_distributor` may be used to create yum repositories.
     """
 
-    @property
-    def is_rsync(self):
-        """True for distributors in the 'rsync distributor' family
-        (e.g. ``rpm_rsync_distributor``).
-        """
-        return self.type_id in (
-            "rpm_rsync_distributor",
-            "iso_rsync_distributor",
-            "docker_rsync_distributor",
+    last_publish = pulp_attrib(
+        default=None, type=datetime.datetime, pulp_field="last_publish"
+    )
+    """The :class:`~datetime.datetime` at which this distributor was last published,
+    if known."""
+
+    is_rsync = attr.ib(
+        default=attr.Factory(
+            lambda self: self.type_id
+            in (
+                "rpm_rsync_distributor",
+                "iso_rsync_distributor",
+                "docker_rsync_distributor",
+            ),
+            takes_self=True,
         )
+    )
+    """True for distributors in the 'rsync distributor' family
+    (e.g. ``rpm_rsync_distributor``).
+    """
