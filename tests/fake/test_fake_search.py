@@ -1,10 +1,10 @@
-import pytest
 import datetime
 
-from pubtools.pulplib import FakeController, Repository, Criteria, PulpException
+from pubtools.pulplib import FakeController, Repository, Criteria
 
 
 def test_can_search_id():
+    """Can search for a repo by ID with fake client."""
     controller = FakeController()
 
     repo1 = Repository(id="repo1")
@@ -21,6 +21,7 @@ def test_can_search_id():
 
 
 def test_can_search_ids():
+    """Can search for a repo by list of IDs with fake client."""
     controller = FakeController()
 
     repo1 = Repository(id="repo1")
@@ -39,6 +40,7 @@ def test_can_search_ids():
 
 
 def test_can_search_id_exists():
+    """Can search for a repo using exists operator with fake client."""
     controller = FakeController()
 
     repo1 = Repository(id="repo1")

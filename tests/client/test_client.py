@@ -5,24 +5,29 @@ from pubtools.pulplib import Client, Criteria, Repository, PulpException
 
 
 def test_can_construct(requests_mocker):
+    """A client instance can be constructed with URL alone."""
     client = Client("https://pulp.example.com/")
 
 
 def test_can_construct_with_session_args(requests_mocker):
+    """A client instance can be constructed with requests.Session kwargs."""
     client = Client("https://pulp.example.com/", auth=("x", "y"), verify=False)
 
 
 def test_construct_raises_on_bad_args(requests_mocker):
+    """A client instance cannot be constructed with unexpected args."""
     with pytest.raises(TypeError):
         client = Client("https://pulp.example.com/", whatever="foobar")
 
 
 def test_search_raises_on_bad_args(client, requests_mocker):
+    """search_repository raises TypeError if passed something other than Criteria"""
     with pytest.raises(TypeError):
         client.search_repository("oops, not valid criteria")
 
 
 def test_can_search(client, requests_mocker):
+    """search_repository issues /search/ POST requests as expected."""
     requests_mocker.post(
         "https://pulp.example.com/pulp/api/v2/repositories/search/",
         json=[{"id": "repo1"}, {"id": "repo2"}],
@@ -40,6 +45,7 @@ def test_can_search(client, requests_mocker):
 
 
 def test_search_retries(client, requests_mocker, caplog):
+    """search_repository retries operations on failure."""
     logging.getLogger().setLevel(logging.WARNING)
     caplog.set_level(logging.WARNING)
 
@@ -83,6 +89,7 @@ def test_search_retries(client, requests_mocker, caplog):
 
 
 def test_search_can_paginate(client, requests_mocker):
+    """search_repository implicitly paginates the search as needed."""
     client._PAGE_SIZE = 10
 
     expected_repos = []
@@ -123,6 +130,7 @@ def test_search_can_paginate(client, requests_mocker):
 
 
 def test_can_get(client, requests_mocker):
+    """get_repository gets a repository (via search)."""
     requests_mocker.post(
         "https://pulp.example.com/pulp/api/v2/repositories/search/",
         json=[{"id": "repo1"}],

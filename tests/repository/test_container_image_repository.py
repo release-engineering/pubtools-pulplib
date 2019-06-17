@@ -2,6 +2,7 @@ from pubtools.pulplib import Repository, ContainerImageRepository
 
 
 def test_from_data_gives_container_image_repository():
+    """Repository.from_data routes to ContainerImageRepository subclass when needed"""
     repo = Repository.from_data(
         {"id": "my-repo", "notes": {"_repo-type": "docker-repo"}}
     )
@@ -9,10 +10,12 @@ def test_from_data_gives_container_image_repository():
 
 
 def test_default_registry_id():
+    """registry_id defaults to repository ID"""
     assert ContainerImageRepository(id="foo").registry_id == "foo"
 
 
 def test_registry_id_from_distributor():
+    """registry_id is loaded from distributor when possible"""
     repo = Repository.from_data(
         {
             "id": "my-repo",

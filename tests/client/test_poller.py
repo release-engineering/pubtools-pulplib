@@ -8,6 +8,7 @@ from pubtools.pulplib._impl.client.errors import MissingTaskException
 
 
 def test_does_nothing_with_no_descriptors(requests_mocker):
+    """TaskPoller doesn't do anything if there's no descriptors to poll."""
     poller = TaskPoller(requests.Session(), "https://pulp.example.com/")
 
     # It should run successfully

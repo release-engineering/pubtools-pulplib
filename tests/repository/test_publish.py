@@ -1,5 +1,4 @@
 import logging
-import datetime
 import pytest
 
 from pubtools.pulplib import (
@@ -176,6 +175,10 @@ def test_publish_fail(fast_poller, requests_mocker, client):
 
 
 def test_publish_broken_response(fast_poller, requests_mocker, client):
+    """publish raises an exception if Pulp /publish/ responded with parseable
+    JSON, but not of the expected structure
+    """
+
     repo = YumRepository(
         id="some-repo",
         distributors=(Distributor(id="yum_distributor", type_id="yum_distributor"),),

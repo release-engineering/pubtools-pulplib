@@ -69,7 +69,6 @@ class Page(object):
         The iterator will block as needed if the current Pulp search has not
         yet completed.
         """
-        # sketch of possible implementation...
         page = self
         while True:
             for elem in page.data:
@@ -78,18 +77,3 @@ class Page(object):
                 return
             # blocks here if next page is not yet fetched
             page = page.next.result()
-
-
-# Design Notes
-# ============
-#
-# Page is supposed to meet these goals:
-#
-# - make it possible for caller to start processing results while the client is
-#   still searching for more pages
-#
-# - allow a completely non-blocking style of processing search results by chaining
-#   futures
-#
-# - also support convenient, traditional blocking style of processing search results
-#

@@ -29,6 +29,8 @@ def s(*args, **kwargs):
 
 if ATTR_VERSION < (18, 1):  # pragma: no cover
 
+    # older attrs version didn't provide this function yet,
+    # but it's easily added here.
     def fields_dict(cls):
         out = {}
         for field in attr.fields(cls):

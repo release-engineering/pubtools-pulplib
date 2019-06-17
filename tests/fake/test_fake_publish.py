@@ -1,16 +1,8 @@
-import pytest
-import datetime
-
-from pubtools.pulplib import (
-    FakeController,
-    YumRepository,
-    Distributor,
-    Criteria,
-    PulpException,
-)
+from pubtools.pulplib import FakeController, YumRepository, Distributor, PulpException
 
 
 def test_can_publish():
+    """repo.publish() succeeds with fake client and populates publish_history."""
     controller = FakeController()
 
     controller.insert_repository(
@@ -47,6 +39,7 @@ def test_can_publish():
 
 
 def test_publish_absent_raises():
+    """repo.publish() of a nonexistent repo raises."""
     controller = FakeController()
 
     controller.insert_repository(

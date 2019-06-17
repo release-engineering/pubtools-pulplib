@@ -3,11 +3,6 @@ pubtools-pulplib
 
 A Pulp library for publishing tools.
 
-.. warning::
-    As of 2019-06, this project is considered **alpha**.
-    All API is subject to change without warning.
-    Information in these docs may be missing or wrong.
-
 .. toctree::
    :maxdepth: 2
    :caption: Contents:

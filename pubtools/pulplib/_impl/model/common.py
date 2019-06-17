@@ -111,37 +111,3 @@ class PulpObject(object):
                     out[field.name] = value
 
         return out
-
-
-# Design notes
-# ============
-#
-# All classes in this hierarchy are meant to be "attrs" classes. This can reduce
-# the boilerplate and give us some nice advantages, such as immutability to discourage
-# spaghetti code in callers.
-#
-# The classes are designed following the guideline here:
-# http://www.attrs.org/en/stable/init.html
-#
-# This means that instances of these classes don't at all store the raw data passed
-# in by Pulp, which has some implications:
-#
-# - there is no way to work around the API - if some attribute you need is missing from
-#   a class, you can't peek at the raw data instead. You have to really add the attribute.
-#
-# - testing is easier because you can simply create a SomeObject(foo='a', bar='b') for any
-#   given attributes, and not have to know/care about what that means in terms of how the
-#   data is structured in Pulp
-#
-# Note that the initial version of these classes is fairly minimal. It is very much
-# expected that many more attributes need to be added to these classes as we uncover
-# use-cases for them.
-#
-# Regarding the validation of incoming data against schemas: those schemas would cover
-# some generic Pulp fields, and some site-specific fields. They would be "open" schemas
-# (i.e. unknown fields are allowed, but bad data in known fields is not allowed).
-#
-# It's hoped that the schemas could be encoded in .yaml files with full commentary,
-# and those might be included in sphinx-generated docs. This could be used to replace
-# some internal docs about the custom fields used on our Pulp servers.
-#

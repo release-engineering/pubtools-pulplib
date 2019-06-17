@@ -16,6 +16,8 @@ REPO_CLASSES = {}
 
 
 def repo_type(pulp_type):
+    # decorator for Repository subclasses, registers against a
+    # particular value of notes._repo-type
     def decorate(klass):
         REPO_CLASSES[pulp_type] = klass
         return klass
@@ -60,8 +62,14 @@ class Repository(PulpObject):
     _SCHEMA = load_schema("repository")
 
     # The distributors (by ID) which should be activated when publishing this repo.
-    # Order matters.
-    _PUBLISH_DISTRIBUTORS = []
+    # Order matters. Distributors which don't exist will be ignored.
+    _PUBLISH_DISTRIBUTORS = [
+        "iso_distributor",
+        "yum_distributor",
+        "cdn_distributor",
+        "cdn_distributor_unprotected",
+        "docker_web_distributor_name_cli",
+    ]
 
     id = pulp_attrib(type=str, pulp_field="id")
     """ID of this repository (str)."""
@@ -261,11 +269,3 @@ class Repository(PulpObject):
             out["force_full"] = options.force
 
         return out
-
-
-# Design notes
-# ============
-#
-# Semantics of publish is intentionally vague to increase the chance that the API
-# might be reusable on Pulp 3, and might be able to cover various behavior changes
-# requested in the future.

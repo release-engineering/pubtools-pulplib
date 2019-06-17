@@ -1,4 +1,3 @@
-import datetime
 import pytest
 
 from pubtools.pulplib import Repository, Task, DetachedException
