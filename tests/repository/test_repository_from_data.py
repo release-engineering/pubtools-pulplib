@@ -80,3 +80,17 @@ def test_distributors_last_publish():
     assert repo.distributor("dist1").last_publish == datetime.datetime(
         2019, 6, 17, 1, 23, 45
     )
+
+
+def test_distributors_last_publish_null():
+    """from_data accepts a null last_publish"""
+    repo = Repository.from_data(
+        {
+            "id": "some-repo",
+            "distributors": [
+                {"id": "dist1", "distributor_type_id": "type1", "last_publish": None}
+            ],
+        }
+    )
+
+    assert repo.distributor("dist1").last_publish is None
