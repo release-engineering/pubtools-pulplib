@@ -31,7 +31,9 @@
           <div class="body" role="main">
             
   <h1>Source code for pubtools.pulplib._impl.model.distributor</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">.common</span> <span class="k">import</span> <span class="n">PulpObject</span>
+<span></span><span class="kn">import</span> <span class="nn">datetime</span>
+
+<span class="kn">from</span> <span class="nn">.common</span> <span class="k">import</span> <span class="n">PulpObject</span>
 <span class="kn">from</span> <span class="nn">.attr</span> <span class="k">import</span> <span class="n">pulp_attrib</span>
 <span class="kn">from</span> <span class="nn">..schema</span> <span class="k">import</span> <span class="n">load_schema</span>
 <span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">compat_attr</span> <span class="k">as</span> <span class="n">attr</span>
@@ -57,16 +59,26 @@
 <span class="sd">    of type `yum_distributor` may be used to create yum repositories.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_rsync</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;True for distributors in the &#39;rsync distributor&#39; family</span>
-<span class="sd">        (e.g. ``rpm_rsync_distributor``).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">type_id</span> <span class="ow">in</span> <span class="p">(</span>
-            <span class="s2">&quot;rpm_rsync_distributor&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;iso_rsync_distributor&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;docker_rsync_distributor&quot;</span><span class="p">,</span>
-        <span class="p">)</span></div>
+    <span class="n">last_publish</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;last_publish&quot;</span>
+    <span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;The :class:`~datetime.datetime` at which this distributor was last published,</span>
+<span class="sd">    if known.&quot;&quot;&quot;</span>
+
+    <span class="n">is_rsync</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">attr</span><span class="o">.</span><span class="n">Factory</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">type_id</span>
+            <span class="ow">in</span> <span class="p">(</span>
+                <span class="s2">&quot;rpm_rsync_distributor&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;iso_rsync_distributor&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;docker_rsync_distributor&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">takes_self</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;True for distributors in the &#39;rsync distributor&#39; family</span>
+<span class="sd">    (e.g. ``rpm_rsync_distributor``).</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
 </pre></div>
 
           </div>
