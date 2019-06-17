@@ -294,9 +294,6 @@
         <span class="n">limit</span> <span class="o">=</span> <span class="n">search</span><span class="p">[</span><span class="s2">&quot;criteria&quot;</span><span class="p">][</span><span class="s2">&quot;limit&quot;</span><span class="p">]</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw_data</span><span class="p">)</span> <span class="o">==</span> <span class="n">limit</span><span class="p">:</span>
             <span class="c1"># Yeah, we might...</span>
-            <span class="c1"># TODO: is there some way we can avoid continuing with the search</span>
-            <span class="c1"># if we know the client doesn&#39;t care about it?  Like holding a weakref</span>
-            <span class="c1"># to the next page and cancelling it if the ref goes away?</span>
             <span class="n">search</span> <span class="o">=</span> <span class="n">search</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
             <span class="n">search</span><span class="p">[</span><span class="s2">&quot;criteria&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">search</span><span class="p">[</span><span class="s2">&quot;criteria&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
             <span class="n">search</span><span class="p">[</span><span class="s2">&quot;criteria&quot;</span><span class="p">][</span><span class="s2">&quot;skip&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">search</span><span class="p">[</span><span class="s2">&quot;criteria&quot;</span><span class="p">][</span><span class="s2">&quot;skip&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">limit</span>

@@ -31,7 +31,12 @@
           <div class="body" role="main">
             
   <h1>Source code for pubtools.pulplib._impl.page</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">compat_attr</span> <span class="k">as</span> <span class="n">attr</span>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">weakref</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">compat_attr</span> <span class="k">as</span> <span class="n">attr</span>
+
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;pubtools.pulplib&quot;</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="Page"><a class="viewcode-back" href="../../../../api/searching.html#pubtools.pulplib.Page">[docs]</a><span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -94,6 +99,25 @@
 
 <span class="sd">    Otherwise, a Future[:class:`Page`] for the next page of results.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__attrs_post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">next</span><span class="p">:</span>
+            <span class="c1"># If *this* page disappears, it&#39;s pointless to keep querying for</span>
+            <span class="c1"># the next page, so we could cancel that future.</span>
+            <span class="c1">#</span>
+            <span class="c1"># Note: when we are Py3-only, this could be better rewritten</span>
+            <span class="c1"># using weakref.finalize or even just plain __del__</span>
+
+            <span class="n">to_cancel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">next</span>
+
+            <span class="k">def</span> <span class="nf">do_cancel</span><span class="p">(</span><span class="o">*</span><span class="n">_</span><span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">to_cancel</span><span class="o">.</span><span class="n">done</span><span class="p">():</span>
+                    <span class="n">cancel_result</span> <span class="o">=</span> <span class="n">to_cancel</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+                    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Cancel next page due to GC: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">cancel_result</span><span class="p">)</span>
+
+            <span class="c1"># Just stash a weakref anywhere it&#39;ll stay alive for as long</span>
+            <span class="c1"># as the page itself.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s2">&quot;_cancel_ref&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">weakref</span><span class="o">.</span><span class="n">ref</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">do_cancel</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Page.as_iter"><a class="viewcode-back" href="../../../../api/searching.html#pubtools.pulplib.Page.as_iter">[docs]</a>    <span class="k">def</span> <span class="nf">as_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Returns an iterator which individually yields each object in this</span>
