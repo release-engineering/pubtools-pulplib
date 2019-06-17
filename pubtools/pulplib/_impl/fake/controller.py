@@ -26,8 +26,8 @@ class FakeController(object):
                 controller = FakeController()
 
                 # Insert repositories into fake data
-                repo_now = Repository(id='current-repo', created=datetime.utcnow())
-                repo_old = Repository(id='old-repo', created=datetime.min)
+                repo_now = YumRepository(id='current-repo', created=datetime.utcnow())
+                repo_old = FileRepository(id='old-repo', created=datetime.min)
 
                 controller.insert_repository(repo_now)
                 controller.insert_repository(repo_old)

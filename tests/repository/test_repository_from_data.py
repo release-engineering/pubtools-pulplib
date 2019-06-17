@@ -60,3 +60,23 @@ def test_distributors_created():
         Distributor(id="dist1", type_id="type1"),
         Distributor(id="dist2", type_id="type1"),
     )
+
+
+def test_distributors_last_publish():
+    """from_data sets distributor last publish attribute appropriately"""
+    repo = Repository.from_data(
+        {
+            "id": "some-repo",
+            "distributors": [
+                {
+                    "id": "dist1",
+                    "distributor_type_id": "type1",
+                    "last_publish": "2019-06-17T01:23:45Z",
+                }
+            ],
+        }
+    )
+
+    assert repo.distributor("dist1").last_publish == datetime.datetime(
+        2019, 6, 17, 1, 23, 45
+    )

@@ -3,14 +3,24 @@ import logging
 
 from more_executors.futures import f_map
 
-from .common import PulpObject, DetachedException
-from .attr import pulp_attrib
-from .distributor import Distributor
-from ..schema import load_schema
-from .. import compat_attr as attr
+from ..common import PulpObject, DetachedException
+from ..attr import pulp_attrib
+from ..distributor import Distributor
+from ...schema import load_schema
+from ... import compat_attr as attr
 
 
 LOG = logging.getLogger("pubtools.pulplib")
+
+REPO_CLASSES = {}
+
+
+def repo_type(pulp_type):
+    def decorate(klass):
+        REPO_CLASSES[pulp_type] = klass
+        return klass
+
+    return decorate
 
 
 @attr.s(kw_only=True, frozen=True)
@@ -34,6 +44,14 @@ class PublishOptions(object):
     Setting ``clean=True`` generally implies ``force=True``.
     """
 
+    origin_only = attr.ib(default=None, type=bool)
+    """If ``True``, Pulp should only update the content units / origin path on
+    remote hosts.
+
+    Only relevant if a repository has one or more distributors where
+    :meth:`~pubtools.pulplib.Distributor.is_rsync` is ``True``.
+    """
+
 
 @attr.s(kw_only=True, frozen=True)
 class Repository(PulpObject):
@@ -41,8 +59,19 @@ class Repository(PulpObject):
 
     _SCHEMA = load_schema("repository")
 
+    # The distributors (by ID) which should be activated when publishing this repo.
+    # Order matters.
+    _PUBLISH_DISTRIBUTORS = []
+
     id = pulp_attrib(type=str, pulp_field="id")
     """ID of this repository (str)."""
+
+    type = pulp_attrib(default=None, type=str, pulp_field="notes._repo-type")
+    """Type of this repository (str).
+
+    This is a brief string denoting the content / Pulp plugin type used with
+    this repository, e.g. ``rpm-repo``.
+    """
 
     created = pulp_attrib(
         default=None, type=datetime.datetime, pulp_field="notes.created"
@@ -63,15 +92,56 @@ class Repository(PulpObject):
     repository.
     """
 
+    eng_product_id = pulp_attrib(
+        default=None, type=int, pulp_field="notes.eng_product", pulp_py_converter=int
+    )
+    """ID of the product to which this repository belongs (if any)."""
+
+    relative_url = attr.ib(default=None, type=str)
+    """Default publish URL for this repository, relative to the Pulp content root."""
+
+    mutable_urls = attr.ib(default=attr.Factory(list), type=list)
+    """A list of URLs relative to repository publish root which are expected
+    to change at every publish (if any content of repo changed)."""
+
+    is_sigstore = attr.ib(default=False, type=bool)
+    """True if this is a sigstore repository, used for container image manifest
+    signatures."""
+
+    signing_keys = pulp_attrib(
+        default=attr.Factory(list),
+        type=list,
+        pulp_field="notes.signatures",
+        pulp_py_converter=lambda sigs: sigs.split(","),
+        converter=lambda keys: [k.strip() for k in keys],
+    )
+    """A list of GPG signing key IDs used to sign content in this repository."""
+
+    skip_rsync_repodata = attr.ib(default=False, type=bool)
+    """True if this repository is explicitly configured such that a publish of
+    this repository will not publish repository metadata to remote hosts.
+    """
+
     _client = attr.ib(default=None, init=False, repr=False, cmp=False)
     # hidden attribute for client attached to this object
 
     @property
-    def distributors_by_id(self):
+    def _distributors_by_id(self):
         out = {}
         for dist in self.distributors:
             out[dist.id] = dist
         return out
+
+    def distributor(self, distributor_id):
+        """Look up a distributor by ID.
+
+        Returns:
+            :class:`~pubtools.pulplib.Distributor`
+                The distributor belonging to this repository with the given ID.
+            None
+                If this repository has no distributor with the given ID.
+        """
+        return self._distributors_by_id.get(distributor_id)
 
     def delete(self):
         """Delete this repository from Pulp.
@@ -130,19 +200,20 @@ class Repository(PulpObject):
 
         # all distributor IDs we're willing to invoke. Anything else is ignored.
         # They'll be invoked in the order listed here.
-        candidate_distributor_ids = [
-            "yum_distributor",
-            "iso_distributor",
-            "cdn_distributor",
-            "docker_web_distributor_name_cli",
-        ]
+        candidate_distributor_ids = self._PUBLISH_DISTRIBUTORS
 
         to_publish = []
 
         for candidate in candidate_distributor_ids:
-            distributor = self.distributors_by_id.get(candidate)
+            distributor = self._distributors_by_id.get(candidate)
             if not distributor:
                 # nothing to be done
+                continue
+
+            if (
+                distributor.id == "docker_web_distributor_name_cli"
+                and options.origin_only
+            ):
                 continue
 
             config = self._config_for_distributor(distributor, options)
@@ -151,11 +222,40 @@ class Repository(PulpObject):
         return self._client._publish_repository(self, to_publish)
 
     @classmethod
+    def from_data(cls, data):
+        # delegate to concrete subclass as needed
+        if cls is Repository:
+            notes = data.get("notes") or {}
+            for notes_type, klass in REPO_CLASSES.items():
+                if notes.get("_repo-type") == notes_type:
+                    return klass.from_data(data)
+
+        return super(Repository, cls).from_data(data)
+
+    @classmethod
+    def _data_to_init_args(cls, data):
+        out = super(Repository, cls)._data_to_init_args(data)
+
+        for dist in data.get("distributors") or []:
+            if dist["distributor_type_id"] in ("yum_distributor", "iso_distributor"):
+                out["relative_url"] = (dist.get("config") or {}).get("relative_url")
+
+            if dist["id"] == "cdn_distributor":
+                skip_repodata = (dist.get("config") or {}).get("skip_repodata")
+                if skip_repodata is not None:
+                    out["skip_rsync_repodata"] = skip_repodata
+
+        return out
+
+    @classmethod
     def _config_for_distributor(cls, distributor, options):
         out = {}
 
         if options.clean is not None and distributor.is_rsync:
             out["delete"] = options.clean
+
+        if options.origin_only is not None and distributor.is_rsync:
+            out["content_units_only"] = options.origin_only
 
         if options.force is not None:
             out["force_full"] = options.force

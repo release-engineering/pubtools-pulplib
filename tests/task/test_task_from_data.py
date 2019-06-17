@@ -86,3 +86,14 @@ def test_task_error():
             """
         ).strip()
     )
+
+
+def test_task_repo_id_from_tags():
+    task = Task.from_data(
+        {
+            "task_id": "some-task",
+            "state": "finished",
+            "tags": ["pulp:foo:bar", "pulp:repository:some-repo"],
+        }
+    )
+    assert task.repo_id == "some-repo"

@@ -1,10 +1,10 @@
 import time
 
-from pubtools.pulplib import Repository, Distributor
+from pubtools.pulplib import YumRepository, Distributor
 
 
 def test_publish_cancel(fast_poller, requests_mocker, client, caplog):
-    repo = Repository(
+    repo = YumRepository(
         id="some-repo",
         distributors=(
             Distributor(id="yum_distributor", type_id="yum_distributor"),

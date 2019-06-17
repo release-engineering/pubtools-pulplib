@@ -4,6 +4,7 @@ import pytest
 
 from pubtools.pulplib import (
     Repository,
+    YumRepository,
     Task,
     Distributor,
     DetachedException,
@@ -28,7 +29,7 @@ def test_publish_no_distributors(client):
 
 def test_publish_distributors(fast_poller, requests_mocker, client):
     """publish succeeds and returns tasks from each applicable distributor"""
-    repo = Repository(
+    repo = YumRepository(
         id="some-repo",
         distributors=(
             Distributor(id="yum_distributor", type_id="yum_distributor"),
@@ -97,7 +98,7 @@ def test_publish_distributors(fast_poller, requests_mocker, client):
 
 def test_publish_with_options(requests_mocker, client):
     """publish passes expected config into distributors based on publish options"""
-    repo = Repository(
+    repo = YumRepository(
         id="some-repo",
         distributors=(
             Distributor(id="yum_distributor", type_id="yum_distributor"),
@@ -122,7 +123,7 @@ def test_publish_with_options(requests_mocker, client):
         ],
     )
 
-    options = PublishOptions(clean=True, force=True)
+    options = PublishOptions(clean=True, force=True, origin_only=True)
 
     # It should have succeeded, with the tasks as retrieved from Pulp
     assert sorted(repo.publish(options).result()) == [
@@ -136,13 +137,18 @@ def test_publish_with_options(requests_mocker, client):
     # delete since it's not recognized by that distributor
     assert req[0].json()["override_config"] == {"force_full": True}
 
-    # The cdn_distributor request should have set force_full and delete
-    assert req[2].json()["override_config"] == {"force_full": True, "delete": True}
+    # The cdn_distributor request should have set force_full, delete
+    # and content_units_only
+    assert req[2].json()["override_config"] == {
+        "force_full": True,
+        "delete": True,
+        "content_units_only": True,
+    }
 
 
 def test_publish_fail(fast_poller, requests_mocker, client):
     """publish raises TaskFailedException if publish task fails"""
-    repo = Repository(
+    repo = YumRepository(
         id="some-repo",
         distributors=(Distributor(id="yum_distributor", type_id="yum_distributor"),),
     )
@@ -170,7 +176,7 @@ def test_publish_fail(fast_poller, requests_mocker, client):
 
 
 def test_publish_broken_response(fast_poller, requests_mocker, client):
-    repo = Repository(
+    repo = YumRepository(
         id="some-repo",
         distributors=(Distributor(id="yum_distributor", type_id="yum_distributor"),),
     )
@@ -191,7 +197,7 @@ def test_publish_retries(fast_poller, requests_mocker, client, caplog):
     """publish retries distributors as they fail"""
     caplog.set_level(logging.WARNING)
 
-    repo = Repository(
+    repo = YumRepository(
         id="some-repo",
         distributors=(
             Distributor(id="yum_distributor", type_id="yum_distributor"),

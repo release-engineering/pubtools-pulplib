@@ -11,7 +11,7 @@ class Task(PulpObject):
 
     _SCHEMA = load_schema("task")
 
-    id = pulp_attrib(type=str, pulp_field="id")
+    id = pulp_attrib(type=str, pulp_field="task_id")
     """ID of this task (str)."""
 
     completed = attr.ib(default=None, type=bool)
@@ -43,6 +43,39 @@ class Task(PulpObject):
     so it is not necessary to display both.
     """
 
+    tags = pulp_attrib(default=attr.Factory(list), type=list, pulp_field="tags")
+    """The tags for this task.
+
+    Typically includes info on the task's associated action and
+    repo, such as:
+
+    .. code-block:: python
+
+        ["pulp:repository:rhel-7-server-rpms__7Server_x86_64",
+         "pulp:action:publish"]
+    """
+
+    repo_id = attr.ib(type=str)
+    """The ID of the repository associated with this task, otherwise None."""
+
+    units_data = pulp_attrib(
+        default=attr.Factory(list), type=list, pulp_field="result.units_successful"
+    )
+    """Info on the units which were processed as part of this task
+    (e.g. associated or unassociated).
+
+    This is a list. The list elements are the raw dicts as returned
+    by Pulp. These should at least contain a 'type_id' and a 'unit_key'.
+    """
+
+    @repo_id.default
+    def _repo_id_default(self):
+        prefix = "pulp:repository:"
+        for tag in self.tags or []:
+            if tag.startswith(prefix):
+                return tag[len(prefix) :]
+        return None
+
     @succeeded.validator
     def _check_succeeded(self, _, value):
         if value and not self.completed:
@@ -50,12 +83,12 @@ class Task(PulpObject):
 
     @classmethod
     def _data_to_init_args(cls, data):
+        out = super(Task, cls)._data_to_init_args(data)
+
         state = data["state"]
-        out = {
-            "id": data["task_id"],
-            "completed": state in ("finished", "error", "canceled", "skipped"),
-            "succeeded": state in ("finished", "skipped"),
-        }
+        out["completed"] = state in ("finished", "error", "canceled", "skipped")
+        out["succeeded"] = state in ("finished", "skipped")
+
         if state == "canceled":
             out["error_summary"] = "Pulp task [%s] was canceled" % data["task_id"]
             out["error_details"] = out["error_summary"]
