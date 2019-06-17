@@ -144,40 +144,6 @@
                     <span class="n">out</span><span class="p">[</span><span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 
         <span class="k">return</span> <span class="n">out</span></div>
-
-
-<span class="c1"># Design notes</span>
-<span class="c1"># ============</span>
-<span class="c1">#</span>
-<span class="c1"># All classes in this hierarchy are meant to be &quot;attrs&quot; classes. This can reduce</span>
-<span class="c1"># the boilerplate and give us some nice advantages, such as immutability to discourage</span>
-<span class="c1"># spaghetti code in callers.</span>
-<span class="c1">#</span>
-<span class="c1"># The classes are designed following the guideline here:</span>
-<span class="c1"># http://www.attrs.org/en/stable/init.html</span>
-<span class="c1">#</span>
-<span class="c1"># This means that instances of these classes don&#39;t at all store the raw data passed</span>
-<span class="c1"># in by Pulp, which has some implications:</span>
-<span class="c1">#</span>
-<span class="c1"># - there is no way to work around the API - if some attribute you need is missing from</span>
-<span class="c1">#   a class, you can&#39;t peek at the raw data instead. You have to really add the attribute.</span>
-<span class="c1">#</span>
-<span class="c1"># - testing is easier because you can simply create a SomeObject(foo=&#39;a&#39;, bar=&#39;b&#39;) for any</span>
-<span class="c1">#   given attributes, and not have to know/care about what that means in terms of how the</span>
-<span class="c1">#   data is structured in Pulp</span>
-<span class="c1">#</span>
-<span class="c1"># Note that the initial version of these classes is fairly minimal. It is very much</span>
-<span class="c1"># expected that many more attributes need to be added to these classes as we uncover</span>
-<span class="c1"># use-cases for them.</span>
-<span class="c1">#</span>
-<span class="c1"># Regarding the validation of incoming data against schemas: those schemas would cover</span>
-<span class="c1"># some generic Pulp fields, and some site-specific fields. They would be &quot;open&quot; schemas</span>
-<span class="c1"># (i.e. unknown fields are allowed, but bad data in known fields is not allowed).</span>
-<span class="c1">#</span>
-<span class="c1"># It&#39;s hoped that the schemas could be encoded in .yaml files with full commentary,</span>
-<span class="c1"># and those might be included in sphinx-generated docs. This could be used to replace</span>
-<span class="c1"># some internal docs about the custom fields used on our Pulp servers.</span>
-<span class="c1">#</span>
 </pre></div>
 
           </div>

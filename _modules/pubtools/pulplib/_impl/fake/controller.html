@@ -112,32 +112,6 @@
 <span class="sd">                of this publish</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">_publish_history</span><span class="p">[:]</span></div>
-
-
-<span class="c1"># Design notes</span>
-<span class="c1"># ============</span>
-<span class="c1">#</span>
-<span class="c1"># The existence of this class is a reaction to the overuse of mocking in existing</span>
-<span class="c1"># Pulp client code. Mocks are very powerful but lead to major maintenance problems:</span>
-<span class="c1"># it&#39;s common to mock a specific method call sequence, unnecessarily tying a test</span>
-<span class="c1"># to certain implementation details. This results in tests which wrongly fail when</span>
-<span class="c1"># the sequence of method calls is changed to an equally valid alternative sequence.</span>
-<span class="c1"># Even worse, it can result in tests which wrongly pass since the default behavior</span>
-<span class="c1"># of MagicMock is for all method calls to succeed even if provided garbage input.</span>
-<span class="c1">#</span>
-<span class="c1"># The fake client is meant to address this by ensuring that, for any code written</span>
-<span class="c1"># against the pulplib client, it&#39;s possible to swap in a client which is &quot;fake&quot; in</span>
-<span class="c1"># that it doesn&#39;t query to a real Pulp server, but &quot;real&quot; in that the usual CRUD</span>
-<span class="c1"># operations do work as normal, arguments have to be the correct type or exceptions</span>
-<span class="c1"># will be raised, and so on.</span>
-<span class="c1">#</span>
-<span class="c1"># The FakeController could potentially be extended to allow certain behaviors of the</span>
-<span class="c1"># client to be customized (e.g. introduce fake delays to Pulp operations).</span>
-<span class="c1">#</span>
-<span class="c1"># If the caller wants to test error conditions, the likely approach will be to mix</span>
-<span class="c1"># mocks with the fake client. For example, make a fake controller &amp; client but then</span>
-<span class="c1"># mock.patch individual methods to return errors when needed.</span>
-<span class="c1">#</span>
 </pre></div>
 
           </div>

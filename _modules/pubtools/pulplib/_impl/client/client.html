@@ -83,11 +83,17 @@
 <span class="sd">    task queue.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1"># TODO: timeout all task futures</span>
+    <span class="c1"># Various defaults can be controlled by environment variables.</span>
+    <span class="c1"># These are not a documented/supported feature of the library.</span>
+    <span class="c1"># They&#39;re more of an emergency escape hatch to temporarily resolve issues.</span>
     <span class="n">_REQUEST_THREADS</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;PUBTOOLS_PULPLIB_REQUEST_THREADS&quot;</span><span class="p">,</span> <span class="s2">&quot;4&quot;</span><span class="p">))</span>
     <span class="n">_PAGE_SIZE</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;PUBTOOLS_PULPLIB_PAGE_SIZE&quot;</span><span class="p">,</span> <span class="s2">&quot;2000&quot;</span><span class="p">))</span>
     <span class="n">_TASK_THROTTLE</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;PUBTOOLS_PULPLIB_TASK_THROTTLE&quot;</span><span class="p">,</span> <span class="s2">&quot;200&quot;</span><span class="p">))</span>
-    <span class="n">_RETRY_POLICY</span> <span class="o">=</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">_</span><span class="p">:</span> <span class="n">retry</span><span class="o">.</span><span class="n">PulpRetryPolicy</span><span class="p">()</span>
+
+    <span class="c1"># Policy used when deciding whether to retry operations.</span>
+    <span class="c1"># This is mainly provided here as a hook for autotests, so the policy can be</span>
+    <span class="c1"># overridden there.</span>
+    <span class="n">_RETRY_POLICY</span> <span class="o">=</span> <span class="n">retry</span><span class="o">.</span><span class="n">PulpRetryPolicy</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -134,7 +140,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_request_executor</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">Executors</span><span class="o">.</span><span class="n">thread_pool</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_REQUEST_THREADS</span><span class="p">)</span>
             <span class="o">.</span><span class="n">with_map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_unpack_response</span><span class="p">)</span>
-            <span class="o">.</span><span class="n">with_retry</span><span class="p">(</span><span class="n">retry_policy</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_RETRY_POLICY</span><span class="p">())</span>
+            <span class="o">.</span><span class="n">with_retry</span><span class="p">(</span><span class="n">retry_policy</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_RETRY_POLICY</span><span class="p">)</span>
         <span class="p">)</span>
 
         <span class="c1"># executor for issuing HTTP requests to Pulp which spawn tasks:</span>
@@ -151,8 +157,29 @@
             <span class="o">.</span><span class="n">with_map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_log_spawned_tasks</span><span class="p">)</span>
             <span class="o">.</span><span class="n">with_poll</span><span class="p">(</span><span class="n">poller</span><span class="p">,</span> <span class="n">cancel_fn</span><span class="o">=</span><span class="n">poller</span><span class="o">.</span><span class="n">cancel</span><span class="p">)</span>
             <span class="o">.</span><span class="n">with_throttle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_TASK_THROTTLE</span><span class="p">)</span>
-            <span class="o">.</span><span class="n">with_retry</span><span class="p">(</span><span class="n">retry_policy</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_RETRY_POLICY</span><span class="p">())</span>
+            <span class="o">.</span><span class="n">with_retry</span><span class="p">(</span><span class="n">retry_policy</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_RETRY_POLICY</span><span class="p">)</span>
         <span class="p">)</span>
+
+<div class="viewcode-block" id="Client.get_repository"><a class="viewcode-back" href="../../../../../api/client.html#pubtools.pulplib.Client.get_repository">[docs]</a>    <span class="k">def</span> <span class="nf">get_repository</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repository_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get a repository by ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            repository_id (str)</span>
+<span class="sd">                The ID of the repository to be fetched.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Future[:class:`~pubtools.pulplib.Repository`]</span>
+<span class="sd">                A future holding the fetched Repository.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">page_f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_repository</span><span class="p">(</span><span class="n">Criteria</span><span class="o">.</span><span class="n">with_id</span><span class="p">(</span><span class="n">repository_id</span><span class="p">))</span>
+
+        <span class="k">def</span> <span class="nf">unpack_page</span><span class="p">(</span><span class="n">page</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">page</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">PulpException</span><span class="p">(</span><span class="s2">&quot;Repository id=</span><span class="si">%s</span><span class="s2"> was not found&quot;</span> <span class="o">%</span> <span class="n">repository_id</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">page</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">repo_f</span> <span class="o">=</span> <span class="n">f_map</span><span class="p">(</span><span class="n">page_f</span><span class="p">,</span> <span class="n">unpack_page</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">repo_f</span></div>
 
 <div class="viewcode-block" id="Client.search_repository"><a class="viewcode-back" href="../../../../../api/client.html#pubtools.pulplib.Client.search_repository">[docs]</a>    <span class="k">def</span> <span class="nf">search_repository</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">criteria</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Search for repositories matching the given criteria.</span>
@@ -184,27 +211,6 @@
         <span class="k">return</span> <span class="n">f_map</span><span class="p">(</span>
             <span class="n">response_f</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">data</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_page</span><span class="p">(</span><span class="n">Repository</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
         <span class="p">)</span></div>
-
-<div class="viewcode-block" id="Client.get_repository"><a class="viewcode-back" href="../../../../../api/client.html#pubtools.pulplib.Client.get_repository">[docs]</a>    <span class="k">def</span> <span class="nf">get_repository</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repository_id</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Get a repository by ID.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            repository_id (str)</span>
-<span class="sd">                The ID of the repository to be fetched.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            Future[:class:`~pubtools.pulplib.Repository`]</span>
-<span class="sd">                A future holding the fetched Repository.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">page_f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_repository</span><span class="p">(</span><span class="n">Criteria</span><span class="o">.</span><span class="n">with_id</span><span class="p">(</span><span class="n">repository_id</span><span class="p">))</span>
-
-        <span class="k">def</span> <span class="nf">unpack_page</span><span class="p">(</span><span class="n">page</span><span class="p">):</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">page</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">PulpException</span><span class="p">(</span><span class="s2">&quot;Repository id=</span><span class="si">%s</span><span class="s2"> was not found&quot;</span> <span class="o">%</span> <span class="n">repository_id</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">page</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-
-        <span class="n">repo_f</span> <span class="o">=</span> <span class="n">f_map</span><span class="p">(</span><span class="n">page_f</span><span class="p">,</span> <span class="n">unpack_page</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">repo_f</span></div>
 
     <span class="k">def</span> <span class="nf">_publish_repository</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repo</span><span class="p">,</span> <span class="n">distributors_with_config</span><span class="p">):</span>
         <span class="n">tasks_f</span> <span class="o">=</span> <span class="n">f_return</span><span class="p">([])</span>
@@ -332,23 +338,6 @@
 
         <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Queuing request to DELETE </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task_executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_request</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;DELETE&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span></div>
-
-
-<span class="c1"># Design notes</span>
-<span class="c1"># ============</span>
-<span class="c1">#</span>
-<span class="c1"># This library aims to fully enable both non-blocking and blocking coding styles,</span>
-<span class="c1"># so that callers can pipeline as much as possible (if they need best possible</span>
-<span class="c1"># performance and are willing to pay the complexity for that), or can write code</span>
-<span class="c1"># in simpler blocking style if they don&#39;t care much.</span>
-<span class="c1">#</span>
-<span class="c1"># As such, futures are used for almost everything, because they can be chained</span>
-<span class="c1"># to remain non-blocking as long as the caller wants, or have .result() called to</span>
-<span class="c1"># immediately block on any result.</span>
-<span class="c1">#</span>
-<span class="c1"># The set of operations available in the client is minimal - we&#39;re only implementing</span>
-<span class="c1"># what we need, as we need it.</span>
-<span class="c1">#</span>
 </pre></div>
 
           </div>

@@ -33,8 +33,7 @@
   <h1>Source code for pubtools.pulplib._impl.model.repository.yum</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">Repository</span><span class="p">,</span> <span class="n">repo_type</span>
 <span class="kn">from</span> <span class="nn">..attr</span> <span class="k">import</span> <span class="n">pulp_attrib</span>
-
-<span class="kn">from</span> <span class="nn">pubtools.pulplib._impl</span> <span class="k">import</span> <span class="n">compat_attr</span> <span class="k">as</span> <span class="n">attr</span>
+<span class="kn">from</span> <span class="nn">...</span> <span class="k">import</span> <span class="n">compat_attr</span> <span class="k">as</span> <span class="n">attr</span>
 
 
 <div class="viewcode-block" id="YumRepository"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.YumRepository">[docs]</a><span class="nd">@repo_type</span><span class="p">(</span><span class="s2">&quot;rpm-repo&quot;</span><span class="p">)</span>
@@ -42,7 +41,7 @@
 <span class="k">class</span> <span class="nc">YumRepository</span><span class="p">(</span><span class="n">Repository</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A :class:`~pubtools.pulplib.Repository` for RPMs, errata and related content.&quot;&quot;&quot;</span>
 
-    <span class="n">_PUBLISH_DISTRIBUTORS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;yum_distributor&quot;</span><span class="p">,</span> <span class="s2">&quot;cdn_distributor&quot;</span><span class="p">]</span>
+    <span class="c1"># this class only overrides some defaults for attributes defined in super</span>
 
     <span class="nb">type</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;rpm-repo&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;notes._repo-type&quot;</span><span class="p">)</span>
 

@@ -49,6 +49,8 @@
 
 
 <span class="k">def</span> <span class="nf">repo_type</span><span class="p">(</span><span class="n">pulp_type</span><span class="p">):</span>
+    <span class="c1"># decorator for Repository subclasses, registers against a</span>
+    <span class="c1"># particular value of notes._repo-type</span>
     <span class="k">def</span> <span class="nf">decorate</span><span class="p">(</span><span class="n">klass</span><span class="p">):</span>
         <span class="n">REPO_CLASSES</span><span class="p">[</span><span class="n">pulp_type</span><span class="p">]</span> <span class="o">=</span> <span class="n">klass</span>
         <span class="k">return</span> <span class="n">klass</span>
@@ -93,8 +95,14 @@
     <span class="n">_SCHEMA</span> <span class="o">=</span> <span class="n">load_schema</span><span class="p">(</span><span class="s2">&quot;repository&quot;</span><span class="p">)</span>
 
     <span class="c1"># The distributors (by ID) which should be activated when publishing this repo.</span>
-    <span class="c1"># Order matters.</span>
-    <span class="n">_PUBLISH_DISTRIBUTORS</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># Order matters. Distributors which don&#39;t exist will be ignored.</span>
+    <span class="n">_PUBLISH_DISTRIBUTORS</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;iso_distributor&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;yum_distributor&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;cdn_distributor&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;cdn_distributor_unprotected&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;docker_web_distributor_name_cli&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
 
     <span class="nb">id</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
     <span class="sd">&quot;&quot;&quot;ID of this repository (str).&quot;&quot;&quot;</span>
@@ -294,14 +302,6 @@
             <span class="n">out</span><span class="p">[</span><span class="s2">&quot;force_full&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">force</span>
 
         <span class="k">return</span> <span class="n">out</span></div>
-
-
-<span class="c1"># Design notes</span>
-<span class="c1"># ============</span>
-<span class="c1">#</span>
-<span class="c1"># Semantics of publish is intentionally vague to increase the chance that the API</span>
-<span class="c1"># might be reusable on Pulp 3, and might be able to cover various behavior changes</span>
-<span class="c1"># requested in the future.</span>
 </pre></div>
 
           </div>

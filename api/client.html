@@ -71,6 +71,24 @@ for the Pulp server or to use an alternative CA bundle.</p>
 </dd>
 </dl>
 <dl class="method">
+<dt id="pubtools.pulplib.Client.get_repository">
+<code class="sig-name descname">get_repository</code><span class="sig-paren">(</span><em class="sig-param">repository_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/client.html#Client.get_repository"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.Client.get_repository" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a repository by ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>repository_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The ID of the repository to be fetched.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Future[<a class="reference internal" href="model.html#pubtools.pulplib.Repository" title="pubtools.pulplib.Repository"><code class="xref py py-class docutils literal notranslate"><span class="pre">Repository</span></code></a>]</dt><dd><p>A future holding the fetched Repository.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
 <dt id="pubtools.pulplib.Client.search_repository">
 <code class="sig-name descname">search_repository</code><span class="sig-paren">(</span><em class="sig-param">criteria=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/client.html#Client.search_repository"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.Client.search_repository" title="Permalink to this definition">¶</a></dt>
 <dd><p>Search for repositories matching the given criteria.</p>
@@ -84,24 +102,6 @@ If None, search for all repositories.</p>
 <dt>Future[<a class="reference internal" href="searching.html#pubtools.pulplib.Page" title="pubtools.pulplib.Page"><code class="xref py py-class docutils literal notranslate"><span class="pre">Page</span></code></a>]</dt><dd><p>A future representing the first page of results.</p>
 <p>Each page will contain a collection of
 <a class="reference internal" href="model.html#pubtools.pulplib.Repository" title="pubtools.pulplib.Repository"><code class="xref py py-class docutils literal notranslate"><span class="pre">Repository</span></code></a> objects.</p>
-</dd>
-</dl>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="pubtools.pulplib.Client.get_repository">
-<code class="sig-name descname">get_repository</code><span class="sig-paren">(</span><em class="sig-param">repository_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/client.html#Client.get_repository"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.Client.get_repository" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get a repository by ID.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>repository_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The ID of the repository to be fetched.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>Future[<a class="reference internal" href="model.html#pubtools.pulplib.Repository" title="pubtools.pulplib.Repository"><code class="xref py py-class docutils literal notranslate"><span class="pre">Repository</span></code></a>]</dt><dd><p>A future holding the fetched Repository.</p>
 </dd>
 </dl>
 </p>

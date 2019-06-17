@@ -102,7 +102,6 @@
 <span class="sd">        The iterator will block as needed if the current Pulp search has not</span>
 <span class="sd">        yet completed.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># sketch of possible implementation...</span>
         <span class="n">page</span> <span class="o">=</span> <span class="bp">self</span>
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">page</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
@@ -111,21 +110,6 @@
                 <span class="k">return</span>
             <span class="c1"># blocks here if next page is not yet fetched</span>
             <span class="n">page</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="n">next</span><span class="o">.</span><span class="n">result</span><span class="p">()</span></div></div>
-
-
-<span class="c1"># Design Notes</span>
-<span class="c1"># ============</span>
-<span class="c1">#</span>
-<span class="c1"># Page is supposed to meet these goals:</span>
-<span class="c1">#</span>
-<span class="c1"># - make it possible for caller to start processing results while the client is</span>
-<span class="c1">#   still searching for more pages</span>
-<span class="c1">#</span>
-<span class="c1"># - allow a completely non-blocking style of processing search results by chaining</span>
-<span class="c1">#   futures</span>
-<span class="c1">#</span>
-<span class="c1"># - also support convenient, traditional blocking style of processing search results</span>
-<span class="c1">#</span>
 </pre></div>
 
           </div>

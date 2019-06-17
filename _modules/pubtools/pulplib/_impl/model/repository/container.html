@@ -33,20 +33,13 @@
   <h1>Source code for pubtools.pulplib._impl.model.repository.container</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">Repository</span><span class="p">,</span> <span class="n">repo_type</span>
 <span class="kn">from</span> <span class="nn">..attr</span> <span class="k">import</span> <span class="n">pulp_attrib</span>
-
-<span class="kn">from</span> <span class="nn">pubtools.pulplib._impl</span> <span class="k">import</span> <span class="n">compat_attr</span> <span class="k">as</span> <span class="n">attr</span>
+<span class="kn">from</span> <span class="nn">...</span> <span class="k">import</span> <span class="n">compat_attr</span> <span class="k">as</span> <span class="n">attr</span>
 
 
 <div class="viewcode-block" id="ContainerImageRepository"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.ContainerImageRepository">[docs]</a><span class="nd">@repo_type</span><span class="p">(</span><span class="s2">&quot;docker-repo&quot;</span><span class="p">)</span>
 <span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">ContainerImageRepository</span><span class="p">(</span><span class="n">Repository</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A :class:`~pubtools.pulplib.Repository` for container images.&quot;&quot;&quot;</span>
-
-    <span class="n">_PUBLISH_DISTRIBUTORS</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s2">&quot;cdn_distributor&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;cdn_distributor_unprotected&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;docker_web_distributor_name_cli&quot;</span><span class="p">,</span>
-    <span class="p">]</span>
 
     <span class="nb">type</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;docker-repo&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;notes._repo-type&quot;</span><span class="p">)</span>
 
