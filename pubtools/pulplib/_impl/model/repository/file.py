@@ -1,7 +1,6 @@
 from .base import Repository, repo_type
 from ..attr import pulp_attrib
-
-from pubtools.pulplib._impl import compat_attr as attr
+from ... import compat_attr as attr
 
 
 @repo_type("iso-repo")
@@ -9,7 +8,7 @@ from pubtools.pulplib._impl import compat_attr as attr
 class FileRepository(Repository):
     """A :class:`~pubtools.pulplib.Repository` for generic file distribution."""
 
-    _PUBLISH_DISTRIBUTORS = ["iso_distributor", "cdn_distributor"]
+    # this class only overrides some defaults for attributes defined in super
 
     type = pulp_attrib(default="iso-repo", type=str, pulp_field="notes._repo-type")
 

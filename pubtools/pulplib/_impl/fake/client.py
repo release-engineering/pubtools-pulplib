@@ -16,6 +16,13 @@ Publish = namedtuple("Publish", ["repository", "tasks"])
 
 
 class FakeClient(object):
+    # Client implementation holding data in memory rather than
+    # using a remote Pulp server.
+    #
+    # This class is not public, but it must have all of the same public
+    # API as the pubtools.pulplib.Client class. The idea is that any code
+    # written against pubtools.pulplib.Client should be able to work with
+    # an instance of this class swapped in.
     _PAGE_SIZE = 3
 
     def __init__(self):

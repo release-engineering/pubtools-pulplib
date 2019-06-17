@@ -1,4 +1,3 @@
-import logging
 import pytest
 import requests_mock
 
@@ -20,11 +19,23 @@ def requests_mocker():
 
 @pytest.fixture
 def client():
+    """Yields a preconfigured Client instance.
+
+    - client points at https://pulp.example.com/
+    - client has a retry policy configured so that all sleeps are very fast
+      (avoids delays due to retry in autotests)
+    """
     return FastRetryClient("https://pulp.example.com/")
 
 
 @pytest.fixture
 def fast_poller():
+    """Overrides TaskPoller behavior to retry much faster than it otherwise
+    would.
+
+    Use this fixture to speed up tests which would otherwise have to spend
+    a significant amount of time waiting on polls.
+    """
     old_max_attempts = TaskPoller.MAX_ATTEMPTS
     old_delay = TaskPoller.DELAY
 
@@ -43,4 +54,4 @@ class FastRetryPolicy(PulpRetryPolicy):
 
 
 class FastRetryClient(Client):
-    _RETRY_POLICY = lambda *_: FastRetryPolicy()
+    _RETRY_POLICY = FastRetryPolicy()

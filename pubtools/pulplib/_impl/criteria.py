@@ -150,7 +150,7 @@ class FieldInCriteria(Criteria):
     _value = attr.ib()
 
     @_value.validator
-    def _check_value(self, attribute, value):
+    def _check_value(self, _, value):
         if isinstance(value, Iterable) and not isinstance(value, six.string_types):
             return
         raise ValueError("Must be an iterable: %s" % repr(value))
@@ -168,28 +168,3 @@ class OrCriteria(Criteria):
 
 class TrueCriteria(Criteria):
     pass
-
-
-# Design Notes
-# ============
-#
-# Pulp 2.x uses mongo query fragments to expose a search API.
-# These are the main reasons why we have these Criteria classes instead of just
-# accepting arbitrary dicts for search:
-#
-# - To reduce the effort for callers of this library to later move to Pulp 3.x
-#   which doesn't use mongo.  A query like {"id": {"$in": ["a", "b", "c"]}} is not
-#   going to work with Pulp 3.  A query like Criteria.with_id(["a", "b", "c"]) could
-#   potentially be made to work without the caller having to change.
-#
-# - To ensure that the FakeClient can be reasonably implemented. If searches use
-#   mongo fragments, implementing an accurate fake client is impractical, since
-#   callers could use the entire range of mongo features. By limiting the criteria,
-#   we can ensure both the FakeClient and the real Client can perform searches with
-#   whatever criteria may be passed by users.
-#
-# Criteria instances are expected to be used by the client roughly like this:
-#
-# - Client will build up a mongo query dict for any given Criteria
-# - FakeClient will directly evaluate the Criteria against some in-memory repository objects
-#

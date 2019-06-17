@@ -11,7 +11,8 @@ LOG = logging.getLogger("pubtools.pulplib")
 def load_schema(basename, definition=None):
     """Load a JSON schema file from YAML.
 
-    If definition is given, a subschema can be referenced.
+    If definition is given, a named subschema can be referenced from
+    'definitions' section.
     """
 
     filename = os.path.join(os.path.dirname(__file__), "%s.yaml" % basename)

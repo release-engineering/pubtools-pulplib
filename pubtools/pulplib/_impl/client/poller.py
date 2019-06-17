@@ -13,6 +13,9 @@ LOG = logging.getLogger("pubtools.pulplib")
 
 
 class TaskPoller(object):
+    # Poll function used with PollExecutor.
+    # Takes care of polling for Pulp task completion and resolving futures.
+
     # max number of times polling is attempted before errors are considered fatal
     MAX_ATTEMPTS = 60
 
@@ -159,6 +162,7 @@ class TaskPoller(object):
         return descriptor_tasks, all_tasks
 
     def cancel(self, task_data):
+        # Invoked when a request is made to cancel a future.
         task_ids = [t["task_id"] for t in task_data["spawned_tasks"]]
 
         for task_id in task_ids:

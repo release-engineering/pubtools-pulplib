@@ -1,5 +1,6 @@
-import pytest
 import textwrap
+
+import pytest
 
 from pubtools.pulplib import Task, InvalidDataException
 
@@ -89,6 +90,7 @@ def test_task_error():
 
 
 def test_task_repo_id_from_tags():
+    """repo_id is initialized from tags where possible"""
     task = Task.from_data(
         {
             "task_id": "some-task",

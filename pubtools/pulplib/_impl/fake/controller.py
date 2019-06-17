@@ -79,29 +79,3 @@ class FakeController(object):
                 of this publish
         """
         return self.client._publish_history[:]
-
-
-# Design notes
-# ============
-#
-# The existence of this class is a reaction to the overuse of mocking in existing
-# Pulp client code. Mocks are very powerful but lead to major maintenance problems:
-# it's common to mock a specific method call sequence, unnecessarily tying a test
-# to certain implementation details. This results in tests which wrongly fail when
-# the sequence of method calls is changed to an equally valid alternative sequence.
-# Even worse, it can result in tests which wrongly pass since the default behavior
-# of MagicMock is for all method calls to succeed even if provided garbage input.
-#
-# The fake client is meant to address this by ensuring that, for any code written
-# against the pulplib client, it's possible to swap in a client which is "fake" in
-# that it doesn't query to a real Pulp server, but "real" in that the usual CRUD
-# operations do work as normal, arguments have to be the correct type or exceptions
-# will be raised, and so on.
-#
-# The FakeController could potentially be extended to allow certain behaviors of the
-# client to be customized (e.g. introduce fake delays to Pulp operations).
-#
-# If the caller wants to test error conditions, the likely approach will be to mix
-# mocks with the fake client. For example, make a fake controller & client but then
-# mock.patch individual methods to return errors when needed.
-#

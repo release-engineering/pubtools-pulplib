@@ -1,10 +1,8 @@
-import pytest
-import datetime
-
-from pubtools.pulplib import FakeController, Repository, Criteria, PulpException
+from pubtools.pulplib import FakeController, Repository
 
 
 def test_can_delete():
+    """repo.delete() with fake client removes repository from fake data."""
     controller = FakeController()
 
     controller.insert_repository(Repository(id="repo1"))
@@ -30,6 +28,11 @@ def test_can_delete():
 
 
 def test_delete_missing_repo_succeeds():
+    """repo.delete() of absent repo with fake client succeeds.
+
+    Deleting a repo succeeds with the fake client since it also succeeds
+    with the real client.
+    """
     controller = FakeController()
 
     controller.insert_repository(Repository(id="repo"))

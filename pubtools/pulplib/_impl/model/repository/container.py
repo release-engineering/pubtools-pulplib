@@ -1,19 +1,12 @@
 from .base import Repository, repo_type
 from ..attr import pulp_attrib
-
-from pubtools.pulplib._impl import compat_attr as attr
+from ... import compat_attr as attr
 
 
 @repo_type("docker-repo")
 @attr.s(kw_only=True, frozen=True)
 class ContainerImageRepository(Repository):
     """A :class:`~pubtools.pulplib.Repository` for container images."""
-
-    _PUBLISH_DISTRIBUTORS = [
-        "cdn_distributor",
-        "cdn_distributor_unprotected",
-        "docker_web_distributor_name_cli",
-    ]
 
     type = pulp_attrib(default="docker-repo", type=str, pulp_field="notes._repo-type")
 

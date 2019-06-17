@@ -4,6 +4,8 @@ from pubtools.pulplib import YumRepository, Distributor
 
 
 def test_publish_cancel(fast_poller, requests_mocker, client, caplog):
+    """Cancelling a publish future will cancel running Pulp task(s)."""
+
     repo = YumRepository(
         id="some-repo",
         distributors=(
