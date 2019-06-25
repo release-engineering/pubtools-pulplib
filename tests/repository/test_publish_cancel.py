@@ -44,6 +44,10 @@ def test_publish_cancel(fast_poller, requests_mocker, client, caplog):
     assert publish_f.cancel()
 
     # It should have cancelled the underlying Pulp task
-    req = requests_mocker.last_request
-    assert req.url == "https://pulp.example.com/pulp/api/v2/tasks/task1/"
-    assert req.method == "DELETE"
+    task_req = [
+        r
+        for r in requests_mocker.request_history
+        if r.url == "https://pulp.example.com/pulp/api/v2/tasks/task1/"
+    ]
+    assert len(task_req) == 1
+    assert task_req[0].method == "DELETE"
