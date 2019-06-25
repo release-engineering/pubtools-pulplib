@@ -2,7 +2,7 @@ import time
 from pubtools.pulplib import Repository
 
 
-def test_search_can_paginate(client, requests_mocker):
+def test_search_stops_paginate(client, requests_mocker):
     """Paginated search will stop issuing requests if pages are no longer referenced."""
 
     client._PAGE_SIZE = 10
