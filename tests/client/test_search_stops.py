@@ -1,10 +1,11 @@
 import time
-from pubtools.pulplib import Repository
+from pubtools.pulplib import Client
 
 
-def test_search_stops_paginate(client, requests_mocker):
+def test_search_stops_paginate(requests_mocker):
     """Paginated search will stop issuing requests if pages are no longer referenced."""
 
+    client = Client("https://pulp.example.com/")
     client._PAGE_SIZE = 10
 
     responses = []
@@ -17,6 +18,21 @@ def test_search_stops_paginate(client, requests_mocker):
             current_response = []
 
     responses.append({"json": current_response})
+
+    # Inject a failing response for stable behavior from test:
+    #
+    # The expected behavior is that, after the first two requests,
+    # pagination is cancelled since we no longer hold onto a page.
+    # But that cancellation is racing with the scheduling of the
+    # request, and there is generally no way to ensure our cancel
+    # happens before the request thread starts the request, so we
+    # can't be sure about how many requests we'd do.
+    #
+    # However, if we insert a failure after the first two pages,
+    # then the client will need to retry a request (with some delay).
+    # It should always be possible to cancel the request during that
+    # retry delay, making the test stable.
+    responses.insert(2, {"status_code": 500})
 
     requests_mocker.post(
         "https://pulp.example.com/pulp/api/v2/repositories/search/", responses
