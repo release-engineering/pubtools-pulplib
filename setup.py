@@ -21,7 +21,7 @@ def get_requirements():
 
 setup(
     name="pubtools-pulplib",
-    version="0.3.0",
+    version="1.0.0",
     packages=find_packages(exclude=["tests"]),
     package_data={"pubtools.pulplib._impl.schema": ["*.yaml"]},
     url="https://github.com/release-engineering/pubtools-pulplib",
@@ -30,7 +30,7 @@ setup(
     long_description=get_long_description(),
     long_description_content_type="text/markdown",
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
         "Programming Language :: Python :: 2",
