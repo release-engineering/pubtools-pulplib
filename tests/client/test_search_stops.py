@@ -7,12 +7,10 @@ def test_search_stops_paginate(client, requests_mocker):
 
     client._PAGE_SIZE = 10
 
-    expected_repos = []
     responses = []
     current_response = []
     for i in range(0, 997):
         repo_id = "repo-%s" % i
-        expected_repos.append(Repository(id=repo_id))
         current_response.append({"id": repo_id})
         if len(current_response) == client._PAGE_SIZE:
             responses.append({"json": current_response})
