@@ -5,14 +5,14 @@ from concurrent.futures import wait
 from datetime import datetime, timedelta
 from argparse import ArgumentParser
 
-from pubtools.pulplib import Client, Criteria
+from pubtools.pulplib import Client, Criteria, Matcher
 
 log = logging.getLogger("garbage-collect")
 
 
 def garbage_collect(client, gc_threshold=7):
     crit = Criteria.and_(
-        Criteria.with_field("notes.created", Criteria.exists),
+        Criteria.with_field("notes.created", Matcher.exists()),
         Criteria.with_field("notes.pub_temp_repo", True),
     )
 

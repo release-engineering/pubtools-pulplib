@@ -1,17 +1,21 @@
 import datetime
+import re
 
 from pubtools.pulplib._impl import compat_attr as attr
 from pubtools.pulplib._impl.client.errors import PulpException
 from pubtools.pulplib._impl.criteria import (
-    Criteria,
     TrueCriteria,
     AndCriteria,
     OrCriteria,
-    FieldEqCriteria,
-    FieldInCriteria,
+    FieldMatchCriteria,
+    EqMatcher,
+    InMatcher,
+    RegexMatcher,
+    ExistsMatcher,
 )
 from pubtools.pulplib._impl.model.common import PULP2_FIELD
 
+ABSENT = object()
 CLASS_MATCHERS = []
 
 
@@ -23,12 +27,13 @@ def visit(klass):
     return wrap
 
 
-def match_object(criteria, obj):
+def match_object(*args, **kwargs):
+    dispatch = args[0]
     for (klass, func) in CLASS_MATCHERS:
-        if isinstance(criteria, klass):
-            return func(criteria, obj)
+        if isinstance(dispatch, klass):
+            return func(*args, **kwargs)
 
-    raise TypeError("Unsupported criteria: %s" % repr(criteria))
+    raise TypeError("Unsupported criteria/matcher: %s" % repr(dispatch))
 
 
 @visit(TrueCriteria)
@@ -58,24 +63,46 @@ def match_or(criteria, obj):
     return False
 
 
-@visit(FieldEqCriteria)
-def match_eq(criteria, obj):
+@visit(FieldMatchCriteria)
+def match_field(criteria, obj):
     field = criteria._field
-    value = criteria._value
-    return match_field(obj, field, value)
+    matcher = criteria._matcher
+    return match_object(matcher, field, obj)
 
 
-@visit(FieldInCriteria)
-def match_in(criteria, obj):
-    field = criteria._field
-    value = criteria._value
-    for elem in value:
-        if match_field(obj, field, elem):
+@visit(EqMatcher)
+def match_field_eq(matcher, field, obj):
+    value = pulp_value(field, obj)
+    return value == matcher._value
+
+
+@visit(RegexMatcher)
+def match_field_regex(matcher, field, obj):
+    value = pulp_value(field, obj)
+    if value is ABSENT:
+        return False
+    return re.search(matcher._pattern, value)
+
+
+@visit(ExistsMatcher)
+def match_field_exists(_matcher, field, obj):
+    value = pulp_value(field, obj)
+    return value is not ABSENT
+
+
+@visit(InMatcher)
+def match_in(matcher, field, obj):
+    value = pulp_value(field, obj)
+    for elem in matcher._values:
+        if elem == value:
             return True
     return False
 
 
-def match_field(obj, field, value):
+def pulp_value(pulp_field, obj):
+    # Given a Pulp 'field' name and a PulpObject instance,
+    # returns the value on the object corresponding to that Pulp field.
+    # e.g. if field is 'notes.relative_url', will return obj.relative_url.
     pulp_dict = {}
 
     for cls_field in attr.fields(type(obj)):
@@ -83,19 +110,15 @@ def match_field(obj, field, value):
         if pulp_key:
             obj_value = getattr(obj, cls_field.name, None)
             # TODO: will we need to differentiate between "absent" and
-            # "present but None"?
+            # "present but None"? There is no way to tell here if
+            # obj_value was explicitly set to None, or if it defaulted
+            # to None when the object was constructed.
             if obj_value is not None:
                 pulp_dict[pulp_key] = convert_field_to_pulp(
                     obj, cls_field.name, obj_value
                 )
 
-    if field in pulp_dict:
-        if value is Criteria.exists:
-            return True
-
-        return pulp_dict[field] == value
-
-    return False
+    return pulp_dict.get(pulp_field, ABSENT)
 
 
 def convert_field_to_pulp(obj, field_name, value):

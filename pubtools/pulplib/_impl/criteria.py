@@ -1,4 +1,6 @@
 import collections
+import re
+import warnings
 
 import six
 
@@ -32,7 +34,7 @@ class Criteria(object):
             #   "notes.other-field": {"$eq": ["a", "b", "c"]}}
             #
             crit = Criteria.and_(
-                Criteria.with_field('notes.my-field', Criteria.exists),
+                Criteria.with_field('notes.my-field', Matcher.exists()),
                 Criteria.with_field('notes.other-field', ["a", "b", "c"])
             )
 
@@ -41,16 +43,7 @@ class Criteria(object):
     """
 
     exists = object()
-    """
-    Placeholder to denote that a field must exist, with no specific value.
-
-    Example:
-
-        .. code-block:: python
-
-            # Would match any Repository where notes.my-field exists
-            crit = Criteria.with_field('notes.my-field', Criteria.exists)
-    """
+    # exists is undocumented and deprecated, use Matcher.exists() instead
 
     @classmethod
     def with_id(cls, ids):
@@ -75,34 +68,28 @@ class Criteria(object):
                 Field names may contain a "." to indicate nested fields,
                 such as ``notes.created``.
 
-            field_value (object)
-                Any value, to be matched against the field.
+            field_value
+                :class:`Matcher`
+                    A matcher to be applied against the field.
+
+                object
+                    Any value, to be matched against the field via
+                    :meth:`Matcher.equals`.
 
         Returns:
             Criteria
                 criteria for finding objects where ``field_name`` is present and
                 matches ``field_value``.
         """
-        return FieldEqCriteria(field_name, field_value)
+        return FieldMatchCriteria(field_name, field_value)
 
     @classmethod
     def with_field_in(cls, field_name, field_value):
-        """Args:
-            field_name (str)
-                The name of a field.
+        warnings.warn(
+            "with_field_in is deprecated, use Matcher.in_() instead", DeprecationWarning
+        )
 
-                Field names may contain a "." to indicate nested fields,
-                such as ``notes.created``.
-
-            field_value (object)
-                List of field values, to be matched against the field.
-
-        Returns:
-            Criteria
-                criteria for finding objects where ``field_name`` is present and
-                matches any elements of ``field_value``.
-        """
-        return FieldInCriteria(field_name, field_value)
+        return cls.with_field(field_name, Matcher.in_(field_value))
 
     @classmethod
     def and_(cls, *criteria):
@@ -138,22 +125,146 @@ class Criteria(object):
         return TrueCriteria()
 
 
+class Matcher(object):
+    """Methods for matching fields within a Pulp search query.
+
+    Instances of this class are created by the documented class methods,
+    and should be used in conjunction with :class:`Criteria` methods, such
+    as :meth:`Criteria.with_field`.
+
+    .. versionadded:: 1.1.0
+    """
+
+    @classmethod
+    def equals(cls, value):
+        """
+        Matcher for a field which must equal exactly the given value.
+
+        Arguments:
+            value (object)
+                An object to match against a field.
+        """
+        return EqMatcher(value)
+
+    @classmethod
+    def regex(cls, pattern):
+        """
+        Matcher for a field which must be a string and must match the given
+        regular expression.
+
+        Arguments:
+            pattern (str)
+                A regular expression to match against the field.
+                The expression is not implicitly anchored.
+
+                .. warning::
+
+                    It is not defined which specific regular expression syntax is
+                    supported. For portable code, callers are recommended to use
+                    only the common subset of PCRE-compatible and Python-compatible
+                    regular expressions.
+
+        Raises:
+            :class:`re.error`
+                If the given pattern is not a valid regular expression.
+
+        Example:
+
+            .. code-block:: python
+
+                # Would match any Repository where notes.my-field starts
+                # with "abc"
+                crit = Criteria.with_field('notes.my-field', Matcher.regex("^abc"))
+        """
+
+        return RegexMatcher(pattern)
+
+    @classmethod
+    def exists(cls):
+        """
+        Matcher for a field which must exist, with no specific value.
+
+        Example:
+
+            .. code-block:: python
+
+                # Would match any Repository where notes.my-field exists
+                crit = Criteria.with_field('notes.my-field', Matcher.exists())
+        """
+        return ExistsMatcher()
+
+    @classmethod
+    def in_(cls, values):
+        """
+        Returns a matcher for a field whose value equals one of the specified
+        input values.
+
+        Arguments:
+            values (iterable)
+                An iterable of values used to match a field.
+
+        Example:
+
+            .. code-block:: python
+
+                # Would match any Repository where notes.my-field is "a", "b" or "c"
+                crit = Criteria.with_field(
+                    'notes.my-field',
+                    Matcher.in_(["a", "b", "c"])
+                )
+        """
+        return InMatcher(values)
+
+
 @attr.s
-class FieldEqCriteria(Criteria):
-    _field = attr.ib()
+class RegexMatcher(Matcher):
+    _pattern = attr.ib()
+
+    @_pattern.validator
+    def _check_pattern(self, _, pattern):
+        re.compile(pattern)
+
+
+@attr.s
+class EqMatcher(Matcher):
     _value = attr.ib()
 
 
 @attr.s
-class FieldInCriteria(Criteria):
-    _field = attr.ib()
-    _value = attr.ib()
+class InMatcher(Matcher):
+    _values = attr.ib()
 
-    @_value.validator
-    def _check_value(self, _, value):
-        if isinstance(value, Iterable) and not isinstance(value, six.string_types):
+    @_values.validator
+    def _check_values(self, _, values):
+        if isinstance(values, Iterable) and not isinstance(values, six.string_types):
             return
-        raise ValueError("Must be an iterable: %s" % repr(value))
+        raise ValueError("Must be an iterable: %s" % repr(values))
+
+
+@attr.s
+class ExistsMatcher(Matcher):
+    pass
+
+
+def coerce_to_matcher(value):
+    if isinstance(value, Matcher):
+        return value
+
+    if value is Criteria.exists:
+        warnings.warn(
+            "Criteria.exists is deprecated, use Matcher.exists() instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return ExistsMatcher()
+
+    return EqMatcher(value)
+
+
+@attr.s
+class FieldMatchCriteria(Criteria):
+    _field = attr.ib()
+    _matcher = attr.ib(converter=coerce_to_matcher)
 
 
 @attr.s

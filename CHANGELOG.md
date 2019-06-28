@@ -7,7 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- n/a
+### Added
+- Extended search functionality to support matching fields by regular expression,
+  using new `Matcher` class
+
+### Deprecated
+- `Criteria.exists` is now deprecated in favor of `Matcher.exists()`
+- `Criteria.with_field_in` is now deprecated in favor of `Matcher.in_()`
 
 ## [1.0.0] - 2019-06-26
 
