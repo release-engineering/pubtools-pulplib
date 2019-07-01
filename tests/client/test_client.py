@@ -164,4 +164,4 @@ def test_get_missing(client, requests_mocker):
         repo_f.result()
 
     # It should explain the problem
-    assert "repo1 was not found" in str(error)
+    assert "repo1 was not found" in str(error.value)

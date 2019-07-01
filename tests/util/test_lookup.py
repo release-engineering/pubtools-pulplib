@@ -17,7 +17,7 @@ def test_lookup_nested_absent_raise():
     with pytest.raises(KeyError) as error:
         lookup(data, "a.b.d")
 
-    assert "a.b.d" in str(error)
+    assert "a.b.d" in str(error.value)
 
 
 def test_lookup_nested_absent_default():

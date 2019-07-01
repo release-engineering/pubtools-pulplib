@@ -182,4 +182,4 @@ def test_retries_exhausted(requests_mocker):
         poller(descriptors)
 
     # It should pass through whatever was the underlying error
-    assert "400 Client Error" in str(exc_info)
+    assert "400 Client Error" in str(exc_info.value)
