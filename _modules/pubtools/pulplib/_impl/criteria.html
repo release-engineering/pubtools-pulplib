@@ -32,6 +32,8 @@
             
   <h1>Source code for pubtools.pulplib._impl.criteria</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
 
 <span class="kn">import</span> <span class="nn">six</span>
 
@@ -65,7 +67,7 @@
 <span class="sd">            #   &quot;notes.other-field&quot;: {&quot;$eq&quot;: [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;]}}</span>
 <span class="sd">            #</span>
 <span class="sd">            crit = Criteria.and_(</span>
-<span class="sd">                Criteria.with_field(&#39;notes.my-field&#39;, Criteria.exists),</span>
+<span class="sd">                Criteria.with_field(&#39;notes.my-field&#39;, Matcher.exists()),</span>
 <span class="sd">                Criteria.with_field(&#39;notes.other-field&#39;, [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;])</span>
 <span class="sd">            )</span>
 
@@ -74,16 +76,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">exists</span> <span class="o">=</span> <span class="nb">object</span><span class="p">()</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Placeholder to denote that a field must exist, with no specific value.</span>
-
-<span class="sd">    Example:</span>
-
-<span class="sd">        .. code-block:: python</span>
-
-<span class="sd">            # Would match any Repository where notes.my-field exists</span>
-<span class="sd">            crit = Criteria.with_field(&#39;notes.my-field&#39;, Criteria.exists)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># exists is undocumented and deprecated, use Matcher.exists() instead</span>
 
 <div class="viewcode-block" id="Criteria.with_id"><a class="viewcode-back" href="../../../../api/searching.html#pubtools.pulplib.Criteria.with_id">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">with_id</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">ids</span><span class="p">):</span>
@@ -108,34 +101,28 @@
 <span class="sd">                Field names may contain a &quot;.&quot; to indicate nested fields,</span>
 <span class="sd">                such as ``notes.created``.</span>
 
-<span class="sd">            field_value (object)</span>
-<span class="sd">                Any value, to be matched against the field.</span>
+<span class="sd">            field_value</span>
+<span class="sd">                :class:`Matcher`</span>
+<span class="sd">                    A matcher to be applied against the field.</span>
+
+<span class="sd">                object</span>
+<span class="sd">                    Any value, to be matched against the field via</span>
+<span class="sd">                    :meth:`Matcher.equals`.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Criteria</span>
 <span class="sd">                criteria for finding objects where ``field_name`` is present and</span>
 <span class="sd">                matches ``field_value``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">FieldEqCriteria</span><span class="p">(</span><span class="n">field_name</span><span class="p">,</span> <span class="n">field_value</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">FieldMatchCriteria</span><span class="p">(</span><span class="n">field_name</span><span class="p">,</span> <span class="n">field_value</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Criteria.with_field_in"><a class="viewcode-back" href="../../../../api/searching.html#pubtools.pulplib.Criteria.with_field_in">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">with_field_in</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">field_value</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Args:</span>
-<span class="sd">            field_name (str)</span>
-<span class="sd">                The name of a field.</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;with_field_in is deprecated, use Matcher.in_() instead&quot;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span>
+        <span class="p">)</span>
 
-<span class="sd">                Field names may contain a &quot;.&quot; to indicate nested fields,</span>
-<span class="sd">                such as ``notes.created``.</span>
-
-<span class="sd">            field_value (object)</span>
-<span class="sd">                List of field values, to be matched against the field.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            Criteria</span>
-<span class="sd">                criteria for finding objects where ``field_name`` is present and</span>
-<span class="sd">                matches any elements of ``field_value``.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">FieldInCriteria</span><span class="p">(</span><span class="n">field_name</span><span class="p">,</span> <span class="n">field_value</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">with_field</span><span class="p">(</span><span class="n">field_name</span><span class="p">,</span> <span class="n">Matcher</span><span class="o">.</span><span class="n">in_</span><span class="p">(</span><span class="n">field_value</span><span class="p">))</span>
 
 <div class="viewcode-block" id="Criteria.and_"><a class="viewcode-back" href="../../../../api/searching.html#pubtools.pulplib.Criteria.and_">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">and_</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">criteria</span><span class="p">):</span>
@@ -171,22 +158,146 @@
         <span class="k">return</span> <span class="n">TrueCriteria</span><span class="p">()</span></div></div>
 
 
+<div class="viewcode-block" id="Matcher"><a class="viewcode-back" href="../../../../api/searching.html#pubtools.pulplib.Matcher">[docs]</a><span class="k">class</span> <span class="nc">Matcher</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Methods for matching fields within a Pulp search query.</span>
+
+<span class="sd">    Instances of this class are created by the documented class methods,</span>
+<span class="sd">    and should be used in conjunction with :class:`Criteria` methods, such</span>
+<span class="sd">    as :meth:`Criteria.with_field`.</span>
+
+<span class="sd">    .. versionadded:: 1.1.0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Matcher.equals"><a class="viewcode-back" href="../../../../api/searching.html#pubtools.pulplib.Matcher.equals">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">equals</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Matcher for a field which must equal exactly the given value.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            value (object)</span>
+<span class="sd">                An object to match against a field.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">EqMatcher</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Matcher.regex"><a class="viewcode-back" href="../../../../api/searching.html#pubtools.pulplib.Matcher.regex">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">regex</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">pattern</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Matcher for a field which must be a string and must match the given</span>
+<span class="sd">        regular expression.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            pattern (str)</span>
+<span class="sd">                A regular expression to match against the field.</span>
+<span class="sd">                The expression is not implicitly anchored.</span>
+
+<span class="sd">                .. warning::</span>
+
+<span class="sd">                    It is not defined which specific regular expression syntax is</span>
+<span class="sd">                    supported. For portable code, callers are recommended to use</span>
+<span class="sd">                    only the common subset of PCRE-compatible and Python-compatible</span>
+<span class="sd">                    regular expressions.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            :class:`re.error`</span>
+<span class="sd">                If the given pattern is not a valid regular expression.</span>
+
+<span class="sd">        Example:</span>
+
+<span class="sd">            .. code-block:: python</span>
+
+<span class="sd">                # Would match any Repository where notes.my-field starts</span>
+<span class="sd">                # with &quot;abc&quot;</span>
+<span class="sd">                crit = Criteria.with_field(&#39;notes.my-field&#39;, Matcher.regex(&quot;^abc&quot;))</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">RegexMatcher</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Matcher.exists"><a class="viewcode-back" href="../../../../api/searching.html#pubtools.pulplib.Matcher.exists">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">exists</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Matcher for a field which must exist, with no specific value.</span>
+
+<span class="sd">        Example:</span>
+
+<span class="sd">            .. code-block:: python</span>
+
+<span class="sd">                # Would match any Repository where notes.my-field exists</span>
+<span class="sd">                crit = Criteria.with_field(&#39;notes.my-field&#39;, Matcher.exists())</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">ExistsMatcher</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Matcher.in_"><a class="viewcode-back" href="../../../../api/searching.html#pubtools.pulplib.Matcher.in_">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">in_</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a matcher for a field whose value equals one of the specified</span>
+<span class="sd">        input values.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            values (iterable)</span>
+<span class="sd">                An iterable of values used to match a field.</span>
+
+<span class="sd">        Example:</span>
+
+<span class="sd">            .. code-block:: python</span>
+
+<span class="sd">                # Would match any Repository where notes.my-field is &quot;a&quot;, &quot;b&quot; or &quot;c&quot;</span>
+<span class="sd">                crit = Criteria.with_field(</span>
+<span class="sd">                    &#39;notes.my-field&#39;,</span>
+<span class="sd">                    Matcher.in_([&quot;a&quot;, &quot;b&quot;, &quot;c&quot;])</span>
+<span class="sd">                )</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">InMatcher</span><span class="p">(</span><span class="n">values</span><span class="p">)</span></div></div>
+
+
 <span class="nd">@attr</span><span class="o">.</span><span class="n">s</span>
-<span class="k">class</span> <span class="nc">FieldEqCriteria</span><span class="p">(</span><span class="n">Criteria</span><span class="p">):</span>
-    <span class="n">_field</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">()</span>
+<span class="k">class</span> <span class="nc">RegexMatcher</span><span class="p">(</span><span class="n">Matcher</span><span class="p">):</span>
+    <span class="n">_pattern</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">()</span>
+
+    <span class="nd">@_pattern</span><span class="o">.</span><span class="n">validator</span>
+    <span class="k">def</span> <span class="nf">_check_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">pattern</span><span class="p">):</span>
+        <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
+
+
+<span class="nd">@attr</span><span class="o">.</span><span class="n">s</span>
+<span class="k">class</span> <span class="nc">EqMatcher</span><span class="p">(</span><span class="n">Matcher</span><span class="p">):</span>
     <span class="n">_value</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">()</span>
 
 
 <span class="nd">@attr</span><span class="o">.</span><span class="n">s</span>
-<span class="k">class</span> <span class="nc">FieldInCriteria</span><span class="p">(</span><span class="n">Criteria</span><span class="p">):</span>
-    <span class="n">_field</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">()</span>
-    <span class="n">_value</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">()</span>
+<span class="k">class</span> <span class="nc">InMatcher</span><span class="p">(</span><span class="n">Matcher</span><span class="p">):</span>
+    <span class="n">_values</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">()</span>
 
-    <span class="nd">@_value</span><span class="o">.</span><span class="n">validator</span>
-    <span class="k">def</span> <span class="nf">_check_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">string_types</span><span class="p">):</span>
+    <span class="nd">@_values</span><span class="o">.</span><span class="n">validator</span>
+    <span class="k">def</span> <span class="nf">_check_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">string_types</span><span class="p">):</span>
             <span class="k">return</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Must be an iterable: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">repr</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Must be an iterable: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">repr</span><span class="p">(</span><span class="n">values</span><span class="p">))</span>
+
+
+<span class="nd">@attr</span><span class="o">.</span><span class="n">s</span>
+<span class="k">class</span> <span class="nc">ExistsMatcher</span><span class="p">(</span><span class="n">Matcher</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+
+<span class="k">def</span> <span class="nf">coerce_to_matcher</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Matcher</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">value</span>
+
+    <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="n">Criteria</span><span class="o">.</span><span class="n">exists</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;Criteria.exists is deprecated, use Matcher.exists() instead&quot;</span><span class="p">,</span>
+            <span class="ne">DeprecationWarning</span><span class="p">,</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">ExistsMatcher</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">EqMatcher</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+
+<span class="nd">@attr</span><span class="o">.</span><span class="n">s</span>
+<span class="k">class</span> <span class="nc">FieldMatchCriteria</span><span class="p">(</span><span class="n">Criteria</span><span class="p">):</span>
+    <span class="n">_field</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">()</span>
+    <span class="n">_matcher</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="n">converter</span><span class="o">=</span><span class="n">coerce_to_matcher</span><span class="p">)</span>
 
 
 <span class="nd">@attr</span><span class="o">.</span><span class="n">s</span>
