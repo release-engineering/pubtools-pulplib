@@ -1,10 +1,12 @@
 from pubtools.pulplib._impl.criteria import (
-    Criteria,
     AndCriteria,
     OrCriteria,
-    FieldEqCriteria,
-    FieldInCriteria,
+    FieldMatchCriteria,
     TrueCriteria,
+    RegexMatcher,
+    EqMatcher,
+    InMatcher,
+    ExistsMatcher,
 )
 
 
@@ -20,19 +22,26 @@ def filters_for_criteria(criteria):
     if isinstance(criteria, OrCriteria):
         return {"$or": [filters_for_criteria(c) for c in criteria._operands]}
 
-    if isinstance(criteria, FieldEqCriteria):
+    if isinstance(criteria, FieldMatchCriteria):
         field = criteria._field
-        value = criteria._value
+        matcher = criteria._matcher
 
-        if value is Criteria.exists:
-            return {field: {"$exists": True}}
-
-        return {field: {"$eq": value}}
-
-    if isinstance(criteria, FieldInCriteria):
-        field = criteria._field
-        value = criteria._value
-
-        return {field: {"$in": value}}
+        return {field: field_match(matcher)}
 
     raise TypeError("Not a criteria: %s" % repr(criteria))
+
+
+def field_match(to_match):
+    if isinstance(to_match, RegexMatcher):
+        return {"$regex": to_match._pattern}
+
+    if isinstance(to_match, EqMatcher):
+        return {"$eq": to_match._value}
+
+    if isinstance(to_match, InMatcher):
+        return {"$in": to_match._values}
+
+    if isinstance(to_match, ExistsMatcher):
+        return {"$exists": True}
+
+    raise TypeError("Not a matcher: %s" % repr(to_match))

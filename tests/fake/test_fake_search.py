@@ -1,6 +1,6 @@
 import datetime
 
-from pubtools.pulplib import FakeController, Repository, Criteria
+from pubtools.pulplib import FakeController, Repository, Criteria, Matcher
 
 
 def test_can_search_id():
@@ -50,7 +50,7 @@ def test_can_search_id_exists():
     controller.insert_repository(repo2)
 
     client = controller.client
-    crit = Criteria.with_field("id", Criteria.exists)
+    crit = Criteria.with_field("id", Matcher.exists())
     found = client.search_repository(crit).result().data
 
     assert sorted(found) == [repo1, repo2]
@@ -84,7 +84,9 @@ def test_search_or():
     controller.insert_repository(repo3)
 
     client = controller.client
-    crit = Criteria.or_(Criteria.with_id("repo3"), Criteria.with_id("repo1"))
+    crit = Criteria.or_(
+        Criteria.with_id("repo3"), Criteria.with_field("id", Matcher.equals("repo1"))
+    )
     found = client.search_repository(crit).result().data
 
     assert sorted(found) == [repo1, repo3]
@@ -102,7 +104,7 @@ def test_search_created_exists():
     controller.insert_repository(repo3)
 
     client = controller.client
-    crit = Criteria.with_field("notes.created", Criteria.exists)
+    crit = Criteria.with_field("notes.created", Matcher.exists())
     found = client.search_repository(crit).result().data
 
     assert sorted(found) == [repo2, repo3]
@@ -191,6 +193,32 @@ def test_search_created_timestamp():
     found = client.search_repository(crit).result().data
 
     assert sorted(found) == [repo2]
+
+
+def test_search_created_regex():
+    """Can search using regular expressions."""
+
+    controller = FakeController()
+
+    when1 = datetime.datetime(2019, 6, 11, 14, 47, 0, tzinfo=None)
+    when2 = datetime.datetime(2019, 3, 1, 1, 1, 0, tzinfo=None)
+    when3 = datetime.datetime(2019, 6, 1, 1, 1, 0, tzinfo=None)
+
+    repo1 = Repository(id="repo1", created=when1)
+    repo2 = Repository(id="repo2", created=when2)
+    repo3 = Repository(id="repo3", created=when3)
+    repo4 = Repository(id="repo4")
+
+    controller.insert_repository(repo1)
+    controller.insert_repository(repo2)
+    controller.insert_repository(repo3)
+    controller.insert_repository(repo4)
+
+    client = controller.client
+    crit = Criteria.with_field("notes.created", Matcher.regex("19-06"))
+    found = list(client.search_repository(crit).result().as_iter())
+
+    assert sorted(found) == [repo1, repo3]
 
 
 def test_search_paginates():
