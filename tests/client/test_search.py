@@ -68,4 +68,4 @@ def test_non_matcher():
     with pytest.raises(TypeError) as exc_info:
         field_match("oops not a matcher")
 
-    assert "Not a matcher" in str(exc_info)
+    assert "Not a matcher" in str(exc_info.value)

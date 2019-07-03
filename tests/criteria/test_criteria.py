@@ -12,4 +12,4 @@ def test_field_in_str_invalid():
     """
     with pytest.raises(ValueError) as exc_info:
         Criteria.with_field_in("x", "someval")
-    assert "Must be an iterable: 'someval'" in str(exc_info)
+    assert "Must be an iterable: 'someval'" in str(exc_info.value)

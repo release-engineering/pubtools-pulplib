@@ -171,7 +171,7 @@ def test_publish_fail(fast_poller, requests_mocker, client):
 
     # The exception should have a reference to the task which failed
     assert error.value.task.id == "task1"
-    assert "Task task1 failed" in str(error)
+    assert "Task task1 failed" in str(error.value)
 
 
 def test_publish_broken_response(fast_poller, requests_mocker, client):

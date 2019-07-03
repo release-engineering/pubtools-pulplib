@@ -33,7 +33,7 @@ def test_get_missing_raises():
     with pytest.raises(PulpException) as raised:
         repo_f.result()
 
-    assert "some-repo not found" in str(raised)
+    assert "some-repo not found" in str(raised.value)
 
 
 def test_get_wrong_type_raises():
