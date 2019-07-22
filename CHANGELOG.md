@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - n/a
 
+## [1.2.0] - 2019-07-21
+
+###Added
+- A new API `FileRepository.upload_file` to upload a file to Pulp repository
+
 ## [1.1.0] - 2019-07-03
 
 ### Added

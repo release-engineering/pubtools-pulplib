@@ -1,6 +1,7 @@
 import os
 import logging
 import threading
+import hashlib
 from functools import partial
 
 import requests
@@ -56,9 +57,7 @@ class Client(object):
     _REQUEST_THREADS = int(os.environ.get("PUBTOOLS_PULPLIB_REQUEST_THREADS", "4"))
     _PAGE_SIZE = int(os.environ.get("PUBTOOLS_PULPLIB_PAGE_SIZE", "2000"))
     _TASK_THROTTLE = int(os.environ.get("PUBTOOLS_PULPLIB_TASK_THROTTLE", "200"))
-    _PULP_CHUNK_SIZE = int(
-        os.environ.get("PUBTOOLS_PULPLIB_PULP_CHUNK_SIZE", 1024 * 1024)
-    )
+    _CHUNK_SIZE = int(os.environ.get("PUBTOOLS_PULPLIB_CHUNK_SIZE", 1024 * 1024))
 
     # Policy used when deciding whether to retry operations.
     # This is mainly provided here as a hook for autotests, so the policy can be
@@ -182,41 +181,35 @@ class Client(object):
             response_f, lambda data: self._handle_page(Repository, search, data)
         )
 
-    def upload_one_file(
-        self,
-        file_name,
-        repo_id,
-        type_id,
-        unit_key,
-        unit_metadata=None,
-        override_config=None,
-    ):
-        """Including four steps uploading a file:
-            1. request upload id from pulp
-            2. upload contents to pulp
-            3. import the uploaded content to wanted repo
-            4. delete the reuqest id
-        """
-        upload_id = self._request_upload().result()["upload_id"]
+    def _do_upload_file(self, upload_id, repo_id, filename):
+        tasks_f = f_return([])
         offset = 0
-        with open(file_name) as f:
-            data = f.read(self._PULP_CHUNK_SIZE)
-            LOG.info("Uploading %s to repo %s", file_name, repo_id)
+
+        def _do_next_part_upload(accumulated_tasks, upload_data):
+            data, upload_id, offset = upload_data
+            upload_task_f = self._do_upload(data, upload_id, offset)
+
+            return f_map(
+                upload_task_f, lambda upload_task: accumulated_tasks + upload_task
+            )
+
+        # calculate size and checksum of the file during upload
+        with open(filename, "rb") as f:
+            checksum = hashlib.sha256()
+            size = 0
+            data = f.read(self._CHUNK_SIZE)
+            LOG.info("uploading %s to repo %s", filename, repo_id)
             while data:
-                self._do_upload(data, upload_id, offset).result()
-                offset += self._PULP_CHUNK_SIZE
-                data = f.read(self._PULP_CHUNK_SIZE)
+                checksum.update(data)
+                size += len(data)
+                next_part_upload = partial(
+                    _do_next_part_upload, upload_data=(data, upload_id, offset)
+                )
+                tasks_f = f_flat_map(tasks_f, next_part_upload)
+                offset += self._CHUNK_SIZE
+                data = f.read(self._CHUNK_SIZE)
 
-        self._do_import(
-            repo_id,
-            upload_id,
-            unit_type_id=type_id,
-            unit_key=unit_key,
-            unit_metadata=unit_metadata,
-            override_config=override_config,
-        ).result()
-
-        self._delete_upload_request(upload_id).result()
+        return tasks_f, checksum.hexdigest(), size
 
     def _publish_repository(self, repo, distributors_with_config):
         tasks_f = f_return([])
@@ -344,7 +337,7 @@ class Client(object):
     def _request_upload(self):
         url = os.path.join(self._url, "pulp/api/v2/content/uploads/")
 
-        LOG.debug("Reuqesting upload id")
+        LOG.debug("Requesting upload id")
         return self._request_executor.submit(self._do_request, method="POST", url=url)
 
     def _do_upload(self, data, upload_id, offset):
@@ -353,18 +346,10 @@ class Client(object):
         )
 
         return self._request_executor.submit(
-            self._do_request, method="PUT", url=url, json=data
+            self._do_request, method="PUT", url=url, data=data
         )
 
-    def _do_import(
-        self,
-        repo_id,
-        upload_id,
-        unit_type_id,
-        unit_key,
-        unit_metadata=None,
-        override_config=None,
-    ):
+    def _do_import(self, repo_id, upload_id, unit_type_id, unit_key):
         url = os.path.join(
             self._url, "pulp/api/v2/repositories/%s/actions/import_upload/" % repo_id
         )
@@ -373,8 +358,6 @@ class Client(object):
             "unit_type_id": unit_type_id,
             "upload_id": upload_id,
             "unit_key": unit_key,
-            "override_config": override_config or {},
-            "unit_metadata": unit_metadata or {},
         }
 
         LOG.debug("Importing contents to repo %s", repo_id)
