@@ -1,5 +1,7 @@
 import os
 
+from more_executors.futures import f_flat_map, f_map
+
 from .base import Repository, repo_type
 from ..attr import pulp_attrib
 from ..common import DetachedException
@@ -24,28 +26,24 @@ class FileRepository(Repository):
 
     mutable_urls = attr.ib(default=attr.Factory(lambda: ["PULP_MANIFEST"]), type=list)
 
-    def upload_file(self, filename, relative_url=None):
+    def upload_file(self, file_obj, relative_url=None):
         """Upload a file to this repository.
 
-        The upload operation includes 4 steps:
-            1. Request an upload id from pulp
-            2. With the requested upload id, upload the file
-            3. After the upload's done, import the uploaded file to repository
-            4. Delete the upload request
-
         Args:
-            filename (str)
-                Path to a local file to upload.
+            file_obj (str, file object)
+                If it's a string, then it's the path of file to upload.
+                Else, it ought to be a file-like object
 
             relative_url (str)
                 Path that should be used in remote repository
 
-                if omitted, filename will be used.
+                If omitted, filename will be used.
         Returns:
             Future[:class:`~pubtools.pulplib.Task`]
-                A future which is resolved when publish succeeds.
+                A future which is resolved when import succeeds.
 
-                The future contains the task to delete upload request
+                The future contains the task to import uploaded content
+                to repository
 
         Raises:
             DetachedException
@@ -54,22 +52,35 @@ class FileRepository(Repository):
         if not self._client:
             raise DetachedException()
 
-        path, name = os.path.split(filename.rstrip("/"))
-        if not relative_url:
-            relative_url = path
+        is_path = isinstance(file_obj, str)
+        if is_path:
+            if not relative_url:
+                relative_url = file_obj
+            elif relative_url.endwith('/'):
+                path, name = os.path.split(file_obj)
+                relative_url = os.path.join(relative_url, name)
+        elif not is_path and not relative_url:
+            msg = "Must provide relative_url if the file's not from disk"
+            LOG.exception(msg)
+            raise ValueError(msg)
 
         # request upload id and wait for it
         upload_id = self._client._request_upload().result()["upload_id"]
 
-        # caculate hash/size of the file and upload it to pulp
-        upload_fs, checksum, size = self._client._do_upload_file(
-            upload_id, self.id, filename
+        upload_complete_f, checksum, size = self._client._do_upload_file(
+            upload_id, self.id, file_obj
         )
 
-        # we need to wait for upload then it can start importing
-        upload_fs.result()
+        unit_key = {"name": relative_url, "digest": checksum, "size": size}
 
-        unit_key = {"name": name, "digest": checksum, "size": size}
-        self._client._do_import(self.id, upload_id, "iso", unit_key).result()
+        import_complete_f = f_flat_map(
+            upload_complete_f,
+            lambda _: self._client._do_import(self.id, upload_id, "iso", unit_key)
+        )
 
-        return self._client._delete_upload_request(upload_id)
+        f_map(
+            import_complete_f,
+            lambda _: self._client._delete_upload_request(upload_id)
+        )
+
+        return import_complete_f

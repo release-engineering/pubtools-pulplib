@@ -12,7 +12,7 @@ from pubtools.pulplib import (
 
 
 def test_upload_detached():
-    """publish raises if called on a detached repo"""
+    """upload_file raises if called on a detached repo"""
     with pytest.raises(DetachedException):
         FileRepository(id="some-repo").upload_file("some-file")
 
@@ -40,7 +40,7 @@ def test_upload_file(client, requests_mocker, tmpdir, caplog):
         "error": {},
         "spawned_tasks": [
             {
-                "_href": "/pulp/api/v2/tasks/7744e2df-39b9-46f0-bb10-feffa2f7014b/",
+                "_href": "/pulp/api/v2/tasks/task1/",
                 "task_id": "task1",
             }
         ],
@@ -72,21 +72,21 @@ def test_upload_file(client, requests_mocker, tmpdir, caplog):
         "https://pulp.example.com/pulp/api/v2/tasks/search/", json=tasks_report
     )
 
-    # delete's done, return []
-    assert repo.upload_file(str(somefile)).result() == []
+
+    assert repo.upload_file(str(somefile)).result() == [Task(id="task1", succeeded=True, completed=True)]
 
     # 4th call should be import, check if right unit_key's passed
     import_request = requests_mocker.request_history[3].json()
     import_unit_key = {
-        u"name": u"some-file.txt",
+        u"name": str(somefile),
         u"digest": u"fad3fc1e6d583b2003ec0a5273702ed8fcc2504271c87c40d9176467ebe218cb",
         u"size": 29,
     }
     assert import_request["unit_key"] == import_unit_key
     messages = caplog.messages
 
-    # 6 reuqests should be made
-    assert requests_mocker.call_count == 6
+    # 5 reuqests should be made
+    assert requests_mocker.call_count == 5
     # task's spwaned and completed
     assert "Created Pulp task: task1" in messages
     assert "Pulp task completed: task1" in messages

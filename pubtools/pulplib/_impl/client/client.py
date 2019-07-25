@@ -181,35 +181,25 @@ class Client(object):
             response_f, lambda data: self._handle_page(Repository, search, data)
         )
 
-    def _do_upload_file(self, upload_id, repo_id, filename):
-        tasks_f = f_return([])
-        offset = 0
+    def _do_upload_file(self, upload_id, repo_id, file_obj):
+        upload_f = f_return()
 
-        def _do_next_part_upload(accumulated_tasks, upload_data):
-            data, upload_id, offset = upload_data
-            upload_task_f = self._do_upload(data, upload_id, offset)
+        if isinstance(file_obj, str):
+            file_obj = open(file_obj, 'rb')
 
-            return f_map(
-                upload_task_f, lambda upload_task: accumulated_tasks + upload_task
-            )
+        checksum = hashlib.sha256()
+        size, offset = 0, 0
+        data = file_obj.read(self._CHUNK_SIZE)
+        LOG.info("Uploading %s to repo %s", file_obj, repo_id)
+        while data:
+            checksum.update(data)
+            size += len(data)
+            upload_f = f_map(upload_f, lambda _: self._do_upload(data, upload_id, offset))
+            offset += self._CHUNK_SIZE
+            data = file_obj.read(self._CHUNK_SIZE)
+        file_obj.close()
 
-        # calculate size and checksum of the file during upload
-        with open(filename, "rb") as f:
-            checksum = hashlib.sha256()
-            size = 0
-            data = f.read(self._CHUNK_SIZE)
-            LOG.info("uploading %s to repo %s", filename, repo_id)
-            while data:
-                checksum.update(data)
-                size += len(data)
-                next_part_upload = partial(
-                    _do_next_part_upload, upload_data=(data, upload_id, offset)
-                )
-                tasks_f = f_flat_map(tasks_f, next_part_upload)
-                offset += self._CHUNK_SIZE
-                data = f.read(self._CHUNK_SIZE)
-
-        return tasks_f, checksum.hexdigest(), size
+        return upload_f, checksum.hexdigest(), size
 
     def _publish_repository(self, repo, distributors_with_config):
         tasks_f = f_return([])
@@ -368,5 +358,5 @@ class Client(object):
     def _delete_upload_request(self, upload_id):
         url = os.path.join(self._url, "pulp/api/v2/content/uploads/%s/" % upload_id)
 
-        LOG.debug("Deleting upload request")
+        LOG.debug("Deleting upload request %s", upload_id)
         return self._request_executor.submit(self._do_request, method="DELETE", url=url)
