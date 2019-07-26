@@ -147,6 +147,7 @@ class TaskPoller(object):
     def gather_descriptor_tasks(self, descriptors):
         descriptor_tasks = []
         all_tasks = []
+
         for descriptor in descriptors:
             result = descriptor.result
             try:

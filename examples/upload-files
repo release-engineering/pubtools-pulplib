@@ -1,0 +1,76 @@
+#!/usr/bin/env python
+import os
+import logging
+from argparse import ArgumentParser
+
+from pubtools.pulplib import Criteria, Client
+
+log = logging.getLogger("upload")
+
+
+def upload(client, path, repo_id):
+    crit = Criteria.with_id(repo_id)
+    repo = client.search_repository(crit).result().data[0]
+
+    uploads = []
+    if os.path.isdir(path):
+        for file in os.listdir(path):
+            if os.path.isfile(file):
+                file = os.path.join(path, file)
+                log.debug("Uploading %s to repo %s in threads", file, repo_id)
+                uploads.append(repo.upload_file(file))
+    elif os.path.isfile(path):
+        log.debug("Uploading %s to repo %s", path, repo_id)
+        uploads.append(repo.upload_file(path))
+
+    for up in uploads:
+        up.result()
+
+    log.info("Uploaded %s files to repository %s", len(uploads), repo_id)
+
+
+def make_client(args):
+    auth = None
+
+    if args.username:
+        password = args.password
+        if password is None:
+            password = os.environ.get("PULP_PASSWORD")
+        if not password:
+            log.warning("No password provided for %s", args.username)
+        auth = (args.username, args.password)
+
+    return Client(args.url, auth=auth)
+
+
+def main():
+    log.setLevel(logging.INFO)
+    logging.basicConfig(format="%(message)s", level=logging.INFO)
+
+    parser = ArgumentParser(description="Upload files to Repository")
+    parser.add_argument("--url", help="Pulp server URL")
+    parser.add_argument("--username", help="Pulp username")
+    parser.add_argument(
+        "--password", help="Pulp password (or set PULP_PASSWORD in env)"
+    )
+    parser.add_argument("--debug", action="store_true")
+    parser.add_argument("--repo-id", action="store")
+    parser.add_argument("path", action="store", help="Path to a file or a directory")
+
+    p = parser.parse_args()
+
+    if not p.url:
+        parser.error("--url is required")
+
+    if not p.repo_id:
+        parser.error("--repo-id is required")
+
+    if p.debug:
+        logging.getLogger("pubtools.pulplib").setLevel(logging.DEBUG)
+
+    client = make_client(p)
+    return upload(client, p.path, p.repo_id)
+
+
+if __name__ == "__main__":
+    main()

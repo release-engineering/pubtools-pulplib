@@ -1,6 +1,7 @@
 import logging
 import pytest
 import json
+import io
 
 from pubtools.pulplib import (
     Repository,
@@ -38,12 +39,7 @@ def test_upload_file(client, requests_mocker, tmpdir, caplog):
     import_report = {
         "result": {},
         "error": {},
-        "spawned_tasks": [
-            {
-                "_href": "/pulp/api/v2/tasks/task1/",
-                "task_id": "task1",
-            }
-        ],
+        "spawned_tasks": [{"_href": "/pulp/api/v2/tasks/task1/", "task_id": "task1"}],
     }
 
     tasks_report = [{"task_id": "task1", "state": "finished"}]
@@ -65,15 +61,19 @@ def test_upload_file(client, requests_mocker, tmpdir, caplog):
         % repo_id,
         json=import_report,
     )
-    requests_mocker.delete(
-        "https://pulp.example.com/pulp/api/v2/content/uploads/%s/" % upload_id, json=[]
-    )
     requests_mocker.post(
         "https://pulp.example.com/pulp/api/v2/tasks/search/", json=tasks_report
     )
+    requests_mocker.delete(
+        "https://pulp.example.com/pulp/api/v2/content/uploads/%s/" % upload_id, json=[]
+    )
 
+    assert repo.upload_file(str(somefile)).result() == [
+        Task(id="task1", succeeded=True, completed=True)
+    ]
 
-    assert repo.upload_file(str(somefile)).result() == [Task(id="task1", succeeded=True, completed=True)]
+    # it' possible the delete has been called while doing assertion
+    assert requests_mocker.call_count == 5 or 6
 
     # 4th call should be import, check if right unit_key's passed
     import_request = requests_mocker.request_history[3].json()
@@ -83,10 +83,36 @@ def test_upload_file(client, requests_mocker, tmpdir, caplog):
         u"size": 29,
     }
     assert import_request["unit_key"] == import_unit_key
-    messages = caplog.messages
 
-    # 5 reuqests should be made
-    assert requests_mocker.call_count == 5
+    messages = caplog.messages
     # task's spwaned and completed
     assert "Created Pulp task: task1" in messages
     assert "Pulp task completed: task1" in messages
+
+
+@pytest.mark.parametrize(
+    "relative_url,expected",
+    [
+        ("some/path/", "some/path/some-file.txt"),
+        ("some/path/foo.txt", "some/path/foo.txt"),
+    ],
+)
+def test_get_relative_url(tmpdir, relative_url, expected):
+    somefile = tmpdir.join("some-file.txt")
+    repo = FileRepository(id="some-repo")
+    result = repo._get_relative_url(str(somefile), relative_url)
+
+    assert result == expected
+
+
+def test_get_relative_url_with_file_object():
+    repo = FileRepository(id="some-repo")
+    file_obj = io.StringIO()
+
+    with pytest.raises(ValueError):
+        repo._get_relative_url(file_obj, None)
+
+    with pytest.raises(ValueError):
+        repo._get_relative_url(file_obj, "some/path/")
+
+    assert repo._get_relative_url(file_obj, "path/foo.txt") == "path/foo.txt"

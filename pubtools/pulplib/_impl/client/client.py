@@ -6,7 +6,7 @@ from functools import partial
 
 import requests
 from more_executors import Executors
-from more_executors.futures import f_map, f_flat_map, f_return
+from more_executors.futures import f_map, f_flat_map, f_return, f_sequence
 
 from ..page import Page
 from ..criteria import Criteria
@@ -182,10 +182,10 @@ class Client(object):
         )
 
     def _do_upload_file(self, upload_id, repo_id, file_obj):
-        upload_f = f_return()
+        upload_fts = []
 
         if isinstance(file_obj, str):
-            file_obj = open(file_obj, 'rb')
+            file_obj = open(file_obj, "rb")
 
         checksum = hashlib.sha256()
         size, offset = 0, 0
@@ -194,12 +194,12 @@ class Client(object):
         while data:
             checksum.update(data)
             size += len(data)
-            upload_f = f_map(upload_f, lambda _: self._do_upload(data, upload_id, offset))
+            upload_fts.append(self._do_upload(data, upload_id, offset))
             offset += self._CHUNK_SIZE
             data = file_obj.read(self._CHUNK_SIZE)
         file_obj.close()
 
-        return upload_f, checksum.hexdigest(), size
+        return f_sequence(upload_fts), checksum.hexdigest(), size
 
     def _publish_repository(self, repo, distributors_with_config):
         tasks_f = f_return([])
