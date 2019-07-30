@@ -2,11 +2,12 @@ import os
 import logging
 import threading
 import hashlib
+import six
 from functools import partial
 
 import requests
 from more_executors import Executors
-from more_executors.futures import f_map, f_flat_map, f_return, f_sequence
+from more_executors.futures import f_map, f_flat_map, f_return
 
 from ..page import Page
 from ..criteria import Criteria
@@ -181,25 +182,27 @@ class Client(object):
             response_f, lambda data: self._handle_page(Repository, search, data)
         )
 
-    def _do_upload_file(self, upload_id, repo_id, file_obj):
-        upload_fts = []
+    def _do_upload_file(self, upload_id, file_obj):
+        def do_next_upload(checksum, size):
+            data = file_obj.read(self._CHUNK_SIZE)
+            if data:
+                checksum.update(data)
+                return f_flat_map(
+                    self._do_upload(data, upload_id, size),
+                    lambda _: do_next_upload(checksum, size + len(data)),
+                )
+            else:
+                # nothing more to upload, return checksum and size
+                if is_string:
+                    file_obj.close()
+                return f_return((checksum.hexdigest(), size))
 
-        if isinstance(file_obj, str):
+        is_string = isinstance(file_obj, six.string_types)
+        if is_string:
             file_obj = open(file_obj, "rb")
 
-        checksum = hashlib.sha256()
-        size, offset = 0, 0
-        data = file_obj.read(self._CHUNK_SIZE)
-        LOG.info("Uploading %s to repo %s", file_obj, repo_id)
-        while data:
-            checksum.update(data)
-            size += len(data)
-            upload_fts.append(self._do_upload(data, upload_id, offset))
-            offset += self._CHUNK_SIZE
-            data = file_obj.read(self._CHUNK_SIZE)
-        file_obj.close()
-
-        return f_sequence(upload_fts), checksum.hexdigest(), size
+        LOG.info("Uploading %s to Pulp", file_obj)
+        return f_flat_map(f_return(), lambda _: do_next_upload(hashlib.sha256(), 0))
 
     def _publish_repository(self, repo, distributors_with_config):
         tasks_f = f_return([])
@@ -350,7 +353,7 @@ class Client(object):
             "unit_key": unit_key,
         }
 
-        LOG.debug("Importing contents to repo %s", repo_id)
+        LOG.debug("Importing contents to repo %s with %s", repo_id, upload_id)
         return self._task_executor.submit(
             self._do_request, method="POST", url=url, json=body
         )

@@ -1,5 +1,6 @@
 import os
 import logging
+import six
 
 from more_executors.futures import f_flat_map, f_map
 
@@ -36,22 +37,33 @@ class FileRepository(Repository):
         Args:
             file_obj (str, file object)
                 If it's a string, then it's the path of file to upload.
-                Else, it ought to be a file-like object
+                Else, it ought to be a file-like object, see:
+                https://docs.python.org/3/glossary.html#term-file-object
 
             relative_url (str)
-                Path that should be used in remote repository
+                Path that should be used in remote repository, can either
+                be a path to a directory or a path to a file, e.g:
+                - if relative_url is 'foo/bar' and file_obj has name 'f.txt',
+                  the result remote path wll be 'foo/bar/f.txt'.
+                - if relative_url is 'foo/bar/f.txt', no matter what the
+                  name of file_obj is, the remote path is 'foo/bar/f.txt'.
 
-                If omitted, filename will be used.
+                If omitted, the local name of the file will be used. Or,
+                if file_obj is a file object without a `name` attribute,
+                passing `relative_url` is mandatory.
+
         Returns:
             Future[:class:`~pubtools.pulplib.Task`]
                 A future which is resolved when import succeeds.
 
                 The future contains the task to import uploaded content
-                to repository
+                to repository.
 
         Raises:
             DetachedException
                 If this instance is not attached to a Pulp client.
+
+        .. versionadded:: 1.2.0
         """
         if not self._client:
             raise DetachedException()
@@ -61,15 +73,16 @@ class FileRepository(Repository):
         # request upload id and wait for it
         upload_id = self._client._request_upload().result()["upload_id"]
 
-        upload_complete_f, checksum, size = self._client._do_upload_file(
-            upload_id, self.id, file_obj
-        )
-
-        unit_key = {"name": relative_url, "digest": checksum, "size": size}
+        upload_complete_f = self._client._do_upload_file(upload_id, file_obj)
 
         import_complete_f = f_flat_map(
             upload_complete_f,
-            lambda _: self._client._do_import(self.id, upload_id, "iso", unit_key),
+            lambda upload: self._client._do_import(
+                self.id,
+                upload_id,
+                "iso",
+                {"name": relative_url, "digest": upload[0], "size": upload[1]},
+            ),
         )
 
         f_map(
@@ -79,7 +92,7 @@ class FileRepository(Repository):
         return import_complete_f
 
     def _get_relative_url(self, file_obj, relative_url):
-        is_path = isinstance(file_obj, str)
+        is_path = isinstance(file_obj, six.string_types)
         if is_path:
             if not relative_url:
                 relative_url = file_obj
@@ -87,8 +100,7 @@ class FileRepository(Repository):
                 _, name = os.path.split(file_obj)
                 relative_url = os.path.join(relative_url, name)
         elif not is_path and (not relative_url or relative_url.endswith("/")):
-            msg = "Must provide complete relative_url if the file's not from disk"
-            LOG.exception(msg)
-            raise ValueError(msg)
+            msg = "%s is missing a name attribute and relative_url was not provided"
+            raise ValueError(msg % file_obj)
 
         return relative_url

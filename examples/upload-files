@@ -3,14 +3,13 @@ import os
 import logging
 from argparse import ArgumentParser
 
-from pubtools.pulplib import Criteria, Client
+from pubtools.pulplib import Client
 
 log = logging.getLogger("upload")
 
 
 def upload(client, path, repo_id):
-    crit = Criteria.with_id(repo_id)
-    repo = client.search_repository(crit).result().data[0]
+    repo = client.get_repository(repo_id).result()
 
     uploads = []
     if os.path.isdir(path):
@@ -24,7 +23,8 @@ def upload(client, path, repo_id):
         uploads.append(repo.upload_file(path))
 
     for up in uploads:
-        up.result()
+        result = up.result()
+        log.debug("Import task finished:\n", result)
 
     log.info("Uploaded %s files to repository %s", len(uploads), repo_id)
 
@@ -54,7 +54,7 @@ def main():
         "--password", help="Pulp password (or set PULP_PASSWORD in env)"
     )
     parser.add_argument("--debug", action="store_true")
-    parser.add_argument("--repo-id", action="store")
+    parser.add_argument("repo-id", action="store")
     parser.add_argument("path", action="store", help="Path to a file or a directory")
 
     p = parser.parse_args()
@@ -67,6 +67,7 @@ def main():
 
     if p.debug:
         logging.getLogger("pubtools.pulplib").setLevel(logging.DEBUG)
+        log.setLevel(logging.DEBUG)
 
     client = make_client(p)
     return upload(client, p.path, p.repo_id)
