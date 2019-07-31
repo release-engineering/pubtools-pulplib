@@ -24,7 +24,7 @@ def upload(client, path, repo_id):
 
     for up in uploads:
         result = up.result()
-        log.debug("Import task finished:\n", result)
+        log.debug("Import task finished:\n%s", result)
 
     log.info("Uploaded %s files to repository %s", len(uploads), repo_id)
 
@@ -49,13 +49,13 @@ def main():
 
     parser = ArgumentParser(description="Upload files to Repository")
     parser.add_argument("--url", help="Pulp server URL")
+    parser.add_argument("--repo-id", action="store")
+    parser.add_argument("--path", action="store", help="Path to a file or a directory")
     parser.add_argument("--username", help="Pulp username")
     parser.add_argument(
         "--password", help="Pulp password (or set PULP_PASSWORD in env)"
     )
     parser.add_argument("--debug", action="store_true")
-    parser.add_argument("repo-id", action="store")
-    parser.add_argument("path", action="store", help="Path to a file or a directory")
 
     p = parser.parse_args()
 
@@ -64,6 +64,9 @@ def main():
 
     if not p.repo_id:
         parser.error("--repo-id is required")
+
+    if not p.path:
+        parser.error("--path is required")
 
     if p.debug:
         logging.getLogger("pubtools.pulplib").setLevel(logging.DEBUG)

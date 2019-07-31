@@ -2,7 +2,6 @@ import os
 import logging
 import threading
 import hashlib
-import six
 from functools import partial
 
 import requests
@@ -182,7 +181,7 @@ class Client(object):
             response_f, lambda data: self._handle_page(Repository, search, data)
         )
 
-    def _do_upload_file(self, upload_id, file_obj):
+    def _do_upload_file(self, upload_id, file_obj, name):
         def do_next_upload(checksum, size):
             data = file_obj.read(self._CHUNK_SIZE)
             if data:
@@ -191,18 +190,19 @@ class Client(object):
                     self._do_upload(data, upload_id, size),
                     lambda _: do_next_upload(checksum, size + len(data)),
                 )
-            else:
-                # nothing more to upload, return checksum and size
-                if is_string:
-                    file_obj.close()
-                return f_return((checksum.hexdigest(), size))
+            # nothing more to upload, return checksum and size
+            return f_return((checksum.hexdigest(), size))
 
-        is_string = isinstance(file_obj, six.string_types)
-        if is_string:
+        is_file_object = "close" in dir(file_obj)
+        if not is_file_object:
             file_obj = open(file_obj, "rb")
 
-        LOG.info("Uploading %s to Pulp", file_obj)
-        return f_flat_map(f_return(), lambda _: do_next_upload(hashlib.sha256(), 0))
+        LOG.info("Uploading %s to Pulp", name)
+        upload_f = f_flat_map(f_return(), lambda _: do_next_upload(hashlib.sha256(), 0))
+
+        if not is_file_object:
+            upload_f.add_done_callback(lambda _: file_obj.close())
+        return upload_f
 
     def _publish_repository(self, repo, distributors_with_config):
         tasks_f = f_return([])

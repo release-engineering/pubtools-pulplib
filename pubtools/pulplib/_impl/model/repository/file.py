@@ -1,6 +1,5 @@
 import os
 import logging
-import six
 
 from more_executors.futures import f_flat_map, f_map
 
@@ -37,14 +36,15 @@ class FileRepository(Repository):
         Args:
             file_obj (str, file object)
                 If it's a string, then it's the path of file to upload.
-                Else, it ought to be a file-like object, see:
-                https://docs.python.org/3/glossary.html#term-file-object
+                Else, it ought to be a
+                `file-like object <https://docs.python.org/3/glossary.html#term-file-object>`_.
+
 
             relative_url (str)
                 Path that should be used in remote repository, can either
                 be a path to a directory or a path to a file, e.g:
-                - if relative_url is 'foo/bar' and file_obj has name 'f.txt',
-                  the result remote path wll be 'foo/bar/f.txt'.
+                - if relative_url is 'foo/bar/' and file_obj has name 'f.txt',
+                  the resulting remote path wll be 'foo/bar/f.txt'.
                 - if relative_url is 'foo/bar/f.txt', no matter what the
                   name of file_obj is, the remote path is 'foo/bar/f.txt'.
 
@@ -69,11 +69,12 @@ class FileRepository(Repository):
             raise DetachedException()
 
         relative_url = self._get_relative_url(file_obj, relative_url)
+        name = os.path.basename(relative_url)
 
         # request upload id and wait for it
         upload_id = self._client._request_upload().result()["upload_id"]
 
-        upload_complete_f = self._client._do_upload_file(upload_id, file_obj)
+        upload_complete_f = self._client._do_upload_file(upload_id, file_obj, name)
 
         import_complete_f = f_flat_map(
             upload_complete_f,
@@ -92,14 +93,14 @@ class FileRepository(Repository):
         return import_complete_f
 
     def _get_relative_url(self, file_obj, relative_url):
-        is_path = isinstance(file_obj, six.string_types)
-        if is_path:
+        is_file_object = "close" in dir(file_obj)
+        if not is_file_object:
             if not relative_url:
                 relative_url = file_obj
             elif relative_url.endswith("/"):
                 _, name = os.path.split(file_obj)
                 relative_url = os.path.join(relative_url, name)
-        elif not is_path and (not relative_url or relative_url.endswith("/")):
+        elif is_file_object and (not relative_url or relative_url.endswith("/")):
             msg = "%s is missing a name attribute and relative_url was not provided"
             raise ValueError(msg % file_obj)
 

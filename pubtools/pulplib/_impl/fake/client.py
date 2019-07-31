@@ -1,6 +1,7 @@
 import random
 import uuid
 import threading
+import hashlib
 
 from collections import namedtuple
 
@@ -13,6 +14,7 @@ from .. import compat_attr as attr
 from .match import match_object
 
 Publish = namedtuple("Publish", ["repository", "tasks"])
+Upload = namedtuple("Upload", ["repo_id", "tasks"])
 
 
 class FakeClient(object):
@@ -28,6 +30,7 @@ class FakeClient(object):
     def __init__(self):
         self._repositories = []
         self._publish_history = []
+        self._upload_history = []
         self._lock = threading.RLock()
         self._uuidgen = random.Random()
         self._uuidgen.seed(0)
@@ -79,6 +82,35 @@ class FakeClient(object):
 
         return f_return(data[0])
 
+    def _do_upload_file(self, upload_id, file_obj, name):
+        # pylint: disable=unused-argument
+        out = f_return((hashlib.sha256().hexdigest(), random.randint(10, 1000)))
+
+        if "close" not in dir(file_obj):
+            file_obj = open(file_obj, "rb")
+            out.add_done_callback(lambda _: file_obj.close())
+
+        return out
+
+    def _request_upload(self):
+        upload_request = {
+            "_href": "/pulp/api/v2/content/uploads/%s/" % self._request_id(),
+            "upload_id": "%s" % self._request_id,
+        }
+
+        return f_return(upload_request)
+
+    def _do_import(self, repo_id, upload_id, unit_type_id, unit_key):
+        # pylint: disable=unused-argument
+        task = Task(id=self._next_task_id(), completed=True, succeeded=True)
+
+        self._upload_history.append(Upload(repo_id, [task]))
+
+        return f_return([task])
+
+    def _delete_upload_request(self):
+        return f_return()  # pragma: no cover
+
     def _delete_resource(self, resource_type, resource_id):
         if resource_type == "repositories":
             return self._delete_repository(resource_id)
@@ -128,3 +160,6 @@ class FakeClient(object):
         with self._lock:
             next_raw_id = self._uuidgen.randint(0, 2 ** 128)
         return str(uuid.UUID(int=next_raw_id))
+
+    def _request_id(self):
+        return self._next_task_id()
