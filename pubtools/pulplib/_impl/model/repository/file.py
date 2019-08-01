@@ -53,7 +53,7 @@ class FileRepository(Repository):
                 passing `relative_url` is mandatory.
 
         Returns:
-            Future[:class:`~pubtools.pulplib.Task`]
+            Future[list of :class:`~pubtools.pulplib.Task`]
                 A future which is resolved when import succeeds.
 
                 The future contains the task to import uploaded content

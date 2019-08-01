@@ -1,4 +1,5 @@
 import logging
+import time
 import pytest
 import json
 import io
@@ -72,8 +73,10 @@ def test_upload_file(client, requests_mocker, tmpdir, caplog):
         Task(id="task1", succeeded=True, completed=True)
     ]
 
-    # it' possible the delete has been called while doing assertion
-    assert requests_mocker.call_count == 5 or 6
+    # sleep for .1 second to let the whole process finish.
+    time.sleep(0.1)
+
+    assert requests_mocker.call_count == 6
 
     # 4th call should be import, check if right unit_key's passed
     import_request = requests_mocker.request_history[3].json()

@@ -89,8 +89,12 @@ class FakeController(object):
 
             ``repository``:
                 :class:`~pubtools.pulplib.Repository` for which upload was triggered
-            ``tasks``:
-                list of :class:`~pubtools.pulplib.Task` generated as a result
+            ``task``:
+                :class:`~pubtools.pulplib.Task` generated as a result
                 of this upload
+            ``unit_type_id`` (str):
+                A string used to indicate the type of uploaded content
+            ``unit_key`` (dictionary):
+                A dictionary includes information about this upload
         """
         return self.client._upload_history[:]

@@ -6,7 +6,7 @@ import hashlib
 from collections import namedtuple
 
 import six
-from more_executors.futures import f_return, f_return_error
+from more_executors.futures import f_return, f_return_error, f_flat_map
 
 from pubtools.pulplib import Page, PulpException, Criteria, Task
 from .. import compat_attr as attr
@@ -14,7 +14,7 @@ from .. import compat_attr as attr
 from .match import match_object
 
 Publish = namedtuple("Publish", ["repository", "tasks"])
-Upload = namedtuple("Upload", ["repo_id", "tasks"])
+Upload = namedtuple("Upload", ["repository", "tasks", "unit_type_id", "unit_key"])
 
 
 class FakeClient(object):
@@ -84,10 +84,21 @@ class FakeClient(object):
 
     def _do_upload_file(self, upload_id, file_obj, name):
         # pylint: disable=unused-argument
-        out = f_return((hashlib.sha256().hexdigest(), random.randint(10, 1000)))
-
-        if "close" not in dir(file_obj):
+        is_file_obj = "close" in dir(file_obj)
+        if not is_file_obj:
             file_obj = open(file_obj, "rb")
+
+        def do_next_upload(checksum, size):
+            data = file_obj.read(1024 * 1024)
+            if data:
+                checksum.update(data)
+                size += len(data)
+                return do_next_upload(checksum, size)
+            return f_return((checksum.hexdigest(), size))
+
+        out = f_flat_map(f_return(), lambda _: do_next_upload(hashlib.sha256(), 0))
+
+        if not is_file_obj:
             out.add_done_callback(lambda _: file_obj.close())
 
         return out
@@ -102,14 +113,18 @@ class FakeClient(object):
 
     def _do_import(self, repo_id, upload_id, unit_type_id, unit_key):
         # pylint: disable=unused-argument
+        repo_f = self.get_repository(repo_id)
+        if repo_f.exception():
+            # Repo can't be found, let that exception propagate
+            return repo_f
+
+        repo = repo_f.result()
+
         task = Task(id=self._next_task_id(), completed=True, succeeded=True)
 
-        self._upload_history.append(Upload(repo_id, [task]))
+        self._upload_history.append(Upload(repo, [task], unit_type_id, unit_key))
 
         return f_return([task])
-
-    def _delete_upload_request(self):
-        return f_return()  # pragma: no cover
 
     def _delete_resource(self, resource_type, resource_id):
         if resource_type == "repositories":
