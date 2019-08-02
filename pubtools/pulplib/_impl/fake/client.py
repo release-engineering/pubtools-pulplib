@@ -14,7 +14,7 @@ from .. import compat_attr as attr
 from .match import match_object
 
 Publish = namedtuple("Publish", ["repository", "tasks"])
-Upload = namedtuple("Upload", ["repository", "tasks", "unit_type_id", "unit_key"])
+Upload = namedtuple("Upload", ["repository", "tasks", "name", "sha256"])
 
 
 class FakeClient(object):
@@ -122,7 +122,9 @@ class FakeClient(object):
 
         task = Task(id=self._next_task_id(), completed=True, succeeded=True)
 
-        self._upload_history.append(Upload(repo, [task], unit_type_id, unit_key))
+        self._upload_history.append(
+            Upload(repo, [task], unit_key["name"], unit_key["digest"])
+        )
 
         return f_return([task])
 

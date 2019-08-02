@@ -27,17 +27,13 @@ def test_can_upload(tmpdir):
 
     # The change should be reflected in the controller's upload history
     history = controller.upload_history
-    unit_key = {
-        "name": str(somefile),
-        "digest": "fad3fc1e6d583b2003ec0a5273702ed8fcc2504271c87c40d9176467ebe218cb",
-        "size": 29,
-    }
 
+    digest = "fad3fc1e6d583b2003ec0a5273702ed8fcc2504271c87c40d9176467ebe218cb"
     assert len(history) == 1
     assert history[0].repository == repo1
     assert history[0].tasks == tasks
-    assert history[0].unit_type_id == "iso"
-    assert history[0].unit_key == unit_key
+    assert history[0].name == str(somefile)
+    assert history[0].sha256 == digest
 
 
 def test_upload_nonexistent_file_raises():

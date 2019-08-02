@@ -92,9 +92,9 @@ class FakeController(object):
             ``task``:
                 :class:`~pubtools.pulplib.Task` generated as a result
                 of this upload
-            ``unit_type_id`` (str):
-                A string used to indicate the type of uploaded content
-            ``unit_key`` (dictionary):
-                A dictionary includes information about this upload
+            ``name`` (str):
+                the remote path used
+            ``sha256`` (str):
+                checksum of the file uploaded
         """
         return self.client._upload_history[:]
