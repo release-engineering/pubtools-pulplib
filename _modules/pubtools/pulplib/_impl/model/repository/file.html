@@ -31,9 +31,18 @@
           <div class="body" role="main">
             
   <h1>Source code for pubtools.pulplib._impl.model.repository.file</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">Repository</span><span class="p">,</span> <span class="n">repo_type</span>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">more_executors.futures</span> <span class="k">import</span> <span class="n">f_flat_map</span><span class="p">,</span> <span class="n">f_map</span>
+
+<span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">Repository</span><span class="p">,</span> <span class="n">repo_type</span>
 <span class="kn">from</span> <span class="nn">..attr</span> <span class="k">import</span> <span class="n">pulp_attrib</span>
+<span class="kn">from</span> <span class="nn">..common</span> <span class="k">import</span> <span class="n">DetachedException</span>
 <span class="kn">from</span> <span class="nn">...</span> <span class="k">import</span> <span class="n">compat_attr</span> <span class="k">as</span> <span class="n">attr</span>
+
+
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;pubtools.pulplib&quot;</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="FileRepository"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.FileRepository">[docs]</a><span class="nd">@repo_type</span><span class="p">(</span><span class="s2">&quot;iso-repo&quot;</span><span class="p">)</span>
@@ -52,7 +61,83 @@
         <span class="nb">type</span><span class="o">=</span><span class="nb">bool</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="n">mutable_urls</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">attr</span><span class="o">.</span><span class="n">Factory</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;PULP_MANIFEST&quot;</span><span class="p">]),</span> <span class="nb">type</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span></div>
+    <span class="n">mutable_urls</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">attr</span><span class="o">.</span><span class="n">Factory</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;PULP_MANIFEST&quot;</span><span class="p">]),</span> <span class="nb">type</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+
+<div class="viewcode-block" id="FileRepository.upload_file"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.FileRepository.upload_file">[docs]</a>    <span class="k">def</span> <span class="nf">upload_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_obj</span><span class="p">,</span> <span class="n">relative_url</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Upload a file to this repository.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            file_obj (str, file object)</span>
+<span class="sd">                If it&#39;s a string, then it&#39;s the path of file to upload.</span>
+<span class="sd">                Else, it ought to be a</span>
+<span class="sd">                `file-like object &lt;https://docs.python.org/3/glossary.html#term-file-object&gt;`_.</span>
+
+
+<span class="sd">            relative_url (str)</span>
+<span class="sd">                Path that should be used in remote repository, can either</span>
+<span class="sd">                be a path to a directory or a path to a file, e.g:</span>
+<span class="sd">                - if relative_url is &#39;foo/bar/&#39; and file_obj has name &#39;f.txt&#39;,</span>
+<span class="sd">                  the resulting remote path wll be &#39;foo/bar/f.txt&#39;.</span>
+<span class="sd">                - if relative_url is &#39;foo/bar/f.txt&#39;, no matter what the</span>
+<span class="sd">                  name of file_obj is, the remote path is &#39;foo/bar/f.txt&#39;.</span>
+
+<span class="sd">                If omitted, the local name of the file will be used. Or,</span>
+<span class="sd">                if file_obj is a file object without a `name` attribute,</span>
+<span class="sd">                passing `relative_url` is mandatory.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Future[list of :class:`~pubtools.pulplib.Task`]</span>
+<span class="sd">                A future which is resolved when import succeeds.</span>
+
+<span class="sd">                The future contains the task to import uploaded content</span>
+<span class="sd">                to repository.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            DetachedException</span>
+<span class="sd">                If this instance is not attached to a Pulp client.</span>
+
+<span class="sd">        .. versionadded:: 1.2.0</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DetachedException</span><span class="p">()</span>
+
+        <span class="n">relative_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_relative_url</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="n">relative_url</span><span class="p">)</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">relative_url</span><span class="p">)</span>
+
+        <span class="c1"># request upload id and wait for it</span>
+        <span class="n">upload_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_request_upload</span><span class="p">()</span><span class="o">.</span><span class="n">result</span><span class="p">()[</span><span class="s2">&quot;upload_id&quot;</span><span class="p">]</span>
+
+        <span class="n">upload_complete_f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_do_upload_file</span><span class="p">(</span><span class="n">upload_id</span><span class="p">,</span> <span class="n">file_obj</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+        <span class="n">import_complete_f</span> <span class="o">=</span> <span class="n">f_flat_map</span><span class="p">(</span>
+            <span class="n">upload_complete_f</span><span class="p">,</span>
+            <span class="k">lambda</span> <span class="n">upload</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_do_import</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                <span class="n">upload_id</span><span class="p">,</span>
+                <span class="s2">&quot;iso&quot;</span><span class="p">,</span>
+                <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">relative_url</span><span class="p">,</span> <span class="s2">&quot;digest&quot;</span><span class="p">:</span> <span class="n">upload</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">upload</span><span class="p">[</span><span class="mi">1</span><span class="p">]},</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="n">f_map</span><span class="p">(</span>
+            <span class="n">import_complete_f</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">_</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_delete_upload_request</span><span class="p">(</span><span class="n">upload_id</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">import_complete_f</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_relative_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_obj</span><span class="p">,</span> <span class="n">relative_url</span><span class="p">):</span>
+        <span class="n">is_file_object</span> <span class="o">=</span> <span class="s2">&quot;close&quot;</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">file_obj</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_file_object</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">relative_url</span><span class="p">:</span>
+                <span class="n">relative_url</span> <span class="o">=</span> <span class="n">file_obj</span>
+            <span class="k">elif</span> <span class="n">relative_url</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">):</span>
+                <span class="n">_</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">file_obj</span><span class="p">)</span>
+                <span class="n">relative_url</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">relative_url</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">is_file_object</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">relative_url</span> <span class="ow">or</span> <span class="n">relative_url</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is missing a name attribute and relative_url was not provided&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span> <span class="o">%</span> <span class="n">file_obj</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">relative_url</span></div>
 </pre></div>
 
           </div>
