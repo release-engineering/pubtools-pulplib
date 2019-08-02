@@ -111,26 +111,7 @@
 <span class="sd">                list of :class:`~pubtools.pulplib.Task` generated as a result</span>
 <span class="sd">                of this publish</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">_publish_history</span><span class="p">[:]</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">upload_history</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;A list of upload tasks triggered via this client.</span>
-
-<span class="sd">        Each element of this list is a named tuple with the following attributes,</span>
-<span class="sd">        in order:</span>
-
-<span class="sd">            ``repository``:</span>
-<span class="sd">                :class:`~pubtools.pulplib.Repository` for which upload was triggered</span>
-<span class="sd">            ``task``:</span>
-<span class="sd">                :class:`~pubtools.pulplib.Task` generated as a result</span>
-<span class="sd">                of this upload</span>
-<span class="sd">            ``unit_type_id`` (str):</span>
-<span class="sd">                A string used to indicate the type of uploaded content</span>
-<span class="sd">            ``unit_key`` (dictionary):</span>
-<span class="sd">                A dictionary includes information about this upload</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">_upload_history</span><span class="p">[:]</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">_publish_history</span><span class="p">[:]</span></div>
 </pre></div>
 
           </div>
