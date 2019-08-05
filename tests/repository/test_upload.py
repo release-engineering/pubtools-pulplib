@@ -90,7 +90,7 @@ def test_upload_file(client, requests_mocker, tmpdir, caplog):
     # 4th call should be import, check if right unit_key's passed
     import_request = requests_mocker.request_history[3].json()
     import_unit_key = {
-        u"name": str(somefile),
+        u"name": somefile.basename,
         u"digest": u"fad3fc1e6d583b2003ec0a5273702ed8fcc2504271c87c40d9176467ebe218cb",
         u"size": 29,
     }
@@ -117,7 +117,7 @@ def test_get_relative_url(tmpdir, relative_url, expected):
     assert result == expected
 
 
-def test_get_relative_url_with_file_object():
+def test_get_relative_url_with_file_object(tmpdir):
     repo = FileRepository(id="some-repo")
     file_obj = io.StringIO()
 

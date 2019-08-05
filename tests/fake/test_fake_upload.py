@@ -32,7 +32,7 @@ def test_can_upload(tmpdir):
     assert len(history) == 1
     assert history[0].repository == repo1
     assert history[0].tasks == tasks
-    assert history[0].name == str(somefile)
+    assert history[0].name == somefile.basename
     assert history[0].sha256 == digest
 
 

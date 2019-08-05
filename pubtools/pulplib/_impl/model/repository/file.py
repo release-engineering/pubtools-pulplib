@@ -95,10 +95,10 @@ class FileRepository(Repository):
     def _get_relative_url(self, file_obj, relative_url):
         is_file_object = "close" in dir(file_obj)
         if not is_file_object:
+            name = os.path.basename(file_obj)
             if not relative_url:
-                relative_url = file_obj
+                relative_url = name
             elif relative_url.endswith("/"):
-                _, name = os.path.split(file_obj)
                 relative_url = os.path.join(relative_url, name)
         elif is_file_object and (not relative_url or relative_url.endswith("/")):
             msg = "%s is missing a name attribute and relative_url was not provided"
