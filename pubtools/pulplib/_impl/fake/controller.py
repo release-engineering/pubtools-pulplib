@@ -89,8 +89,8 @@ class FakeController(object):
 
             ``repository``:
                 :class:`~pubtools.pulplib.Repository` for which upload was triggered
-            ``task``:
-                :class:`~pubtools.pulplib.Task` generated as a result
+            ``tasks``:
+                list of :class:`~pubtools.pulplib.Task` generated as a result
                 of this upload
             ``name`` (str):
                 the remote path used

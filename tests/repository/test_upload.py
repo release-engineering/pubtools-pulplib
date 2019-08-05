@@ -73,10 +73,19 @@ def test_upload_file(client, requests_mocker, tmpdir, caplog):
         Task(id="task1", succeeded=True, completed=True)
     ]
 
-    # sleep for .1 second to let the whole process finish.
-    time.sleep(0.1)
-
-    assert requests_mocker.call_count == 6
+    # the 6th request call might not be done in time, try 1000
+    # times with .01 sec sleep before next try.
+    for i in range(1000):
+        time.sleep(0.01)
+        try:
+            assert requests_mocker.call_count == 6
+        except AssertionError:
+            if i != 999:
+                continue
+            else:
+                raise
+        else:
+            break
 
     # 4th call should be import, check if right unit_key's passed
     import_request = requests_mocker.request_history[3].json()
@@ -88,7 +97,7 @@ def test_upload_file(client, requests_mocker, tmpdir, caplog):
     assert import_request["unit_key"] == import_unit_key
 
     messages = caplog.messages
-    # task's spwaned and completed
+    # task's spawned and completed
     assert "Created Pulp task: task1" in messages
     assert "Pulp task completed: task1" in messages
 

@@ -105,8 +105,8 @@ class FakeClient(object):
 
     def _request_upload(self):
         upload_request = {
-            "_href": "/pulp/api/v2/content/uploads/%s/" % self._request_id(),
-            "upload_id": "%s" % self._request_id,
+            "_href": "/pulp/api/v2/content/uploads/%s/" % self._next_request_id(),
+            "upload_id": "%s" % self._next_request_id(),
         }
 
         return f_return(upload_request)
@@ -178,5 +178,5 @@ class FakeClient(object):
             next_raw_id = self._uuidgen.randint(0, 2 ** 128)
         return str(uuid.UUID(int=next_raw_id))
 
-    def _request_id(self):
+    def _next_request_id(self):
         return self._next_task_id()
