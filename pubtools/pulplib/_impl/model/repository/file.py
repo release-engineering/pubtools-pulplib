@@ -82,7 +82,7 @@ class FileRepository(Repository):
                 self.id,
                 upload_id,
                 "iso",
-                {"name": relative_url, "digest": upload[0], "size": upload[1]},
+                {"name": relative_url, "checksum": upload[0], "size": upload[1]},
             ),
         )
 

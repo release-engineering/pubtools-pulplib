@@ -52,10 +52,12 @@ def test_upload_file(client, requests_mocker, tmpdir, caplog):
         "https://pulp.example.com/pulp/api/v2/content/uploads/", json=request_body
     )
     requests_mocker.put(
-        "https://pulp.example.com/pulp/api/v2/contents/%s/0" % upload_id, json=[]
+        "https://pulp.example.com/pulp/api/v2/content/uploads/%s/0/" % upload_id,
+        json=[],
     )
     requests_mocker.put(
-        "https://pulp.example.com/pulp/api/v2/contents/%s/20" % upload_id, json=[]
+        "https://pulp.example.com/pulp/api/v2/content/uploads/%s/20/" % upload_id,
+        json=[],
     )
     requests_mocker.post(
         "https://pulp.example.com/pulp/api/v2/repositories/%s/actions/import_upload/"
@@ -91,7 +93,7 @@ def test_upload_file(client, requests_mocker, tmpdir, caplog):
     import_request = requests_mocker.request_history[3].json()
     import_unit_key = {
         u"name": somefile.basename,
-        u"digest": u"fad3fc1e6d583b2003ec0a5273702ed8fcc2504271c87c40d9176467ebe218cb",
+        u"checksum": u"fad3fc1e6d583b2003ec0a5273702ed8fcc2504271c87c40d9176467ebe218cb",
         u"size": 29,
     }
     assert import_request["unit_key"] == import_unit_key
