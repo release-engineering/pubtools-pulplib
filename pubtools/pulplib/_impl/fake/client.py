@@ -123,7 +123,7 @@ class FakeClient(object):
         task = Task(id=self._next_task_id(), completed=True, succeeded=True)
 
         self._upload_history.append(
-            Upload(repo, [task], unit_key["name"], unit_key["digest"])
+            Upload(repo, [task], unit_key["name"], unit_key["checksum"])
         )
 
         return f_return([task])

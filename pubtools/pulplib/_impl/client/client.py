@@ -335,7 +335,7 @@ class Client(object):
 
     def _do_upload(self, data, upload_id, offset):
         url = os.path.join(
-            self._url, "pulp/api/v2/contents/%s/%s" % (upload_id, offset)
+            self._url, "pulp/api/v2/content/uploads/%s/%s/" % (upload_id, offset)
         )
 
         return self._request_executor.submit(
@@ -353,7 +353,7 @@ class Client(object):
             "unit_key": unit_key,
         }
 
-        LOG.debug("Importing contents to repo %s with %s", repo_id, upload_id)
+        LOG.debug("Importing contents to repo %s with upload id %s", repo_id, upload_id)
         return self._task_executor.submit(
             self._do_request, method="POST", url=url, json=body
         )

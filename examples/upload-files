@@ -14,8 +14,8 @@ def upload(client, path, repo_id):
     uploads = []
     if os.path.isdir(path):
         for file in os.listdir(path):
+            file = os.path.join(path, file)
             if os.path.isfile(file):
-                file = os.path.join(path, file)
                 log.debug("Uploading %s to repo %s in threads", file, repo_id)
                 uploads.append(repo.upload_file(file))
     elif os.path.isfile(path):
@@ -40,7 +40,7 @@ def make_client(args):
             log.warning("No password provided for %s", args.username)
         auth = (args.username, args.password)
 
-    return Client(args.url, auth=auth)
+    return Client(args.url, auth=auth, verify=args.verify)
 
 
 def main():
@@ -56,6 +56,7 @@ def main():
         "--password", help="Pulp password (or set PULP_PASSWORD in env)"
     )
     parser.add_argument("--debug", action="store_true")
+    parser.add_argument("--verify", default=False, action="store_true")
 
     p = parser.parse_args()
 
