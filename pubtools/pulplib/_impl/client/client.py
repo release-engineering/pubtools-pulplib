@@ -1,6 +1,7 @@
 import os
 import logging
 import threading
+import hashlib
 from functools import partial
 
 import requests
@@ -56,6 +57,7 @@ class Client(object):
     _REQUEST_THREADS = int(os.environ.get("PUBTOOLS_PULPLIB_REQUEST_THREADS", "4"))
     _PAGE_SIZE = int(os.environ.get("PUBTOOLS_PULPLIB_PAGE_SIZE", "2000"))
     _TASK_THROTTLE = int(os.environ.get("PUBTOOLS_PULPLIB_TASK_THROTTLE", "200"))
+    _CHUNK_SIZE = int(os.environ.get("PUBTOOLS_PULPLIB_CHUNK_SIZE", 1024 * 1024))
 
     # Policy used when deciding whether to retry operations.
     # This is mainly provided here as a hook for autotests, so the policy can be
@@ -179,6 +181,29 @@ class Client(object):
             response_f, lambda data: self._handle_page(Repository, search, data)
         )
 
+    def _do_upload_file(self, upload_id, file_obj, name):
+        def do_next_upload(checksum, size):
+            data = file_obj.read(self._CHUNK_SIZE)
+            if data:
+                checksum.update(data)
+                return f_flat_map(
+                    self._do_upload(data, upload_id, size),
+                    lambda _: do_next_upload(checksum, size + len(data)),
+                )
+            # nothing more to upload, return checksum and size
+            return f_return((checksum.hexdigest(), size))
+
+        is_file_object = "close" in dir(file_obj)
+        if not is_file_object:
+            file_obj = open(file_obj, "rb")
+
+        LOG.info("Uploading %s to Pulp", name)
+        upload_f = f_flat_map(f_return(), lambda _: do_next_upload(hashlib.sha256(), 0))
+
+        if not is_file_object:
+            upload_f.add_done_callback(lambda _: file_obj.close())
+        return upload_f
+
     def _publish_repository(self, repo, distributors_with_config):
         tasks_f = f_return([])
 
@@ -290,7 +315,6 @@ class Client(object):
         url = os.path.join(self._url, "pulp/api/v2/{0}/search/".format(resource_type))
 
         LOG.debug("Submitting %s search: %s", url, search)
-
         return self._request_executor.submit(
             self._do_request, method="POST", url=url, json=search
         )
@@ -302,3 +326,40 @@ class Client(object):
 
         LOG.debug("Queuing request to DELETE %s", url)
         return self._task_executor.submit(self._do_request, method="DELETE", url=url)
+
+    def _request_upload(self):
+        url = os.path.join(self._url, "pulp/api/v2/content/uploads/")
+
+        LOG.debug("Requesting upload id")
+        return self._request_executor.submit(self._do_request, method="POST", url=url)
+
+    def _do_upload(self, data, upload_id, offset):
+        url = os.path.join(
+            self._url, "pulp/api/v2/content/uploads/%s/%s/" % (upload_id, offset)
+        )
+
+        return self._request_executor.submit(
+            self._do_request, method="PUT", url=url, data=data
+        )
+
+    def _do_import(self, repo_id, upload_id, unit_type_id, unit_key):
+        url = os.path.join(
+            self._url, "pulp/api/v2/repositories/%s/actions/import_upload/" % repo_id
+        )
+
+        body = {
+            "unit_type_id": unit_type_id,
+            "upload_id": upload_id,
+            "unit_key": unit_key,
+        }
+
+        LOG.debug("Importing contents to repo %s with upload id %s", repo_id, upload_id)
+        return self._task_executor.submit(
+            self._do_request, method="POST", url=url, json=body
+        )
+
+    def _delete_upload_request(self, upload_id):
+        url = os.path.join(self._url, "pulp/api/v2/content/uploads/%s/" % upload_id)
+
+        LOG.debug("Deleting upload request %s", upload_id)
+        return self._request_executor.submit(self._do_request, method="DELETE", url=url)
