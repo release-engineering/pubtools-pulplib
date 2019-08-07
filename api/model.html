@@ -255,12 +255,10 @@ during the publish operation.</p>
 Else, it ought to be a
 <a class="reference external" href="https://docs.python.org/3/glossary.html#term-file-object">file-like object</a>.</p></li>
 <li><p><strong>relative_url</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – <p>Path that should be used in remote repository, can either
-be a path to a directory or a path to a file, e.g:
-- if relative_url is ‘foo/bar/’ and file_obj has name ‘f.txt’,</p>
-<blockquote>
-<div><p>the resulting remote path wll be ‘foo/bar/f.txt’.</p>
-</div></blockquote>
+be a path to a directory or a path to a file, e.g:</p>
 <ul>
+<li><p>if relative_url is ‘foo/bar/’ and file_obj has name ‘f.txt’,
+the resulting remote path wll be ‘foo/bar/f.txt’.</p></li>
 <li><p>if relative_url is ‘foo/bar/f.txt’, no matter what the
 name of file_obj is, the remote path is ‘foo/bar/f.txt’.</p></li>
 </ul>
