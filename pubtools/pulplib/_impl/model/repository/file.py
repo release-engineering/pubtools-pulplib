@@ -43,8 +43,10 @@ class FileRepository(Repository):
             relative_url (str)
                 Path that should be used in remote repository, can either
                 be a path to a directory or a path to a file, e.g:
+
                 - if relative_url is 'foo/bar/' and file_obj has name 'f.txt',
                   the resulting remote path wll be 'foo/bar/f.txt'.
+
                 - if relative_url is 'foo/bar/f.txt', no matter what the
                   name of file_obj is, the remote path is 'foo/bar/f.txt'.
 
