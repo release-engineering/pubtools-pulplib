@@ -34,6 +34,18 @@ def test_bad_created():
         Repository.from_data({"id": "some-repo", "notes": {"created": "whoops"}})
 
 
+def test_is_temporary():
+    """from_data is_temporary is True if expected note is present"""
+    repo = Repository.from_data({"id": "some-repo", "notes": {"pub_temp_repo": True}})
+    assert repo.is_temporary
+
+
+def test_is_not_temporary():
+    """from_data is_temporary is False by default"""
+    repo = Repository.from_data({"id": "some-repo"})
+    assert not repo.is_temporary
+
+
 def test_attr_created():
     """from_data sets created attribute appropriately"""
     repo = Repository.from_data(

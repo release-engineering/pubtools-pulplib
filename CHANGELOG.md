@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- n/a
+### Added
+- Introduced ``Repository.is_temporary`` attribute
 
 ## [1.2.1] - 2019-08-12
 
