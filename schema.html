@@ -123,6 +123,11 @@ properties:
       signatures:
         type: string
 
+      # True if this is considered a temporary repository, created for
+      # use during certain workflows and deleted later
+      pub_temp_repo:
+        type: boolean
+
   # List of repository distributors.
   # Note that order matters in this list.
   distributors:
