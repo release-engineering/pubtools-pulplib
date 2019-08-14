@@ -1,5 +1,7 @@
 import datetime
 
+import pytest
+
 from pubtools.pulplib import FakeController, Repository, Criteria, Matcher
 
 
@@ -169,9 +171,11 @@ def test_search_bad_criteria():
     controller.insert_repository(repo1)
 
     client = controller.client
-    assert "Unsupported criteria" in str(
-        client.search_repository("not a valid criteria").exception()
-    )
+
+    with pytest.raises(Exception) as exc:
+        client.search_repository("not a valid criteria")
+
+    assert "Not a criteria" in str(exc.value)
 
 
 def test_search_created_timestamp():

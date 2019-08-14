@@ -33,8 +33,6 @@ def match_object(*args, **kwargs):
         if isinstance(dispatch, klass):
             return func(*args, **kwargs)
 
-    raise TypeError("Unsupported criteria/matcher: %s" % repr(dispatch))
-
 
 @visit(TrueCriteria)
 def match_true(*_):

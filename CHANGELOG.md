@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Introduced ``Repository.is_temporary`` attribute
 
+### Fixed
+- Fixed inconsistency between real and fake clients: both clients now immediately raise
+  if a search is attempted with invalid criteria.  Previously, the fake client would
+  instead return a failed `Future`.
+
 ## [1.2.1] - 2019-08-12
 
 ### Fixed
