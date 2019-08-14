@@ -46,3 +46,4 @@ ib = attr.ib
 Factory = attr.Factory
 fields = attr.fields
 evolve = attr.evolve
+has = attr.has
