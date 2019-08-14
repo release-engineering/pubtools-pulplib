@@ -8,7 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Introduced ``Repository.is_temporary`` attribute
+- Introduced ``Repository.is_temporary`` attribute.
+- Extended search functionality; it is now possible to search using fields defined
+  on the `PulpObject` classes. Searching on raw Pulp fields remains supported.
 
 ### Fixed
 - Fixed inconsistency between real and fake clients: both clients now immediately raise

@@ -199,6 +199,66 @@ def test_search_created_timestamp():
     assert sorted(found) == [repo2]
 
 
+def test_search_mapped_field_eq():
+    """Can do equality search with fields subject to Python<=>Pulp conversion."""
+    controller = FakeController()
+
+    repo1 = Repository(id="repo1", eng_product_id=888)
+    repo2 = Repository(id="repo2", signing_keys=["foo", "bar"])
+    repo3 = Repository(id="repo3", eng_product_id=123)
+
+    controller.insert_repository(repo1)
+    controller.insert_repository(repo2)
+    controller.insert_repository(repo3)
+
+    client = controller.client
+    keys_crit = Criteria.with_field("signing_keys", ["foo", "bar"])
+    product_crit = Criteria.with_field("eng_product_id", 123)
+    found_by_keys = client.search_repository(keys_crit).result().data
+    found_by_product = client.search_repository(product_crit).result().data
+
+    assert found_by_keys == [repo2]
+    assert found_by_product == [repo3]
+
+
+def test_search_mapped_field_in():
+    """Can do 'in' search with fields subject to Python<=>Pulp conversion."""
+    controller = FakeController()
+
+    repo1 = Repository(id="repo1", eng_product_id=888)
+    repo2 = Repository(id="repo2", eng_product_id=123)
+    repo3 = Repository(id="repo3", eng_product_id=456)
+
+    controller.insert_repository(repo1)
+    controller.insert_repository(repo2)
+    controller.insert_repository(repo3)
+
+    client = controller.client
+    crit = Criteria.with_field("eng_product_id", Matcher.in_([123, 456]))
+    found = client.search_repository(crit).result().data
+
+    assert sorted(found) == [repo2, repo3]
+
+
+def test_search_mapped_field_regex():
+    """Can do regex search with fields subject to Python<=>Pulp conversion."""
+    controller = FakeController()
+
+    repo1 = Repository(id="repo1", type="foobar")
+    repo2 = Repository(id="repo2", type="foobaz")
+    repo3 = Repository(id="repo3", type="quux")
+
+    controller.insert_repository(repo1)
+    controller.insert_repository(repo2)
+    controller.insert_repository(repo3)
+
+    client = controller.client
+    crit = Criteria.with_field("type", Matcher.regex("fooba[rz]"))
+    found = client.search_repository(crit).result().data
+
+    assert sorted(found) == [repo1, repo2]
+
+
 def test_search_created_regex():
     """Can search using regular expressions."""
 

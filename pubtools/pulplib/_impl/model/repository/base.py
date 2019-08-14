@@ -101,7 +101,11 @@ class Repository(PulpObject):
     """
 
     eng_product_id = pulp_attrib(
-        default=None, type=int, pulp_field="notes.eng_product", pulp_py_converter=int
+        default=None,
+        type=int,
+        pulp_field="notes.eng_product",
+        pulp_py_converter=int,
+        py_pulp_converter=str,
     )
     """ID of the product to which this repository belongs (if any)."""
 
@@ -134,6 +138,7 @@ class Repository(PulpObject):
         type=list,
         pulp_field="notes.signatures",
         pulp_py_converter=lambda sigs: sigs.split(","),
+        py_pulp_converter=",".join,
         converter=lambda keys: [k.strip() for k in keys],
     )
     """A list of GPG signing key IDs used to sign content in this repository."""
