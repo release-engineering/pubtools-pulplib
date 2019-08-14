@@ -116,6 +116,19 @@ class Repository(PulpObject):
     """True if this is a sigstore repository, used for container image manifest
     signatures."""
 
+    is_temporary = pulp_attrib(
+        default=False, type=bool, pulp_field="notes.pub_temp_repo"
+    )
+    """True if this is a temporary repository.
+
+    A temporary repository is a repository created by release-engineering tools
+    for temporary use during certain workflows.  Such repos are not expected to
+    be published externally and generally should have a lifetime of a few days
+    or less.
+
+    .. versionadded:: 1.3.0
+    """
+
     signing_keys = pulp_attrib(
         default=attr.Factory(list),
         type=list,
