@@ -165,3 +165,25 @@ def test_get_missing(client, requests_mocker):
 
     # It should explain the problem
     assert "repo1 was not found" in str(error.value)
+
+
+def test_can_get_maintenance_status(client, requests_mocker):
+    maintenance_status = {
+        "last_updated": "2019-08-15T14:21:12.448444",
+        "last_updated_by": "Content Delivery",
+        "repos": {
+            "repo1": {
+                "message": "Maintenance Mode Enabled",
+                "owner": "Content Delivery",
+                "started": "2019-08-15T14:21:12.448444",
+            }
+        },
+    }
+    requests_mocker.get(
+        "https://pulp.example.com/pulp/isos/redhat-maintenance/repos.json",
+        json=maintenance_status,
+    )
+
+    maintenance = client.get_maintenance_status().result()
+
+    assert requests_mocker.call_count == 1

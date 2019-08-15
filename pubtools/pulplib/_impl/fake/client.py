@@ -31,6 +31,7 @@ class FakeClient(object):
         self._repositories = []
         self._publish_history = []
         self._upload_history = []
+        self._maintenance_status = {"repos": {}, "last_updated_by": "Content Delivery"}
         self._lock = threading.RLock()
         self._uuidgen = random.Random()
         self._uuidgen.seed(0)
@@ -81,6 +82,9 @@ class FakeClient(object):
             )
 
         return f_return(data[0])
+
+    def get_maintenance_status(self):
+        return f_return(self._maintenance_status)
 
     def _do_upload_file(self, upload_id, file_obj, name):
         # pylint: disable=unused-argument

@@ -181,6 +181,15 @@ class Client(object):
             response_f, lambda data: self._handle_page(Repository, search, data)
         )
 
+    def get_maintenance_status(self):
+        """Get maintenance status from maintenance repository
+
+        Returns:
+            Future[dict]
+                A future wraps a dictionary indicates the status of maintenance
+        """
+        return self._do_get_maintenance()
+
     def _do_upload_file(self, upload_id, file_obj, name):
         def do_next_upload(checksum, size):
             data = file_obj.read(self._CHUNK_SIZE)
@@ -363,3 +372,8 @@ class Client(object):
 
         LOG.debug("Deleting upload request %s", upload_id)
         return self._request_executor.submit(self._do_request, method="DELETE", url=url)
+
+    def _do_get_maintenance(self):
+        url = os.path.join(self._url, "pulp/isos/redhat-maintenance/repos.json")
+
+        return self._request_executor.submit(self._do_request, method="GET", url=url)

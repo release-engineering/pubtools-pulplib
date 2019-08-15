@@ -1,0 +1,57 @@
+#!/usr/bin/env python
+import os
+import logging
+from argparse import ArgumentParser
+
+from pubtools.pulplib import Client
+
+log = logging.getLogger("get-maintenance")
+
+
+def get_maintenance(client):
+
+    maintenance = client.get_maintenance_status().result()
+    log.info("maintenance status: %s", maintenance)
+
+def make_client(args):
+    auth = None
+
+    if args.username:
+        password = args.password
+        if password is None:
+            password = os.environ.get("PULP_PASSWORD")
+        if not password:
+            log.warning("No password provided for %s", args.username)
+        auth = (args.username, args.password)
+
+    return Client(args.url, auth=auth, verify=not args.insecure)
+
+
+def main():
+    log.setLevel(logging.INFO)
+    logging.basicConfig(format="%(message)s", level=logging.INFO)
+
+    parser = ArgumentParser(description="Get maintenance status of Pulp")
+    parser.add_argument("--url", help="Pulp server URL")
+    parser.add_argument("--username", help="Pulp username")
+    parser.add_argument(
+        "--password", help="Pulp password (or set PULP_PASSWORD in env)"
+    )
+    parser.add_argument("--debug", action="store_true")
+    parser.add_argument("--insecure", default=False, action="store_true")
+
+    p = parser.parse_args()
+
+    if not p.url:
+        parser.error("--url is required")
+
+    if p.debug:
+        logging.getLogger("pubtools.pulplib").setLevel(logging.DEBUG)
+        log.setLevel(logging.DEBUG)
+
+    client = make_client(p)
+    return get_maintenance(client)
+
+
+if __name__ == "__main__":
+    main()
