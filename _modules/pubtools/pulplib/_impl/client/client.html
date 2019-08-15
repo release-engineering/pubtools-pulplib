@@ -201,7 +201,7 @@
         <span class="n">pulp_crit</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;skip&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
             <span class="s2">&quot;limit&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_PAGE_SIZE</span><span class="p">,</span>
-            <span class="s2">&quot;filters&quot;</span><span class="p">:</span> <span class="n">filters_for_criteria</span><span class="p">(</span><span class="n">criteria</span><span class="p">),</span>
+            <span class="s2">&quot;filters&quot;</span><span class="p">:</span> <span class="n">filters_for_criteria</span><span class="p">(</span><span class="n">criteria</span><span class="p">,</span> <span class="n">Repository</span><span class="p">),</span>
         <span class="p">}</span>
         <span class="n">search</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;criteria&quot;</span><span class="p">:</span> <span class="n">pulp_crit</span><span class="p">,</span> <span class="s2">&quot;distributors&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
 

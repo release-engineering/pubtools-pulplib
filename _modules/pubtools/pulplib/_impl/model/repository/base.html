@@ -134,7 +134,11 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">eng_product_id</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;notes.eng_product&quot;</span><span class="p">,</span> <span class="n">pulp_py_converter</span><span class="o">=</span><span class="nb">int</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+        <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;notes.eng_product&quot;</span><span class="p">,</span>
+        <span class="n">pulp_py_converter</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+        <span class="n">py_pulp_converter</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="sd">&quot;&quot;&quot;ID of the product to which this repository belongs (if any).&quot;&quot;&quot;</span>
 
@@ -167,6 +171,7 @@
         <span class="nb">type</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span>
         <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;notes.signatures&quot;</span><span class="p">,</span>
         <span class="n">pulp_py_converter</span><span class="o">=</span><span class="k">lambda</span> <span class="n">sigs</span><span class="p">:</span> <span class="n">sigs</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">),</span>
+        <span class="n">py_pulp_converter</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">,</span>
         <span class="n">converter</span><span class="o">=</span><span class="k">lambda</span> <span class="n">keys</span><span class="p">:</span> <span class="p">[</span><span class="n">k</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">],</span>
     <span class="p">)</span>
     <span class="sd">&quot;&quot;&quot;A list of GPG signing key IDs used to sign content in this repository.&quot;&quot;&quot;</span>

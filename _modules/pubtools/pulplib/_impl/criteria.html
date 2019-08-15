@@ -98,8 +98,12 @@
 <span class="sd">            field_name (str)</span>
 <span class="sd">                The name of a field.</span>
 
-<span class="sd">                Field names may contain a &quot;.&quot; to indicate nested fields,</span>
-<span class="sd">                such as ``notes.created``.</span>
+<span class="sd">                Supported field names include both model fields</span>
+<span class="sd">                and Pulp fields.  See :ref:`model_fields` for information</span>
+<span class="sd">                about these two types of fields.</span>
+
+<span class="sd">                When Pulp fields are used, field names may contain a &quot;.&quot; to</span>
+<span class="sd">                indicate nesting, such as ``notes.created``.</span>
 
 <span class="sd">            field_value</span>
 <span class="sd">                :class:`Matcher`</span>
@@ -246,7 +250,13 @@
 <span class="sd">                    Matcher.in_([&quot;a&quot;, &quot;b&quot;, &quot;c&quot;])</span>
 <span class="sd">                )</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">InMatcher</span><span class="p">(</span><span class="n">values</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">InMatcher</span><span class="p">(</span><span class="n">values</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_fn</span><span class="p">):</span>
+        <span class="c1"># Internal-only: return self with matched value mapped through</span>
+        <span class="c1"># the given function. Intended to be overridden in subclasses</span>
+        <span class="c1"># to support field conversions between Pulp and Python.</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
 
 
 <span class="nd">@attr</span><span class="o">.</span><span class="n">s</span>
@@ -257,10 +267,16 @@
     <span class="k">def</span> <span class="nf">_check_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">pattern</span><span class="p">):</span>
         <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
 
+    <span class="c1"># Note: regex matcher does not implement _map since regex is defined only</span>
+    <span class="c1"># in terms of strings, there are no meaningful conversions.</span>
+
 
 <span class="nd">@attr</span><span class="o">.</span><span class="n">s</span>
 <span class="k">class</span> <span class="nc">EqMatcher</span><span class="p">(</span><span class="n">Matcher</span><span class="p">):</span>
     <span class="n">_value</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">attr</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">fn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="p">))</span>
 
 
 <span class="nd">@attr</span><span class="o">.</span><span class="n">s</span>
@@ -272,6 +288,9 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">string_types</span><span class="p">):</span>
             <span class="k">return</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Must be an iterable: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">repr</span><span class="p">(</span><span class="n">values</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">attr</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="n">fn</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">])</span>
 
 
 <span class="nd">@attr</span><span class="o">.</span><span class="n">s</span>

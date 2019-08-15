@@ -34,6 +34,29 @@
             
   <div class="section" id="searching">
 <h1>Searching<a class="headerlink" href="#searching" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="model-vs-pulp-fields">
+<span id="model-fields"></span><h2>Model vs Pulp fields<a class="headerlink" href="#model-vs-pulp-fields" title="Permalink to this headline">¶</a></h2>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.3.0.</span></p>
+</div>
+<p>The <a class="reference internal" href="#pubtools.pulplib.Criteria" title="pubtools.pulplib.Criteria"><code class="xref py py-class docutils literal notranslate"><span class="pre">Criteria</span></code></a> and <a class="reference internal" href="#pubtools.pulplib.Matcher" title="pubtools.pulplib.Matcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">Matcher</span></code></a>
+classes are able to operate on two types of fields:</p>
+<ul class="simple">
+<li><p>Model fields: fields documented on the <a class="reference internal" href="model.html#pubtools.pulplib.PulpObject" title="pubtools.pulplib.PulpObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">PulpObject</span></code></a>
+class hierarchy.  <code class="docutils literal notranslate"><span class="pre">eng_product_id</span></code> from the
+<a class="reference internal" href="model.html#pubtools.pulplib.Repository" title="pubtools.pulplib.Repository"><code class="xref py py-class docutils literal notranslate"><span class="pre">Repository</span></code></a> class is an example of a model field.</p></li>
+<li><p>Pulp fields: any arbitrary fields within the Pulp 2.x database.
+<code class="docutils literal notranslate"><span class="pre">notes.eng_product</span></code> is an example of a Pulp field.</p></li>
+</ul>
+<p>Generally, searching on model fields should be preferred when possible,
+as this allows your code to avoid a dependency on Pulp implementation details
+and allows you to use the same field names everywhere.</p>
+<p>However, not all model fields support this, as not every model field has
+a direct mapping with a Pulp field.  Attempting to search on an unsupported
+model field will raise an exception.</p>
+</div>
+<div class="section" id="class-reference">
+<h2>Class reference<a class="headerlink" href="#class-reference" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="pubtools.pulplib.Criteria">
 <em class="property">class </em><code class="sig-prename descclassname">pubtools.pulplib.</code><code class="sig-name descname">Criteria</code><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/criteria.html#Criteria"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.Criteria" title="Permalink to this definition">¶</a></dt>
@@ -81,8 +104,11 @@ composed by calls to the documented class methods.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>field_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – <p>The name of a field.</p>
-<p>Field names may contain a “.” to indicate nested fields,
-such as <code class="docutils literal notranslate"><span class="pre">notes.created</span></code>.</p>
+<p>Supported field names include both model fields
+and Pulp fields.  See <a class="reference internal" href="#model-fields"><span class="std std-ref">Model vs Pulp fields</span></a> for information
+about these two types of fields.</p>
+<p>When Pulp fields are used, field names may contain a “.” to
+indicate nesting, such as <code class="docutils literal notranslate"><span class="pre">notes.created</span></code>.</p>
 </p></li>
 <li><p><strong>field_value</strong> – <dl class="simple">
 <dt><a class="reference internal" href="#pubtools.pulplib.Matcher" title="pubtools.pulplib.Matcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">Matcher</span></code></a></dt><dd><p>A matcher to be applied against the field.</p>
@@ -303,6 +329,7 @@ yet completed.</p>
 
 </dd></dl>
 
+</div>
 </div>
 
 
