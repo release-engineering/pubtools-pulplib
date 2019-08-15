@@ -2,13 +2,23 @@ import random
 import uuid
 import threading
 import hashlib
+import json
 
 from collections import namedtuple
 
 import six
+from six.moves import StringIO
+
 from more_executors.futures import f_return, f_return_error, f_flat_map
 
-from pubtools.pulplib import Page, PulpException, Criteria, Task
+from pubtools.pulplib import (
+    Page,
+    PulpException,
+    Criteria,
+    Matcher,
+    Task,
+    MaintenanceReport,
+)
 from .. import compat_attr as attr
 
 from .match import match_object
@@ -31,6 +41,7 @@ class FakeClient(object):
         self._repositories = []
         self._publish_history = []
         self._upload_history = []
+        self._maintenance_report = None
         self._lock = threading.RLock()
         self._uuidgen = random.Random()
         self._uuidgen.seed(0)
@@ -82,6 +93,38 @@ class FakeClient(object):
 
         return f_return(data[0])
 
+    def get_maintenance_report(self):
+        if self._maintenance_report:
+            return MaintenanceReport.from_data(json.loads(self._maintenance_report))
+        return None
+
+    def set_maintenance(self, regex, enable=True, **kwargs):
+        report = self.get_maintenance_report()
+        if not report:
+            if enable:
+                report = MaintenanceReport()
+            else:
+                return None
+
+        if enable:
+            crit = Criteria.with_field("id", Matcher.regex(regex))
+            repos = self.search_repository(crit).result()
+            repo_ids = [repo.id for repo in repos.as_iter()]
+            report.add(repo_ids, **kwargs)
+        else:
+            report.remove(regex, **kwargs)
+
+        repo = self.get_repository("redhat-maintenance").result()
+
+        # upload updated report to repository and publish
+        report_json = report.json()
+        report_fileobj = StringIO(report_json)
+        repo.upload_file(report_fileobj, "repos.json").result()
+        repo.publish().result()
+
+        self._maintenance_report = report_json
+        return report_json
+
     def _do_upload_file(self, upload_id, file_obj, name):
         # pylint: disable=unused-argument
         is_file_obj = "close" in dir(file_obj)
@@ -91,6 +134,8 @@ class FakeClient(object):
         def do_next_upload(checksum, size):
             data = file_obj.read(1024 * 1024)
             if data:
+                if isinstance(data, six.text_type):
+                    data = data.encode("utf-8")
                 checksum.update(data)
                 size += len(data)
                 return do_next_upload(checksum, size)

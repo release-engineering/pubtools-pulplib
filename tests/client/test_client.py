@@ -1,7 +1,16 @@
 import logging
+import json
 import pytest
 import requests_mock
-from pubtools.pulplib import Client, Criteria, Repository, PulpException
+from mock import patch
+
+from pubtools.pulplib import (
+    Client,
+    Criteria,
+    Repository,
+    PulpException,
+    MaintenanceReport,
+)
 
 
 def test_can_construct(requests_mocker):
@@ -165,3 +174,172 @@ def test_get_missing(client, requests_mocker):
 
     # It should explain the problem
     assert "repo1 was not found" in str(error.value)
+
+
+def test_can_get_maintenance_report(client, requests_mocker):
+    maintenance_report = {
+        "last_updated": "2019-08-15T14:21:12Z",
+        "last_updated_by": "Content Delivery",
+        "repos": {
+            "repo1": {
+                "message": "Maintenance Mode Enabled",
+                "owner": "Content Delivery",
+                "started": "2019-08-15T14:21:12Z",
+            }
+        },
+    }
+    requests_mocker.get(
+        "https://pulp.example.com/pulp/isos/redhat-maintenance/repos.json",
+        json=maintenance_report,
+    )
+
+    report = client.get_maintenance_report()
+
+    assert requests_mocker.call_count == 1
+    assert isinstance(report, MaintenanceReport)
+    assert report.last_updated_by == "Content Delivery"
+    assert report.last_updated == "2019-08-15T14:21:12Z"
+    assert report.repos["repo1"].message == "Maintenance Mode Enabled"
+
+
+def test_non_maintenance_report(client, requests_mocker):
+    requests_mocker.get(
+        "https://pulp.example.com/pulp/isos/redhat-maintenance/repos.json",
+        text="Not Found",
+        status_code=404,
+    )
+
+    assert client.get_maintenance_report() is None
+
+
+def test_set_maintenance_on(client, requests_mocker):
+    original_report = {
+        "last_updated": "2019-08-15T14:21:12Z",
+        "last_updated_by": "Content Delivery",
+        "repos": {},
+    }
+    requests_mocker.post(
+        "https://pulp.example.com/pulp/api/v2/repositories/search/",
+        [
+            {"json": [{"id": "repo1"}]},
+            {
+                "json": [
+                    {"id": "redhat-maintenance", "notes": {"_repo-type": "iso-repo"}}
+                ]
+            },
+        ],
+    )
+
+    requests_mocker.get(
+        "https://pulp.example.com/pulp/isos/redhat-maintenance/repos.json",
+        json=original_report,
+    )
+
+    regex = "repo1"
+    owner = "someone"
+    message = "I want to set it"
+
+    with patch("pubtools.pulplib.FileRepository.upload_file") as mocked_upload:
+        with patch("pubtools.pulplib.Repository.publish") as mocked_publish:
+            report = client.set_maintainenance(regex, owner=owner, message=message)
+
+    report = json.loads(report)
+
+    assert "repo1" in report["repos"].keys()
+    assert report["repos"]["repo1"]["message"] == message
+    assert report["repos"]["repo1"]["owner"] == owner
+    assert report["last_updated_by"] == owner
+    assert mocked_publish.call_count == 1
+    assert mocked_upload.call_count == 1
+
+
+def test_set_maintenance_off(client, requests_mocker):
+    original_report = {
+        "last_updated": "2019-08-15T14:21:12Z",
+        "last_updated_by": "Content Delivery",
+        "repos": {
+            "repo1": {
+                "message": "Maintenance Mode Enabled",
+                "owner": "Content Delivery",
+                "started": "2019-08-15T14:21:12Z",
+            },
+            "repo2": {
+                "message": "Maintenance Mode Enabled",
+                "owner": "Content Delivery",
+                "started": "2019-08-15T14:21:12Z",
+            },
+        },
+    }
+    requests_mocker.get(
+        "https://pulp.example.com/pulp/isos/redhat-maintenance/repos.json",
+        json=original_report,
+    )
+
+    requests_mocker.post(
+        "https://pulp.example.com/pulp/api/v2/repositories/search/",
+        json=[{"id": "redhat-maintenance", "notes": {"_repo-type": "iso-repo"}}],
+    )
+
+    regex = "repo1"
+    owner = "someone"
+
+    with patch("pubtools.pulplib.FileRepository.upload_file") as mocked_upload:
+        with patch("pubtools.pulplib.Repository.publish") as mocked_publish:
+            report = client.set_maintainenance(regex, enable=False, owner=owner)
+
+    report = json.loads(report)
+
+    assert report["last_updated_by"] == owner
+    assert "repo2" in report["repos"].keys()
+    assert "repo1" not in report["repos"].keys()
+    assert mocked_publish.call_count == 1
+    assert mocked_upload.call_count == 1
+
+
+def test_set_maintenance_on_first_time(client, requests_mocker):
+    requests_mocker.post(
+        "https://pulp.example.com/pulp/api/v2/repositories/search/",
+        [
+            {"json": [{"id": "repo1"}]},
+            {
+                "json": [
+                    {"id": "redhat-maintenance", "notes": {"_repo-type": "iso-repo"}}
+                ]
+            },
+        ],
+    )
+
+    requests_mocker.get(
+        "https://pulp.example.com/pulp/isos/redhat-maintenance/repos.json",
+        text="Not Found",
+        status_code=404,
+    )
+
+    regex = "repo1"
+    owner = "someone"
+    message = "I want to set it"
+
+    with patch("pubtools.pulplib.FileRepository.upload_file") as mocked_upload:
+        with patch("pubtools.pulplib.Repository.publish") as mocked_publish:
+            report = client.set_maintainenance(regex, owner=owner, message=message)
+
+    report = json.loads(report)
+
+    assert "repo1" in report["repos"].keys()
+    assert report["repos"]["repo1"]["message"] == message
+    assert report["repos"]["repo1"]["owner"] == owner
+    assert report["last_updated_by"] == owner
+    assert mocked_publish.call_count == 1
+    assert mocked_upload.call_count == 1
+
+
+def test_set_maintenance_off_without_report_in_repo(client, requests_mocker, caplog):
+    requests_mocker.get(
+        "https://pulp.example.com/pulp/isos/redhat-maintenance/repos.json",
+        text="Not Found",
+        status_code=404,
+    )
+
+    assert client.set_maintainenance("", enable=False) is None
+
+    assert "No repository is in maintenance mode, exit" in caplog.messages

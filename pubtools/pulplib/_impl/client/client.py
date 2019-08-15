@@ -4,13 +4,16 @@ import threading
 import hashlib
 from functools import partial
 
+import six
+from six.moves import StringIO
+
 import requests
 from more_executors import Executors
 from more_executors.futures import f_map, f_flat_map, f_return
 
 from ..page import Page
-from ..criteria import Criteria
-from ..model import Repository
+from ..criteria import Criteria, Matcher
+from ..model import Repository, MaintenanceReport
 from .search import filters_for_criteria
 from .errors import PulpException
 from .poller import TaskPoller
@@ -181,10 +184,87 @@ class Client(object):
             response_f, lambda data: self._handle_page(Repository, search, data)
         )
 
+    def get_maintenance_report(self):
+        """Get maintenance report from maintenance repository
+
+        Returns:
+            :class:`~pubtools.pulplib.MaintenceReport` object describes the
+            maintenance status
+
+            None if there's no report in the repository
+        """
+        try:
+            data = self._do_get_maintenance().result()
+        except requests.exceptions.HTTPError:
+            # if the maintenance mode hasn't been used before, then it could return
+            # HTTPError 404.
+            LOG.warning("No maintenance info found")
+            return None
+
+        return MaintenanceReport.from_data(data)
+
+    def set_maintainenance(self, regex, enable=True, **kwargs):
+        """Set repositories to maintenance mode.
+
+        Args:
+            regex (str):
+                A python regular expression pattern used to match repositories.
+
+            enable (bool):
+                If enable, then set the matched repositories to maintenance mode.
+                If not enable, unset the maintenance more for the matched repositories.
+
+            Optional keyword args:
+                owner (str):
+                    Person/party who set/unset maintenance mode.
+                message (str):
+                    Reason why set repositories to maintenance mode, doesn't have
+                    any effect if enable is False.
+
+        Return:
+            A result report in json format (str)
+        """
+        report = self.get_maintenance_report()
+        if not report:
+            if enable:
+                # create an empty report for later use.
+                report = MaintenanceReport()
+            else:
+                # if no maintenance info's found and user wants to unset
+                # maintenance mode, simply return None.
+                LOG.warning("No repository is in maintenance mode, exit")
+                return None
+
+        if enable:
+            # search repos match the regex and set to maintenance
+            crit = Criteria.with_field("id", Matcher.regex(regex))
+            repos = self.search_repository(crit).result()
+            repo_ids = [repo.id for repo in repos.as_iter()]
+            report.add(repo_ids, **kwargs)
+        elif not enable:
+            report.remove(regex, **kwargs)
+
+        repo = self.get_repository("redhat-maintenance").result()
+
+        # upload updated report to repository and publish
+        report_json = report.json()
+        report_fileobj = StringIO(report_json)
+        repo.upload_file(report_fileobj, "repos.json").result()
+        LOG.debug("Maintenance file uploaded in redhat-maintenance repository")
+
+        repo.publish().result()
+        LOG.debug("Maintenance status published")
+
+        # return the json dumped report, so caller could see the result directly.
+        return report_json
+
     def _do_upload_file(self, upload_id, file_obj, name):
         def do_next_upload(checksum, size):
             data = file_obj.read(self._CHUNK_SIZE)
             if data:
+                if isinstance(data, six.text_type):
+                    # if it's unicode, need to encode before calculate checksum
+                    data = data.encode("utf-8")
                 checksum.update(data)
                 return f_flat_map(
                     self._do_upload(data, upload_id, size),
@@ -363,3 +443,8 @@ class Client(object):
 
         LOG.debug("Deleting upload request %s", upload_id)
         return self._request_executor.submit(self._do_request, method="DELETE", url=url)
+
+    def _do_get_maintenance(self):
+        url = os.path.join(self._url, "pulp/isos/redhat-maintenance/repos.json")
+
+        return self._request_executor.submit(self._do_request, method="GET", url=url)

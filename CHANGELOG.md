@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Introduced ``Repository.is_temporary`` attribute
+- Support set maintenance mode of pulp repositories
+
+### Fixed
+- Fix can't calculate checksum if file object contains unicode data during upload
 
 ## [1.2.1] - 2019-08-12
 

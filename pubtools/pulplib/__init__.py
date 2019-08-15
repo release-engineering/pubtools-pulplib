@@ -12,5 +12,6 @@ from ._impl.model import (
     Distributor,
     PublishOptions,
     Task,
+    MaintenanceReport,
 )
 from ._impl.fake import FakeController
