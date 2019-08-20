@@ -112,7 +112,7 @@ def match_field_regex(matcher, field, obj):
 @visit(ExistsMatcher)
 def match_field_exists(_matcher, field, obj):
     value = get_field(field, obj)
-    return value is not ABSENT
+    return value not in [ABSENT, None]
 
 
 @visit(InMatcher)
