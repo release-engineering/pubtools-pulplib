@@ -100,19 +100,3 @@ class FakeController(object):
                 checksum of the file uploaded
         """
         return self.client._upload_history[:]
-
-    def update_maintenance_file(self):
-        for repo in self.client._repositories[::2]:
-            self.client._maintenance_status["repos"].update(
-                {
-                    repo.id: {
-                        "message": "Maintenannce Mode Enabled",
-                        "Owner": "Content Delivery",
-                        "started": self._iso_time_now(),
-                    }
-                }
-            )
-        self.client._maintenance_status.update({"last_updated": self._iso_time_now()})
-
-    def _iso_time_now(self):
-        return datetime.datetime.now().isoformat()

@@ -8,6 +8,7 @@ from ..attr import pulp_attrib
 from ..distributor import Distributor
 from ...schema import load_schema
 from ... import compat_attr as attr
+from ...criteria import Criteria
 
 
 LOG = logging.getLogger("pubtools.pulplib")
@@ -241,6 +242,16 @@ class Repository(PulpObject):
             to_publish.append((distributor, config))
 
         return self._client._publish_repository(self, to_publish)
+
+    def unassociate_unit(self, type_ids, filters):
+        if not self._client:
+            raise DetachedException()
+
+        criterias = []
+        for key, value in filters.iteritems():
+            criterias.append(Criteria.with_field(key, value))
+
+        return self._client._unassociate_unit(self, type_ids, Criteria.and_(*criterias))
 
     @classmethod
     def from_data(cls, data):

@@ -5,13 +5,17 @@ from argparse import ArgumentParser
 
 from pubtools.pulplib import Client
 
-log = logging.getLogger("get-maintenance")
+log = logging.getLogger("set-maintenance")
 
 
-def get_maintenance(client):
+def set_maintenance(client, regex):
 
-    maintenance = client.get_maintenance_status().result()
-    log.info("maintenance status: %s", maintenance)
+    report = client.set_maintainenance(regex)
+    log.info("maintenance mode set: %s", report)
+
+    client.set_maintainenance(regex, enable=False)
+    report = client.get_maintenance_report().json()
+    log.info("maintenance mode unset: %s", report)
 
 def make_client(args):
     auth = None
@@ -31,7 +35,7 @@ def main():
     log.setLevel(logging.INFO)
     logging.basicConfig(format="%(message)s", level=logging.INFO)
 
-    parser = ArgumentParser(description="Get maintenance status of Pulp")
+    parser = ArgumentParser(description="Set/unset maintenance mode of Pulp")
     parser.add_argument("--url", help="Pulp server URL")
     parser.add_argument("--username", help="Pulp username")
     parser.add_argument(
@@ -39,18 +43,22 @@ def main():
     )
     parser.add_argument("--debug", action="store_true")
     parser.add_argument("--insecure", default=False, action="store_true")
+    parser.add_argument("--regex", action="store")
 
     p = parser.parse_args()
 
     if not p.url:
         parser.error("--url is required")
 
+    if not p.regex:
+        parser.error("--regex is required")
+
     if p.debug:
         logging.getLogger("pubtools.pulplib").setLevel(logging.DEBUG)
         log.setLevel(logging.DEBUG)
 
     client = make_client(p)
-    return get_maintenance(client)
+    return set_maintenance(client, p.regex)
 
 
 if __name__ == "__main__":

@@ -6,15 +6,18 @@ import hashlib
 from collections import namedtuple
 
 import six
+from six.moves import StringIO
+
 from more_executors.futures import f_return, f_return_error, f_flat_map
 
-from pubtools.pulplib import Page, PulpException, Criteria, Task
+from pubtools.pulplib import Page, PulpException, Criteria, Task, MaintenanceReport
 from .. import compat_attr as attr
 
 from .match import match_object
 
 Publish = namedtuple("Publish", ["repository", "tasks"])
 Upload = namedtuple("Upload", ["repository", "tasks", "name", "sha256"])
+Unassociate = namedtuple("Unassociate", ["repository", "tasks", "type_ids", "criteria"])
 
 
 class FakeClient(object):
@@ -31,7 +34,8 @@ class FakeClient(object):
         self._repositories = []
         self._publish_history = []
         self._upload_history = []
-        self._maintenance_status = {"repos": {}, "last_updated_by": "Content Delivery"}
+        self._unassociate_history = []
+        self._maintenance_report = None
         self._lock = threading.RLock()
         self._uuidgen = random.Random()
         self._uuidgen.seed(0)
@@ -83,8 +87,56 @@ class FakeClient(object):
 
         return f_return(data[0])
 
-    def get_maintenance_status(self):
-        return f_return(self._maintenance_status)
+    def get_maintenance_report(self):
+        if self._maintenance_report:
+            return MaintenanceReport.from_data(self._maintenance_report)
+        return None
+
+    def set_maintenance(self, regex, enable=True, **kwargs):
+        report = self.get_maintenance_report()
+        if not report:
+            if enable:
+                report = MaintenanceReport()
+            else:
+                LOG.warn("No repository is in maintenance mode, exit")
+                return
+
+        if enable:
+            crit = Criteria.with_field("id", Matcher.regex(regex))
+            repos = self.search_repository(crit).result()
+            repo_ids = [repo.id for repo in repos]
+            report.add(repo_ids, **kwargs)
+        else:
+            report.remove(regex, **kwargs)
+
+        repo = self.get_repository("redhat-maintenance").result()
+
+        # upload updated report to repository and publish
+        report_json = report.json()
+        report_fileobj = StringIO(report_json)
+        repo.upload_file(report_fileobj, "repos.json").result()
+        LOG.debug("Maintenance file uploaded in redhat-maintenance repository")
+
+        repo.publish().result()
+        LOG.debug("Maintenance status published")
+        self._maintenance_report = report_json
+        return report_json
+
+    def _unassociate_unit(self, repo, type_ids, criteria):
+        repo_f = self.get_repository(repo.id)
+        if repo_f.exception():
+            # Repo can't be found, let that exception propagate
+            return repo_f
+
+        if not type_ids or not isinstance(type_ids, list):
+            raise PulpException("Must specify a list of type_ids ['<type>',..]")
+
+        task = Task(id=self._next_task_id(), completed=True, succeeded=True)
+        # unassociate task shows task succeeds, even there's no matched unit
+
+        self._unassociate_history.append(Unassociate(repo, [task], type_ids, criteria))
+
+        return f_return([task])
 
     def _do_upload_file(self, upload_id, file_obj, name):
         # pylint: disable=unused-argument
