@@ -19,7 +19,7 @@ from pubtools.pulplib import (
     Matcher,
     Task,
     MaintenanceReport,
-    Repository
+    Repository,
 )
 from pubtools.pulplib._impl.client.search import filters_for_criteria
 from .. import compat_attr as attr

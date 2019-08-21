@@ -7,14 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-n/a
+### Added
+- Support set maintenance mode of pulp repositories
+
+### Fixed
+- Fix can't calculate checksum if file object contains unicode data during upload
 
 ## [1.3.0] - 2019-08-15
 
 ### Added
 
 - Introduced ``Repository.is_temporary`` attribute
-- Support set maintenance mode of pulp repositories
 - Extended search functionality; it is now possible to search using fields defined
   on the `PulpObject` classes. Searching on raw Pulp fields remains supported.
 
@@ -22,7 +25,6 @@ n/a
 - Fixed inconsistency between real and fake clients: both clients now immediately raise
   if a search is attempted with invalid criteria.  Previously, the fake client would
   instead return a failed `Future`.
-- Fix can't calculate checksum if file object contains unicode data during upload
 
 ## [1.2.1] - 2019-08-12
 
