@@ -171,7 +171,7 @@ class Client(object):
         pulp_crit = {
             "skip": 0,
             "limit": self._PAGE_SIZE,
-            "filters": filters_for_criteria(criteria),
+            "filters": filters_for_criteria(criteria, Repository),
         }
         search = {"criteria": pulp_crit, "distributors": True}
 

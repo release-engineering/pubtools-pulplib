@@ -11,6 +11,7 @@ from six.moves import StringIO
 
 from more_executors.futures import f_return, f_return_error, f_flat_map
 
+
 from pubtools.pulplib import (
     Page,
     PulpException,
@@ -18,7 +19,9 @@ from pubtools.pulplib import (
     Matcher,
     Task,
     MaintenanceReport,
+    Repository
 )
+from pubtools.pulplib._impl.client.search import filters_for_criteria
 from .. import compat_attr as attr
 
 from .match import match_object
@@ -49,6 +52,13 @@ class FakeClient(object):
     def search_repository(self, criteria=None):
         criteria = criteria or Criteria.true()
         repos = []
+
+        # Pass the criteria through the code used by the real client to build
+        # up the Pulp query. We don't actually *use* the resulting query since
+        # we're not accessing a real Pulp server. The point is to ensure the
+        # same validation and error behavior as used by the real client also
+        # applies to the fake.
+        filters_for_criteria(criteria, Repository)
 
         try:
             for repo in self._repositories:

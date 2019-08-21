@@ -65,8 +65,12 @@ class Criteria(object):
             field_name (str)
                 The name of a field.
 
-                Field names may contain a "." to indicate nested fields,
-                such as ``notes.created``.
+                Supported field names include both model fields
+                and Pulp fields.  See :ref:`model_fields` for information
+                about these two types of fields.
+
+                When Pulp fields are used, field names may contain a "." to
+                indicate nesting, such as ``notes.created``.
 
             field_value
                 :class:`Matcher`
@@ -215,6 +219,12 @@ class Matcher(object):
         """
         return InMatcher(values)
 
+    def _map(self, _fn):
+        # Internal-only: return self with matched value mapped through
+        # the given function. Intended to be overridden in subclasses
+        # to support field conversions between Pulp and Python.
+        return self
+
 
 @attr.s
 class RegexMatcher(Matcher):
@@ -224,10 +234,16 @@ class RegexMatcher(Matcher):
     def _check_pattern(self, _, pattern):
         re.compile(pattern)
 
+    # Note: regex matcher does not implement _map since regex is defined only
+    # in terms of strings, there are no meaningful conversions.
+
 
 @attr.s
 class EqMatcher(Matcher):
     _value = attr.ib()
+
+    def _map(self, fn):
+        return attr.evolve(self, value=fn(self._value))
 
 
 @attr.s
@@ -239,6 +255,9 @@ class InMatcher(Matcher):
         if isinstance(values, Iterable) and not isinstance(values, six.string_types):
             return
         raise ValueError("Must be an iterable: %s" % repr(values))
+
+    def _map(self, fn):
+        return attr.evolve(self, values=[fn(x) for x in self._values])
 
 
 @attr.s

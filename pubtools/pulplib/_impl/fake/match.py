@@ -3,6 +3,7 @@ import re
 
 from pubtools.pulplib._impl import compat_attr as attr
 from pubtools.pulplib._impl.client.errors import PulpException
+from pubtools.pulplib._impl.client.search import map_field_for_type
 from pubtools.pulplib._impl.criteria import (
     TrueCriteria,
     AndCriteria,
@@ -33,7 +34,31 @@ def match_object(*args, **kwargs):
         if isinstance(dispatch, klass):
             return func(*args, **kwargs)
 
-    raise TypeError("Unsupported criteria/matcher: %s" % repr(dispatch))
+
+def get_field(field, obj):
+    # Obtain a named field from a model object;
+    # 'field' may be either a field name used in Pulp or a field name used
+    # by our model.
+
+    # Determine whether this field name refers to a field on the model.
+    # Note that we don't care about conversion on the matcher here because:
+    # - If it's a field on the model, no conversion is needed since we already
+    #   are storing plain objects from the model
+    # - If it's a Pulp field, conversion will be handled in pulp_value
+    mapped_field, _ = map_field_for_type(field, matcher=None, type_hint=obj.__class__)
+
+    # Are we looking for a field on our model, or a raw Pulp field?
+    using_model_field = mapped_field is not field
+
+    if using_model_field:
+        # If matching a field on the model, we can simply grab and compare
+        # the attribute directly.
+        return getattr(obj, field, ABSENT)
+
+    # Otherwise, the user passed a Pulp field name (e.g. notes.eng_product_id).
+    # Then we delegate to pulp_value, which can look up the corresponding model
+    # field and do conversions.
+    return pulp_value(field, obj)
 
 
 @visit(TrueCriteria)
@@ -72,13 +97,13 @@ def match_field(criteria, obj):
 
 @visit(EqMatcher)
 def match_field_eq(matcher, field, obj):
-    value = pulp_value(field, obj)
+    value = get_field(field, obj)
     return value == matcher._value
 
 
 @visit(RegexMatcher)
 def match_field_regex(matcher, field, obj):
-    value = pulp_value(field, obj)
+    value = get_field(field, obj)
     if value is ABSENT:
         return False
     return re.search(matcher._pattern, value)
@@ -86,13 +111,13 @@ def match_field_regex(matcher, field, obj):
 
 @visit(ExistsMatcher)
 def match_field_exists(_matcher, field, obj):
-    value = pulp_value(field, obj)
+    value = get_field(field, obj)
     return value is not ABSENT
 
 
 @visit(InMatcher)
 def match_in(matcher, field, obj):
-    value = pulp_value(field, obj)
+    value = get_field(field, obj)
     for elem in matcher._values:
         if elem == value:
             return True

@@ -7,11 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+n/a
+
+## [1.3.0] - 2019-08-15
+
 ### Added
+
 - Introduced ``Repository.is_temporary`` attribute
 - Support set maintenance mode of pulp repositories
+- Extended search functionality; it is now possible to search using fields defined
+  on the `PulpObject` classes. Searching on raw Pulp fields remains supported.
 
 ### Fixed
+- Fixed inconsistency between real and fake clients: both clients now immediately raise
+  if a search is attempted with invalid criteria.  Previously, the fake client would
+  instead return a failed `Future`.
 - Fix can't calculate checksum if file object contains unicode data during upload
 
 ## [1.2.1] - 2019-08-12
@@ -80,7 +90,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release to PyPI
 
-[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v1.2.1...HEAD
+[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v1.2.1...v1.3.0
 [1.2.1]: https://github.com/release-engineering/pubtools-pulplib/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v1.0.0...v1.1.0

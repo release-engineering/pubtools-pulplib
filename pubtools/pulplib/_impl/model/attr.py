@@ -13,9 +13,14 @@ PULP2_FIELD = "_pubtools.pulplib.pulp2_field"
 # from_data methods.
 PULP2_PY_CONVERTER = "_pubtools.pulplib.pulp2_to_py_converter"
 
+# Inverse of the above: converter for Python value into Pulp2 value.
+PY_PULP2_CONVERTER = "_pubtools.pulplib.py_to_pulp2_converter"
+
 
 # make usage of the above less ugly
-def pulp_attrib(pulp_field=None, pulp_py_converter=None, **kwargs):
+def pulp_attrib(
+    pulp_field=None, pulp_py_converter=None, py_pulp_converter=None, **kwargs
+):
     metadata = kwargs.get("metadata") or {}
 
     if pulp_field:
@@ -23,6 +28,9 @@ def pulp_attrib(pulp_field=None, pulp_py_converter=None, **kwargs):
 
     if pulp_py_converter:
         metadata[PULP2_PY_CONVERTER] = pulp_py_converter
+
+    if py_pulp_converter:
+        metadata[PY_PULP2_CONVERTER] = py_pulp_converter
 
     kwargs["metadata"] = metadata
     return attr.ib(**kwargs)
