@@ -12,7 +12,7 @@ from more_executors import Executors
 from more_executors.futures import f_map, f_flat_map, f_return
 
 from ..page import Page
-from ..criteria import Criteria, Matcher
+from ..criteria import Criteria
 from ..model import Repository, MaintenanceReport
 from .search import filters_for_criteria
 from .errors import PulpException
@@ -188,75 +188,40 @@ class Client(object):
         """Get maintenance report from maintenance repository
 
         Returns:
-            :class:`~pubtools.pulplib.MaintenceReport` object describes the
-            maintenance status
-
-            None if there's no report in the repository
+            Future[:class:`~pubtools.pulplib.MaintenceReport`]
+                A future describes the maintenance status
         """
-        try:
-            data = self._do_get_maintenance().result()
-        except requests.exceptions.HTTPError:
-            # if the maintenance mode hasn't been used before, then it could return
-            # HTTPError 404.
-            LOG.warning("No maintenance info found")
-            return None
+        report_ft = self._do_get_maintenance()
 
-        return MaintenanceReport.from_data(data)
+        return f_map(
+            report_ft,
+            lambda data: MaintenanceReport.from_data(data)
+            if data
+            else MaintenanceReport(),
+        )
 
-    def set_maintainenance(self, regex, enable=True, **kwargs):
+    def set_maintenance(self, report):
         """Set repositories to maintenance mode.
 
         Args:
-            regex (str):
-                A python regular expression pattern used to match repositories.
-
-            enable (bool):
-                If enable, then set the matched repositories to maintenance mode.
-                If not enable, unset the maintenance more for the matched repositories.
-
-            Optional keyword args:
-                owner (str):
-                    Person/party who set/unset maintenance mode.
-                message (str):
-                    Reason why set repositories to maintenance mode, doesn't have
-                    any effect if enable is False.
-
+            report:
+                An updated :class:`~pubtools.pulplib.MaintenanceReport` object that
+                will be used as the newest maintenance report.
         Return:
-            A result report in json format (str)
-        """
-        report = self.get_maintenance_report()
-        if not report:
-            if enable:
-                # create an empty report for later use.
-                report = MaintenanceReport()
-            else:
-                # if no maintenance info's found and user wants to unset
-                # maintenance mode, simply return None.
-                LOG.warning("No repository is in maintenance mode, exit")
-                return None
+            Future[:class:`~pubtools.pulplib.Task`]
+                A future which is resolved when publish succeeds.
 
-        if enable:
-            # search repos match the regex and set to maintenance
-            crit = Criteria.with_field("id", Matcher.regex(regex))
-            repos = self.search_repository(crit).result()
-            repo_ids = [repo.id for repo in repos.as_iter()]
-            report.add(repo_ids, **kwargs)
-        elif not enable:
-            report.remove(regex, **kwargs)
+                The future contains a task triggered and awaited during the publish
+                maintenance repository operation.
+        """
+        report_fileobj = StringIO(report._json())
 
         repo = self.get_repository("redhat-maintenance").result()
 
         # upload updated report to repository and publish
-        report_json = report.json()
-        report_fileobj = StringIO(report_json)
-        repo.upload_file(report_fileobj, "repos.json").result()
-        LOG.debug("Maintenance file uploaded in redhat-maintenance repository")
+        upload_ft = repo.upload_file(report_fileobj, "repos.json")
 
-        repo.publish().result()
-        LOG.debug("Maintenance status published")
-
-        # return the json dumped report, so caller could see the result directly.
-        return report_json
+        return f_flat_map(upload_ft, lambda _: repo.publish())
 
     def _do_upload_file(self, upload_id, file_obj, name):
         def do_next_upload(checksum, size):
@@ -319,10 +284,18 @@ class Client(object):
             parsed = pulp_response.json()
         except Exception:
             # Couldn't parse as JSON?
-            # If the response was unsuccessful, raise that.
-            # Otherwise re-raise parse error.
-            pulp_response.raise_for_status()
-            raise
+            if (
+                pulp_response.url.endswith(retry.MAINTENANCE_REPROT_URL)
+                and pulp_response.status_code == 404
+            ):
+                # It's possible it's querying the maintenance report and it doesn't
+                # exist, then it means no repository is in maintenance.
+                return None
+            else:
+                # In other cases, if the response was unsuccessful, raise that.
+                # Otherwise re-raise parse error.
+                pulp_response.raise_for_status()
+                raise
 
         if (
             isinstance(parsed, dict)

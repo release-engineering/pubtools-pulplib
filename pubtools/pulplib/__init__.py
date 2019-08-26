@@ -13,5 +13,6 @@ from ._impl.model import (
     PublishOptions,
     Task,
     MaintenanceReport,
+    MaintenanceEntry,
 )
 from ._impl.fake import FakeController

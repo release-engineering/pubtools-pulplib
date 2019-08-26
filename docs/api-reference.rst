@@ -9,3 +9,4 @@ API Reference
    api/searching
    api/model
    api/testing
+   api/maintenance

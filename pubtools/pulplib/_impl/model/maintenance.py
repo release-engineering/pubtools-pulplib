@@ -1,7 +1,7 @@
 import logging
 import datetime
 import json
-import re
+import os
 
 import jsonschema
 
@@ -13,61 +13,88 @@ from .common import InvalidDataException
 LOG = logging.getLogger("pubtools.pulplib")
 
 
-def _iso_time_now():
+USER = os.environ.get("USER")
+HOSTNAME = os.environ.get("HOSTNAME")
+OWNER = "%s@%s" % (USER, HOSTNAME)
+
+
+def iso_time_now():
     return datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-@attr.s(kw_only=True)
-class MaintainedRepo(object):
+@attr.s(kw_only=True, frozen=True)
+class MaintenanceEntry(object):
     """Details about the maintenance"""
 
+    id = attr.ib(default=None, type=str)
+    """ID of repository in maintenance"""
     message = attr.ib(default=None, type=str)
     """Why this repository is in maintenance"""
     owner = attr.ib(default=None, type=str)
     """Who set this repository in maintenance mode"""
-    started = attr.ib(default=None, type=str)
-    """When did the maintenance start"""
+    started = attr.ib(default=None, type=datetime.datetime)
+    """:class:`~datetime.datetime` in UTC at when the maintenance started"""
 
 
-@attr.s(kw_only=True)
+@attr.s(kw_only=True, frozen=True)
 class MaintenanceReport(object):
-    """Represent the maintenance status of pulp"""
+    """Represents the maintenance status of Pulp repositories
+
+    On release-engineering Pulp servers, it's possible to put individual repositories
+    into "maintenance mode".  When in maintenance mode, external publishes of a repository
+    will be blocked.  Other operations remain possible.
+
+    This object holds information on the set of repositories currently in maintenance mode.
+    """
 
     _SCHEMA = load_schema("maintenance")
 
-    last_updated = attr.ib(default=_iso_time_now(), type=str)
+    last_updated = attr.ib(default=iso_time_now(), type=datetime.datetime)
     """:class:`~datetime.datetime` in UTC when this report was last updated,
     if it's the first time the report is created, current time is used."""
 
-    last_updated_by = attr.ib(default="Content Delivery", type=str)
+    last_updated_by = attr.ib(default=None, type=str)
     """Person/party who updated the report last time"""
 
-    repos = attr.ib(default={}, type=dict)
-    """A dictionary contains repo_id: :class:`MaintainedRepo` pairs, indicates
+    entries = attr.ib(default=attr.Factory(tuple), type=tuple)
+    """A tuple contains :class:`MaintenanceEntry` objects, indicates
     which repositories are in maintenance mode and details.
     If empty, then it means no repositories is in maintenance mode.
     """
 
     @classmethod
     def from_data(cls, data):
-        """Create a new report with a dictionary"""
+        """Create a new report with raw data
+
+        Args:
+            data (dict):
+                A dict containing a raw representation of the maintenance status.
+        Returns:
+            a new instance of ``cls``
+
+        Raises:
+            InvalidDataException
+                If the provided ``data`` fails validation against an expected schema.
+        """
         try:
             jsonschema.validate(instance=data, schema=cls._SCHEMA)
         except jsonschema.exceptions.ValidationError as error:
             LOG.exception("%s.from_data invoked with invalid data", cls.__name__)
             raise InvalidDataException(str(error))
 
+        entries = []
+        for repo_id, details in data["repos"].items():
+            entries.append(MaintenanceEntry(id=repo_id, **details))
+
         maintenance = cls(
             last_updated=data["last_updated"],
             last_updated_by=data["last_updated_by"],
-            repos={},
+            entries=tuple(entries),
         )
-        for repo_id, details in data["repos"].items():
-            maintenance.repos[repo_id] = MaintainedRepo(**details)
 
         return maintenance
 
-    def json(self):
+    def _json(self):
         """Output a json format report.
 
         Returns:
@@ -79,13 +106,13 @@ class MaintenanceReport(object):
             "repos": {},
         }
 
-        for repo_id, details in self.repos.items():
+        for entry in self.entries:
             report["repos"].update(
                 {
-                    repo_id: {
-                        "message": details.message,
-                        "owner": details.owner,
-                        "started": details.started,
+                    entry.id: {
+                        "message": entry.message,
+                        "owner": entry.owner,
+                        "started": entry.started,
                     }
                 }
             )
@@ -98,7 +125,8 @@ class MaintenanceReport(object):
 
         Args:
             repo_ids (list[str]):
-            A list of repositories ids that will be added to the report.
+                A list of repository ids. New entries with these repository ids will
+                be added to the maintenance report.
 
             Optional keyword args:
                 message (str):
@@ -108,40 +136,44 @@ class MaintenanceReport(object):
 
         """
         message = kwargs.get("message") or "Maintenance mode is enabled"
-        owner = kwargs.get("owner") or "Content Delivery"
+        owner = kwargs.get("owner") or OWNER
 
+        to_add = []
         for repo in repo_ids:
-            self.repos[repo] = MaintainedRepo(
-                owner=owner, message=message, started=_iso_time_now()
+            to_add.append(
+                MaintenanceEntry(
+                    id=repo, owner=owner, message=message, started=iso_time_now()
+                )
             )
+        entries = list(self.entries)
+        entries.extend(to_add)
 
-        self._update_owner_time(owner)
+        return MaintenanceReport(last_updated_by=owner, entries=tuple(entries))
 
-    def remove(self, regex, **kwargs):
+    def remove(self, repo_ids, **kwargs):
         """Remove entries from the maintenece report. Once the entry is removed,
         it means the corresponding repository isn't in maintenance mode anymore.
 
         Args:
-            regex (str):
-                A python regular expression style pattern used to match repository
-                ids in the report. The matched entries will be removed.
+            repo_ids (list[str]):
+                A list of repository ids. Entries match repository ids will be removed
+                from the maintenance report.
 
             Optional keyword args:
                 owner (str):
                     Who unset the maintenance mode.
         """
-        owner = kwargs.get("owner") or "Content Delivery"
+        owner = kwargs.get("owner") or OWNER
 
+        repo_ids = set(repo_ids)
+        # convert to set, make checking faster
         to_remove = []
-        for repo_id in self.repos:
-            if re.match(regex, repo_id):
-                to_remove.append(repo_id)
+        for entry in self.entries:
+            if entry.id in repo_ids:
+                to_remove.append(entry)
 
-        for repo_id in to_remove:
-            self.repos.pop(repo_id)
+        entries = list(self.entries)
+        for entry in to_remove:
+            entries.remove(entry)
 
-        self._update_owner_time(owner)
-
-    def _update_owner_time(self, owner):
-        self.last_updated_by = owner or "Content Delivery"
-        self.last_updated = _iso_time_now()
+        return MaintenanceReport(last_updated_by=owner, entries=tuple(entries))

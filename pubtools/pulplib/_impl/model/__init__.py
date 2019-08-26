@@ -8,4 +8,4 @@ from .repository import (
 )
 from .task import Task
 from .distributor import Distributor
-from .maintenance import MaintenanceReport
+from .maintenance import MaintenanceReport, MaintenanceEntry

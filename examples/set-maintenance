@@ -1,21 +1,41 @@
 #!/usr/bin/env python
 import os
+import re
 import logging
 from argparse import ArgumentParser
 
-from pubtools.pulplib import Client
+from pubtools.pulplib import Client, Criteria, Matcher
 
 log = logging.getLogger("set-maintenance")
 
 
 def set_maintenance(client, regex):
 
-    report = client.set_maintainenance(regex)
-    log.info("maintenance mode set: %s", report)
+    report = client.get_maintenance_report().result()
 
-    client.set_maintainenance(regex, enable=False)
-    report = client.get_maintenance_report().json()
-    log.info("maintenance mode unset: %s", report)
+    crit = Criteria.with_field("id", Matcher.regex(regex))
+    # search repo
+    repos = self.search_repository(crit).result()
+
+    repo_ids = [repo.id for repo in repos.as_iter()]
+    report = report.add(repo_ids)
+    # get the repo ids and feed to report
+
+    tasks = client.set_maintainenance(report).result()
+
+    report = client.get_maintenance_report().result()
+    log.info("maintenance mode set: %s", report._json())
+
+    to_remove = []
+    for entry in report.entries:
+        if re.match(regex, entry.id):
+            to_remove.append(entry.id)
+
+    report = report.remove(to_remove)
+    tasks = client.set_maintainenance(report).result()
+
+    report = client.get_maintenance_report().result()
+    log.info("maintenance mode unset: %s", report._json())
 
 
 def make_client(args):

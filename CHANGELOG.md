@@ -8,10 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Support set maintenance mode of pulp repositories
+- Support querying and updating maintenance mode of Pulp repositories
 
 ### Fixed
-- Fix can't calculate checksum if file object contains unicode data during upload
+- Fixed a crash in `upload_file` when passed a file object opened in text mode
 
 ## [1.3.0] - 2019-08-15
 

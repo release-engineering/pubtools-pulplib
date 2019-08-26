@@ -16,7 +16,6 @@ from pubtools.pulplib import (
     Page,
     PulpException,
     Criteria,
-    Matcher,
     Task,
     MaintenanceReport,
     Repository,
@@ -105,35 +104,24 @@ class FakeClient(object):
 
     def get_maintenance_report(self):
         if self._maintenance_report:
-            return MaintenanceReport.from_data(json.loads(self._maintenance_report))
-        return None
-
-    def set_maintenance(self, regex, enable=True, **kwargs):
-        report = self.get_maintenance_report()
-        if not report:
-            if enable:
-                report = MaintenanceReport()
-            else:
-                return None
-
-        if enable:
-            crit = Criteria.with_field("id", Matcher.regex(regex))
-            repos = self.search_repository(crit).result()
-            repo_ids = [repo.id for repo in repos.as_iter()]
-            report.add(repo_ids, **kwargs)
+            report = MaintenanceReport.from_data(json.loads(self._maintenance_report))
         else:
-            report.remove(regex, **kwargs)
+            report = MaintenanceReport()
+        return f_return(report)
+
+    def set_maintenance(self, report):
+        report_json = report._json()
+        report_fileobj = StringIO(report_json)
 
         repo = self.get_repository("redhat-maintenance").result()
 
         # upload updated report to repository and publish
-        report_json = report.json()
-        report_fileobj = StringIO(report_json)
-        repo.upload_file(report_fileobj, "repos.json").result()
-        repo.publish().result()
+        upload_ft = repo.upload_file(report_fileobj, "repos.json")
 
+        publish_ft = f_flat_map(upload_ft, lambda _: repo.publish())
         self._maintenance_report = report_json
-        return report_json
+
+        return publish_ft
 
     def _do_upload_file(self, upload_id, file_obj, name):
         # pylint: disable=unused-argument

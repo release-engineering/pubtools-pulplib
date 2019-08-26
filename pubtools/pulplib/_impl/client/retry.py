@@ -11,6 +11,8 @@ LOG = logging.getLogger("pubtools.pulplib")
 ATTEMPTS = int(os.environ.get("PUBTOOLS_PULPLIB_RETRY_ATTEMPTS", "10"))
 SLEEP = float(os.environ.get("PUBTOOLS_PULPLIB_RETRY_SLEEP", "1.0"))
 MAX_SLEEP = float(os.environ.get("PUBTOOLS_PULPLIB_RETRY_MAX_SLEEP", "120.0"))
+# the relative url where the maintenance report is stored
+MAINTENANCE_REPROT_URL = "pulp/isos/redhat-maintenance/repos.json"
 
 
 class PulpRetryPolicy(RetryPolicy):
@@ -27,7 +29,16 @@ class PulpRetryPolicy(RetryPolicy):
         # at the error in more detail in order to decide whether to retry.
         retry = self._delegate.should_retry(attempt, future)
 
-        if future.exception() and retry:
+        exception = future.exception()
+        if exception and hasattr(exception, "response"):
+            # if request is querying maintenance repo, it's possible there's
+            # no report existed, not wasting time on retry.
+            url = str(exception.response.url)
+            status_code = exception.response.status_code
+            if url.endswith(MAINTENANCE_REPROT_URL) and status_code == 404:
+                return False
+
+        if exception and retry:
             self._log_retry(attempt, future)
 
         return retry
