@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import logging
 import time
 import pytest
@@ -134,7 +135,7 @@ def test_get_relative_url_with_file_object(tmpdir):
 
 
 def test_upload_file_contains_unicode(client, requests_mocker):
-    file_obj = StringIO(u"some unicode")
+    file_obj = StringIO("哈罗")
     upload_id = "cfb1fed0-752b-439e-aa68-fba68eababa3"
 
     requests_mocker.put(
@@ -149,6 +150,6 @@ def test_upload_file_contains_unicode(client, requests_mocker):
     upload_f = client._do_upload_file(upload_id, file_obj, "file.txt")
 
     assert upload_f.result() == (
-        "c570b952b1a2852bb146f63a4ced4c7e63c182ed5883de81782ed43d6f46acad",
-        12,
+        "478f4808df7898528c7f13dc840aa321c4109f5c9f33bad7afcffc0253d4ff8f",
+        6,
     )

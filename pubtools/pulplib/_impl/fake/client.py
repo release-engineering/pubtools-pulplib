@@ -104,7 +104,7 @@ class FakeClient(object):
 
     def get_maintenance_report(self):
         if self._maintenance_report:
-            report = MaintenanceReport.from_data(json.loads(self._maintenance_report))
+            report = MaintenanceReport._from_data(json.loads(self._maintenance_report))
         else:
             report = MaintenanceReport()
         return f_return(report)

@@ -67,6 +67,9 @@ class Client(object):
     # overridden there.
     _RETRY_POLICY = retry.PulpRetryPolicy()
 
+    # the relative url where the maintenance report is stored
+    MAINTENANCE_REPORT_URL = "pulp/isos/redhat-maintenance/repos.json"
+
     def __init__(self, url, **kwargs):
         """
         Args:
@@ -185,7 +188,7 @@ class Client(object):
         )
 
     def get_maintenance_report(self):
-        """Get maintenance report from maintenance repository
+        """Get the current maintenance mode status for this Pulp server.
 
         Returns:
             Future[:class:`~pubtools.pulplib.MaintenceReport`]
@@ -195,21 +198,21 @@ class Client(object):
 
         return f_map(
             report_ft,
-            lambda data: MaintenanceReport.from_data(data)
+            lambda data: MaintenanceReport._from_data(data)
             if data
             else MaintenanceReport(),
         )
 
     def set_maintenance(self, report):
-        """Set repositories to maintenance mode.
+        """Set the current maintenance mode status for this Pulp server.
 
         Args:
             report:
                 An updated :class:`~pubtools.pulplib.MaintenanceReport` object that
                 will be used as the newest maintenance report.
         Return:
-            Future[:class:`~pubtools.pulplib.Task`]
-                A future which is resolved when publish succeeds.
+            Future[list[:class:`~pubtools.pulplib.Task`]]
+                A future which is resolved when maintenance mode has been updated successfully.
 
                 The future contains a task triggered and awaited during the publish
                 maintenance repository operation.
@@ -284,18 +287,17 @@ class Client(object):
             parsed = pulp_response.json()
         except Exception:
             # Couldn't parse as JSON?
-            if (
-                pulp_response.url.endswith(retry.MAINTENANCE_REPROT_URL)
-                and pulp_response.status_code == 404
+            if pulp_response.status_code == 404 and str(pulp_response.url).endswith(
+                cls.MAINTENANCE_REPORT_URL
             ):
-                # It's possible it's querying the maintenance report and it doesn't
-                # exist, then it means no repository is in maintenance.
+                # for getting maintenance report, it's possible the report
+                # doesn't exist, means no repositories are in maintenance mode,
+                # return None
                 return None
-            else:
-                # In other cases, if the response was unsuccessful, raise that.
-                # Otherwise re-raise parse error.
-                pulp_response.raise_for_status()
-                raise
+            # In other cases, if the response was unsuccessful, raise that.
+            # Otherwise re-raise parse error.
+            pulp_response.raise_for_status()
+            raise
 
         if (
             isinstance(parsed, dict)

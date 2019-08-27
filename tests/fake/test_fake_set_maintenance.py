@@ -11,7 +11,7 @@ from pubtools.pulplib import (
     InvalidDataException,
 )
 
-OWNER = "%s@%s" % (os.environ.get("USER"), os.environ.get("HOSTNAME"))
+MaintenanceReport._OWNER = "ContentDelivery"
 
 
 def test_set_maintenance():
@@ -42,17 +42,17 @@ def test_set_maintenance():
 
     # get_maintenance_report should give a report object
     report = client.get_maintenance_report().result()
-    assert report.last_updated_by == OWNER
+    assert report.last_updated_by == "ContentDelivery"
     assert len(report.entries) == 2
 
-    report = report.remove(repo_ids=["repo1"], owner="pubtools.pulplib")
+    report = report.remove(repo_ids=["repo1"], owner="jazhang@hostname")
     client.set_maintenance(report).result()
 
     # the report in repo should have updated
     report = client.get_maintenance_report().result()
-    assert report.last_updated_by == "pubtools.pulplib"
+    assert report.last_updated_by == "jazhang@hostname"
     assert len(report.entries) == 1
-    assert report.entries[0].id == "repo2"
+    assert report.entries[0].repository_id == "repo2"
 
 
 def test_load_invalid_report_raise_exception():

@@ -217,12 +217,23 @@ def test_non_maintenance_report(client, requests_mocker):
 
 
 def test_set_maintenance(client, requests_mocker):
+    maintenance_report = {
+        "last_updated": "2019-08-15T14:21:12Z",
+        "last_updated_by": "pubtools.pulplib",
+        "repos": {
+            "repo1": {
+                "message": "Maintenance Mode Enabled",
+                "owner": "pubtools.pulplib",
+                "started": "2019-08-15T14:21:12Z",
+            }
+        },
+    }
     requests_mocker.post(
         "https://pulp.example.com/pulp/api/v2/repositories/search/",
         [{"json": [{"id": "redhat-maintenance", "notes": {"_repo-type": "iso-repo"}}]}],
     )
 
-    report = MaintenanceReport()
+    report = MaintenanceReport._from_data(maintenance_report)
 
     with patch("pubtools.pulplib.FileRepository.upload_file") as mocked_upload:
         with patch("pubtools.pulplib.Repository.publish") as mocked_publish:
@@ -230,6 +241,16 @@ def test_set_maintenance(client, requests_mocker):
             mocked_publish.return_value = f_return()
             client.set_maintenance(report).result()
 
+    # upload_file should be called with (file_obj, 'repos.json')
+    args = mocked_upload.call_args
+    report_file = args[0][0]
+    report = MaintenanceReport()._from_data(json.loads(report_file.read()))
+
+    assert len(report.entries) == 1
+    assert report.entries[0].repository_id == "repo1"
+    assert report.last_updated_by == "pubtools.pulplib"
+
+    # search repo, upload and publish should be called once each
     assert requests_mocker.call_count == 1
     assert mocked_publish.call_count == 1
     assert mocked_upload.call_count == 1

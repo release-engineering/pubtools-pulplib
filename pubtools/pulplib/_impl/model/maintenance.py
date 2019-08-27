@@ -15,7 +15,6 @@ LOG = logging.getLogger("pubtools.pulplib")
 
 USER = os.environ.get("USER")
 HOSTNAME = os.environ.get("HOSTNAME")
-OWNER = "%s@%s" % (USER, HOSTNAME)
 
 
 def iso_time_now():
@@ -24,21 +23,23 @@ def iso_time_now():
 
 @attr.s(kw_only=True, frozen=True)
 class MaintenanceEntry(object):
-    """Details about the maintenance"""
+    """Details about the maintenance status of a specific repository."""
 
-    id = attr.ib(default=None, type=str)
-    """ID of repository in maintenance"""
+    repository_id = attr.ib(type=str)
+    """ID of repository in maintenance.
+    Note: there is no guarantee that a repository of this ID currenly exists
+          in the Pulp server."""
     message = attr.ib(default=None, type=str)
-    """Why this repository is in maintenance"""
+    """Why this repository is in maintenance."""
     owner = attr.ib(default=None, type=str)
-    """Who set this repository in maintenance mode"""
-    started = attr.ib(default=None, type=datetime.datetime)
-    """:class:`~datetime.datetime` in UTC at when the maintenance started"""
+    """Who set this repository in maintenance mode."""
+    started = attr.ib(default=iso_time_now(), type=datetime.datetime)
+    """:class:`~datetime.datetime` in UTC at when the maintenance started."""
 
 
 @attr.s(kw_only=True, frozen=True)
 class MaintenanceReport(object):
-    """Represents the maintenance status of Pulp repositories
+    """Represents the maintenance status of Pulp repositories.
 
     On release-engineering Pulp servers, it's possible to put individual repositories
     into "maintenance mode".  When in maintenance mode, external publishes of a repository
@@ -47,6 +48,8 @@ class MaintenanceReport(object):
     This object holds information on the set of repositories currently in maintenance mode.
     """
 
+    _OWNER = "%s@%s" % (USER, HOSTNAME) if all([USER, HOSTNAME]) else "pubtools.pulplib"
+
     _SCHEMA = load_schema("maintenance")
 
     last_updated = attr.ib(default=iso_time_now(), type=datetime.datetime)
@@ -54,16 +57,16 @@ class MaintenanceReport(object):
     if it's the first time the report is created, current time is used."""
 
     last_updated_by = attr.ib(default=None, type=str)
-    """Person/party who updated the report last time"""
+    """Person/party who updated the report last time."""
 
     entries = attr.ib(default=attr.Factory(tuple), type=tuple)
-    """A tuple contains :class:`MaintenanceEntry` objects, indicates
+    """A tuple of :class:`MaintenanceEntry` objects, indicating
     which repositories are in maintenance mode and details.
-    If empty, then it means no repositories is in maintenance mode.
+    If empty, then it means no repositories are in maintenance mode.
     """
 
     @classmethod
-    def from_data(cls, data):
+    def _from_data(cls, data):
         """Create a new report with raw data
 
         Args:
@@ -84,7 +87,7 @@ class MaintenanceReport(object):
 
         entries = []
         for repo_id, details in data["repos"].items():
-            entries.append(MaintenanceEntry(id=repo_id, **details))
+            entries.append(MaintenanceEntry(repository_id=repo_id, **details))
 
         maintenance = cls(
             last_updated=data["last_updated"],
@@ -109,7 +112,7 @@ class MaintenanceReport(object):
         for entry in self.entries:
             report["repos"].update(
                 {
-                    entry.id: {
+                    entry.repository_id: {
                         "message": entry.message,
                         "owner": entry.owner,
                         "started": entry.started,
@@ -128,31 +131,43 @@ class MaintenanceReport(object):
                 A list of repository ids. New entries with these repository ids will
                 be added to the maintenance report.
 
+                Note: it's users' responsibility to make sure the repository exists in
+                the pulp server, this method doesn't check the repository's existence.
+
             Optional keyword args:
                 message (str):
                     Reason why put the repo to maintenance.
                 owner (str):
                     Who set the maintenance mode.
+        Returns:
+           :class:`~pubtools.pulplib.MaintenanceReport`
+                A copy of this maintenance report with added repositories.
 
         """
         message = kwargs.get("message") or "Maintenance mode is enabled"
-        owner = kwargs.get("owner") or OWNER
+        owner = kwargs.get("owner") or self._OWNER
 
         to_add = []
         for repo in repo_ids:
             to_add.append(
-                MaintenanceEntry(
-                    id=repo, owner=owner, message=message, started=iso_time_now()
-                )
+                MaintenanceEntry(repository_id=repo, owner=owner, message=message)
             )
         entries = list(self.entries)
         entries.extend(to_add)
 
-        return MaintenanceReport(last_updated_by=owner, entries=tuple(entries))
+        report = attr.evolve(
+            self,
+            entries=tuple(entries),
+            last_updated_by=owner,
+            last_updated=iso_time_now(),
+        )
+
+        # filter out duplicate entries by export json
+        return MaintenanceReport._from_data(json.loads(report._json()))
 
     def remove(self, repo_ids, **kwargs):
-        """Remove entries from the maintenece report. Once the entry is removed,
-        it means the corresponding repository isn't in maintenance mode anymore.
+        """Remove entries from the maintenance report. Remove entries means the
+        removing corresponding repositories from maintenance mode.
 
         Args:
             repo_ids (list[str]):
@@ -162,18 +177,17 @@ class MaintenanceReport(object):
             Optional keyword args:
                 owner (str):
                     Who unset the maintenance mode.
+        Returns:
+            :class:`~pubtools.pulplib.MaintenanceReport`
+                A copy of this maintenance report with removed repositories.
         """
-        owner = kwargs.get("owner") or OWNER
+        owner = kwargs.get("owner") or self._OWNER
 
         repo_ids = set(repo_ids)
         # convert to set, make checking faster
-        to_remove = []
+        new_entries = []
         for entry in self.entries:
-            if entry.id in repo_ids:
-                to_remove.append(entry)
+            if entry.repository_id not in repo_ids:
+                new_entries.append(entry)
 
-        entries = list(self.entries)
-        for entry in to_remove:
-            entries.remove(entry)
-
-        return MaintenanceReport(last_updated_by=owner, entries=tuple(entries))
+        return attr.evolve(self, last_updated_by=owner, entries=tuple(new_entries))

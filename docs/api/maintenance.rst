@@ -1,4 +1,4 @@
-Maintenance Object
+Maintenance Mode
 ==================
 
 .. contents::
