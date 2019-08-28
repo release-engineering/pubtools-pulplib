@@ -247,7 +247,7 @@ def test_set_maintenance(client, requests_mocker):
     report = MaintenanceReport()._from_data(json.loads(report_file.read()))
 
     assert len(report.entries) == 1
-    assert report.entries[0].repository_id == "repo1"
+    assert report.entries[0].repo_id == "repo1"
     assert report.last_updated_by == "pubtools.pulplib"
 
     # search repo, upload and publish should be called once each

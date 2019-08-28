@@ -24,7 +24,7 @@ def set_maintenance(client, regex):
     tasks = client.set_maintainenance(report).result()
 
     report = client.get_maintenance_report().result()
-    log.info("maintenance mode set: %s", report._json())
+    log.info("maintenance mode set: %s", report.entries)
 
     to_remove = []
     for entry in report.entries:
@@ -35,7 +35,7 @@ def set_maintenance(client, regex):
     tasks = client.set_maintainenance(report).result()
 
     report = client.get_maintenance_report().result()
-    log.info("maintenance mode unset: %s", report._json())
+    log.info("maintenance mode unset: %s", report.entries)
 
 
 def make_client(args):

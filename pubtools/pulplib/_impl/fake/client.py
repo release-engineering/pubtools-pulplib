@@ -110,7 +110,7 @@ class FakeClient(object):
         return f_return(report)
 
     def set_maintenance(self, report):
-        report_json = report._json()
+        report_json = json.dumps(report._export_dict(), indent=4, sort_keys=True)
         report_fileobj = StringIO(report_json)
 
         repo = self.get_repository("redhat-maintenance").result()

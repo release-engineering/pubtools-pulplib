@@ -1,6 +1,5 @@
 import logging
 import datetime
-import json
 import os
 
 import jsonschema
@@ -25,7 +24,7 @@ def iso_time_now():
 class MaintenanceEntry(object):
     """Details about the maintenance status of a specific repository."""
 
-    repository_id = attr.ib(type=str)
+    repo_id = attr.ib(type=str)
     """ID of repository in maintenance.
     Note: there is no guarantee that a repository of this ID currenly exists
           in the Pulp server."""
@@ -65,6 +64,14 @@ class MaintenanceReport(object):
     If empty, then it means no repositories are in maintenance mode.
     """
 
+    @entries.validator
+    def check_duplicates(self, attribute, value):
+        # pylint: disable=unused-argument
+        # check if there's duplicate entries
+        repo_ids = [entry.repo_id for entry in value]
+        if len(repo_ids) != len(set(repo_ids)):
+            raise ValueError("Duplicate entries")
+
     @classmethod
     def _from_data(cls, data):
         """Create a new report with raw data
@@ -87,7 +94,7 @@ class MaintenanceReport(object):
 
         entries = []
         for repo_id, details in data["repos"].items():
-            entries.append(MaintenanceEntry(repository_id=repo_id, **details))
+            entries.append(MaintenanceEntry(repo_id=repo_id, **details))
 
         maintenance = cls(
             last_updated=data["last_updated"],
@@ -97,12 +104,8 @@ class MaintenanceReport(object):
 
         return maintenance
 
-    def _json(self):
-        """Output a json format report.
-
-        Returns:
-            A string contains the maintenance report in json format.
-        """
+    def _export_dict(self):
+        """export a raw dictionary of maintenance report"""
         report = {
             "last_updated": self.last_updated,
             "last_updated_by": self.last_updated_by,
@@ -112,7 +115,7 @@ class MaintenanceReport(object):
         for entry in self.entries:
             report["repos"].update(
                 {
-                    entry.repository_id: {
+                    entry.repo_id: {
                         "message": entry.message,
                         "owner": entry.owner,
                         "started": entry.started,
@@ -120,7 +123,7 @@ class MaintenanceReport(object):
                 }
             )
 
-        return json.dumps(report, indent=4, sort_keys=True)
+        return report
 
     def add(self, repo_ids, **kwargs):
         """Add entries to maintenance report and update the timestamp. Every
@@ -149,21 +152,25 @@ class MaintenanceReport(object):
 
         to_add = []
         for repo in repo_ids:
-            to_add.append(
-                MaintenanceEntry(repository_id=repo, owner=owner, message=message)
-            )
+            to_add.append(MaintenanceEntry(repo_id=repo, owner=owner, message=message))
         entries = list(self.entries)
         entries.extend(to_add)
 
-        report = attr.evolve(
+        # filter out duplicated entries. Filtering is in reverse order, which
+        # means existed entries will be replaced by newer ones with same repo_id
+        filtered_entries = []
+        entry_ids = set()
+        for entry in reversed(entries):
+            if entry.repo_id not in entry_ids:
+                filtered_entries.append(entry)
+                entry_ids.add(entry.repo_id)
+
+        return attr.evolve(
             self,
-            entries=tuple(entries),
+            entries=tuple(filtered_entries),
             last_updated_by=owner,
             last_updated=iso_time_now(),
         )
-
-        # filter out duplicate entries by export json
-        return MaintenanceReport._from_data(json.loads(report._json()))
 
     def remove(self, repo_ids, **kwargs):
         """Remove entries from the maintenance report. Remove entries means the
@@ -187,7 +194,7 @@ class MaintenanceReport(object):
         # convert to set, make checking faster
         new_entries = []
         for entry in self.entries:
-            if entry.repository_id not in repo_ids:
+            if entry.repo_id not in repo_ids:
                 new_entries.append(entry)
 
         return attr.evolve(self, last_updated_by=owner, entries=tuple(new_entries))

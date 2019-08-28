@@ -2,8 +2,9 @@ import os
 import logging
 import threading
 import hashlib
+import json
 from functools import partial
-
+from concurrent.futures import Future
 import six
 from six.moves import StringIO
 
@@ -66,9 +67,6 @@ class Client(object):
     # This is mainly provided here as a hook for autotests, so the policy can be
     # overridden there.
     _RETRY_POLICY = retry.PulpRetryPolicy()
-
-    # the relative url where the maintenance report is stored
-    MAINTENANCE_REPORT_URL = "pulp/isos/redhat-maintenance/repos.json"
 
     def __init__(self, url, **kwargs):
         """
@@ -217,7 +215,8 @@ class Client(object):
                 The future contains a task triggered and awaited during the publish
                 maintenance repository operation.
         """
-        report_fileobj = StringIO(report._json())
+        report_json = json.dumps(report._export_dict(), indent=4, sort_keys=True)
+        report_fileobj = StringIO(report_json)
 
         repo = self.get_repository("redhat-maintenance").result()
 
@@ -287,13 +286,6 @@ class Client(object):
             parsed = pulp_response.json()
         except Exception:
             # Couldn't parse as JSON?
-            if pulp_response.status_code == 404 and str(pulp_response.url).endswith(
-                cls.MAINTENANCE_REPORT_URL
-            ):
-                # for getting maintenance report, it's possible the report
-                # doesn't exist, means no repositories are in maintenance mode,
-                # return None
-                return None
             # In other cases, if the response was unsuccessful, raise that.
             # Otherwise re-raise parse error.
             pulp_response.raise_for_status()
@@ -420,6 +412,33 @@ class Client(object):
         return self._request_executor.submit(self._do_request, method="DELETE", url=url)
 
     def _do_get_maintenance(self):
+        def map_404_to_none(response):
+            """Given a future, if it resolved with a 404 error then return a Future[None],
+            else return original future"""
+            out = Future()
+
+            def handle_response(ft):
+                exception = ft.exception()
+                if (
+                    hasattr(exception, "response")
+                    and exception.response.status_code == 404
+                ):
+                    # failed with 404 => returned future should return None
+                    out.set_result(None)
+                elif exception:
+                    # failed with other exception => returned future should raise that exception
+                    out.set_exception(exception)
+                else:
+                    # succeeded => returned future should pass through the result
+                    out.set_result(ft.result())
+
+            response.add_done_callback(handle_response)
+            return out
+
         url = os.path.join(self._url, "pulp/isos/redhat-maintenance/repos.json")
 
-        return self._request_executor.submit(self._do_request, method="GET", url=url)
+        response = self._request_executor.submit(
+            self._do_request, method="GET", url=url
+        )
+
+        return map_404_to_none(response)

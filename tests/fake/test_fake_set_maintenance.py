@@ -8,7 +8,6 @@ from pubtools.pulplib import (
     Repository,
     FileRepository,
     MaintenanceReport,
-    InvalidDataException,
 )
 
 MaintenanceReport._OWNER = "ContentDelivery"
@@ -52,25 +51,4 @@ def test_set_maintenance():
     report = client.get_maintenance_report().result()
     assert report.last_updated_by == "jazhang@hostname"
     assert len(report.entries) == 1
-    assert report.entries[0].repository_id == "repo2"
-
-
-def test_load_invalid_report_raise_exception():
-    controller = FakeController()
-
-    client = controller.client
-    report = {
-        "last_updated": "2019-08-15T14:21:1211",  # invalid timestamp
-        "last_updated_by": "pubtools.pulplib",
-        "repos": {
-            "repo1": {
-                "message": "Maintenance Mode Enabled",
-                "owner": "pubtools.pulplib",
-                "started": "2019-08-15T14:21:12Z",
-            }
-        },
-    }
-    client._maintenance_report = json.dumps(report, indent=4, sort_keys=True)
-
-    with pytest.raises(InvalidDataException):
-        client.get_maintenance_report()
+    assert report.entries[0].repo_id == "repo2"
