@@ -10,7 +10,7 @@ from more_executors.futures import f_map, f_flat_map, f_return
 
 from ..page import Page
 from ..criteria import Criteria
-from ..model import Repository
+from ..model import Repository, Distributor
 from .search import filters_for_criteria
 from .errors import PulpException
 from .poller import TaskPoller
@@ -165,20 +165,45 @@ class Client(object):
                 Each page will contain a collection of
                 :class:`~pubtools.pulplib.Repository` objects.
         """
+        search_options = {"distributors": True}
+        return self._search(
+            Repository, "repositories", criteria=criteria, search_options=search_options
+        )
+
+    def search_distributor(self, criteria=None):
+        """Search the distributors matching the given criteria
+
+        Args:
+            criteria (:class:`~pubtools.pulplib.Criteria`)
+                A criteria object used for this search.
+                If None, search for all repositories.
+
+        Returns:
+            Future[:class:`~pubtools.pulplib.Page`]
+                A future representing the first page of results.
+
+                Each page will contain a collection of
+                :class:`~pubtools.pulplib.Distributor` objects.
+        """
+        return self._search(Distributor, "distributors", criteria=criteria)
+
+    def _search(self, return_type, resource_type, criteria=None, search_options=None):
         pulp_crit = {
             "skip": 0,
             "limit": self._PAGE_SIZE,
-            "filters": filters_for_criteria(criteria, Repository),
+            "filters": filters_for_criteria(criteria, return_type),
         }
-        search = {"criteria": pulp_crit, "distributors": True}
+        search = {"criteria": pulp_crit}
+        if search_options:
+            search.update(search_options)
 
-        response_f = self._do_search("repositories", search)
+        response_f = self._do_search(resource_type, search)
 
         # When this request is resolved, we'll have the first page of data.
         # We'll need to convert that into a page and also keep going with
         # the search if there's more to be done.
         return f_map(
-            response_f, lambda data: self._handle_page(Repository, search, data)
+            response_f, lambda data: self._handle_page(return_type, search, data)
         )
 
     def _do_upload_file(self, upload_id, file_obj, name):
