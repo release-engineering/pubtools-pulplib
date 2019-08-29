@@ -13,7 +13,7 @@ from pubtools.pulplib._impl.criteria import (
     InMatcher,
     RegexMatcher,
     ExistsMatcher,
-    LessThanMatcher
+    LessThanMatcher,
 )
 from pubtools.pulplib._impl.model.common import PULP2_FIELD
 from pubtools.pulplib._impl.util import _is_iso_date_format

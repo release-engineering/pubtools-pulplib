@@ -63,10 +63,12 @@ def test_field_less_than_criteria():
     date and non-date types
     """
     c1 = Criteria.with_field("num_field", Matcher.less_than("5"))
-    c2= Criteria.with_field("date_field", Matcher.less_than("2019-08-27T00:00:00Z"))
+    c2 = Criteria.with_field("date_field", Matcher.less_than("2019-08-27T00:00:00Z"))
 
     assert filters_for_criteria(c1) == {"num_field": {"$lt": "5"}}
-    assert filters_for_criteria(c2) == {"date_field": {"$lt": {"$date": "2019-08-27T00:00:00Z"}}}
+    assert filters_for_criteria(c2) == {
+        "date_field": {"$lt": {"$date": "2019-08-27T00:00:00Z"}}
+    }
 
 
 def test_non_matcher():

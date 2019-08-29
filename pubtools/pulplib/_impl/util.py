@@ -26,6 +26,7 @@ def lookup(value, key, default=ABSENT):
     # it's present
     return value
 
+
 def _is_iso_date_format(str_date):
     # checks if the input is of the format YYYY-mm-ddTHH:MM:SSZ
     # to qualify as a date type field value

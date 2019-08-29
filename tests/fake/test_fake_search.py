@@ -136,7 +136,9 @@ def test_search_null_and():
     """Search with an empty AND gives an error."""
     controller = FakeController()
 
-    dist1 = Distributor(id="yum_distributor", type_id="yum_distributor", repo_id="repo1")
+    dist1 = Distributor(
+        id="yum_distributor", type_id="yum_distributor", repo_id="repo1"
+    )
     repo1 = Repository(id="repo1", distributors=[dist1])
 
     controller.insert_repository(repo1)
@@ -321,11 +323,16 @@ def test_search_paginates():
     # All repos should have been found
     assert sorted(found_repos) == sorted(repos)
 
+
 def test_search_distributor():
     controller = FakeController()
 
-    dist1 = Distributor(id="yum_distributor", type_id="yum_distributor", repo_id="repo1")
-    dist2 = Distributor(id="cdn_distributor", type_id="rpm_rsync_distributor", repo_id="repo1")
+    dist1 = Distributor(
+        id="yum_distributor", type_id="yum_distributor", repo_id="repo1"
+    )
+    dist2 = Distributor(
+        id="cdn_distributor", type_id="rpm_rsync_distributor", repo_id="repo1"
+    )
     repo1 = Repository(id="repo1", distributors=(dist1, dist2))
 
     controller.insert_repository(repo1)
@@ -337,19 +344,30 @@ def test_search_distributor():
 
     assert sorted(found) == [dist2, dist1]
 
+
 def test_search_mapped_field_less_than():
     controller = FakeController()
 
-    dist1 = Distributor(id="yum_distributor", type_id="yum_distributor", repo_id="repo1",
-                        last_publish=datetime.datetime(2019, 8, 23, 2, 5, 0, tzinfo=None))
-    dist2 = Distributor(id="cdn_distributor", type_id="rpm_rsync_distributor", repo_id="repo1",
-                        last_publish=datetime.datetime(2019, 8, 27, 2, 5, 0, tzinfo=None))
+    dist1 = Distributor(
+        id="yum_distributor",
+        type_id="yum_distributor",
+        repo_id="repo1",
+        last_publish=datetime.datetime(2019, 8, 23, 2, 5, 0, tzinfo=None),
+    )
+    dist2 = Distributor(
+        id="cdn_distributor",
+        type_id="rpm_rsync_distributor",
+        repo_id="repo1",
+        last_publish=datetime.datetime(2019, 8, 27, 2, 5, 0, tzinfo=None),
+    )
     repo1 = Repository(id="repo1", distributors=(dist1, dist2))
 
     controller.insert_repository(repo1)
 
     client = controller.client
-    crit = Criteria.with_field("last_publish", Matcher.less_than("2019-08-24T00:00:00Z"))
+    crit = Criteria.with_field(
+        "last_publish", Matcher.less_than("2019-08-24T00:00:00Z")
+    )
 
     found = client.search_distributor(crit).result().data
 

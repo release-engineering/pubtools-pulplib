@@ -7,7 +7,7 @@ from pubtools.pulplib._impl.criteria import (
     EqMatcher,
     InMatcher,
     ExistsMatcher,
-    LessThanMatcher
+    LessThanMatcher,
 )
 
 from pubtools.pulplib._impl import compat_attr as attr

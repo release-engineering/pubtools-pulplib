@@ -8,7 +8,14 @@ from collections import namedtuple
 import six
 from more_executors.futures import f_return, f_return_error, f_flat_map
 
-from pubtools.pulplib import Page, PulpException, Criteria, Task, Repository, Distributor
+from pubtools.pulplib import (
+    Page,
+    PulpException,
+    Criteria,
+    Task,
+    Repository,
+    Distributor,
+)
 from pubtools.pulplib._impl.client.search import filters_for_criteria
 from .. import compat_attr as attr
 
