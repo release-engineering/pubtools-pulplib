@@ -13,8 +13,10 @@ from pubtools.pulplib._impl.criteria import (
     InMatcher,
     RegexMatcher,
     ExistsMatcher,
+    LessThanMatcher
 )
 from pubtools.pulplib._impl.model.common import PULP2_FIELD
+from pubtools.pulplib._impl.util import _is_iso_date_format
 
 ABSENT = object()
 CLASS_MATCHERS = []
@@ -122,6 +124,21 @@ def match_in(matcher, field, obj):
         if elem == value:
             return True
     return False
+
+
+@visit(LessThanMatcher)
+def match_less(matcher, field, obj):
+    # for datetime.dateime fields, obj_value is returned as pulp_value(iso format)
+    # if the model filed name is same as pulp filed name else returns a obj_value
+    # as datetime.datetime object
+    obj_value = get_field(field, obj)
+    if _is_iso_date_format(obj_value):
+        obj_value = datetime.datetime.strptime(obj_value, "%Y-%m-%dT%H:%M:%SZ")
+    matcher_value = matcher._value
+    if _is_iso_date_format(matcher_value):
+        matcher_value = datetime.datetime.strptime(matcher_value, "%Y-%m-%dT%H:%M:%SZ")
+
+    return obj_value < matcher_value
 
 
 def pulp_value(pulp_field, obj):

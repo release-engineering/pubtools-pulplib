@@ -219,6 +219,28 @@ class Matcher(object):
         """
         return InMatcher(values)
 
+    @classmethod
+    def less_than(cls, value):
+        """
+        Returns a matcher for a field whose value is less than the specified input
+        value
+
+        Arguments:
+            values (object)
+                An object to match against the field
+
+        Example:
+            .. code-block:: python
+
+            # would match where last_publish is before "2019-08-27T00:00:00Z
+            # date is reqired to be in this format
+            crit = Criteria.with_field(
+                'last_publish',
+                Matcher.less_than("2019-08-27T00:00:00Z")
+            )
+        """
+        return LessThanMatcher(value)
+
     def _map(self, _fn):
         # Internal-only: return self with matched value mapped through
         # the given function. Intended to be overridden in subclasses
@@ -263,6 +285,14 @@ class InMatcher(Matcher):
 @attr.s
 class ExistsMatcher(Matcher):
     pass
+
+
+@attr.s
+class LessThanMatcher(Matcher):
+    _value = attr.ib()
+
+    def _map(self, fn):
+        return attr.evolve(self, value=fn(self._value))
 
 
 def coerce_to_matcher(value):

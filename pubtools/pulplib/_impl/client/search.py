@@ -7,10 +7,12 @@ from pubtools.pulplib._impl.criteria import (
     EqMatcher,
     InMatcher,
     ExistsMatcher,
+    LessThanMatcher
 )
 
 from pubtools.pulplib._impl import compat_attr as attr
 from pubtools.pulplib._impl.model.attr import PULP2_FIELD, PY_PULP2_CONVERTER
+from pubtools.pulplib._impl.util import _is_iso_date_format
 
 
 def all_subclasses(klass):
@@ -86,5 +88,13 @@ def field_match(to_match):
 
     if isinstance(to_match, ExistsMatcher):
         return {"$exists": True}
+
+    if isinstance(to_match, LessThanMatcher):
+        value = to_match._value
+        # only value of the format YYYY-mm-ddTHH:MM:SSZ is
+        # treated as date
+        if _is_iso_date_format(value):
+            return {"$lt": {"$date": value}}
+        return {"$lt": value}
 
     raise TypeError("Not a matcher: %s" % repr(to_match))
