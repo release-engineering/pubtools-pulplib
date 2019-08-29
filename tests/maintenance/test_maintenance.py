@@ -14,7 +14,12 @@ def test_create_report_with_duplicate_entries():
 
 
 def test_add_entry_existed():
-    entry = MaintenanceEntry(repo_id="repo1", owner="someone", message="Enabled")
+    entry = MaintenanceEntry(
+        repo_id="repo1",
+        owner="someone",
+        message="Enabled",
+        started="2019-08-15T14:21:12Z",
+    )
 
     report = MaintenanceReport(entries=(entry,))
 

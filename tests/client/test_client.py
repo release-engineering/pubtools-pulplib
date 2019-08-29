@@ -216,6 +216,24 @@ def test_non_maintenance_report(client, requests_mocker):
     assert report.entries == ()
 
 
+def test_get_invalid_maintenance_file(client, requests_mocker, caplog):
+    requests_mocker.get(
+        "https://pulp.example.com/pulp/isos/redhat-maintenance/repos.json",
+        text='{"not-valid-json": ',
+    )
+    with pytest.raises(Exception):
+        client.get_maintenance_report().result()
+
+    messages = caplog.messages
+    assert len(messages) == 5
+
+    # Messages have full exception detail. Just check the first line.
+    lines = [m.splitlines()[0] for m in messages]
+
+    assert lines[-1].startswith("Retrying due to error:")
+    assert lines[-1].endswith(" [5/6]")
+
+
 def test_set_maintenance(client, requests_mocker):
     maintenance_report = {
         "last_updated": "2019-08-15T14:21:12Z",

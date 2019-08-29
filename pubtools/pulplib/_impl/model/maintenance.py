@@ -26,13 +26,14 @@ class MaintenanceEntry(object):
 
     repo_id = attr.ib(type=str)
     """ID of repository in maintenance.
-    Note: there is no guarantee that a repository of this ID currenly exists
-          in the Pulp server."""
+
+    Note: there is no guarantee that a repository of this ID currently exists
+    in the Pulp server."""
     message = attr.ib(default=None, type=str)
     """Why this repository is in maintenance."""
     owner = attr.ib(default=None, type=str)
     """Who set this repository in maintenance mode."""
-    started = attr.ib(default=iso_time_now(), type=datetime.datetime)
+    started = attr.ib(default=None, type=datetime.datetime)
     """:class:`~datetime.datetime` in UTC at when the maintenance started."""
 
 
@@ -65,8 +66,7 @@ class MaintenanceReport(object):
     """
 
     @entries.validator
-    def check_duplicates(self, attribute, value):
-        # pylint: disable=unused-argument
+    def _check_duplicates(self, _, value):
         # check if there's duplicate entries
         repo_ids = [entry.repo_id for entry in value]
         if len(repo_ids) != len(set(repo_ids)):
@@ -79,6 +79,7 @@ class MaintenanceReport(object):
         Args:
             data (dict):
                 A dict containing a raw representation of the maintenance status.
+
         Returns:
             a new instance of ``cls``
 
@@ -127,7 +128,7 @@ class MaintenanceReport(object):
 
     def add(self, repo_ids, **kwargs):
         """Add entries to maintenance report and update the timestamp. Every
-        entry added to the report represents a repository in maintenace mode.
+        entry added to the report represents a repository in maintenance mode.
 
         Args:
             repo_ids (list[str]):
@@ -135,13 +136,14 @@ class MaintenanceReport(object):
                 be added to the maintenance report.
 
                 Note: it's users' responsibility to make sure the repository exists in
-                the pulp server, this method doesn't check the repository's existence.
+                the Pulp server, this method doesn't check for the existence of repositories.
 
-            Optional keyword args:
-                message (str):
-                    Reason why put the repo to maintenance.
-                owner (str):
-                    Who set the maintenance mode.
+            message (str) (optional):
+                Reason why put the repo to maintenance.
+
+            owner (str) (optional):
+                Who set the maintenance mode.
+
         Returns:
            :class:`~pubtools.pulplib.MaintenanceReport`
                 A copy of this maintenance report with added repositories.
@@ -152,7 +154,11 @@ class MaintenanceReport(object):
 
         to_add = []
         for repo in repo_ids:
-            to_add.append(MaintenanceEntry(repo_id=repo, owner=owner, message=message))
+            to_add.append(
+                MaintenanceEntry(
+                    repo_id=repo, owner=owner, message=message, started=iso_time_now()
+                )
+            )
         entries = list(self.entries)
         entries.extend(to_add)
 
@@ -181,9 +187,9 @@ class MaintenanceReport(object):
                 A list of repository ids. Entries match repository ids will be removed
                 from the maintenance report.
 
-            Optional keyword args:
-                owner (str):
-                    Who unset the maintenance mode.
+            owner (str) (optional):
+                Who unset the maintenance mode.
+
         Returns:
             :class:`~pubtools.pulplib.MaintenanceReport`
                 A copy of this maintenance report with removed repositories.

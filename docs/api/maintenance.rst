@@ -4,8 +4,8 @@ Maintenance Mode
 .. contents::
   :local:
 
-.. autoclass:: pubtools.pulplib.MaintenanceEntry
+.. autoclass:: pubtools.pulplib.MaintenanceReport
     :members:
 
-.. autoclass:: pubtools.pulplib.MaintenanceReport
+.. autoclass:: pubtools.pulplib.MaintenanceEntry
     :members:

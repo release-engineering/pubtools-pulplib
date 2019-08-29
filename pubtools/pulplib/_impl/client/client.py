@@ -189,7 +189,7 @@ class Client(object):
         """Get the current maintenance mode status for this Pulp server.
 
         Returns:
-            Future[:class:`~pubtools.pulplib.MaintenceReport`]
+            Future[:class:`~pubtools.pulplib.MaintenanceReport`]
                 A future describes the maintenance status
         """
         report_ft = self._do_get_maintenance()
@@ -202,7 +202,7 @@ class Client(object):
         )
 
     def set_maintenance(self, report):
-        """Set the current maintenance mode status for this Pulp server.
+        """Set maintenance mode for this Pulp server.
 
         Args:
             report:
@@ -286,7 +286,7 @@ class Client(object):
             parsed = pulp_response.json()
         except Exception:
             # Couldn't parse as JSON?
-            # In other cases, if the response was unsuccessful, raise that.
+            # If the response was unsuccessful, raise that.
             # Otherwise re-raise parse error.
             pulp_response.raise_for_status()
             raise
