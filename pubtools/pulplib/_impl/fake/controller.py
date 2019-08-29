@@ -66,6 +66,25 @@ class FakeController(object):
         self.client._repositories.append(repository)
 
     @property
+    def content_type_ids(self):
+        """The list of content type IDs the fake client will claim to support.
+
+        .. versionadded:: 1.4.0
+        """
+        return self.client._type_ids[:]
+
+    def set_content_type_ids(self, type_ids):
+        """Set the list of content type IDs the fake client will claim to support.
+
+        Args:
+            type_ids (list[str])
+                A list of content type IDs (e.g. "rpm", "erratum", ...)
+
+        .. versionadded:: 1.4.0
+        """
+        self.client._type_ids = type_ids[:]
+
+    @property
     def publish_history(self):
         """A list of repository publishes triggered via this client.
 
