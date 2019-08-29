@@ -7,7 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-n/a
+### Added
+- A `search_distributor` API to search distributors on defined `Criteria`
+- `Matcher.less_than()` matcher to find the results with fields less than
+  the given value
 
 ## [1.3.0] - 2019-08-15
 
