@@ -8,7 +8,7 @@ from collections import namedtuple
 import six
 from more_executors.futures import f_return, f_return_error, f_flat_map
 
-from pubtools.pulplib import Page, PulpException, Criteria, Task, Repository
+from pubtools.pulplib import Page, PulpException, Criteria, Task, Repository, Distributor
 from pubtools.pulplib._impl.client.search import filters_for_criteria
 from .. import compat_attr as attr
 
@@ -57,14 +57,34 @@ class FakeClient(object):
         # callers should not make any assumption about the order of returned
         # values. Encourage that by returning output in unpredictable order
         random.shuffle(repos)
+        return self._prepare_pages(repos)
 
-        # Split it into pages
+    def search_distributor(self, criteria=None):
+        criteria = criteria or Criteria.true()
+        distributors = []
+
+        filters_for_criteria(criteria, Distributor)
+
+        try:
+            for repo in self._repositories:
+                for distributor in repo.distributors:
+                    if match_object(criteria, distributor):
+                        distributors.append(distributor)
+        except Exception as ex:  # pylint: disable=broad-except
+            return f_return_error(ex)
+
+        random.shuffle(distributors)
+        return self._prepare_pages(distributors)
+
+    def _prepare_pages(self, resource_list):
+        # Split resource_list into pages
+        # resource_list: list of objects that paginated
         page_data = []
         current_page_data = []
-        while repos:
-            next_elem = repos.pop()
+        while resource_list:
+            next_elem = resource_list.pop()
             current_page_data.append(next_elem)
-            if len(current_page_data) == self._PAGE_SIZE and repos:
+            if len(current_page_data) == self._PAGE_SIZE and resource_list:
                 page_data.append(current_page_data)
                 current_page_data = []
 
