@@ -43,7 +43,9 @@ class Task(PulpObject):
     so it is not necessary to display both.
     """
 
-    tags = pulp_attrib(default=attr.Factory(list), type=list, pulp_field="tags")
+    tags = pulp_attrib(
+        default=attr.Factory(list), type=list, pulp_field="tags", hash=False
+    )
     """The tags for this task.
 
     Typically includes info on the task's associated action and
@@ -59,7 +61,10 @@ class Task(PulpObject):
     """The ID of the repository associated with this task, otherwise None."""
 
     units_data = pulp_attrib(
-        default=attr.Factory(list), type=list, pulp_field="result.units_successful"
+        default=attr.Factory(list),
+        type=list,
+        pulp_field="result.units_successful",
+        hash=False,
     )
     """Info on the units which were processed as part of this task
     (e.g. associated or unassociated).

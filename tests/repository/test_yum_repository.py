@@ -12,6 +12,14 @@ def test_default_mutable_urls():
     assert YumRepository(id="foo").mutable_urls == ["repodata/repomd.xml"]
 
 
+def test_can_hash():
+    """a default YumRepository is hashable"""
+    repo = YumRepository(id="foo")
+    reposet = set()
+    reposet.add(repo)
+    assert repo in reposet
+
+
 def test_from_data_relative_url():
     """relative_url is initialized from distributors when possible"""
     repo = Repository.from_data(

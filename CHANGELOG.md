@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- n/a
+### Fixed
+- Fixed hashability of `PulpObject` subclasses, making it possible to use them
+  in sets/dicts
 
 ## [1.4.0] - 2019-09-02
 
