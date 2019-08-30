@@ -214,6 +214,29 @@
             <span class="n">response_f</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">data</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_page</span><span class="p">(</span><span class="n">Repository</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
         <span class="p">)</span></div>
 
+<div class="viewcode-block" id="Client.get_content_type_ids"><a class="viewcode-back" href="../../../../../api/client.html#pubtools.pulplib.Client.get_content_type_ids">[docs]</a>    <span class="k">def</span> <span class="nf">get_content_type_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the content types supported by this Pulp server.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Future[list[str]]</span>
+<span class="sd">                A future holding the IDs of supported content types.</span>
+
+<span class="sd">                The returned values will depend on the plugins installed</span>
+<span class="sd">                on the connected Pulp server.</span>
+
+<span class="sd">                &quot;modulemd&quot;, &quot;rpm&quot;, &quot;srpm&quot; and &quot;erratum&quot; are some examples</span>
+<span class="sd">                of common return values.</span>
+
+<span class="sd">        .. versionadded:: 1.4.0</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_url</span><span class="p">,</span> <span class="s2">&quot;pulp/api/v2/plugins/types/&quot;</span><span class="p">)</span>
+
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_request</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span>
+
+        <span class="c1"># The pulp API returns an object per supported type.</span>
+        <span class="c1"># We only support returning the ID at this time.</span>
+        <span class="k">return</span> <span class="n">f_map</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">types</span><span class="p">:</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">t</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">types</span><span class="p">]))</span></div>
+
     <span class="k">def</span> <span class="nf">_do_upload_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">upload_id</span><span class="p">,</span> <span class="n">file_obj</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="k">def</span> <span class="nf">do_next_upload</span><span class="p">(</span><span class="n">checksum</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">file_obj</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_CHUNK_SIZE</span><span class="p">)</span>

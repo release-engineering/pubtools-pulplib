@@ -109,6 +109,28 @@ If None, search for all repositories.</p>
 </dl>
 </dd></dl>
 
+<dl class="method">
+<dt id="pubtools.pulplib.Client.get_content_type_ids">
+<code class="sig-name descname">get_content_type_ids</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/client.html#Client.get_content_type_ids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.Client.get_content_type_ids" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the content types supported by this Pulp server.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><dl>
+<dt>Future[list[str]]</dt><dd><p>A future holding the IDs of supported content types.</p>
+<p>The returned values will depend on the plugins installed
+on the connected Pulp server.</p>
+<p>”modulemd”, “rpm”, “srpm” and “erratum” are some examples
+of common return values.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.4.0.</span></p>
+</div>
+</dd></dl>
+
 </dd></dl>
 
 <div class="section" id="errors">
