@@ -22,7 +22,10 @@ def iso_time_now():
 
 @attr.s(kw_only=True, frozen=True)
 class MaintenanceEntry(object):
-    """Details about the maintenance status of a specific repository."""
+    """Details about the maintenance status of a specific repository.
+
+    .. versionadded:: 1.4.0
+    """
 
     repo_id = attr.ib(type=str)
     """ID of repository in maintenance.
@@ -46,13 +49,15 @@ class MaintenanceReport(object):
     will be blocked.  Other operations remain possible.
 
     This object holds information on the set of repositories currently in maintenance mode.
+
+    .. versionadded:: 1.4.0
     """
 
     _OWNER = "%s@%s" % (USER, HOSTNAME) if all([USER, HOSTNAME]) else "pubtools.pulplib"
 
     _SCHEMA = load_schema("maintenance")
 
-    last_updated = attr.ib(default=iso_time_now(), type=datetime.datetime)
+    last_updated = attr.ib(default=None, type=datetime.datetime)
     """:class:`~datetime.datetime` in UTC when this report was last updated,
     if it's the first time the report is created, current time is used."""
 

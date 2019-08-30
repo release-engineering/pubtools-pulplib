@@ -12,6 +12,7 @@ from pubtools.pulplib import (
     Repository,
     PulpException,
     MaintenanceReport,
+    Task,
 )
 
 
@@ -255,9 +256,14 @@ def test_set_maintenance(client, requests_mocker):
 
     with patch("pubtools.pulplib.FileRepository.upload_file") as mocked_upload:
         with patch("pubtools.pulplib.Repository.publish") as mocked_publish:
-            mocked_upload.return_value = f_return()
-            mocked_publish.return_value = f_return()
-            client.set_maintenance(report).result()
+            upload_task = Task(id="upload-task", completed=True, succeeded=True)
+            publish_task = [Task(id="publish-task", completed=True, succeeded=True)]
+
+            mocked_upload.return_value = f_return(upload_task)
+            mocked_publish.return_value = f_return(publish_task)
+
+            # set_maintenance.result() should return whatever publish.result() returns
+            assert client.set_maintenance(report).result() is publish_task
 
     # upload_file should be called with (file_obj, 'repos.json')
     args = mocked_upload.call_args

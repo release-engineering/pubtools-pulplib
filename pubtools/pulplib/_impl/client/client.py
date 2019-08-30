@@ -191,6 +191,8 @@ class Client(object):
         Returns:
             Future[:class:`~pubtools.pulplib.MaintenanceReport`]
                 A future describes the maintenance status
+
+        .. versionadded:: 1.4.0
         """
         report_ft = self._do_get_maintenance()
 
@@ -214,6 +216,8 @@ class Client(object):
 
                 The future contains a task triggered and awaited during the publish
                 maintenance repository operation.
+
+        .. versionadded:: 1.4.0
         """
         report_json = json.dumps(report._export_dict(), indent=4, sort_keys=True)
         report_fileobj = StringIO(report_json)
