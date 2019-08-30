@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Introduced ``Client.get_content_type_ids`` method to retrieve supported content types.
 - A `search_distributor` API to search distributors on defined `Criteria`
 - `Matcher.less_than()` matcher to find the results with fields less than
   the given value

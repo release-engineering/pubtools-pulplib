@@ -34,11 +34,28 @@ class FakeClient(object):
     # written against pubtools.pulplib.Client should be able to work with
     # an instance of this class swapped in.
     _PAGE_SIZE = 3
+    _DEFAULT_TYPE_IDS = [
+        "distribution",
+        "drpm",
+        "erratum",
+        "iso",
+        "modulemd_defaults",
+        "modulemd",
+        "package_category",
+        "package_environment",
+        "package_group",
+        "package_langpacks",
+        "repository",
+        "rpm",
+        "srpm",
+        "yum_repo_metadata_file",
+    ]
 
     def __init__(self):
         self._repositories = []
         self._publish_history = []
         self._upload_history = []
+        self._type_ids = self._DEFAULT_TYPE_IDS[:]
         self._lock = threading.RLock()
         self._uuidgen = random.Random()
         self._uuidgen.seed(0)
@@ -116,6 +133,9 @@ class FakeClient(object):
             )
 
         return f_return(data[0])
+
+    def get_content_type_ids(self):
+        return f_return(self._type_ids)
 
     def _do_upload_file(self, upload_id, file_obj, name):
         # pylint: disable=unused-argument
