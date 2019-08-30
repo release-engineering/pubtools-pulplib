@@ -112,7 +112,7 @@ class Repository(PulpObject):
     relative_url = attr.ib(default=None, type=str)
     """Default publish URL for this repository, relative to the Pulp content root."""
 
-    mutable_urls = attr.ib(default=attr.Factory(list), type=list)
+    mutable_urls = attr.ib(default=attr.Factory(list), type=list, hash=False)
     """A list of URLs relative to repository publish root which are expected
     to change at every publish (if any content of repo changed)."""
 
@@ -140,6 +140,7 @@ class Repository(PulpObject):
         pulp_py_converter=lambda sigs: sigs.split(","),
         py_pulp_converter=",".join,
         converter=lambda keys: [k.strip() for k in keys],
+        hash=False,
     )
     """A list of GPG signing key IDs used to sign content in this repository."""
 

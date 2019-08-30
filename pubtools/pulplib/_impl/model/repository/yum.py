@@ -13,5 +13,5 @@ class YumRepository(Repository):
     type = pulp_attrib(default="rpm-repo", type=str, pulp_field="notes._repo-type")
 
     mutable_urls = attr.ib(
-        default=attr.Factory(lambda: ["repodata/repomd.xml"]), type=list
+        default=attr.Factory(lambda: ["repodata/repomd.xml"]), type=list, hash=False
     )
