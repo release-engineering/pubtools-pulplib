@@ -1,6 +1,7 @@
 from pubtools.pulplib._impl import compat_attr as attr
 
 from ..schema import load_schema
+from .unit import Unit
 from .common import PulpObject
 from .attr import pulp_attrib
 
@@ -60,6 +61,22 @@ class Task(PulpObject):
     repo_id = attr.ib(type=str)
     """The ID of the repository associated with this task, otherwise None."""
 
+    units = pulp_attrib(
+        default=attr.Factory(tuple),
+        type=tuple,
+        pulp_field="result.units_successful",
+        pulp_py_converter=lambda raw: tuple([Unit._from_task_data(x) for x in raw]),
+    )
+    """Info on the units which were processed as part of this task
+    (e.g. associated or unassociated).
+
+    This is an iterable. Each element is an instance of
+    :class:`~pubtools.pulplib.Unit` containing information on a processed
+    unit.
+
+    .. versionadded:: 1.5.0
+    """
+
     units_data = pulp_attrib(
         default=attr.Factory(list),
         type=list,
@@ -71,6 +88,9 @@ class Task(PulpObject):
 
     This is a list. The list elements are the raw dicts as returned
     by Pulp. These should at least contain a 'type_id' and a 'unit_key'.
+
+    .. deprecated:: 1.5.0
+       Use :meth:`~pubtools.pulplib.Task.units` instead.
     """
 
     @repo_id.default

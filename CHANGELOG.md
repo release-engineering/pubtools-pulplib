@@ -7,9 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Introduced ``Repository.remove_content`` to remove contents of a repository.
+- Introduced ``Unit`` classes representing various types of Pulp units.
+
 ### Fixed
 - Fixed hashability of `PulpObject` subclasses, making it possible to use them
   in sets/dicts
+
+### Deprecated
+- ``Task.units_data`` is now deprecated in favor of ``Task.units``.
 
 ## [1.4.0] - 2019-09-02
 

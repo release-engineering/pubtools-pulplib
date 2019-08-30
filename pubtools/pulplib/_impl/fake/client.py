@@ -57,6 +57,7 @@ class FakeClient(object):
 
     def __init__(self):
         self._repositories = []
+        self._repo_units = {}
         self._publish_history = []
         self._upload_history = []
         self._maintenance_report = None
@@ -166,6 +167,33 @@ class FakeClient(object):
 
         return out
 
+    def _do_unassociate(self, repo_id, type_ids):
+        repo_f = self.get_repository(repo_id)
+        if repo_f.exception():
+            return repo_f
+
+        current = self._repo_units.get(repo_id, set())
+        removed = set()
+        kept = set()
+
+        for unit in current:
+            if type_ids is None or unit.content_type_id in type_ids:
+                removed.add(unit)
+            else:
+                kept.add(unit)
+
+        self._repo_units[repo_id] = kept
+
+        task = Task(
+            id=self._next_task_id(),
+            repo_id=repo_id,
+            completed=True,
+            succeeded=True,
+            units=tuple(removed),
+        )
+
+        return f_return([task])
+
     def _request_upload(self):
         upload_request = {
             "_href": "/pulp/api/v2/content/uploads/%s/" % self._next_request_id(),
@@ -213,6 +241,7 @@ class FakeClient(object):
                 return f_return([])
 
             self._repositories.pop(idx)  # pylint: disable=undefined-loop-variable
+            self._repo_units.pop(repo_id, None)
             return f_return(
                 [Task(id=self._next_task_id(), completed=True, succeeded=True)]
             )
