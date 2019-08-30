@@ -65,6 +65,19 @@ class FakeController(object):
         """
         self.client._repositories.append(repository)
 
+    def insert_units(self, repository, units):
+        """Add units to the set of existing content for a repository.
+
+        Args:
+            repository (:class:`~pubtools.pulplib.Repository`)
+                A repository object.
+            units (list[:class:`~pubtools.pulplib.Unit`])
+                A list of units to be inserted.
+
+        .. versionadded:: 1.5.0
+        """
+        self.client._repo_units.setdefault(repository.id, set()).update(set(units))
+
     @property
     def content_type_ids(self):
         """The list of content type IDs the fake client will claim to support.

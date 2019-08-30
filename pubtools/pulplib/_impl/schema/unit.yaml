@@ -1,0 +1,144 @@
+title: pulp2-unit
+
+description: >-
+  Schema for a Pulp 2.x unit, as returned by content search API.
+
+$schema: http://json-schema.org/draft-07/schema#
+
+definitions:
+  # ISO units (generic file)
+  iso:
+    type: object
+
+    properties:
+      # Type of the unit, e.g. "iso", "rpm", "srpm", "erratum" ...
+      _content_type_id:
+        const: iso
+
+      # Filename (actually path)
+      name:
+        type: string
+
+      # SHA256 checksum
+      checksum:
+        type: string
+        pattern: "^[a-f0-9]{64}$"
+
+      # Size in bytes
+      size:
+        type: integer
+
+    required:
+    - _content_type_id
+    - name
+    - checksum
+    - size
+
+  # RPM units
+  rpm:
+    type: object
+
+    properties:
+      # Type of the unit
+      _content_type_id:
+        enum:
+        - rpm
+        - srpm
+
+      # ENVR components
+      name:
+        type: string
+      epoch:
+        type: string
+      version:
+        type: string
+      release:
+        type: string
+
+      # Architecture
+      arch:
+        type: string
+
+      # Short ID of key used to sign this RPM
+      signing_key:
+        anyOf:
+        - type: string
+        - type: "null"
+
+      # Checksums in key/value pairs (key=algorithm, value=hex string).
+      # All checksums are optional.
+      checksums:
+        type: object
+        properties:
+          md5:
+            type: string
+            pattern: "^[a-f0-9]{32}$"
+          sha1:
+            type: string
+            pattern: "^[a-f0-9]{40}$"
+          sha256:
+            type: string
+            pattern: "^[a-f0-9]{64}$"
+
+    required:
+    - _content_type_id
+    - name
+    - epoch
+    - version
+    - release
+    - arch
+
+  # modulemd units
+  modulemd:
+    type: object
+
+    properties:
+      # Type of the unit
+      _content_type_id:
+        const: modulemd
+
+      # NSVCA components
+      name:
+        type: string
+      stream:
+        type: string
+      version:
+        type: integer
+      context:
+        type: string
+      arch:
+        type: string
+
+    required:
+    - _content_type_id
+    - name
+    - stream
+    - version
+    - context
+    - arch
+
+  # Schema for any unknown type of unit
+  unknown:
+    type: object
+
+    properties:
+      # Type of the unit. Since this is the catch-all schema for unknown unit types,
+      # this must be a type not included in one of the other schemas.
+      _content_type_id:
+        allOf:
+        - type: string
+        - not:
+            enum:
+            - iso
+            - rpm
+            - srpm
+            - modulemd
+
+    required:
+    - _content_type_id
+
+anyOf:
+- $ref: "#/definitions/iso"
+- $ref: "#/definitions/rpm"
+- $ref: "#/definitions/modulemd"
+- $ref: "#/definitions/unknown"

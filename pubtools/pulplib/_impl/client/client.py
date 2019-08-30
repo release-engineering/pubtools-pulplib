@@ -307,6 +307,21 @@ class Client(object):
             self._do_request, method="POST", url=url, json=body
         )
 
+    def _do_unassociate(self, repo_id, type_ids):
+        url = os.path.join(
+            self._url, "pulp/api/v2/repositories/%s/actions/unassociate/" % repo_id
+        )
+
+        body = {}
+        if type_ids is not None:
+            body["type_ids"] = type_ids
+
+        LOG.debug("Submitting %s unassociate: %s", url, body)
+
+        return self._task_executor.submit(
+            self._do_request, method="POST", url=url, json=body
+        )
+
     @classmethod
     def _unpack_response(cls, pulp_response):
         try:
