@@ -17,7 +17,7 @@ def test_can_search_id():
 
     client = controller.client
     crit = Criteria.with_id("repo1")
-    found = client.search_repository(crit).result().data
+    found = client.search_repository(crit).data
 
     assert found == [repo1]
 
@@ -36,7 +36,7 @@ def test_can_search_ids():
 
     client = controller.client
     crit = Criteria.with_id(["repo1", "repo3", "other-id"])
-    found = client.search_repository(crit).result().data
+    found = client.search_repository(crit).data
 
     assert sorted(found) == [repo1, repo3]
 
@@ -53,7 +53,7 @@ def test_can_search_id_exists():
 
     client = controller.client
     crit = Criteria.with_field("id", Matcher.exists())
-    found = client.search_repository(crit).result().data
+    found = client.search_repository(crit).data
 
     assert sorted(found) == [repo1, repo2]
 
@@ -69,7 +69,7 @@ def test_search_no_result():
 
     client = controller.client
     crit = Criteria.with_field("notes.whatever", "foobar")
-    found = client.search_repository(crit).result().data
+    found = client.search_repository(crit).data
 
     assert found == []
 
@@ -89,7 +89,7 @@ def test_search_or():
     crit = Criteria.or_(
         Criteria.with_id("repo3"), Criteria.with_field("id", Matcher.equals("repo1"))
     )
-    found = client.search_repository(crit).result().data
+    found = client.search_repository(crit).data
 
     assert sorted(found) == [repo1, repo3]
 
@@ -107,7 +107,7 @@ def test_search_created_exists():
 
     client = controller.client
     crit = Criteria.with_field("notes.created", Matcher.exists())
-    found = client.search_repository(crit).result().data
+    found = client.search_repository(crit).data
 
     assert sorted(found) == [repo2, repo3]
 
@@ -149,7 +149,7 @@ def test_search_and():
     crit = Criteria.and_(
         Criteria.with_field("notes.created", Criteria.exists), Criteria.with_id("repo2")
     )
-    found = client.search_repository(crit).result().data
+    found = client.search_repository(crit).data
 
     assert sorted(found) == [repo2]
 
@@ -216,7 +216,7 @@ def test_search_created_timestamp():
 
     client = controller.client
     crit = Criteria.with_field("notes.created", when_str)
-    found = client.search_repository(crit).result().data
+    found = client.search_repository(crit).data
 
     assert sorted(found) == [repo2]
 
@@ -236,8 +236,8 @@ def test_search_mapped_field_eq():
     client = controller.client
     keys_crit = Criteria.with_field("signing_keys", ["foo", "bar"])
     product_crit = Criteria.with_field("eng_product_id", 123)
-    found_by_keys = client.search_repository(keys_crit).result().data
-    found_by_product = client.search_repository(product_crit).result().data
+    found_by_keys = client.search_repository(keys_crit).data
+    found_by_product = client.search_repository(product_crit).data
 
     assert found_by_keys == [repo2]
     assert found_by_product == [repo3]
@@ -257,7 +257,7 @@ def test_search_mapped_field_in():
 
     client = controller.client
     crit = Criteria.with_field("eng_product_id", Matcher.in_([123, 456]))
-    found = client.search_repository(crit).result().data
+    found = client.search_repository(crit).data
 
     assert sorted(found) == [repo2, repo3]
 
@@ -276,7 +276,7 @@ def test_search_mapped_field_regex():
 
     client = controller.client
     crit = Criteria.with_field("type", Matcher.regex("fooba[rz]"))
-    found = client.search_repository(crit).result().data
+    found = client.search_repository(crit).data
 
     assert sorted(found) == [repo1, repo2]
 
@@ -302,7 +302,7 @@ def test_search_created_regex():
 
     client = controller.client
     crit = Criteria.with_field("notes.created", Matcher.regex("19-06"))
-    found = list(client.search_repository(crit).result())
+    found = client.search_repository(crit)
 
     assert sorted(found) == [repo1, repo3]
 
@@ -319,7 +319,7 @@ def test_search_paginates():
     client = controller.client
     crit = Criteria.true()
 
-    page = client.search_repository(crit).result()
+    page = client.search_repository(crit)
     found_repos = list(page)
 
     page_count = 1

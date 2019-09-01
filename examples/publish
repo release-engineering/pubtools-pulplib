@@ -13,7 +13,7 @@ log = logging.getLogger("publish")
 def publish(client, repo_id):
     crit = Criteria.with_id(repo_id)
 
-    repos = client.search_repository(crit).result()
+    repos = client.search_repository(crit)
     publishes = [repo.publish() for repo in repos]
 
     # Blocks at result() calls here.

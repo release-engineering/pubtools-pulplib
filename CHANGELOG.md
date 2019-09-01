@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- n/a
+### Added
+- Introduced "proxy futures" for values produced by this library.
 
 ## [2.0.0] - 2019-09-09
 

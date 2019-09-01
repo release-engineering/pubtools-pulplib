@@ -9,7 +9,7 @@ from collections import namedtuple
 import six
 from six.moves import StringIO
 
-from more_executors.futures import f_return, f_return_error, f_flat_map
+from more_executors.futures import f_return, f_return_error, f_flat_map, f_proxy
 
 
 from pubtools.pulplib import (
@@ -104,9 +104,9 @@ class FakeClient(object):
         next_page = None
         for batch in reversed(page_data):
             page = Page(data=batch, next=next_page)
-            next_page = f_return(page)
+            next_page = f_proxy(f_return(page))
 
-        return f_return(page)
+        return f_proxy(f_return(page))
 
     def get_repository(self, repository_id):
         if not isinstance(repository_id, six.string_types):
@@ -118,14 +118,14 @@ class FakeClient(object):
                 PulpException("Repository id=%s not found" % repository_id)
             )
 
-        return f_return(data[0])
+        return f_proxy(f_return(data[0]))
 
     def get_maintenance_report(self):
         if self._maintenance_report:
             report = MaintenanceReport._from_data(json.loads(self._maintenance_report))
         else:
             report = MaintenanceReport()
-        return f_return(report)
+        return f_proxy(f_return(report))
 
     def set_maintenance(self, report):
         report_json = json.dumps(report._export_dict(), indent=4, sort_keys=True)
@@ -139,10 +139,10 @@ class FakeClient(object):
         publish_ft = f_flat_map(upload_ft, lambda _: repo.publish())
         self._maintenance_report = report_json
 
-        return publish_ft
+        return f_proxy(publish_ft)
 
     def get_content_type_ids(self):
-        return f_return(self._type_ids)
+        return f_proxy(f_return(self._type_ids))
 
     def _do_upload_file(self, upload_id, file_obj, name):
         # pylint: disable=unused-argument
