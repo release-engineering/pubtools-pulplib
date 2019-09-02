@@ -58,10 +58,12 @@
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/searching.html#pubtools.pulplib.Criteria.and_">and_() (pubtools.pulplib.Criteria class method)</a>
+      <li><a href="api/maintenance.html#pubtools.pulplib.MaintenanceReport.add">add() (pubtools.pulplib.MaintenanceReport method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/searching.html#pubtools.pulplib.Criteria.and_">and_() (pubtools.pulplib.Criteria class method)</a>
+</li>
       <li><a href="api/searching.html#pubtools.pulplib.Page.as_iter">as_iter() (pubtools.pulplib.Page method)</a>
 </li>
   </ul></td>
@@ -116,6 +118,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/model.html#pubtools.pulplib.Repository.eng_product_id">eng_product_id (pubtools.pulplib.Repository attribute)</a>
 </li>
+      <li><a href="api/maintenance.html#pubtools.pulplib.MaintenanceReport.entries">entries (pubtools.pulplib.MaintenanceReport attribute)</a>
+</li>
       <li><a href="api/searching.html#pubtools.pulplib.Matcher.equals">equals() (pubtools.pulplib.Matcher class method)</a>
 </li>
   </ul></td>
@@ -152,6 +156,8 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/client.html#pubtools.pulplib.Client.get_maintenance_report">get_maintenance_report() (pubtools.pulplib.Client method)</a>
+</li>
       <li><a href="api/client.html#pubtools.pulplib.Client.get_repository">get_repository() (pubtools.pulplib.Client method)</a>
 </li>
   </ul></td>
@@ -191,15 +197,27 @@
       <li><a href="api/model.html#pubtools.pulplib.Distributor.last_publish">last_publish (pubtools.pulplib.Distributor attribute)</a>
 </li>
   </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/maintenance.html#pubtools.pulplib.MaintenanceReport.last_updated">last_updated (pubtools.pulplib.MaintenanceReport attribute)</a>
+</li>
+      <li><a href="api/maintenance.html#pubtools.pulplib.MaintenanceReport.last_updated_by">last_updated_by (pubtools.pulplib.MaintenanceReport attribute)</a>
+</li>
+  </ul></td>
 </tr></table>
 
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/searching.html#pubtools.pulplib.Matcher">Matcher (class in pubtools.pulplib)</a>
+      <li><a href="api/maintenance.html#pubtools.pulplib.MaintenanceEntry">MaintenanceEntry (class in pubtools.pulplib)</a>
+</li>
+      <li><a href="api/maintenance.html#pubtools.pulplib.MaintenanceReport">MaintenanceReport (class in pubtools.pulplib)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/searching.html#pubtools.pulplib.Matcher">Matcher (class in pubtools.pulplib)</a>
+</li>
+      <li><a href="api/maintenance.html#pubtools.pulplib.MaintenanceEntry.message">message (pubtools.pulplib.MaintenanceEntry attribute)</a>
+</li>
       <li><a href="api/model.html#pubtools.pulplib.Repository.mutable_urls">mutable_urls (pubtools.pulplib.Repository attribute)</a>
 </li>
   </ul></td>
@@ -221,6 +239,8 @@
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/model.html#pubtools.pulplib.PublishOptions.origin_only">origin_only (pubtools.pulplib.PublishOptions attribute)</a>
+</li>
+      <li><a href="api/maintenance.html#pubtools.pulplib.MaintenanceEntry.owner">owner (pubtools.pulplib.MaintenanceEntry attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -254,10 +274,16 @@
 </li>
       <li><a href="api/model.html#pubtools.pulplib.Repository.relative_url">relative_url (pubtools.pulplib.Repository attribute)</a>
 </li>
+      <li><a href="api/maintenance.html#pubtools.pulplib.MaintenanceReport.remove">remove() (pubtools.pulplib.MaintenanceReport method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/model.html#pubtools.pulplib.Task.repo_id">repo_id (pubtools.pulplib.Task attribute)</a>
+      <li><a href="api/maintenance.html#pubtools.pulplib.MaintenanceEntry.repo_id">repo_id (pubtools.pulplib.MaintenanceEntry attribute)</a>
+
+      <ul>
+        <li><a href="api/model.html#pubtools.pulplib.Task.repo_id">(pubtools.pulplib.Task attribute)</a>
 </li>
+      </ul></li>
       <li><a href="api/testing.html#pubtools.pulplib.FakeController.repositories">repositories() (pubtools.pulplib.FakeController property)</a>
 </li>
       <li><a href="api/model.html#pubtools.pulplib.Repository">Repository (class in pubtools.pulplib)</a>
@@ -272,11 +298,15 @@
 </li>
       <li><a href="api/testing.html#pubtools.pulplib.FakeController.set_content_type_ids">set_content_type_ids() (pubtools.pulplib.FakeController method)</a>
 </li>
+      <li><a href="api/client.html#pubtools.pulplib.Client.set_maintenance">set_maintenance() (pubtools.pulplib.Client method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/model.html#pubtools.pulplib.Repository.signing_keys">signing_keys (pubtools.pulplib.Repository attribute)</a>
 </li>
       <li><a href="api/model.html#pubtools.pulplib.Repository.skip_rsync_repodata">skip_rsync_repodata (pubtools.pulplib.Repository attribute)</a>
+</li>
+      <li><a href="api/maintenance.html#pubtools.pulplib.MaintenanceEntry.started">started (pubtools.pulplib.MaintenanceEntry attribute)</a>
 </li>
       <li><a href="api/model.html#pubtools.pulplib.Task.succeeded">succeeded (pubtools.pulplib.Task attribute)</a>
 </li>

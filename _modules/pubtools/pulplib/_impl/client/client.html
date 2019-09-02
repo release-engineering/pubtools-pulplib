@@ -35,7 +35,11 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">import</span> <span class="nn">hashlib</span>
+<span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">partial</span>
+<span class="kn">from</span> <span class="nn">concurrent.futures</span> <span class="k">import</span> <span class="n">Future</span>
+<span class="kn">import</span> <span class="nn">six</span>
+<span class="kn">from</span> <span class="nn">six.moves</span> <span class="k">import</span> <span class="n">StringIO</span>
 
 <span class="kn">import</span> <span class="nn">requests</span>
 <span class="kn">from</span> <span class="nn">more_executors</span> <span class="k">import</span> <span class="n">Executors</span>
@@ -43,7 +47,7 @@
 
 <span class="kn">from</span> <span class="nn">..page</span> <span class="k">import</span> <span class="n">Page</span>
 <span class="kn">from</span> <span class="nn">..criteria</span> <span class="k">import</span> <span class="n">Criteria</span>
-<span class="kn">from</span> <span class="nn">..model</span> <span class="k">import</span> <span class="n">Repository</span>
+<span class="kn">from</span> <span class="nn">..model</span> <span class="k">import</span> <span class="n">Repository</span><span class="p">,</span> <span class="n">MaintenanceReport</span>
 <span class="kn">from</span> <span class="nn">.search</span> <span class="k">import</span> <span class="n">filters_for_criteria</span>
 <span class="kn">from</span> <span class="nn">.errors</span> <span class="k">import</span> <span class="n">PulpException</span>
 <span class="kn">from</span> <span class="nn">.poller</span> <span class="k">import</span> <span class="n">TaskPoller</span>
@@ -214,6 +218,50 @@
             <span class="n">response_f</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">data</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_page</span><span class="p">(</span><span class="n">Repository</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
         <span class="p">)</span></div>
 
+<div class="viewcode-block" id="Client.get_maintenance_report"><a class="viewcode-back" href="../../../../../api/client.html#pubtools.pulplib.Client.get_maintenance_report">[docs]</a>    <span class="k">def</span> <span class="nf">get_maintenance_report</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the current maintenance mode status for this Pulp server.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Future[:class:`~pubtools.pulplib.MaintenanceReport`]</span>
+<span class="sd">                A future describes the maintenance status</span>
+
+<span class="sd">        .. versionadded:: 1.4.0</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">report_ft</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_get_maintenance</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">f_map</span><span class="p">(</span>
+            <span class="n">report_ft</span><span class="p">,</span>
+            <span class="k">lambda</span> <span class="n">data</span><span class="p">:</span> <span class="n">MaintenanceReport</span><span class="o">.</span><span class="n">_from_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">data</span>
+            <span class="k">else</span> <span class="n">MaintenanceReport</span><span class="p">(),</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Client.set_maintenance"><a class="viewcode-back" href="../../../../../api/client.html#pubtools.pulplib.Client.set_maintenance">[docs]</a>    <span class="k">def</span> <span class="nf">set_maintenance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">report</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set maintenance mode for this Pulp server.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            report:</span>
+<span class="sd">                An updated :class:`~pubtools.pulplib.MaintenanceReport` object that</span>
+<span class="sd">                will be used as the newest maintenance report.</span>
+<span class="sd">        Return:</span>
+<span class="sd">            Future[list[:class:`~pubtools.pulplib.Task`]]</span>
+<span class="sd">                A future which is resolved when maintenance mode has been updated successfully.</span>
+
+<span class="sd">                The future contains a task triggered and awaited during the publish</span>
+<span class="sd">                maintenance repository operation.</span>
+
+<span class="sd">        .. versionadded:: 1.4.0</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">report_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">report</span><span class="o">.</span><span class="n">_export_dict</span><span class="p">(),</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">report_fileobj</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">(</span><span class="n">report_json</span><span class="p">)</span>
+
+        <span class="n">repo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_repository</span><span class="p">(</span><span class="s2">&quot;redhat-maintenance&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+
+        <span class="c1"># upload updated report to repository and publish</span>
+        <span class="n">upload_ft</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">upload_file</span><span class="p">(</span><span class="n">report_fileobj</span><span class="p">,</span> <span class="s2">&quot;repos.json&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">f_flat_map</span><span class="p">(</span><span class="n">upload_ft</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">_</span><span class="p">:</span> <span class="n">repo</span><span class="o">.</span><span class="n">publish</span><span class="p">())</span></div>
+
 <div class="viewcode-block" id="Client.get_content_type_ids"><a class="viewcode-back" href="../../../../../api/client.html#pubtools.pulplib.Client.get_content_type_ids">[docs]</a>    <span class="k">def</span> <span class="nf">get_content_type_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get the content types supported by this Pulp server.</span>
 
@@ -241,6 +289,9 @@
         <span class="k">def</span> <span class="nf">do_next_upload</span><span class="p">(</span><span class="n">checksum</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">file_obj</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_CHUNK_SIZE</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">data</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">text_type</span><span class="p">):</span>
+                    <span class="c1"># if it&#39;s unicode, need to encode before calculate checksum</span>
+                    <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
                 <span class="n">checksum</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
                 <span class="k">return</span> <span class="n">f_flat_map</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_do_upload</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">upload_id</span><span class="p">,</span> <span class="n">size</span><span class="p">),</span>
@@ -418,7 +469,39 @@
         <span class="n">url</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_url</span><span class="p">,</span> <span class="s2">&quot;pulp/api/v2/content/uploads/</span><span class="si">%s</span><span class="s2">/&quot;</span> <span class="o">%</span> <span class="n">upload_id</span><span class="p">)</span>
 
         <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Deleting upload request </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">upload_id</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_request</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;DELETE&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_request</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;DELETE&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_do_get_maintenance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">map_404_to_none</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;Given a future, if it resolved with a 404 error then return a Future[None],</span>
+<span class="sd">            else return original future&quot;&quot;&quot;</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">Future</span><span class="p">()</span>
+
+            <span class="k">def</span> <span class="nf">handle_response</span><span class="p">(</span><span class="n">ft</span><span class="p">):</span>
+                <span class="n">exception</span> <span class="o">=</span> <span class="n">ft</span><span class="o">.</span><span class="n">exception</span><span class="p">()</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="nb">hasattr</span><span class="p">(</span><span class="n">exception</span><span class="p">,</span> <span class="s2">&quot;response&quot;</span><span class="p">)</span>
+                    <span class="ow">and</span> <span class="n">exception</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">404</span>
+                <span class="p">):</span>
+                    <span class="c1"># failed with 404 =&gt; returned future should return None</span>
+                    <span class="n">out</span><span class="o">.</span><span class="n">set_result</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">exception</span><span class="p">:</span>
+                    <span class="c1"># failed with other exception =&gt; returned future should raise that exception</span>
+                    <span class="n">out</span><span class="o">.</span><span class="n">set_exception</span><span class="p">(</span><span class="n">exception</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># succeeded =&gt; returned future should pass through the result</span>
+                    <span class="n">out</span><span class="o">.</span><span class="n">set_result</span><span class="p">(</span><span class="n">ft</span><span class="o">.</span><span class="n">result</span><span class="p">())</span>
+
+            <span class="n">response</span><span class="o">.</span><span class="n">add_done_callback</span><span class="p">(</span><span class="n">handle_response</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">out</span>
+
+        <span class="n">url</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_url</span><span class="p">,</span> <span class="s2">&quot;pulp/isos/redhat-maintenance/repos.json&quot;</span><span class="p">)</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_do_request</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">url</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">map_404_to_none</span><span class="p">(</span><span class="n">response</span><span class="p">)</span></div>
 </pre></div>
 
           </div>
