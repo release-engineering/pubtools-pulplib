@@ -131,6 +131,48 @@ of common return values.</p>
 </div>
 </dd></dl>
 
+<dl class="method">
+<dt id="pubtools.pulplib.Client.get_maintenance_report">
+<code class="sig-name descname">get_maintenance_report</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/client.html#Client.get_maintenance_report"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.Client.get_maintenance_report" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the current maintenance mode status for this Pulp server.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt>Future[<a class="reference internal" href="maintenance.html#pubtools.pulplib.MaintenanceReport" title="pubtools.pulplib.MaintenanceReport"><code class="xref py py-class docutils literal notranslate"><span class="pre">MaintenanceReport</span></code></a>]</dt><dd><p>A future describes the maintenance status</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.4.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pubtools.pulplib.Client.set_maintenance">
+<code class="sig-name descname">set_maintenance</code><span class="sig-paren">(</span><em class="sig-param">report</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/client.html#Client.set_maintenance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.Client.set_maintenance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set maintenance mode for this Pulp server.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>report</strong> – An updated <a class="reference internal" href="maintenance.html#pubtools.pulplib.MaintenanceReport" title="pubtools.pulplib.MaintenanceReport"><code class="xref py py-class docutils literal notranslate"><span class="pre">MaintenanceReport</span></code></a> object that
+will be used as the newest maintenance report.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl>
+<dt>Future[list[<a class="reference internal" href="model.html#pubtools.pulplib.Task" title="pubtools.pulplib.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a>]]</dt><dd><p>A future which is resolved when maintenance mode has been updated successfully.</p>
+<p>The future contains a task triggered and awaited during the publish
+maintenance repository operation.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.4.0.</span></p>
+</div>
+</dd></dl>
+
 </dd></dl>
 
 <div class="section" id="errors">
@@ -184,6 +226,7 @@ Error details may be accessed from the task.</p>
 <li class="toctree-l1 current"><a class="reference internal" href="../api-reference.html">API Reference</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Client</a></li>
 <li class="toctree-l2"><a class="reference internal" href="searching.html">Searching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="maintenance.html">Maintenance Mode</a></li>
 <li class="toctree-l2"><a class="reference internal" href="model.html">Pulp objects</a></li>
 <li class="toctree-l2"><a class="reference internal" href="testing.html">Testing</a></li>
 </ul>
