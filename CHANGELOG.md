@@ -8,12 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Support querying and updating maintenance mode of Pulp repositories
 - Introduced ``Client.get_content_type_ids`` method to retrieve supported content types.
+
+### Fixed
+- Fixed a crash in `upload_file` when passed a file object opened in text mode
 
 ## [1.3.0] - 2019-08-15
 
 ### Added
-- Introduced ``Repository.is_temporary`` attribute.
+
+- Introduced ``Repository.is_temporary`` attribute
 - Extended search functionality; it is now possible to search using fields defined
   on the `PulpObject` classes. Searching on raw Pulp fields remains supported.
 

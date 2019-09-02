@@ -1,0 +1,44 @@
+title: maintenance report
+
+description: >-
+  Schema for the maintenance report JSON file.
+  This is a custom file used on release-engineering Pulp servers to flag repositories
+  as being in "maintenance mode", meaning that external publishes are not allowed.
+
+$schema: http://json-schema.org/draft-07/schema#
+
+definitions:
+  # details of maintenance
+  details:
+    type: object
+    properties:
+      # Why this repo is in maintenance mode
+      message:
+        type: string
+      # Who set it to maintenance
+      owner:
+        type: string
+      # An ISO8601 timestamp for when did the maintenance start for this repo
+      started:
+        type: string
+        pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z"
+
+type: object
+
+properties:
+  # An ISO8601 timestamp for when this report was updated last time
+  last_updated:
+    type: string
+    pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z"
+
+  # The person who updated maintenance repo last time
+  last_updated_by:
+    type: string
+
+  # repo_id: details pairs, indicate which repo is in maintenance mode
+  # with details.
+  repos:
+    type: object
+    patternProperties:
+      ".*":
+        $ref: "#/definitions/details"

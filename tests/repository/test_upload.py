@@ -1,8 +1,10 @@
+# -*- coding: utf-8 -*-
 import logging
 import time
 import pytest
 import json
-import io
+
+from six.moves import StringIO
 
 from pubtools.pulplib import (
     Repository,
@@ -121,7 +123,7 @@ def test_get_relative_url(tmpdir, relative_url, expected):
 
 def test_get_relative_url_with_file_object(tmpdir):
     repo = FileRepository(id="some-repo")
-    file_obj = io.StringIO()
+    file_obj = StringIO()
 
     with pytest.raises(ValueError):
         repo._get_relative_url(file_obj, None)
@@ -130,3 +132,24 @@ def test_get_relative_url_with_file_object(tmpdir):
         repo._get_relative_url(file_obj, "some/path/")
 
     assert repo._get_relative_url(file_obj, "path/foo.txt") == "path/foo.txt"
+
+
+def test_upload_file_contains_unicode(client, requests_mocker):
+    file_obj = StringIO("哈罗")
+    upload_id = "cfb1fed0-752b-439e-aa68-fba68eababa3"
+
+    requests_mocker.put(
+        "https://pulp.example.com/pulp/api/v2/content/uploads/%s/0/" % upload_id,
+        json=[],
+    )
+
+    repo_id = "repo1"
+    repo = FileRepository(id=repo_id)
+    repo.__dict__["_client"] = client
+
+    upload_f = client._do_upload_file(upload_id, file_obj, "file.txt")
+
+    assert upload_f.result() == (
+        "478f4808df7898528c7f13dc840aa321c4109f5c9f33bad7afcffc0253d4ff8f",
+        6,
+    )

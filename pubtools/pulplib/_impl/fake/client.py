@@ -2,13 +2,24 @@ import random
 import uuid
 import threading
 import hashlib
+import json
 
 from collections import namedtuple
 
 import six
+from six.moves import StringIO
+
 from more_executors.futures import f_return, f_return_error, f_flat_map
 
-from pubtools.pulplib import Page, PulpException, Criteria, Task, Repository
+
+from pubtools.pulplib import (
+    Page,
+    PulpException,
+    Criteria,
+    Task,
+    MaintenanceReport,
+    Repository,
+)
 from pubtools.pulplib._impl.client.search import filters_for_criteria
 from .. import compat_attr as attr
 
@@ -48,6 +59,7 @@ class FakeClient(object):
         self._repositories = []
         self._publish_history = []
         self._upload_history = []
+        self._maintenance_report = None
         self._type_ids = self._DEFAULT_TYPE_IDS[:]
         self._lock = threading.RLock()
         self._uuidgen = random.Random()
@@ -107,6 +119,27 @@ class FakeClient(object):
 
         return f_return(data[0])
 
+    def get_maintenance_report(self):
+        if self._maintenance_report:
+            report = MaintenanceReport._from_data(json.loads(self._maintenance_report))
+        else:
+            report = MaintenanceReport()
+        return f_return(report)
+
+    def set_maintenance(self, report):
+        report_json = json.dumps(report._export_dict(), indent=4, sort_keys=True)
+        report_fileobj = StringIO(report_json)
+
+        repo = self.get_repository("redhat-maintenance").result()
+
+        # upload updated report to repository and publish
+        upload_ft = repo.upload_file(report_fileobj, "repos.json")
+
+        publish_ft = f_flat_map(upload_ft, lambda _: repo.publish())
+        self._maintenance_report = report_json
+
+        return publish_ft
+
     def get_content_type_ids(self):
         return f_return(self._type_ids)
 
@@ -119,6 +152,8 @@ class FakeClient(object):
         def do_next_upload(checksum, size):
             data = file_obj.read(1024 * 1024)
             if data:
+                if isinstance(data, six.text_type):
+                    data = data.encode("utf-8")
                 checksum.update(data)
                 size += len(data)
                 return do_next_upload(checksum, size)

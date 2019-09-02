@@ -1,7 +1,19 @@
 import logging
+import json
 import pytest
 import requests_mock
-from pubtools.pulplib import Client, Criteria, Repository, PulpException
+from mock import patch
+
+from more_executors.futures import f_return
+
+from pubtools.pulplib import (
+    Client,
+    Criteria,
+    Repository,
+    PulpException,
+    MaintenanceReport,
+    Task,
+)
 
 
 def test_can_construct(requests_mocker):
@@ -165,3 +177,104 @@ def test_get_missing(client, requests_mocker):
 
     # It should explain the problem
     assert "repo1 was not found" in str(error.value)
+
+
+def test_can_get_maintenance_report(client, requests_mocker):
+    maintenance_report = {
+        "last_updated": "2019-08-15T14:21:12Z",
+        "last_updated_by": "Content Delivery",
+        "repos": {
+            "repo1": {
+                "message": "Maintenance Mode Enabled",
+                "owner": "Content Delivery",
+                "started": "2019-08-15T14:21:12Z",
+            }
+        },
+    }
+    requests_mocker.get(
+        "https://pulp.example.com/pulp/isos/redhat-maintenance/repos.json",
+        json=maintenance_report,
+    )
+
+    report = client.get_maintenance_report().result()
+
+    assert requests_mocker.call_count == 1
+    assert isinstance(report, MaintenanceReport)
+    assert report.last_updated_by == "Content Delivery"
+    assert report.last_updated == "2019-08-15T14:21:12Z"
+    assert report.entries[0].message == "Maintenance Mode Enabled"
+
+
+def test_non_maintenance_report(client, requests_mocker):
+    requests_mocker.get(
+        "https://pulp.example.com/pulp/isos/redhat-maintenance/repos.json",
+        text="Not Found",
+        status_code=404,
+    )
+
+    report = client.get_maintenance_report().result()
+    assert report.last_updated_by is None
+    assert report.entries == ()
+
+
+def test_get_invalid_maintenance_file(client, requests_mocker, caplog):
+    requests_mocker.get(
+        "https://pulp.example.com/pulp/isos/redhat-maintenance/repos.json",
+        text='{"not-valid-json": ',
+    )
+    with pytest.raises(Exception):
+        client.get_maintenance_report().result()
+
+    messages = caplog.messages
+    assert len(messages) == 5
+
+    # Messages have full exception detail. Just check the first line.
+    lines = [m.splitlines()[0] for m in messages]
+
+    assert lines[-1].startswith("Retrying due to error:")
+    assert lines[-1].endswith(" [5/6]")
+
+
+def test_set_maintenance(client, requests_mocker):
+    maintenance_report = {
+        "last_updated": "2019-08-15T14:21:12Z",
+        "last_updated_by": "pubtools.pulplib",
+        "repos": {
+            "repo1": {
+                "message": "Maintenance Mode Enabled",
+                "owner": "pubtools.pulplib",
+                "started": "2019-08-15T14:21:12Z",
+            }
+        },
+    }
+    requests_mocker.post(
+        "https://pulp.example.com/pulp/api/v2/repositories/search/",
+        [{"json": [{"id": "redhat-maintenance", "notes": {"_repo-type": "iso-repo"}}]}],
+    )
+
+    report = MaintenanceReport._from_data(maintenance_report)
+
+    with patch("pubtools.pulplib.FileRepository.upload_file") as mocked_upload:
+        with patch("pubtools.pulplib.Repository.publish") as mocked_publish:
+            upload_task = Task(id="upload-task", completed=True, succeeded=True)
+            publish_task = [Task(id="publish-task", completed=True, succeeded=True)]
+
+            mocked_upload.return_value = f_return(upload_task)
+            mocked_publish.return_value = f_return(publish_task)
+
+            # set_maintenance.result() should return whatever publish.result() returns
+            assert client.set_maintenance(report).result() is publish_task
+
+    # upload_file should be called with (file_obj, 'repos.json')
+    args = mocked_upload.call_args
+    report_file = args[0][0]
+    report = MaintenanceReport()._from_data(json.loads(report_file.read()))
+
+    assert len(report.entries) == 1
+    assert report.entries[0].repo_id == "repo1"
+    assert report.last_updated_by == "pubtools.pulplib"
+
+    # search repo, upload and publish should be called once each
+    assert requests_mocker.call_count == 1
+    assert mocked_publish.call_count == 1
+    assert mocked_upload.call_count == 1
