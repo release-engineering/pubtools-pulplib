@@ -229,6 +229,29 @@ class Client(object):
 
         return f_flat_map(upload_ft, lambda _: repo.publish())
 
+    def get_content_type_ids(self):
+        """Get the content types supported by this Pulp server.
+
+        Returns:
+            Future[list[str]]
+                A future holding the IDs of supported content types.
+
+                The returned values will depend on the plugins installed
+                on the connected Pulp server.
+
+                "modulemd", "rpm", "srpm" and "erratum" are some examples
+                of common return values.
+
+        .. versionadded:: 1.4.0
+        """
+        url = os.path.join(self._url, "pulp/api/v2/plugins/types/")
+
+        out = self._request_executor.submit(self._do_request, method="GET", url=url)
+
+        # The pulp API returns an object per supported type.
+        # We only support returning the ID at this time.
+        return f_map(out, lambda types: sorted([t["id"] for t in types]))
+
     def _do_upload_file(self, upload_id, file_obj, name):
         def do_next_upload(checksum, size):
             data = file_obj.read(self._CHUNK_SIZE)

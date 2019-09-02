@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Support querying and updating maintenance mode of Pulp repositories
+- Introduced ``Client.get_content_type_ids`` method to retrieve supported content types.
 
 ### Fixed
 - Fixed a crash in `upload_file` when passed a file object opened in text mode
