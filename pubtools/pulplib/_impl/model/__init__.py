@@ -6,5 +6,7 @@ from .repository import (
     ContainerImageRepository,
     PublishOptions,
 )
+from .unit import Unit, FileUnit, RpmUnit, ModulemdUnit
 from .task import Task
 from .distributor import Distributor
+from .maintenance import MaintenanceReport, MaintenanceEntry

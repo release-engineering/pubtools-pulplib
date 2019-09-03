@@ -2,7 +2,11 @@ import os
 import logging
 import threading
 import hashlib
+import json
 from functools import partial
+from concurrent.futures import Future
+import six
+from six.moves import StringIO
 
 import requests
 from more_executors import Executors
@@ -10,7 +14,7 @@ from more_executors.futures import f_map, f_flat_map, f_return
 
 from ..page import Page
 from ..criteria import Criteria
-from ..model import Repository, Distributor
+from ..model import Repository, MaintenanceReport, Distributor
 from .search import filters_for_criteria
 from .errors import PulpException
 from .poller import TaskPoller
@@ -205,6 +209,50 @@ class Client(object):
             response_f, lambda data: self._handle_page(return_type, search, data)
         )
 
+    def get_maintenance_report(self):
+        """Get the current maintenance mode status for this Pulp server.
+
+        Returns:
+            Future[:class:`~pubtools.pulplib.MaintenanceReport`]
+                A future describes the maintenance status
+
+        .. versionadded:: 1.4.0
+        """
+        report_ft = self._do_get_maintenance()
+
+        return f_map(
+            report_ft,
+            lambda data: MaintenanceReport._from_data(data)
+            if data
+            else MaintenanceReport(),
+        )
+
+    def set_maintenance(self, report):
+        """Set maintenance mode for this Pulp server.
+
+        Args:
+            report:
+                An updated :class:`~pubtools.pulplib.MaintenanceReport` object that
+                will be used as the newest maintenance report.
+        Return:
+            Future[list[:class:`~pubtools.pulplib.Task`]]
+                A future which is resolved when maintenance mode has been updated successfully.
+
+                The future contains a task triggered and awaited during the publish
+                maintenance repository operation.
+
+        .. versionadded:: 1.4.0
+        """
+        report_json = json.dumps(report._export_dict(), indent=4, sort_keys=True)
+        report_fileobj = StringIO(report_json)
+
+        repo = self.get_repository("redhat-maintenance").result()
+
+        # upload updated report to repository and publish
+        upload_ft = repo.upload_file(report_fileobj, "repos.json")
+
+        return f_flat_map(upload_ft, lambda _: repo.publish())
+
     def get_content_type_ids(self):
         """Get the content types supported by this Pulp server.
 
@@ -232,6 +280,9 @@ class Client(object):
         def do_next_upload(checksum, size):
             data = file_obj.read(self._CHUNK_SIZE)
             if data:
+                if isinstance(data, six.text_type):
+                    # if it's unicode, need to encode before calculate checksum
+                    data = data.encode("utf-8")
                 checksum.update(data)
                 return f_flat_map(
                     self._do_upload(data, upload_id, size),
@@ -276,6 +327,21 @@ class Client(object):
             self._url, "pulp/api/v2/repositories/%s/actions/publish/" % repo_id
         )
         body = {"id": distributor_id, "override_config": override_config}
+        return self._task_executor.submit(
+            self._do_request, method="POST", url=url, json=body
+        )
+
+    def _do_unassociate(self, repo_id, type_ids):
+        url = os.path.join(
+            self._url, "pulp/api/v2/repositories/%s/actions/unassociate/" % repo_id
+        )
+
+        body = {}
+        if type_ids is not None:
+            body["type_ids"] = type_ids
+
+        LOG.debug("Submitting %s unassociate: %s", url, body)
+
         return self._task_executor.submit(
             self._do_request, method="POST", url=url, json=body
         )
@@ -410,3 +476,35 @@ class Client(object):
 
         LOG.debug("Deleting upload request %s", upload_id)
         return self._request_executor.submit(self._do_request, method="DELETE", url=url)
+
+    def _do_get_maintenance(self):
+        def map_404_to_none(response):
+            """Given a future, if it resolved with a 404 error then return a Future[None],
+            else return original future"""
+            out = Future()
+
+            def handle_response(ft):
+                exception = ft.exception()
+                if (
+                    hasattr(exception, "response")
+                    and exception.response.status_code == 404
+                ):
+                    # failed with 404 => returned future should return None
+                    out.set_result(None)
+                elif exception:
+                    # failed with other exception => returned future should raise that exception
+                    out.set_exception(exception)
+                else:
+                    # succeeded => returned future should pass through the result
+                    out.set_result(ft.result())
+
+            response.add_done_callback(handle_response)
+            return out
+
+        url = os.path.join(self._url, "pulp/isos/redhat-maintenance/repos.json")
+
+        response = self._request_executor.submit(
+            self._do_request, method="GET", url=url
+        )
+
+        return map_404_to_none(response)

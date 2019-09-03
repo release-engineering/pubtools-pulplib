@@ -8,3 +8,11 @@ def test_task_impossible_states():
     completed is False."""
     with pytest.raises(ValueError):
         Task(id="foobar", succeeded=True, completed=False)
+
+
+def test_can_hash():
+    """a default Task is hashable"""
+    task = Task(id="foobar")
+    taskset = set()
+    taskset.add(task)
+    assert task in taskset

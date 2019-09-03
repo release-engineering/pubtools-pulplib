@@ -2,10 +2,13 @@ import random
 import uuid
 import threading
 import hashlib
+import json
 
 from collections import namedtuple
 
 import six
+from six.moves import StringIO
+
 from more_executors.futures import f_return, f_return_error, f_flat_map
 
 from pubtools.pulplib import (
@@ -15,6 +18,7 @@ from pubtools.pulplib import (
     Task,
     Repository,
     Distributor,
+    MaintenanceReport,
 )
 from pubtools.pulplib._impl.client.search import filters_for_criteria
 from .. import compat_attr as attr
@@ -53,8 +57,10 @@ class FakeClient(object):
 
     def __init__(self):
         self._repositories = []
+        self._repo_units = {}
         self._publish_history = []
         self._upload_history = []
+        self._maintenance_report = None
         self._type_ids = self._DEFAULT_TYPE_IDS[:]
         self._lock = threading.RLock()
         self._uuidgen = random.Random()
@@ -134,6 +140,27 @@ class FakeClient(object):
 
         return f_return(data[0])
 
+    def get_maintenance_report(self):
+        if self._maintenance_report:
+            report = MaintenanceReport._from_data(json.loads(self._maintenance_report))
+        else:
+            report = MaintenanceReport()
+        return f_return(report)
+
+    def set_maintenance(self, report):
+        report_json = json.dumps(report._export_dict(), indent=4, sort_keys=True)
+        report_fileobj = StringIO(report_json)
+
+        repo = self.get_repository("redhat-maintenance").result()
+
+        # upload updated report to repository and publish
+        upload_ft = repo.upload_file(report_fileobj, "repos.json")
+
+        publish_ft = f_flat_map(upload_ft, lambda _: repo.publish())
+        self._maintenance_report = report_json
+
+        return publish_ft
+
     def get_content_type_ids(self):
         return f_return(self._type_ids)
 
@@ -146,6 +173,8 @@ class FakeClient(object):
         def do_next_upload(checksum, size):
             data = file_obj.read(1024 * 1024)
             if data:
+                if isinstance(data, six.text_type):
+                    data = data.encode("utf-8")
                 checksum.update(data)
                 size += len(data)
                 return do_next_upload(checksum, size)
@@ -157,6 +186,33 @@ class FakeClient(object):
             out.add_done_callback(lambda _: file_obj.close())
 
         return out
+
+    def _do_unassociate(self, repo_id, type_ids):
+        repo_f = self.get_repository(repo_id)
+        if repo_f.exception():
+            return repo_f
+
+        current = self._repo_units.get(repo_id, set())
+        removed = set()
+        kept = set()
+
+        for unit in current:
+            if type_ids is None or unit.content_type_id in type_ids:
+                removed.add(unit)
+            else:
+                kept.add(unit)
+
+        self._repo_units[repo_id] = kept
+
+        task = Task(
+            id=self._next_task_id(),
+            repo_id=repo_id,
+            completed=True,
+            succeeded=True,
+            units=tuple(removed),
+        )
+
+        return f_return([task])
 
     def _request_upload(self):
         upload_request = {
@@ -205,6 +261,7 @@ class FakeClient(object):
                 return f_return([])
 
             self._repositories.pop(idx)  # pylint: disable=undefined-loop-variable
+            self._repo_units.pop(repo_id, None)
             return f_return(
                 [Task(id=self._next_task_id(), completed=True, succeeded=True)]
             )

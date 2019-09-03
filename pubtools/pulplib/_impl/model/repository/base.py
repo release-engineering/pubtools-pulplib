@@ -112,7 +112,7 @@ class Repository(PulpObject):
     relative_url = attr.ib(default=None, type=str)
     """Default publish URL for this repository, relative to the Pulp content root."""
 
-    mutable_urls = attr.ib(default=attr.Factory(list), type=list)
+    mutable_urls = attr.ib(default=attr.Factory(list), type=list, hash=False)
     """A list of URLs relative to repository publish root which are expected
     to change at every publish (if any content of repo changed)."""
 
@@ -140,6 +140,7 @@ class Repository(PulpObject):
         pulp_py_converter=lambda sigs: sigs.split(","),
         py_pulp_converter=",".join,
         converter=lambda keys: [k.strip() for k in keys],
+        hash=False,
     )
     """A list of GPG signing key IDs used to sign content in this repository."""
 
@@ -246,6 +247,42 @@ class Repository(PulpObject):
             to_publish.append((distributor, config))
 
         return self._client._publish_repository(self, to_publish)
+
+    def remove_content(self, **kwargs):
+        """Remove all content of requested types from this repository.
+
+        Args:
+            type_ids (list[str])
+                IDs of content type(s) to be removed.
+                See :meth:`~pubtools.pulplib.Client.get_content_type_ids`.
+
+                If omitted, content of all types will be removed.
+
+        Returns:
+            Future[list[:class:`~pubtools.pulplib.Task`]]
+                A future which is resolved when content has been removed.
+
+                The future contains a list of zero or more tasks triggered and awaited
+                during the removal.
+
+                To obtain information on the removed content, use
+                :meth:`~pubtools.pulplib.Task.units`.
+
+        Raises:
+            DetachedException
+                If this instance is not attached to a Pulp client.
+
+        .. versionadded:: 1.5.0
+        """
+        if not self._client:
+            raise DetachedException()
+
+        # Note: we use dynamic kwargs because it's very likely that a future
+        # version of this method will support some "criteria".  Let's not fix the
+        # argument order at least until then.
+
+        type_ids = kwargs.get("type_ids")
+        return self._client._do_unassociate(self.id, type_ids)
 
     @classmethod
     def from_data(cls, data):

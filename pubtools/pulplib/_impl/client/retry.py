@@ -27,7 +27,13 @@ class PulpRetryPolicy(RetryPolicy):
         # at the error in more detail in order to decide whether to retry.
         retry = self._delegate.should_retry(attempt, future)
 
-        if future.exception() and retry:
+        exception = future.exception()
+        if exception and hasattr(exception, "response"):
+            # if returned status code is 404, never retry on that
+            if exception.response.status_code == 404:
+                return False
+
+        if exception and retry:
             self._log_retry(attempt, future)
 
         return retry

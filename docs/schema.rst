@@ -28,4 +28,17 @@ Task
     :code: yaml
 
 
+Unit
+----
+
+.. include:: ../pubtools/pulplib/_impl/schema/unit.yaml
+    :code: yaml
+
+
+Maintenance
+-----------
+
+.. include:: ../pubtools/pulplib/_impl/schema/maintenance.yaml
+    :code: yaml
+
 .. _JSON schema: https://json-schema.org/

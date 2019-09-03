@@ -7,5 +7,6 @@ API Reference
 
    api/client
    api/searching
+   api/maintenance
    api/model
    api/testing

@@ -28,7 +28,9 @@ class FileRepository(Repository):
         type=bool,
     )
 
-    mutable_urls = attr.ib(default=attr.Factory(lambda: ["PULP_MANIFEST"]), type=list)
+    mutable_urls = attr.ib(
+        default=attr.Factory(lambda: ["PULP_MANIFEST"]), type=list, hash=False
+    )
 
     def upload_file(self, file_obj, relative_url=None):
         """Upload a file to this repository.

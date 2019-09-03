@@ -9,8 +9,14 @@ from ._impl.model import (
     YumRepository,
     FileRepository,
     ContainerImageRepository,
+    Unit,
+    FileUnit,
+    RpmUnit,
+    ModulemdUnit,
     Distributor,
     PublishOptions,
     Task,
+    MaintenanceReport,
+    MaintenanceEntry,
 )
 from ._impl.fake import FakeController
