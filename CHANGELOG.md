@@ -7,7 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- n/a
+### Added
+- ``Page`` objects may now be directly used as iterables
+
+### Deprecated
+- ``Page.as_iter`` is now deprecated.
 
 ## [1.5.0] - 2019-09-03
 

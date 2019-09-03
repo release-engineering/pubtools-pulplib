@@ -17,7 +17,7 @@ def garbage_collect(client, gc_threshold=7):
     )
 
     repos = client.search_repository(crit).result()
-    for repo in repos.as_iter():
+    for repo in repos:
         created = repo.created
         if not created:
             log.warning("Can't check repo %s - no creation time available", repo.id)
