@@ -101,6 +101,23 @@ on fields known to the <a class="reference internal" href="../schema.html#schema
 </dd></dl>
 
 <dl class="method">
+<dt id="pubtools.pulplib.FakeController.insert_units">
+<code class="sig-name descname">insert_units</code><span class="sig-paren">(</span><em class="sig-param">repository</em>, <em class="sig-param">units</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/fake/controller.html#FakeController.insert_units"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.FakeController.insert_units" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add units to the set of existing content for a repository.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>repository</strong> (<a class="reference internal" href="model.html#pubtools.pulplib.Repository" title="pubtools.pulplib.Repository"><code class="xref py py-class docutils literal notranslate"><span class="pre">Repository</span></code></a>) – A repository object.</p></li>
+<li><p><strong>units</strong> (list[<a class="reference internal" href="model.html#pubtools.pulplib.Unit" title="pubtools.pulplib.Unit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unit</span></code></a>]) – A list of units to be inserted.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.5.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="method">
 <dt id="pubtools.pulplib.FakeController.content_type_ids">
 <em class="property">property </em><code class="sig-name descname">content_type_ids</code><a class="headerlink" href="#pubtools.pulplib.FakeController.content_type_ids" title="Permalink to this definition">¶</a></dt>
 <dd><p>The list of content type IDs the fake client will claim to support.</p>

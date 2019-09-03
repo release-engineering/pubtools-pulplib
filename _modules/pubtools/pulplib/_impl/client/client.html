@@ -340,6 +340,21 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_do_request</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">body</span>
         <span class="p">)</span>
 
+    <span class="k">def</span> <span class="nf">_do_unassociate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repo_id</span><span class="p">,</span> <span class="n">type_ids</span><span class="p">):</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_url</span><span class="p">,</span> <span class="s2">&quot;pulp/api/v2/repositories/</span><span class="si">%s</span><span class="s2">/actions/unassociate/&quot;</span> <span class="o">%</span> <span class="n">repo_id</span>
+        <span class="p">)</span>
+
+        <span class="n">body</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">type_ids</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">body</span><span class="p">[</span><span class="s2">&quot;type_ids&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">type_ids</span>
+
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Submitting </span><span class="si">%s</span><span class="s2"> unassociate: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">body</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task_executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_do_request</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">body</span>
+        <span class="p">)</span>
+
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_unpack_response</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">pulp_response</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>

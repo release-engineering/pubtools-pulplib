@@ -98,6 +98,19 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">_repositories</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">repository</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="FakeController.insert_units"><a class="viewcode-back" href="../../../../../api/testing.html#pubtools.pulplib.FakeController.insert_units">[docs]</a>    <span class="k">def</span> <span class="nf">insert_units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repository</span><span class="p">,</span> <span class="n">units</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add units to the set of existing content for a repository.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            repository (:class:`~pubtools.pulplib.Repository`)</span>
+<span class="sd">                A repository object.</span>
+<span class="sd">            units (list[:class:`~pubtools.pulplib.Unit`])</span>
+<span class="sd">                A list of units to be inserted.</span>
+
+<span class="sd">        .. versionadded:: 1.5.0</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">_repo_units</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">repository</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">units</span><span class="p">))</span></div>
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">content_type_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;The list of content type IDs the fake client will claim to support.</span>

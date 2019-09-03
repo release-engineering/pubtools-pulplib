@@ -61,7 +61,9 @@
         <span class="nb">type</span><span class="o">=</span><span class="nb">bool</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="n">mutable_urls</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">attr</span><span class="o">.</span><span class="n">Factory</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;PULP_MANIFEST&quot;</span><span class="p">]),</span> <span class="nb">type</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">mutable_urls</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">attr</span><span class="o">.</span><span class="n">Factory</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;PULP_MANIFEST&quot;</span><span class="p">]),</span> <span class="nb">type</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span> <span class="nb">hash</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">)</span>
 
 <div class="viewcode-block" id="FileRepository.upload_file"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.FileRepository.upload_file">[docs]</a>    <span class="k">def</span> <span class="nf">upload_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_obj</span><span class="p">,</span> <span class="n">relative_url</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Upload a file to this repository.</span>

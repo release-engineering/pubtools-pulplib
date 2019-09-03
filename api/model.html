@@ -38,8 +38,9 @@
 <ul class="simple">
 <li><p><a class="reference internal" href="#common-functionality" id="id1">Common functionality</a></p></li>
 <li><p><a class="reference internal" href="#repository" id="id2">Repository</a></p></li>
-<li><p><a class="reference internal" href="#task" id="id3">Task</a></p></li>
-<li><p><a class="reference internal" href="#errors" id="id4">Errors</a></p></li>
+<li><p><a class="reference internal" href="#units" id="id3">Units</a></p></li>
+<li><p><a class="reference internal" href="#task" id="id4">Task</a></p></li>
+<li><p><a class="reference internal" href="#errors" id="id5">Errors</a></p></li>
 </ul>
 </div>
 <div class="section" id="common-functionality">
@@ -245,6 +246,37 @@ during the publish operation.</p>
 </dl>
 </dd></dl>
 
+<dl class="method">
+<dt id="pubtools.pulplib.Repository.remove_content">
+<code class="sig-name descname">remove_content</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository/base.html#Repository.remove_content"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.Repository.remove_content" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove all content of requested types from this repository.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>type_ids</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>]</em>) – <p>IDs of content type(s) to be removed.
+See <a class="reference internal" href="client.html#pubtools.pulplib.Client.get_content_type_ids" title="pubtools.pulplib.Client.get_content_type_ids"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_content_type_ids()</span></code></a>.</p>
+<p>If omitted, content of all types will be removed.</p>
+</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl>
+<dt>Future[list[<a class="reference internal" href="#pubtools.pulplib.Task" title="pubtools.pulplib.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a>]]</dt><dd><p>A future which is resolved when content has been removed.</p>
+<p>The future contains a list of zero or more tasks triggered and awaited
+during the removal.</p>
+<p>To obtain information on the removed content, use
+<a class="reference internal" href="#pubtools.pulplib.Task.units" title="pubtools.pulplib.Task.units"><code class="xref py py-meth docutils literal notranslate"><span class="pre">units()</span></code></a>.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#pubtools.pulplib.DetachedException" title="pubtools.pulplib.DetachedException"><strong>DetachedException</strong></a> – If this instance is not attached to a Pulp client.</p>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.5.0.</span></p>
+</div>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
@@ -390,8 +422,178 @@ remote hosts.</p>
 </dd></dl>
 
 </div>
+<div class="section" id="units">
+<h2><a class="toc-backref" href="#id3">Units</a><a class="headerlink" href="#units" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pubtools.pulplib.Unit">
+<em class="property">class </em><code class="sig-prename descclassname">pubtools.pulplib.</code><code class="sig-name descname">Unit</code><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/unit/base.html#Unit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.Unit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents a Pulp unit (a single piece of content).</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.5.0.</span></p>
+</div>
+<dl class="attribute">
+<dt id="pubtools.pulplib.Unit.content_type_id">
+<code class="sig-name descname">content_type_id</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.Unit.content_type_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The type of this unit.</p>
+<p>This value will match one of the content types returned by
+<a class="reference internal" href="client.html#pubtools.pulplib.Client.get_content_type_ids" title="pubtools.pulplib.Client.get_content_type_ids"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_content_type_ids()</span></code></a>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pubtools.pulplib.FileUnit">
+<em class="property">class </em><code class="sig-prename descclassname">pubtools.pulplib.</code><code class="sig-name descname">FileUnit</code><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/unit/file.html#FileUnit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.FileUnit" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <a class="reference internal" href="#pubtools.pulplib.Unit" title="pubtools.pulplib.Unit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unit</span></code></a> representing a generic file.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.5.0.</span></p>
+</div>
+<dl class="attribute">
+<dt id="pubtools.pulplib.FileUnit.path">
+<code class="sig-name descname">path</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.FileUnit.path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Full path for this file in the Pulp repository.</p>
+<p>This may include leading directory components, but
+in the common case, this is only a basename.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pubtools.pulplib.FileUnit.size">
+<code class="sig-name descname">size</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.FileUnit.size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Size of this file, in bytes.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pubtools.pulplib.FileUnit.sha256sum">
+<code class="sig-name descname">sha256sum</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.FileUnit.sha256sum" title="Permalink to this definition">¶</a></dt>
+<dd><p>SHA256 checksum of this file, as a hex string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pubtools.pulplib.RpmUnit">
+<em class="property">class </em><code class="sig-prename descclassname">pubtools.pulplib.</code><code class="sig-name descname">RpmUnit</code><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/unit/rpm.html#RpmUnit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.RpmUnit" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <a class="reference internal" href="#pubtools.pulplib.Unit" title="pubtools.pulplib.Unit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unit</span></code></a> representing an RPM.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.5.0.</span></p>
+</div>
+<dl class="attribute">
+<dt id="pubtools.pulplib.RpmUnit.name">
+<code class="sig-name descname">name</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.RpmUnit.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of this RPM.</p>
+<p>Example: the name of bash-5.0.7-1.fc30.x86_64.rpm is “bash”.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pubtools.pulplib.RpmUnit.version">
+<code class="sig-name descname">version</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.RpmUnit.version" title="Permalink to this definition">¶</a></dt>
+<dd><p>The version of this RPM.</p>
+<p>Example: the version of bash-5.0.7-1.fc30.x86_64.rpm is “5.0.7”.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pubtools.pulplib.RpmUnit.release">
+<code class="sig-name descname">release</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.RpmUnit.release" title="Permalink to this definition">¶</a></dt>
+<dd><p>The release of this RPM.</p>
+<p>Example: the release of bash-5.0.7-1.fc30.x86_64.rpm is “1.fc30”.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pubtools.pulplib.RpmUnit.arch">
+<code class="sig-name descname">arch</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.RpmUnit.arch" title="Permalink to this definition">¶</a></dt>
+<dd><p>The architecture of this RPM.</p>
+<p>Example: the arch of bash-5.0.7-1.fc30.x86_64.rpm is “x86_64”.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pubtools.pulplib.RpmUnit.epoch">
+<code class="sig-name descname">epoch</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.RpmUnit.epoch" title="Permalink to this definition">¶</a></dt>
+<dd><p>The epoch of this RPM (most commonly “0”).</p>
+<p>Example: the epoch of 3:bash-5.0.7-1.fc30.x86_64.rpm is “3”.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pubtools.pulplib.RpmUnit.signing_key">
+<code class="sig-name descname">signing_key</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.RpmUnit.signing_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>The short ID of the GPG key used to sign this RPM.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#pubtools.pulplib.Repository.signing_keys" title="pubtools.pulplib.Repository.signing_keys"><code class="xref py py-meth docutils literal notranslate"><span class="pre">signing_keys()</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pubtools.pulplib.RpmUnit.md5sum">
+<code class="sig-name descname">md5sum</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.RpmUnit.md5sum" title="Permalink to this definition">¶</a></dt>
+<dd><p>MD5 checksum of this RPM, as a hex string.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pubtools.pulplib.RpmUnit.sha1sum">
+<code class="sig-name descname">sha1sum</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.RpmUnit.sha1sum" title="Permalink to this definition">¶</a></dt>
+<dd><p>SHA1 checksum of this RPM, as a hex string.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pubtools.pulplib.RpmUnit.sha256sum">
+<code class="sig-name descname">sha256sum</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.RpmUnit.sha256sum" title="Permalink to this definition">¶</a></dt>
+<dd><p>SHA256 checksum of this RPM, as a hex string.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pubtools.pulplib.ModulemdUnit">
+<em class="property">class </em><code class="sig-prename descclassname">pubtools.pulplib.</code><code class="sig-name descname">ModulemdUnit</code><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/unit/modulemd.html#ModulemdUnit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.ModulemdUnit" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <a class="reference internal" href="#pubtools.pulplib.Unit" title="pubtools.pulplib.Unit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unit</span></code></a> representing a modulemd document.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.5.0.</span></p>
+</div>
+<dl class="attribute">
+<dt id="pubtools.pulplib.ModulemdUnit.name">
+<code class="sig-name descname">name</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.ModulemdUnit.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of this module.</p>
+<p>Example: the name of javapackages-tools:201801:20180813043155:dca7b4a4:aarch64
+is “javapackages-tools”.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pubtools.pulplib.ModulemdUnit.stream">
+<code class="sig-name descname">stream</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.ModulemdUnit.stream" title="Permalink to this definition">¶</a></dt>
+<dd><p>The stream of this module.</p>
+<p>Example: the stream of javapackages-tools:201801:20180813043155:dca7b4a4:aarch64
+is “201801”.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pubtools.pulplib.ModulemdUnit.version">
+<code class="sig-name descname">version</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.ModulemdUnit.version" title="Permalink to this definition">¶</a></dt>
+<dd><p>The version of this module.</p>
+<p>Example: the version of javapackages-tools:201801:20180813043155:dca7b4a4:aarch64
+is 20180813043155.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pubtools.pulplib.ModulemdUnit.context">
+<code class="sig-name descname">context</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.ModulemdUnit.context" title="Permalink to this definition">¶</a></dt>
+<dd><p>The context of this module.</p>
+<p>Example: the context of javapackages-tools:201801:20180813043155:dca7b4a4:aarch64
+is “dca7b4a4”.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pubtools.pulplib.ModulemdUnit.arch">
+<code class="sig-name descname">arch</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.ModulemdUnit.arch" title="Permalink to this definition">¶</a></dt>
+<dd><p>The architecture of this module.</p>
+<p>Example: the arch of javapackages-tools:201801:20180813043155:dca7b4a4:aarch64
+is “aarch64.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
 <div class="section" id="task">
-<h2><a class="toc-backref" href="#id3">Task</a><a class="headerlink" href="#task" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id4">Task</a><a class="headerlink" href="#task" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="pubtools.pulplib.Task">
 <em class="property">class </em><code class="sig-prename descclassname">pubtools.pulplib.</code><code class="sig-name descname">Task</code><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/task.html#Task"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.Task" title="Permalink to this definition">¶</a></dt>
@@ -453,19 +655,35 @@ repo, such as:</p>
 </dd></dl>
 
 <dl class="attribute">
+<dt id="pubtools.pulplib.Task.units">
+<code class="sig-name descname">units</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.Task.units" title="Permalink to this definition">¶</a></dt>
+<dd><p>Info on the units which were processed as part of this task
+(e.g. associated or unassociated).</p>
+<p>This is an iterable. Each element is an instance of
+<a class="reference internal" href="#pubtools.pulplib.Unit" title="pubtools.pulplib.Unit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unit</span></code></a> containing information on a processed
+unit.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.5.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="pubtools.pulplib.Task.units_data">
 <code class="sig-name descname">units_data</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.Task.units_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Info on the units which were processed as part of this task
 (e.g. associated or unassociated).</p>
 <p>This is a list. The list elements are the raw dicts as returned
 by Pulp. These should at least contain a ‘type_id’ and a ‘unit_key’.</p>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version 1.5.0: </span>Use <a class="reference internal" href="#pubtools.pulplib.Task.units" title="pubtools.pulplib.Task.units"><code class="xref py py-meth docutils literal notranslate"><span class="pre">units()</span></code></a> instead.</p>
+</div>
 </dd></dl>
 
 </dd></dl>
 
 </div>
 <div class="section" id="errors">
-<h2><a class="toc-backref" href="#id4">Errors</a><a class="headerlink" href="#errors" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id5">Errors</a><a class="headerlink" href="#errors" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="pubtools.pulplib.DetachedException">
 <em class="property">class </em><code class="sig-prename descclassname">pubtools.pulplib.</code><code class="sig-name descname">DetachedException</code><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/common.html#DetachedException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.DetachedException" title="Permalink to this definition">¶</a></dt>

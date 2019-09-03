@@ -42,7 +42,8 @@ reference.</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="#repository" id="id2">Repository</a></p></li>
 <li><p><a class="reference internal" href="#task" id="id3">Task</a></p></li>
-<li><p><a class="reference internal" href="#maintenance" id="id4">Maintenance</a></p></li>
+<li><p><a class="reference internal" href="#unit" id="id4">Unit</a></p></li>
+<li><p><a class="reference internal" href="#maintenance" id="id5">Maintenance</a></p></li>
 </ul>
 </div>
 <div class="section" id="repository">
@@ -239,8 +240,157 @@ required:
 </pre></div>
 </div>
 </div>
+<div class="section" id="unit">
+<h2><a class="toc-backref" href="#id4">Unit</a><a class="headerlink" href="#unit" title="Permalink to this headline">¶</a></h2>
+<div class="code yaml highlight-default notranslate"><div class="highlight"><pre><span></span>title: pulp2-unit
+
+description: &gt;-
+  Schema for a Pulp 2.x unit, as returned by content search API.
+
+$schema: http://json-schema.org/draft-07/schema#
+
+definitions:
+  # ISO units (generic file)
+  iso:
+    type: object
+
+    properties:
+      # Type of the unit, e.g. &quot;iso&quot;, &quot;rpm&quot;, &quot;srpm&quot;, &quot;erratum&quot; ...
+      _content_type_id:
+        const: iso
+
+      # Filename (actually path)
+      name:
+        type: string
+
+      # SHA256 checksum
+      checksum:
+        type: string
+        pattern: &quot;^[a-f0-9]{64}$&quot;
+
+      # Size in bytes
+      size:
+        type: integer
+
+    required:
+    - _content_type_id
+    - name
+    - checksum
+    - size
+
+  # RPM units
+  rpm:
+    type: object
+
+    properties:
+      # Type of the unit
+      _content_type_id:
+        enum:
+        - rpm
+        - srpm
+
+      # ENVR components
+      name:
+        type: string
+      epoch:
+        type: string
+      version:
+        type: string
+      release:
+        type: string
+
+      # Architecture
+      arch:
+        type: string
+
+      # Short ID of key used to sign this RPM
+      signing_key:
+        anyOf:
+        - type: string
+        - type: &quot;null&quot;
+
+      # Checksums in key/value pairs (key=algorithm, value=hex string).
+      # All checksums are optional.
+      checksums:
+        type: object
+        properties:
+          md5:
+            type: string
+            pattern: &quot;^[a-f0-9]{32}$&quot;
+          sha1:
+            type: string
+            pattern: &quot;^[a-f0-9]{40}$&quot;
+          sha256:
+            type: string
+            pattern: &quot;^[a-f0-9]{64}$&quot;
+
+    required:
+    - _content_type_id
+    - name
+    - epoch
+    - version
+    - release
+    - arch
+
+  # modulemd units
+  modulemd:
+    type: object
+
+    properties:
+      # Type of the unit
+      _content_type_id:
+        const: modulemd
+
+      # NSVCA components
+      name:
+        type: string
+      stream:
+        type: string
+      version:
+        type: integer
+      context:
+        type: string
+      arch:
+        type: string
+
+    required:
+    - _content_type_id
+    - name
+    - stream
+    - version
+    - context
+    - arch
+
+  # Schema for any unknown type of unit
+  unknown:
+    type: object
+
+    properties:
+      # Type of the unit. Since this is the catch-all schema for unknown unit types,
+      # this must be a type not included in one of the other schemas.
+      _content_type_id:
+        allOf:
+        - type: string
+        - not:
+            enum:
+            - iso
+            - rpm
+            - srpm
+            - modulemd
+
+    required:
+    - _content_type_id
+
+anyOf:
+- $ref: &quot;#/definitions/iso&quot;
+- $ref: &quot;#/definitions/rpm&quot;
+- $ref: &quot;#/definitions/modulemd&quot;
+- $ref: &quot;#/definitions/unknown&quot;
+</pre></div>
+</div>
+</div>
 <div class="section" id="maintenance">
-<h2><a class="toc-backref" href="#id4">Maintenance</a><a class="headerlink" href="#maintenance" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id5">Maintenance</a><a class="headerlink" href="#maintenance" title="Permalink to this headline">¶</a></h2>
 <div class="code yaml highlight-default notranslate"><div class="highlight"><pre><span></span>title: maintenance report
 
 description: &gt;-
@@ -318,6 +468,7 @@ properties:
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Schemas</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#repository">Repository</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#task">Task</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#unit">Unit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#maintenance">Maintenance</a></li>
 </ul>
 </li>

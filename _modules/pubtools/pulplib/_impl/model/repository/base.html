@@ -145,7 +145,7 @@
     <span class="n">relative_url</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
     <span class="sd">&quot;&quot;&quot;Default publish URL for this repository, relative to the Pulp content root.&quot;&quot;&quot;</span>
 
-    <span class="n">mutable_urls</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">attr</span><span class="o">.</span><span class="n">Factory</span><span class="p">(</span><span class="nb">list</span><span class="p">),</span> <span class="nb">type</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">mutable_urls</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">attr</span><span class="o">.</span><span class="n">Factory</span><span class="p">(</span><span class="nb">list</span><span class="p">),</span> <span class="nb">type</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span> <span class="nb">hash</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="sd">&quot;&quot;&quot;A list of URLs relative to repository publish root which are expected</span>
 <span class="sd">    to change at every publish (if any content of repo changed).&quot;&quot;&quot;</span>
 
@@ -173,6 +173,7 @@
         <span class="n">pulp_py_converter</span><span class="o">=</span><span class="k">lambda</span> <span class="n">sigs</span><span class="p">:</span> <span class="n">sigs</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">),</span>
         <span class="n">py_pulp_converter</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">,</span>
         <span class="n">converter</span><span class="o">=</span><span class="k">lambda</span> <span class="n">keys</span><span class="p">:</span> <span class="p">[</span><span class="n">k</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">],</span>
+        <span class="nb">hash</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="sd">&quot;&quot;&quot;A list of GPG signing key IDs used to sign content in this repository.&quot;&quot;&quot;</span>
 
@@ -279,6 +280,42 @@
             <span class="n">to_publish</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">distributor</span><span class="p">,</span> <span class="n">config</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_publish_repository</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to_publish</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Repository.remove_content"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.Repository.remove_content">[docs]</a>    <span class="k">def</span> <span class="nf">remove_content</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Remove all content of requested types from this repository.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            type_ids (list[str])</span>
+<span class="sd">                IDs of content type(s) to be removed.</span>
+<span class="sd">                See :meth:`~pubtools.pulplib.Client.get_content_type_ids`.</span>
+
+<span class="sd">                If omitted, content of all types will be removed.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Future[list[:class:`~pubtools.pulplib.Task`]]</span>
+<span class="sd">                A future which is resolved when content has been removed.</span>
+
+<span class="sd">                The future contains a list of zero or more tasks triggered and awaited</span>
+<span class="sd">                during the removal.</span>
+
+<span class="sd">                To obtain information on the removed content, use</span>
+<span class="sd">                :meth:`~pubtools.pulplib.Task.units`.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            DetachedException</span>
+<span class="sd">                If this instance is not attached to a Pulp client.</span>
+
+<span class="sd">        .. versionadded:: 1.5.0</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DetachedException</span><span class="p">()</span>
+
+        <span class="c1"># Note: we use dynamic kwargs because it&#39;s very likely that a future</span>
+        <span class="c1"># version of this method will support some &quot;criteria&quot;.  Let&#39;s not fix the</span>
+        <span class="c1"># argument order at least until then.</span>
+
+        <span class="n">type_ids</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;type_ids&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_do_unassociate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">type_ids</span><span class="p">)</span></div>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
