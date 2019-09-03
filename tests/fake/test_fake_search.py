@@ -366,9 +366,8 @@ def test_search_mapped_field_less_than():
 
     client = controller.client
     crit = Criteria.with_field(
-        "last_publish", Matcher.less_than("2019-08-24T00:00:00Z")
+        "last_publish", Matcher.less_than(datetime.datetime(2019, 8, 24, 0, 0, 0))
     )
-
     found = client.search_distributor(crit).result().data
 
     assert found == [dist1]

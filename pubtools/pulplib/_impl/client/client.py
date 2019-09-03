@@ -171,12 +171,12 @@ class Client(object):
         )
 
     def search_distributor(self, criteria=None):
-        """Search the distributors matching the given criteria
+        """Search the distributors matching the given criteria.
 
         Args:
             criteria (:class:`~pubtools.pulplib.Criteria`)
                 A criteria object used for this search.
-                If None, search for all repositories.
+                If None, search for all distributors.
 
         Returns:
             Future[:class:`~pubtools.pulplib.Page`]
@@ -194,8 +194,7 @@ class Client(object):
             "filters": filters_for_criteria(criteria, return_type),
         }
         search = {"criteria": pulp_crit}
-        if search_options:
-            search.update(search_options)
+        search.update(search_options or {})
 
         response_f = self._do_search(resource_type, search)
 

@@ -1,4 +1,5 @@
 import pytest
+import datetime
 
 from pubtools.pulplib import Criteria, Matcher
 
@@ -59,13 +60,14 @@ def test_field_regex_criteria():
 
 
 def test_field_less_than_criteria():
-    """with_filed with less_than is translated as expected for
+    """with_field with less_than is translated as expected for
     date and non-date types
     """
-    c1 = Criteria.with_field("num_field", Matcher.less_than("5"))
-    c2 = Criteria.with_field("date_field", Matcher.less_than("2019-08-27T00:00:00Z"))
+    publish_date = datetime.datetime(2019, 8, 27, 0, 0, 0)
+    c1 = Criteria.with_field("num_field", Matcher.less_than(5))
+    c2 = Criteria.with_field("date_field", Matcher.less_than(publish_date))
 
-    assert filters_for_criteria(c1) == {"num_field": {"$lt": "5"}}
+    assert filters_for_criteria(c1) == {"num_field": {"$lt": 5}}
     assert filters_for_criteria(c2) == {
         "date_field": {"$lt": {"$date": "2019-08-27T00:00:00Z"}}
     }

@@ -1,3 +1,4 @@
+import datetime
 from pubtools.pulplib._impl.criteria import (
     AndCriteria,
     OrCriteria,
@@ -12,7 +13,6 @@ from pubtools.pulplib._impl.criteria import (
 
 from pubtools.pulplib._impl import compat_attr as attr
 from pubtools.pulplib._impl.model.attr import PULP2_FIELD, PY_PULP2_CONVERTER
-from pubtools.pulplib._impl.util import _is_iso_date_format
 
 
 def all_subclasses(klass):
@@ -21,6 +21,15 @@ def all_subclasses(klass):
     for subclass in klass.__subclasses__():
         out.update(all_subclasses(subclass))
     return out
+
+
+def to_mongo_json(value):
+    # Return a value converted to the format expected for a mongo JSON
+    # expression. Only a handful of special types need explicit conversions.
+    if isinstance(value, datetime.datetime):
+        return {"$date": value.strftime("%Y-%m-%dT%H:%M:%SZ")}
+
+    return value
 
 
 def map_field_for_type(field_name, matcher, type_hint):
@@ -81,20 +90,15 @@ def field_match(to_match):
         return {"$regex": to_match._pattern}
 
     if isinstance(to_match, EqMatcher):
-        return {"$eq": to_match._value}
+        return {"$eq": to_mongo_json(to_match._value)}
 
     if isinstance(to_match, InMatcher):
-        return {"$in": to_match._values}
+        return {"$in": to_mongo_json(to_match._values)}
 
     if isinstance(to_match, ExistsMatcher):
         return {"$exists": True}
 
     if isinstance(to_match, LessThanMatcher):
-        value = to_match._value
-        # only value of the format YYYY-mm-ddTHH:MM:SSZ is
-        # treated as date
-        if _is_iso_date_format(value):
-            return {"$lt": {"$date": value}}
-        return {"$lt": value}
+        return {"$lt": to_mongo_json(to_match._value)}
 
     raise TypeError("Not a matcher: %s" % repr(to_match))

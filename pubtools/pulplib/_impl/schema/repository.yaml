@@ -18,7 +18,7 @@ definitions:
         # String ID of distributor's type, e.g. "yum_distributor"
         type: string
       repo_id:
-        # String ID of the repository the distributor is attached
+        # String ID of distributor's repository
         type: string
       config:
         # Config dict for this distributor, different per distributor type.

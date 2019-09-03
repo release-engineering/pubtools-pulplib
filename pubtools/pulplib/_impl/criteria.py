@@ -223,20 +223,20 @@ class Matcher(object):
     def less_than(cls, value):
         """
         Returns a matcher for a field whose value is less than the specified input
-        value
+        value.
 
         Arguments:
-            values (object)
+            value (object)
                 An object to match against the field
 
         Example:
             .. code-block:: python
 
-            # would match where last_publish is before "2019-08-27T00:00:00Z
-            # date is reqired to be in this format
+            # would match where last_publish is before "2019-08-27T00:00:00Z"
+            # date comparison requries a dateime.datetime object
             crit = Criteria.with_field(
                 'last_publish',
-                Matcher.less_than("2019-08-27T00:00:00Z")
+                Matcher.less_than(datetime.datetime(2019, 8, 27, 0, 0, 0))
             )
         """
         return LessThanMatcher(value)
