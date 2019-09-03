@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- n/a
+
+## [1.5.0] - 2019-09-03
+
 ### Added
 - Introduced ``Repository.remove_content`` to remove contents of a repository.
 - Introduced ``Unit`` classes representing various types of Pulp units.
@@ -106,7 +110,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release to PyPI
 
-[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v1.4.0...HEAD
+[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v1.5.0...HEAD
+[1.5.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v1.2.1...v1.3.0
 [1.2.1]: https://github.com/release-engineering/pubtools-pulplib/compare/v1.2.0...v1.2.1
