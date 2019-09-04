@@ -214,7 +214,7 @@ def test_non_maintenance_report(client, requests_mocker):
 
     report = client.get_maintenance_report().result()
     assert report.last_updated_by is None
-    assert report.entries == ()
+    assert report.entries == []
 
 
 def test_get_invalid_maintenance_file(client, requests_mocker, caplog):

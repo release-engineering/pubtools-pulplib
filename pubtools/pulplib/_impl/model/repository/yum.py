@@ -1,4 +1,5 @@
 from .base import Repository, repo_type
+from ..frozenlist import FrozenList
 from ..attr import pulp_attrib
 from ... import compat_attr as attr
 
@@ -13,5 +14,7 @@ class YumRepository(Repository):
     type = pulp_attrib(default="rpm-repo", type=str, pulp_field="notes._repo-type")
 
     mutable_urls = attr.ib(
-        default=attr.Factory(lambda: ["repodata/repomd.xml"]), type=list, hash=False
+        default=attr.Factory(lambda: FrozenList(["repodata/repomd.xml"])),
+        type=list,
+        converter=FrozenList,
     )

@@ -51,6 +51,10 @@ def assert_model_fields(model_object):
                 % (klass.__name__, field.name, field.type.__name__, model_object)
             )
 
+            if field.type is list:
+                # Any lists on our model objects should be immutable.
+                assert_list_immutable(value)
+
             # If this object is also an attrs-using class,
             # test it deeply
             if attr.has(type(value)):
@@ -92,3 +96,33 @@ def assert_type_validated(model_object, field):
         field.name,
         copy,
     )
+
+
+def assert_list_immutable(value):
+    """Verifies that a given list is immutable (all operations which would normally
+    write to the list instead raise).
+    """
+
+    with pytest.raises(NotImplementedError):
+        value[0] = None
+
+    with pytest.raises(NotImplementedError):
+        del value[0]
+
+    with pytest.raises(NotImplementedError):
+        value += None
+
+    with pytest.raises(NotImplementedError):
+        value.insert(0, None)
+
+    with pytest.raises(NotImplementedError):
+        value.append(None)
+
+    with pytest.raises(NotImplementedError):
+        value.extend([None])
+
+    with pytest.raises(NotImplementedError):
+        value.pop()
+
+    with pytest.raises(NotImplementedError):
+        value.remove(None)
