@@ -6,6 +6,7 @@ import jsonschema
 
 from pubtools.pulplib._impl import compat_attr as attr
 from ..schema import load_schema
+from .frozenlist import FrozenList
 from .common import InvalidDataException
 
 
@@ -64,8 +65,8 @@ class MaintenanceReport(object):
     last_updated_by = attr.ib(default=None, type=str)
     """Person/party who updated the report last time."""
 
-    entries = attr.ib(default=attr.Factory(tuple), type=tuple)
-    """A tuple of :class:`MaintenanceEntry` objects, indicating
+    entries = attr.ib(default=attr.Factory(FrozenList), type=list, converter=FrozenList)
+    """A list of :class:`MaintenanceEntry` objects, indicating
     which repositories are in maintenance mode and details.
     If empty, then it means no repositories are in maintenance mode.
     """
@@ -105,7 +106,7 @@ class MaintenanceReport(object):
         maintenance = cls(
             last_updated=data["last_updated"],
             last_updated_by=data["last_updated_by"],
-            entries=tuple(entries),
+            entries=entries,
         )
 
         return maintenance
@@ -178,7 +179,7 @@ class MaintenanceReport(object):
 
         return attr.evolve(
             self,
-            entries=tuple(filtered_entries),
+            entries=filtered_entries,
             last_updated_by=owner,
             last_updated=iso_time_now(),
         )
@@ -208,4 +209,4 @@ class MaintenanceReport(object):
             if entry.repo_id not in repo_ids:
                 new_entries.append(entry)
 
-        return attr.evolve(self, last_updated_by=owner, entries=tuple(new_entries))
+        return attr.evolve(self, last_updated_by=owner, entries=new_entries)

@@ -68,10 +68,10 @@ def test_distributors_created():
         }
     )
 
-    assert repo.distributors == (
+    assert repo.distributors == [
         Distributor(id="dist1", type_id="type1"),
         Distributor(id="dist2", type_id="type1"),
-    )
+    ]
 
 
 def test_distributors_last_publish():

@@ -28,7 +28,7 @@ def test_set_maintenance():
 
     assert isinstance(report, MaintenanceReport)
     # return an empty report
-    assert report.entries == ()
+    assert report.entries == []
     # there's no entries in the report
 
     report = report.add(repo_ids=["repo1", "repo2"])

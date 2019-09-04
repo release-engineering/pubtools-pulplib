@@ -6,6 +6,7 @@ from more_executors.futures import f_map
 from ..common import PulpObject, DetachedException
 from ..attr import pulp_attrib
 from ..distributor import Distributor
+from ..frozenlist import FrozenList
 from ...schema import load_schema
 from ... import compat_attr as attr
 
@@ -89,14 +90,15 @@ class Repository(PulpObject):
     """
 
     distributors = pulp_attrib(
-        default=attr.Factory(tuple),
-        type=tuple,
+        default=attr.Factory(FrozenList),
+        type=list,
         pulp_field="distributors",
-        pulp_py_converter=lambda ds: tuple([Distributor.from_data(d) for d in ds]),
+        converter=FrozenList,
+        pulp_py_converter=lambda ds: FrozenList([Distributor.from_data(d) for d in ds]),
         # It's too noisy to let repr descend into sub-objects
         repr=False,
     )
-    """tuple of :class:`~pubtools.pulplib.Distributor` objects belonging to this
+    """list of :class:`~pubtools.pulplib.Distributor` objects belonging to this
     repository.
     """
 
@@ -112,7 +114,9 @@ class Repository(PulpObject):
     relative_url = attr.ib(default=None, type=str)
     """Default publish URL for this repository, relative to the Pulp content root."""
 
-    mutable_urls = attr.ib(default=attr.Factory(list), type=list, hash=False)
+    mutable_urls = attr.ib(
+        default=attr.Factory(FrozenList), type=list, converter=FrozenList
+    )
     """A list of URLs relative to repository publish root which are expected
     to change at every publish (if any content of repo changed)."""
 
@@ -134,13 +138,12 @@ class Repository(PulpObject):
     """
 
     signing_keys = pulp_attrib(
-        default=attr.Factory(list),
+        default=attr.Factory(FrozenList),
         type=list,
         pulp_field="notes.signatures",
         pulp_py_converter=lambda sigs: sigs.split(","),
         py_pulp_converter=",".join,
-        converter=lambda keys: [k.strip() for k in keys],
-        hash=False,
+        converter=lambda keys: FrozenList([k.strip() for k in keys]),
     )
     """A list of GPG signing key IDs used to sign content in this repository."""
 
