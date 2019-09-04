@@ -34,7 +34,7 @@ def to_mongo_json(value):
 
 def map_field_for_type(field_name, matcher, type_hint):
     if not type_hint:
-        return (field_name, matcher)
+        return None
 
     attrs_classes = all_subclasses(type_hint)
     attrs_classes = [cls for cls in attrs_classes if attr.has(cls)]
@@ -55,7 +55,7 @@ def map_field_for_type(field_name, matcher, type_hint):
         raise NotImplementedError("Searching on field %s is not supported" % field_name)
 
     # No match => no change, search exactly what was requested
-    return (field_name, matcher)
+    return None
 
 
 def filters_for_criteria(criteria, type_hint=None):
@@ -78,7 +78,9 @@ def filters_for_criteria(criteria, type_hint=None):
         field = criteria._field
         matcher = criteria._matcher
 
-        field, matcher = map_field_for_type(field, matcher, type_hint)
+        mapped = map_field_for_type(field, matcher, type_hint)
+        if mapped:
+            field, matcher = mapped
 
         return {field: field_match(matcher)}
 
