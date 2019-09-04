@@ -1,4 +1,5 @@
 import logging
+import datetime
 import json
 import pytest
 import requests_mock
@@ -201,7 +202,7 @@ def test_can_get_maintenance_report(client, requests_mocker):
     assert requests_mocker.call_count == 1
     assert isinstance(report, MaintenanceReport)
     assert report.last_updated_by == "Content Delivery"
-    assert report.last_updated == "2019-08-15T14:21:12Z"
+    assert report.last_updated == datetime.datetime(2019, 8, 15, 14, 21, 12)
     assert report.entries[0].message == "Maintenance Mode Enabled"
 
 

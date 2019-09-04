@@ -9,40 +9,10 @@ import pubtools.pulplib
 from .assertions import assert_model_invariants
 
 
-# These are some classes which currently fail the model tests.
-XFAIL_CLASSES = [
-    pubtools.pulplib.Page,
-    pubtools.pulplib.ContainerImageRepository,
-    pubtools.pulplib.Distributor,
-    pubtools.pulplib.FileRepository,
-    pubtools.pulplib.FileUnit,
-    pubtools.pulplib.MaintenanceEntry,
-    pubtools.pulplib.MaintenanceReport,
-    pubtools.pulplib.ModulemdUnit,
-    pubtools.pulplib.PublishOptions,
-    pubtools.pulplib.Repository,
-    pubtools.pulplib.RpmUnit,
-    pubtools.pulplib.Task,
-    pubtools.pulplib.Unit,
-    pubtools.pulplib.YumRepository,
-]
-
-
 def test_invariants(model_object):
     """Test that the given object satisfies all expected invariants of model objects."""
 
-    # Checking for *exact* types is intentional here to limit scope of xfail:
-    # pylint: disable=unidiomatic-typecheck
-
-    try:
-        assert_model_invariants(model_object)
-    except:
-        if type(model_object) in XFAIL_CLASSES:
-            pytest.xfail("class is known to be buggy")
-        raise
-
-    # If it didn't fail, it must not be listed in XFAIL
-    assert type(model_object) not in XFAIL_CLASSES
+    assert_model_invariants(model_object)
 
 
 def public_model_objects():

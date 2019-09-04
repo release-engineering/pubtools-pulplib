@@ -1,6 +1,7 @@
 import datetime
 import logging
 
+from attr import validators
 from more_executors.futures import f_map
 
 from ..common import PulpObject, DetachedException
@@ -32,14 +33,14 @@ class PublishOptions(object):
     :meth:`~pubtools.pulplib.Repository.publish`.
     """
 
-    force = attr.ib(default=None, type=bool)
+    force = pulp_attrib(default=None, type=bool)
     """If True, Pulp should publish all data within a repository, rather than attempting
     to publish only changed data (or even skipping the publish).
 
     Setting ``force=True`` may have a major performance impact when publishing large repos.
     """
 
-    clean = attr.ib(default=None, type=bool)
+    clean = pulp_attrib(default=None, type=bool)
     """If True, certain publish tasks will not only publish new/changed content, but
     will also attempt to erase formerly published content which is no longer present
     in the repo.
@@ -47,7 +48,7 @@ class PublishOptions(object):
     Setting ``clean=True`` generally implies ``force=True``.
     """
 
-    origin_only = attr.ib(default=None, type=bool)
+    origin_only = pulp_attrib(default=None, type=bool)
     """If ``True``, Pulp should only update the content units / origin path on
     remote hosts.
 
@@ -111,21 +112,24 @@ class Repository(PulpObject):
     )
     """ID of the product to which this repository belongs (if any)."""
 
-    relative_url = attr.ib(default=None, type=str)
+    relative_url = pulp_attrib(default=None, type=str)
     """Default publish URL for this repository, relative to the Pulp content root."""
 
-    mutable_urls = attr.ib(
+    mutable_urls = pulp_attrib(
         default=attr.Factory(FrozenList), type=list, converter=FrozenList
     )
     """A list of URLs relative to repository publish root which are expected
     to change at every publish (if any content of repo changed)."""
 
-    is_sigstore = attr.ib(default=False, type=bool)
+    is_sigstore = pulp_attrib(default=False, type=bool)
     """True if this is a sigstore repository, used for container image manifest
     signatures."""
 
     is_temporary = pulp_attrib(
-        default=False, type=bool, pulp_field="notes.pub_temp_repo"
+        default=False,
+        type=bool,
+        validator=validators.instance_of(bool),
+        pulp_field="notes.pub_temp_repo",
     )
     """True if this is a temporary repository.
 
@@ -147,12 +151,12 @@ class Repository(PulpObject):
     )
     """A list of GPG signing key IDs used to sign content in this repository."""
 
-    skip_rsync_repodata = attr.ib(default=False, type=bool)
+    skip_rsync_repodata = pulp_attrib(default=False, type=bool)
     """True if this repository is explicitly configured such that a publish of
     this repository will not publish repository metadata to remote hosts.
     """
 
-    _client = attr.ib(default=None, init=False, repr=False, cmp=False)
+    _client = attr.ib(default=None, init=False, repr=False, cmp=False, hash=False)
     # hidden attribute for client attached to this object
 
     @property
