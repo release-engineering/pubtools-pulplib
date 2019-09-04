@@ -90,7 +90,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">string_types</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">with_field</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="n">ids</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">with_field_in</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="n">ids</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">with_field</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="n">Matcher</span><span class="o">.</span><span class="n">in_</span><span class="p">(</span><span class="n">ids</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="Criteria.with_field"><a class="viewcode-back" href="../../../../api/searching.html#pubtools.pulplib.Criteria.with_field">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">with_field</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">field_value</span><span class="p">):</span>
