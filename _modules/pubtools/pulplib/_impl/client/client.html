@@ -37,7 +37,6 @@
 <span class="kn">import</span> <span class="nn">hashlib</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">partial</span>
-<span class="kn">from</span> <span class="nn">concurrent.futures</span> <span class="k">import</span> <span class="n">Future</span>
 <span class="kn">import</span> <span class="nn">six</span>
 <span class="kn">from</span> <span class="nn">six.moves</span> <span class="k">import</span> <span class="n">StringIO</span>
 
@@ -487,28 +486,12 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_request</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;DELETE&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_do_get_maintenance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">def</span> <span class="nf">map_404_to_none</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
-            <span class="sd">&quot;&quot;&quot;Given a future, if it resolved with a 404 error then return a Future[None],</span>
-<span class="sd">            else return original future&quot;&quot;&quot;</span>
-            <span class="n">out</span> <span class="o">=</span> <span class="n">Future</span><span class="p">()</span>
-
-            <span class="k">def</span> <span class="nf">handle_response</span><span class="p">(</span><span class="n">ft</span><span class="p">):</span>
-                <span class="n">exception</span> <span class="o">=</span> <span class="n">ft</span><span class="o">.</span><span class="n">exception</span><span class="p">()</span>
-                <span class="k">if</span> <span class="p">(</span>
-                    <span class="nb">hasattr</span><span class="p">(</span><span class="n">exception</span><span class="p">,</span> <span class="s2">&quot;response&quot;</span><span class="p">)</span>
-                    <span class="ow">and</span> <span class="n">exception</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">404</span>
-                <span class="p">):</span>
-                    <span class="c1"># failed with 404 =&gt; returned future should return None</span>
-                    <span class="n">out</span><span class="o">.</span><span class="n">set_result</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="n">exception</span><span class="p">:</span>
-                    <span class="c1"># failed with other exception =&gt; returned future should raise that exception</span>
-                    <span class="n">out</span><span class="o">.</span><span class="n">set_exception</span><span class="p">(</span><span class="n">exception</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="c1"># succeeded =&gt; returned future should pass through the result</span>
-                    <span class="n">out</span><span class="o">.</span><span class="n">set_result</span><span class="p">(</span><span class="n">ft</span><span class="o">.</span><span class="n">result</span><span class="p">())</span>
-
-            <span class="n">response</span><span class="o">.</span><span class="n">add_done_callback</span><span class="p">(</span><span class="n">handle_response</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">out</span>
+        <span class="k">def</span> <span class="nf">map_404_to_none</span><span class="p">(</span><span class="n">exception</span><span class="p">):</span>
+            <span class="c1"># Translates 404 errors to a None response (no maintenance report).</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">exception</span><span class="p">,</span> <span class="s2">&quot;response&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">exception</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">404</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="c1"># Any other types of errors are raised unchanged.</span>
+            <span class="k">raise</span> <span class="n">exception</span>
 
         <span class="n">url</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_url</span><span class="p">,</span> <span class="s2">&quot;pulp/isos/redhat-maintenance/repos.json&quot;</span><span class="p">)</span>
 
@@ -516,7 +499,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_do_request</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">url</span>
         <span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">map_404_to_none</span><span class="p">(</span><span class="n">response</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">f_map</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">error_fn</span><span class="o">=</span><span class="n">map_404_to_none</span><span class="p">)</span></div>
 </pre></div>
 
           </div>
