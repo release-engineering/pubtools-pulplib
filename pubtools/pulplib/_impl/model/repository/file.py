@@ -1,6 +1,7 @@
 import os
 import logging
 
+from attr import validators
 from more_executors.futures import f_flat_map, f_map
 
 from .base import Repository, repo_type
@@ -27,6 +28,7 @@ class FileRepository(Repository):
             lambda self: self.id == "redhat-sigstore", takes_self=True
         ),
         type=bool,
+        validator=validators.instance_of(bool),
     )
 
     mutable_urls = attr.ib(
