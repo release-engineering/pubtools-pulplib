@@ -115,4 +115,4 @@ def test_invalid_distributor_repo_id():
     with pytest.raises(ValueError) as ex:
         repo = Repository(id="test_repo", distributors=[dist])
 
-    assert "repo_id doesn't match for dist" in ex.value.message
+    assert "repo_id doesn't match for dist" in str(ex.value)
