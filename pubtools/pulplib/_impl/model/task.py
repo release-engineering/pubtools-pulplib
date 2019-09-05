@@ -1,6 +1,7 @@
 from pubtools.pulplib._impl import compat_attr as attr
 
 from ..schema import load_schema
+from .frozenlist import FrozenList
 from .unit import Unit
 from .common import PulpObject
 from .attr import pulp_attrib
@@ -15,26 +16,26 @@ class Task(PulpObject):
     id = pulp_attrib(type=str, pulp_field="task_id")
     """ID of this task (str)."""
 
-    completed = attr.ib(default=None, type=bool)
+    completed = pulp_attrib(default=None, type=bool)
     """True if this task has completed, successfully or otherwise.
 
     May be `None` if the state of this task is unknown.
     """
 
-    succeeded = attr.ib(default=None, type=bool)
+    succeeded = pulp_attrib(default=None, type=bool)
     """True if this task has completed successfully.
 
     May be `None` if the state of this task is unknown.
     """
 
-    error_summary = attr.ib(default=None, type=str)
+    error_summary = pulp_attrib(default=None, type=str)
     """A summary of the reason for this task's failure (if any).
 
     This is a short string, generally a single line, suitable for display to users.
     The string includes the ID of the failed task.
     """
 
-    error_details = attr.ib(default=None, type=str)
+    error_details = pulp_attrib(default=None, type=str)
     """Detailed information for this task's failure (if any).
 
     This may be a multi-line string and may include technical information such as
@@ -45,7 +46,10 @@ class Task(PulpObject):
     """
 
     tags = pulp_attrib(
-        default=attr.Factory(list), type=list, pulp_field="tags", hash=False
+        default=attr.Factory(FrozenList),
+        type=list,
+        converter=FrozenList,
+        pulp_field="tags",
     )
     """The tags for this task.
 
@@ -58,14 +62,17 @@ class Task(PulpObject):
          "pulp:action:publish"]
     """
 
-    repo_id = attr.ib(type=str)
+    repo_id = pulp_attrib(type=str)
     """The ID of the repository associated with this task, otherwise None."""
 
     units = pulp_attrib(
-        default=attr.Factory(tuple),
-        type=tuple,
+        default=attr.Factory(FrozenList),
+        type=FrozenList,
         pulp_field="result.units_successful",
-        pulp_py_converter=lambda raw: tuple([Unit._from_task_data(x) for x in raw]),
+        converter=FrozenList,
+        pulp_py_converter=lambda raw: FrozenList(
+            [Unit._from_task_data(x) for x in raw]
+        ),
     )
     """Info on the units which were processed as part of this task
     (e.g. associated or unassociated).
@@ -78,10 +85,10 @@ class Task(PulpObject):
     """
 
     units_data = pulp_attrib(
-        default=attr.Factory(list),
+        default=attr.Factory(FrozenList),
         type=list,
+        converter=FrozenList,
         pulp_field="result.units_successful",
-        hash=False,
     )
     """Info on the units which were processed as part of this task
     (e.g. associated or unassociated).

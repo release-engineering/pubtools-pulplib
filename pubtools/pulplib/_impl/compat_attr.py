@@ -47,3 +47,4 @@ Factory = attr.Factory
 fields = attr.fields
 evolve = attr.evolve
 has = attr.has
+validators = attr.validators

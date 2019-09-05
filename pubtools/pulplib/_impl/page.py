@@ -1,13 +1,22 @@
 import logging
 import weakref
 import warnings
+from concurrent.futures import Future
 
 from . import compat_attr as attr
+from .model.frozenlist import FrozenList
+from .model.attr import pulp_attrib
 
 LOG = logging.getLogger("pubtools.pulplib")
 
 
-@attr.s(kw_only=True)
+# pylint shows these spurious errors on this file, not sure why:
+# page.py:86:23: E1101: Instance of '_CountingAttr' has no 'done' member (no-member)
+# Could be due to bug https://github.com/PyCQA/pylint/issues/1694 ?
+# pylint: disable=no-member
+
+
+@attr.s(kw_only=True, frozen=True)
 class Page(object):
     """A page of Pulp search results.
 
@@ -59,14 +68,16 @@ class Page(object):
 
     """
 
-    data = attr.ib(default=attr.Factory(list))
+    data = pulp_attrib(
+        default=attr.Factory(FrozenList), type=list, converter=FrozenList
+    )
     """List of Pulp objects in this page.
 
     This list will contain instances of the appropriate Pulp object type
     (e.g. :class:`~pubtools.pulplib.Repository` for a repository search).
     """
 
-    next = attr.ib(default=None)
+    next = pulp_attrib(default=None, type=Future)
     """None, if this is the last page of results.
 
     Otherwise, a Future[:class:`Page`] for the next page of results.

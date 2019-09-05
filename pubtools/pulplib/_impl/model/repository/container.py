@@ -10,7 +10,7 @@ class ContainerImageRepository(Repository):
 
     type = pulp_attrib(default="docker-repo", type=str, pulp_field="notes._repo-type")
 
-    registry_id = attr.ib(
+    registry_id = pulp_attrib(
         default=attr.Factory(lambda self: self.id, takes_self=True), type=str
     )
     """The ID of this repository in a container image registry.

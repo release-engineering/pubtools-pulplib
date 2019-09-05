@@ -1,4 +1,5 @@
 import pytest
+import datetime
 
 from pubtools.pulplib import MaintenanceReport, MaintenanceEntry, InvalidDataException
 
@@ -18,7 +19,7 @@ def test_add_entry_existed():
         repo_id="repo1",
         owner="someone",
         message="Enabled",
-        started="2019-08-15T14:21:12Z",
+        started=datetime.datetime(2019, 8, 15, 14, 21, 12),
     )
 
     report = MaintenanceReport(entries=(entry,))

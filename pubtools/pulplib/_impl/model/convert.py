@@ -29,3 +29,7 @@ def null_convert(value):
 
 def read_timestamp(value):
     return datetime.datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ")
+
+
+def write_timestamp(value):
+    return value.strftime("%Y-%m-%dT%H:%M:%SZ")

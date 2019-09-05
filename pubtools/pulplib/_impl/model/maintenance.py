@@ -5,7 +5,10 @@ import os
 import jsonschema
 
 from pubtools.pulplib._impl import compat_attr as attr
+from .attr import pulp_attrib
+from .convert import read_timestamp, write_timestamp
 from ..schema import load_schema
+from .frozenlist import FrozenList
 from .common import InvalidDataException
 
 
@@ -16,10 +19,6 @@ USER = os.environ.get("USER")
 HOSTNAME = os.environ.get("HOSTNAME")
 
 
-def iso_time_now():
-    return datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
-
-
 @attr.s(kw_only=True, frozen=True)
 class MaintenanceEntry(object):
     """Details about the maintenance status of a specific repository.
@@ -27,16 +26,16 @@ class MaintenanceEntry(object):
     .. versionadded:: 1.4.0
     """
 
-    repo_id = attr.ib(type=str)
+    repo_id = pulp_attrib(type=str)
     """ID of repository in maintenance.
 
     Note: there is no guarantee that a repository of this ID currently exists
     in the Pulp server."""
-    message = attr.ib(default=None, type=str)
+    message = pulp_attrib(default=None, type=str)
     """Why this repository is in maintenance."""
-    owner = attr.ib(default=None, type=str)
+    owner = pulp_attrib(default=None, type=str)
     """Who set this repository in maintenance mode."""
-    started = attr.ib(default=None, type=datetime.datetime)
+    started = pulp_attrib(default=None, type=datetime.datetime)
     """:class:`~datetime.datetime` in UTC at when the maintenance started."""
 
 
@@ -57,15 +56,17 @@ class MaintenanceReport(object):
 
     _SCHEMA = load_schema("maintenance")
 
-    last_updated = attr.ib(default=None, type=datetime.datetime)
+    last_updated = pulp_attrib(default=None, type=datetime.datetime)
     """:class:`~datetime.datetime` in UTC when this report was last updated,
     if it's the first time the report is created, current time is used."""
 
-    last_updated_by = attr.ib(default=None, type=str)
+    last_updated_by = pulp_attrib(default=None, type=str)
     """Person/party who updated the report last time."""
 
-    entries = attr.ib(default=attr.Factory(tuple), type=tuple)
-    """A tuple of :class:`MaintenanceEntry` objects, indicating
+    entries = pulp_attrib(
+        default=attr.Factory(FrozenList), type=list, converter=FrozenList
+    )
+    """A list of :class:`MaintenanceEntry` objects, indicating
     which repositories are in maintenance mode and details.
     If empty, then it means no repositories are in maintenance mode.
     """
@@ -100,12 +101,19 @@ class MaintenanceReport(object):
 
         entries = []
         for repo_id, details in data["repos"].items():
-            entries.append(MaintenanceEntry(repo_id=repo_id, **details))
+            entries.append(
+                MaintenanceEntry(
+                    repo_id=repo_id,
+                    message=details["message"],
+                    owner=details["owner"],
+                    started=read_timestamp(details["started"]),
+                )
+            )
 
         maintenance = cls(
-            last_updated=data["last_updated"],
+            last_updated=read_timestamp(data["last_updated"]),
             last_updated_by=data["last_updated_by"],
-            entries=tuple(entries),
+            entries=entries,
         )
 
         return maintenance
@@ -113,7 +121,7 @@ class MaintenanceReport(object):
     def _export_dict(self):
         """export a raw dictionary of maintenance report"""
         report = {
-            "last_updated": self.last_updated,
+            "last_updated": write_timestamp(self.last_updated),
             "last_updated_by": self.last_updated_by,
             "repos": {},
         }
@@ -124,7 +132,7 @@ class MaintenanceReport(object):
                     entry.repo_id: {
                         "message": entry.message,
                         "owner": entry.owner,
-                        "started": entry.started,
+                        "started": write_timestamp(entry.started),
                     }
                 }
             )
@@ -161,7 +169,10 @@ class MaintenanceReport(object):
         for repo in repo_ids:
             to_add.append(
                 MaintenanceEntry(
-                    repo_id=repo, owner=owner, message=message, started=iso_time_now()
+                    repo_id=repo,
+                    owner=owner,
+                    message=message,
+                    started=datetime.datetime.utcnow(),
                 )
             )
         entries = list(self.entries)
@@ -178,9 +189,9 @@ class MaintenanceReport(object):
 
         return attr.evolve(
             self,
-            entries=tuple(filtered_entries),
+            entries=filtered_entries,
             last_updated_by=owner,
-            last_updated=iso_time_now(),
+            last_updated=datetime.datetime.utcnow(),
         )
 
     def remove(self, repo_ids, **kwargs):
@@ -208,4 +219,4 @@ class MaintenanceReport(object):
             if entry.repo_id not in repo_ids:
                 new_entries.append(entry)
 
-        return attr.evolve(self, last_updated_by=owner, entries=tuple(new_entries))
+        return attr.evolve(self, last_updated_by=owner, entries=new_entries)
