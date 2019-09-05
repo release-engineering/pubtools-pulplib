@@ -57,7 +57,7 @@ class Criteria(object):
         """
         if isinstance(ids, six.string_types):
             return cls.with_field("id", ids)
-        return cls.with_field_in("id", ids)
+        return cls.with_field("id", Matcher.in_(ids))
 
     @classmethod
     def with_field(cls, field_name, field_value):

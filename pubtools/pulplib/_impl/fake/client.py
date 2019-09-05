@@ -209,7 +209,7 @@ class FakeClient(object):
             repo_id=repo_id,
             completed=True,
             succeeded=True,
-            units=tuple(removed),
+            units=removed,
         )
 
         return f_return([task])

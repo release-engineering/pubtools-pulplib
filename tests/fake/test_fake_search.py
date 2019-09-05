@@ -112,6 +112,28 @@ def test_search_created_exists():
     assert sorted(found) == [repo2, repo3]
 
 
+def test_search_with_model_field():
+    """search repos using model field 'created' in criteria.
+    returns only those repos which has the field and value is
+    not None
+    """
+    controller = FakeController()
+
+    repo1 = Repository(id="repo1")
+    repo2 = Repository(id="repo2", created=datetime.datetime.utcnow())
+    repo3 = Repository(id="repo3", created=None)
+
+    controller.insert_repository(repo1)
+    controller.insert_repository(repo2)
+    controller.insert_repository(repo3)
+
+    client = controller.client
+    crit = Criteria.with_field("created", Matcher.exists())
+    found = client.search_repository(crit).result().data
+
+    assert sorted(found) == [repo2]
+
+
 def test_search_and():
     controller = FakeController()
 

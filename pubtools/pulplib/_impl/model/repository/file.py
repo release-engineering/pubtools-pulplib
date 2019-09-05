@@ -1,9 +1,11 @@
 import os
 import logging
 
+from attr import validators
 from more_executors.futures import f_flat_map, f_map
 
 from .base import Repository, repo_type
+from ..frozenlist import FrozenList
 from ..attr import pulp_attrib
 from ..common import DetachedException
 from ... import compat_attr as attr
@@ -26,10 +28,13 @@ class FileRepository(Repository):
             lambda self: self.id == "redhat-sigstore", takes_self=True
         ),
         type=bool,
+        validator=validators.instance_of(bool),
     )
 
     mutable_urls = attr.ib(
-        default=attr.Factory(lambda: ["PULP_MANIFEST"]), type=list, hash=False
+        default=attr.Factory(lambda: FrozenList(["PULP_MANIFEST"])),
+        type=list,
+        converter=FrozenList,
     )
 
     def upload_file(self, file_obj, relative_url=None):

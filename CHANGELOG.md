@@ -7,7 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- n/a
+### Changed
+- **API break**: types of fields on model objects are now strictly validated
+  during construction.
+- **API break**: objects documented as immutable are now more deeply immutable;
+  it is no longer possible to mutate list fields on these objects.
+- **API break**: fixed inconsistencies on collection model fields. All fields
+  previously declared as tuples have been updated to use (immutable) lists.
+
+
+### Fixed
+- **API break**: `MaintenanceReport.last_updated`, `MaintenanceEntry.started`
+  are now `datetime` objects as documented. In previous versions, these were
+  documented as datetimes but implemented as `str`.
 
 ## [1.5.0] - 2019-09-03
 

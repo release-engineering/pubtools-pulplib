@@ -4,7 +4,6 @@ import threading
 import hashlib
 import json
 from functools import partial
-from concurrent.futures import Future
 import six
 from six.moves import StringIO
 
@@ -478,28 +477,12 @@ class Client(object):
         return self._request_executor.submit(self._do_request, method="DELETE", url=url)
 
     def _do_get_maintenance(self):
-        def map_404_to_none(response):
-            """Given a future, if it resolved with a 404 error then return a Future[None],
-            else return original future"""
-            out = Future()
-
-            def handle_response(ft):
-                exception = ft.exception()
-                if (
-                    hasattr(exception, "response")
-                    and exception.response.status_code == 404
-                ):
-                    # failed with 404 => returned future should return None
-                    out.set_result(None)
-                elif exception:
-                    # failed with other exception => returned future should raise that exception
-                    out.set_exception(exception)
-                else:
-                    # succeeded => returned future should pass through the result
-                    out.set_result(ft.result())
-
-            response.add_done_callback(handle_response)
-            return out
+        def map_404_to_none(exception):
+            # Translates 404 errors to a None response (no maintenance report).
+            if hasattr(exception, "response") and exception.response.status_code == 404:
+                return None
+            # Any other types of errors are raised unchanged.
+            raise exception
 
         url = os.path.join(self._url, "pulp/isos/redhat-maintenance/repos.json")
 
@@ -507,4 +490,4 @@ class Client(object):
             self._do_request, method="GET", url=url
         )
 
-        return map_404_to_none(response)
+        return f_map(response, error_fn=map_404_to_none)
