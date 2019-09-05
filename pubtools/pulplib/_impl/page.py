@@ -92,6 +92,7 @@ class Page(object):
             self.__dict__["_cancel_ref"] = weakref.ref(self, do_cancel)
 
     def as_iter(self):
+        # TODO: remove me. Originally deprecated 2019-09.
         warnings.warn(
             "as_iter is deprecated, use page as iterable instead", DeprecationWarning
         )
