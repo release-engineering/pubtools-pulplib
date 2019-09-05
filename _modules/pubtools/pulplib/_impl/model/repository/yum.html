@@ -32,6 +32,7 @@
             
   <h1>Source code for pubtools.pulplib._impl.model.repository.yum</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">Repository</span><span class="p">,</span> <span class="n">repo_type</span>
+<span class="kn">from</span> <span class="nn">..frozenlist</span> <span class="k">import</span> <span class="n">FrozenList</span>
 <span class="kn">from</span> <span class="nn">..attr</span> <span class="k">import</span> <span class="n">pulp_attrib</span>
 <span class="kn">from</span> <span class="nn">...</span> <span class="k">import</span> <span class="n">compat_attr</span> <span class="k">as</span> <span class="n">attr</span>
 
@@ -46,7 +47,9 @@
     <span class="nb">type</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;rpm-repo&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;notes._repo-type&quot;</span><span class="p">)</span>
 
     <span class="n">mutable_urls</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="n">attr</span><span class="o">.</span><span class="n">Factory</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;repodata/repomd.xml&quot;</span><span class="p">]),</span> <span class="nb">type</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span> <span class="nb">hash</span><span class="o">=</span><span class="kc">False</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">attr</span><span class="o">.</span><span class="n">Factory</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">FrozenList</span><span class="p">([</span><span class="s2">&quot;repodata/repomd.xml&quot;</span><span class="p">])),</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span>
+        <span class="n">converter</span><span class="o">=</span><span class="n">FrozenList</span><span class="p">,</span>
     <span class="p">)</span></div>
 </pre></div>
 
