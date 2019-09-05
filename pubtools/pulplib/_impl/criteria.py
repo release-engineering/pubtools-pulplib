@@ -232,12 +232,12 @@ class Matcher(object):
         Example:
             .. code-block:: python
 
-            # would match where last_publish is before "2019-08-27T00:00:00Z"
-            # date comparison requries a dateime.datetime object
-            crit = Criteria.with_field(
-                'last_publish',
-                Matcher.less_than(datetime.datetime(2019, 8, 27, 0, 0, 0))
-            )
+                # would match where last_publish is before "2019-08-27T00:00:00Z"
+                # date comparison requires a datetime.datetime object
+                crit = Criteria.with_field(
+                    'last_publish',
+                    Matcher.less_than(datetime.datetime(2019, 8, 27, 0, 0, 0))
+                )
         """
         return LessThanMatcher(value)
 
