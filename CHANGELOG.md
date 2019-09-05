@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- A `search_distributor` API to search distributors on defined `Criteria`
+- `Matcher.less_than()` matcher to find the results with fields less than
+  the given value
+
 ### Changed
 - **API break**: types of fields on model objects are now strictly validated
   during construction.
@@ -39,9 +44,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Support querying and updating maintenance mode of Pulp repositories
 - Introduced ``Client.get_content_type_ids`` method to retrieve supported content types.
-- A `search_distributor` API to search distributors on defined `Criteria`
-- `Matcher.less_than()` matcher to find the results with fields less than
-  the given value
 
 ### Fixed
 - Fixed a crash in `upload_file` when passed a file object opened in text mode
