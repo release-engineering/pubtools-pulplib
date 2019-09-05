@@ -29,6 +29,15 @@ def to_mongo_json(value):
     if isinstance(value, datetime.datetime):
         return {"$date": value.strftime("%Y-%m-%dT%H:%M:%SZ")}
 
+    if isinstance(value, (list, tuple)):
+        return [to_mongo_json(elem) for elem in value]
+
+    if isinstance(value, dict):
+        out = {}
+        for (key, val) in value.items():
+            out[key] = to_mongo_json(val)
+        return out
+
     return value
 
 

@@ -84,3 +84,16 @@ def test_non_matcher():
         field_match("oops not a matcher")
 
     assert "Not a matcher" in str(exc_info.value)
+
+
+def test_dict_matcher_value():
+    """criteria using a dict as matcher value"""
+
+    crit = Criteria.with_field(
+        "created",
+        Matcher.less_than({"created_date": datetime.datetime(2019, 9, 4, 0, 0, 0)}),
+    )
+
+    assert filters_for_criteria(crit) == {
+        "created": {"$lt": {"created_date": {"$date": "2019-09-04T00:00:00Z"}}}
+    }
