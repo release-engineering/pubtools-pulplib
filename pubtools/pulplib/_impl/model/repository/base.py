@@ -159,6 +159,20 @@ class Repository(PulpObject):
     _client = attr.ib(default=None, init=False, repr=False, cmp=False, hash=False)
     # hidden attribute for client attached to this object
 
+    @distributors.validator
+    def check_repo_id(self, _, value):
+        # checks if distributor's repository id is same as the repository it
+        # is attached to
+        for distributor in value:
+            if not distributor.repo_id:
+                return
+            elif distributor.repo_id == self.id:
+                return
+            raise ValueError(
+                "repo_id doesn't match for %s. repo_id: %s, distributor.repo_id: %s"
+                % (distributor.id, self.id, distributor.repo_id)
+            )
+
     @property
     def _distributors_by_id(self):
         out = {}

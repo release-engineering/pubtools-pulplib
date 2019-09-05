@@ -99,7 +99,7 @@ class FakeClient(object):
             for repo in self._repositories:
                 for distributor in repo.distributors:
                     if match_object(criteria, distributor):
-                        distributors.append(distributor)
+                        distributors.append(attr.evolve(distributor, repo_id=repo.id))
         except Exception as ex:  # pylint: disable=broad-except
             return f_return_error(ex)
 
