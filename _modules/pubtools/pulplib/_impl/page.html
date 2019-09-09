@@ -33,6 +33,7 @@
   <h1>Source code for pubtools.pulplib._impl.page</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">weakref</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">concurrent.futures</span> <span class="k">import</span> <span class="n">Future</span>
 
 <span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">compat_attr</span> <span class="k">as</span> <span class="n">attr</span>
@@ -55,6 +56,10 @@
 <span class="sd">    All Pulp searches issued by this library are paginated.</span>
 <span class="sd">    Instances of this class may be used to iterate through the returned</span>
 <span class="sd">    pages, in both blocking and non-blocking coding styles.</span>
+
+<span class="sd">    Page objects are iterables. Iterating over a page will iterate</span>
+<span class="sd">    over all data within that page, *and all subsequent pages*,</span>
+<span class="sd">    blocking on more data from Pulp as needed.</span>
 
 <span class="sd">    Examples:</span>
 
@@ -83,15 +88,15 @@
 
 <span class="sd">        **Blocking iteration**</span>
 
-<span class="sd">        This example uses :meth:`as_iter` to loop over all search results.</span>
-<span class="sd">        At certain points during the iteration, blocking may occur to</span>
-<span class="sd">        await more pages from Pulp.</span>
+<span class="sd">        This example uses the page as an iterable to loop over all search</span>
+<span class="sd">        results. At certain points during the iteration, blocking may</span>
+<span class="sd">        occur to await more pages from Pulp.</span>
 
 <span class="sd">        .. code-block:: python</span>
 
 <span class="sd">            page = client.search_repository(...).result()</span>
 <span class="sd">            # processes all data, but may block at page boundaries</span>
-<span class="sd">            for repo in page.as_iter():</span>
+<span class="sd">            for repo in page:</span>
 <span class="sd">                do_something(repo)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -130,13 +135,15 @@
             <span class="c1"># as the page itself.</span>
             <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s2">&quot;_cancel_ref&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">weakref</span><span class="o">.</span><span class="n">ref</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">do_cancel</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Page.as_iter"><a class="viewcode-back" href="../../../../api/searching.html#pubtools.pulplib.Page.as_iter">[docs]</a>    <span class="k">def</span> <span class="nf">as_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns an iterator which individually yields each object in this</span>
-<span class="sd">        page, and all subsequent pages.</span>
+    <span class="k">def</span> <span class="nf">as_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># TODO: remove me. Originally deprecated 2019-09.</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;as_iter is deprecated, use page as iterable instead&quot;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span>
+        <span class="p">)</span>
 
-<span class="sd">        The iterator will block as needed if the current Pulp search has not</span>
-<span class="sd">        yet completed.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__iter__</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">page</span> <span class="o">=</span> <span class="bp">self</span>
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">page</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
@@ -144,7 +151,7 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">page</span><span class="o">.</span><span class="n">next</span><span class="p">:</span>
                 <span class="k">return</span>
             <span class="c1"># blocks here if next page is not yet fetched</span>
-            <span class="n">page</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="n">next</span><span class="o">.</span><span class="n">result</span><span class="p">()</span></div></div>
+            <span class="n">page</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="n">next</span><span class="o">.</span><span class="n">result</span><span class="p">()</span></div>
 </pre></div>
 
           </div>

@@ -272,11 +272,14 @@ input values.</p>
 <p>All Pulp searches issued by this library are paginated.
 Instances of this class may be used to iterate through the returned
 pages, in both blocking and non-blocking coding styles.</p>
+<p>Page objects are iterables. Iterating over a page will iterate
+over all data within that page, <em>and all subsequent pages</em>,
+blocking on more data from Pulp as needed.</p>
 <p class="rubric">Examples</p>
 <p><strong>Non-blocking iteration</strong></p>
 <p>This example sets up non-blocking processing of all results from
 a search query. Futures are chained and composed using
-<a class="reference external" href="https://rohanpm.github.io/more-executors/reference/futures-map.html#more_executors.futures.f_flat_map" title="(in more-executors v2.2.0, revision 2f8f40f)"><code class="xref py py-func docutils literal notranslate"><span class="pre">f_flat_map()</span></code></a> and friends.</p>
+<a class="reference external" href="https://rohanpm.github.io/more-executors/reference/futures-map.html#more_executors.futures.f_flat_map" title="(in more-executors v2.3.0, revision a9e0c1a)"><code class="xref py py-func docutils literal notranslate"><span class="pre">f_flat_map()</span></code></a> and friends.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">handle_results</span><span class="p">(</span><span class="n">page</span><span class="p">):</span>
     <span class="c1"># Returns a future for handling of a single page</span>
     <span class="k">for</span> <span class="n">repo</span> <span class="ow">in</span> <span class="n">page</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
@@ -294,12 +297,12 @@ a search query. Futures are chained and composed using
 </pre></div>
 </div>
 <p><strong>Blocking iteration</strong></p>
-<p>This example uses <a class="reference internal" href="#pubtools.pulplib.Page.as_iter" title="pubtools.pulplib.Page.as_iter"><code class="xref py py-meth docutils literal notranslate"><span class="pre">as_iter()</span></code></a> to loop over all search results.
-At certain points during the iteration, blocking may occur to
-await more pages from Pulp.</p>
+<p>This example uses the page as an iterable to loop over all search
+results. At certain points during the iteration, blocking may
+occur to await more pages from Pulp.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">page</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">search_repository</span><span class="p">(</span><span class="o">...</span><span class="p">)</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
 <span class="c1"># processes all data, but may block at page boundaries</span>
-<span class="k">for</span> <span class="n">repo</span> <span class="ow">in</span> <span class="n">page</span><span class="o">.</span><span class="n">as_iter</span><span class="p">():</span>
+<span class="k">for</span> <span class="n">repo</span> <span class="ow">in</span> <span class="n">page</span><span class="p">:</span>
     <span class="n">do_something</span><span class="p">(</span><span class="n">repo</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -316,15 +319,6 @@ await more pages from Pulp.</p>
 <code class="sig-name descname">next</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.Page.next" title="Permalink to this definition">¶</a></dt>
 <dd><p>None, if this is the last page of results.</p>
 <p>Otherwise, a Future[<a class="reference internal" href="#pubtools.pulplib.Page" title="pubtools.pulplib.Page"><code class="xref py py-class docutils literal notranslate"><span class="pre">Page</span></code></a>] for the next page of results.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pubtools.pulplib.Page.as_iter">
-<code class="sig-name descname">as_iter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/page.html#Page.as_iter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.Page.as_iter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns an iterator which individually yields each object in this
-page, and all subsequent pages.</p>
-<p>The iterator will block as needed if the current Pulp search has not
-yet completed.</p>
 </dd></dl>
 
 </dd></dl>
