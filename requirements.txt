@@ -4,4 +4,3 @@ six
 PyYAML
 jsonschema
 attrs
-six
