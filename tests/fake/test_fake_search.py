@@ -302,7 +302,7 @@ def test_search_created_regex():
 
     client = controller.client
     crit = Criteria.with_field("notes.created", Matcher.regex("19-06"))
-    found = list(client.search_repository(crit).result().as_iter())
+    found = list(client.search_repository(crit).result())
 
     assert sorted(found) == [repo1, repo3]
 
@@ -320,7 +320,7 @@ def test_search_paginates():
     crit = Criteria.true()
 
     page = client.search_repository(crit).result()
-    found_repos = [repo for repo in page.as_iter()]
+    found_repos = list(page)
 
     page_count = 1
     while page.next:
