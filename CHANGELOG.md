@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- n/a
+### Fixed
+- Fixed certain exceptions from requests library (such as SSL handshake errors) not being
+  propagated correctly.
 
 ## [2.0.0] - 2019-09-09
 
