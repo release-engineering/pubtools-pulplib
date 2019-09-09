@@ -160,7 +160,7 @@ class Repository(PulpObject):
     # hidden attribute for client attached to this object
 
     @distributors.validator
-    def check_repo_id(self, _, value):
+    def _check_repo_id(self, _, value):
         # checks if distributor's repository id is same as the repository it
         # is attached to
         for distributor in value:
