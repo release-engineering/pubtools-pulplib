@@ -37,7 +37,7 @@ def dump_repos(client, crit_strings):
     log.info("Starting Pulp search with %s", repr(criteria))
 
     count = 0
-    repos = client.search_repository(criteria).result().as_iter()
+    repos = client.search_repository(criteria).result()
     for repo in repos:
         count += 1
         log.info("Repo: %s", repr(repo))

@@ -17,7 +17,7 @@ def set_maintenance(client, regex):
     # search repo
     repos = self.search_repository(crit).result()
 
-    repo_ids = [repo.id for repo in repos.as_iter()]
+    repo_ids = [repo.id for repo in repos]
     report = report.add(repo_ids)
     # get the repo ids and feed to report
 

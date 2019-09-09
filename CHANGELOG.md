@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - A `search_distributor` API to search distributors on defined `Criteria`
 - `Matcher.less_than()` matcher to find the results with fields less than
   the given value
+- ``Page`` objects may now be directly used as iterables
 
 ### Changed
 - **API break**: types of fields on model objects are now strictly validated
@@ -20,11 +21,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **API break**: fixed inconsistencies on collection model fields. All fields
   previously declared as tuples have been updated to use (immutable) lists.
 
-
 ### Fixed
 - **API break**: `MaintenanceReport.last_updated`, `MaintenanceEntry.started`
   are now `datetime` objects as documented. In previous versions, these were
   documented as datetimes but implemented as `str`.
+
+### Deprecated
+- ``Page.as_iter`` is now deprecated.
 
 ## [1.5.0] - 2019-09-03
 

@@ -50,7 +50,7 @@ def test_can_search(client, requests_mocker):
 
     repos_f = client.search_repository()
 
-    repos = [r for r in repos_f.result().as_iter()]
+    repos = [r for r in repos_f.result()]
 
     # It should have returned the repos as objects
     assert sorted(repos) == [Repository(id="repo1"), Repository(id="repo2")]
@@ -104,7 +104,7 @@ def test_search_retries(client, requests_mocker, caplog):
 
     repos_f = client.search_repository()
 
-    repos = [r for r in repos_f.result().as_iter()]
+    repos = [r for r in repos_f.result()]
 
     # It should have found the repo
     assert repos == [Repository(id="repo1")]

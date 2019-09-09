@@ -1,5 +1,6 @@
 import logging
 import weakref
+import warnings
 from concurrent.futures import Future
 
 from . import compat_attr as attr
@@ -22,6 +23,10 @@ class Page(object):
     All Pulp searches issued by this library are paginated.
     Instances of this class may be used to iterate through the returned
     pages, in both blocking and non-blocking coding styles.
+
+    Page objects are iterables. Iterating over a page will iterate
+    over all data within that page, *and all subsequent pages*,
+    blocking on more data from Pulp as needed.
 
     Examples:
 
@@ -50,15 +55,15 @@ class Page(object):
 
         **Blocking iteration**
 
-        This example uses :meth:`as_iter` to loop over all search results.
-        At certain points during the iteration, blocking may occur to
-        await more pages from Pulp.
+        This example uses the page as an iterable to loop over all search
+        results. At certain points during the iteration, blocking may
+        occur to await more pages from Pulp.
 
         .. code-block:: python
 
             page = client.search_repository(...).result()
             # processes all data, but may block at page boundaries
-            for repo in page.as_iter():
+            for repo in page:
                 do_something(repo)
 
     """
@@ -98,12 +103,14 @@ class Page(object):
             self.__dict__["_cancel_ref"] = weakref.ref(self, do_cancel)
 
     def as_iter(self):
-        """Returns an iterator which individually yields each object in this
-        page, and all subsequent pages.
+        # TODO: remove me. Originally deprecated 2019-09.
+        warnings.warn(
+            "as_iter is deprecated, use page as iterable instead", DeprecationWarning
+        )
 
-        The iterator will block as needed if the current Pulp search has not
-        yet completed.
-        """
+        return self.__iter__()
+
+    def __iter__(self):
         page = self
         while True:
             for elem in page.data:
