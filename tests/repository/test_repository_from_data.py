@@ -106,3 +106,13 @@ def test_distributors_last_publish_null():
     )
 
     assert repo.distributor("dist1").last_publish is None
+
+
+def test_invalid_distributor_repo_id():
+    """distributor's repo id being different from repo it's attached is invalid"""
+
+    dist = Distributor(id="dist", type_id="yum_distributor", repo_id="repo")
+    with pytest.raises(ValueError) as ex:
+        repo = Repository(id="test_repo", distributors=[dist])
+
+    assert "repo_id doesn't match for dist" in str(ex.value)

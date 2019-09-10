@@ -26,6 +26,9 @@ class Distributor(PulpObject):
     of type `yum_distributor` may be used to create yum repositories.
     """
 
+    repo_id = pulp_attrib(type=str, default=None, pulp_field="repo_id")
+    """The :class:`pubtools.pulplib.Repository` ID this distributor is attached to."""
+
     last_publish = pulp_attrib(
         default=None, type=datetime.datetime, pulp_field="last_publish"
     )

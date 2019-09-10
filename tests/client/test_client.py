@@ -3,6 +3,7 @@ import datetime
 import json
 import pytest
 import requests_mock
+
 from mock import patch
 
 from more_executors.futures import f_return
@@ -14,6 +15,7 @@ from pubtools.pulplib import (
     PulpException,
     MaintenanceReport,
     Task,
+    Distributor,
 )
 
 
@@ -54,6 +56,33 @@ def test_can_search(client, requests_mocker):
     assert sorted(repos) == [Repository(id="repo1"), Repository(id="repo2")]
 
     # It should have issued only a single search
+    assert requests_mocker.call_count == 1
+
+
+def test_can_search_distributor(client, requests_mocker):
+    """search_distributor issues distributors/search POST request as expected."""
+    requests_mocker.post(
+        "https://pulp.example.com/pulp/api/v2/distributors/search/",
+        json=[
+            {
+                "id": "yum_distributor",
+                "distributor_type_id": "yum_distributor",
+                "repo_id": "test_rpm",
+            },
+            {"id": "cdn_distributor", "distributor_type_id": "rpm_rsync_distributor"},
+        ],
+    )
+
+    distributors_f = client.search_distributor()
+    distributors = [dist for dist in distributors_f.result().as_iter()]
+    # distributor objects are returned
+    assert sorted(distributors) == [
+        Distributor(id="cdn_distributor", type_id="rpm_rsync_distributor"),
+        Distributor(
+            id="yum_distributor", type_id="yum_distributor", repo_id="test_rpm"
+        ),
+    ]
+    # api is called once
     assert requests_mocker.call_count == 1
 
 

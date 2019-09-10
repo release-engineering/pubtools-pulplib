@@ -1,3 +1,4 @@
+import datetime
 from pubtools.pulplib._impl.criteria import (
     AndCriteria,
     OrCriteria,
@@ -7,6 +8,7 @@ from pubtools.pulplib._impl.criteria import (
     EqMatcher,
     InMatcher,
     ExistsMatcher,
+    LessThanMatcher,
 )
 
 from pubtools.pulplib._impl import compat_attr as attr
@@ -21,9 +23,27 @@ def all_subclasses(klass):
     return out
 
 
+def to_mongo_json(value):
+    # Return a value converted to the format expected for a mongo JSON
+    # expression. Only a handful of special types need explicit conversions.
+    if isinstance(value, datetime.datetime):
+        return {"$date": value.strftime("%Y-%m-%dT%H:%M:%SZ")}
+
+    if isinstance(value, (list, tuple)):
+        return [to_mongo_json(elem) for elem in value]
+
+    if isinstance(value, dict):
+        out = {}
+        for (key, val) in value.items():
+            out[key] = to_mongo_json(val)
+        return out
+
+    return value
+
+
 def map_field_for_type(field_name, matcher, type_hint):
     if not type_hint:
-        return (field_name, matcher)
+        return None
 
     attrs_classes = all_subclasses(type_hint)
     attrs_classes = [cls for cls in attrs_classes if attr.has(cls)]
@@ -44,7 +64,7 @@ def map_field_for_type(field_name, matcher, type_hint):
         raise NotImplementedError("Searching on field %s is not supported" % field_name)
 
     # No match => no change, search exactly what was requested
-    return (field_name, matcher)
+    return None
 
 
 def filters_for_criteria(criteria, type_hint=None):
@@ -67,7 +87,9 @@ def filters_for_criteria(criteria, type_hint=None):
         field = criteria._field
         matcher = criteria._matcher
 
-        field, matcher = map_field_for_type(field, matcher, type_hint)
+        mapped = map_field_for_type(field, matcher, type_hint)
+        if mapped:
+            field, matcher = mapped
 
         return {field: field_match(matcher)}
 
@@ -79,12 +101,15 @@ def field_match(to_match):
         return {"$regex": to_match._pattern}
 
     if isinstance(to_match, EqMatcher):
-        return {"$eq": to_match._value}
+        return {"$eq": to_mongo_json(to_match._value)}
 
     if isinstance(to_match, InMatcher):
-        return {"$in": to_match._values}
+        return {"$in": to_mongo_json(to_match._values)}
 
     if isinstance(to_match, ExistsMatcher):
         return {"$exists": True}
+
+    if isinstance(to_match, LessThanMatcher):
+        return {"$lt": to_mongo_json(to_match._value)}
 
     raise TypeError("Not a matcher: %s" % repr(to_match))
