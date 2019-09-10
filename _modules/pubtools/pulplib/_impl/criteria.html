@@ -252,6 +252,28 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">InMatcher</span><span class="p">(</span><span class="n">values</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="Matcher.less_than"><a class="viewcode-back" href="../../../../api/searching.html#pubtools.pulplib.Matcher.less_than">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">less_than</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a matcher for a field whose value is less than the specified input</span>
+<span class="sd">        value.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            value (object)</span>
+<span class="sd">                An object to match against the field</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            .. code-block:: python</span>
+
+<span class="sd">                # would match where last_publish is before &quot;2019-08-27T00:00:00Z&quot;</span>
+<span class="sd">                # date comparison requires a datetime.datetime object</span>
+<span class="sd">                crit = Criteria.with_field(</span>
+<span class="sd">                    &#39;last_publish&#39;,</span>
+<span class="sd">                    Matcher.less_than(datetime.datetime(2019, 8, 27, 0, 0, 0))</span>
+<span class="sd">                )</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">LessThanMatcher</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
     <span class="k">def</span> <span class="nf">_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_fn</span><span class="p">):</span>
         <span class="c1"># Internal-only: return self with matched value mapped through</span>
         <span class="c1"># the given function. Intended to be overridden in subclasses</span>
@@ -296,6 +318,14 @@
 <span class="nd">@attr</span><span class="o">.</span><span class="n">s</span>
 <span class="k">class</span> <span class="nc">ExistsMatcher</span><span class="p">(</span><span class="n">Matcher</span><span class="p">):</span>
     <span class="k">pass</span>
+
+
+<span class="nd">@attr</span><span class="o">.</span><span class="n">s</span>
+<span class="k">class</span> <span class="nc">LessThanMatcher</span><span class="p">(</span><span class="n">Matcher</span><span class="p">):</span>
+    <span class="n">_value</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">attr</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">fn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="p">))</span>
 
 
 <span class="k">def</span> <span class="nf">coerce_to_matcher</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>

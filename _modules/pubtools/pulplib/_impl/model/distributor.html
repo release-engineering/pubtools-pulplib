@@ -59,6 +59,9 @@
 <span class="sd">    of type `yum_distributor` may be used to create yum repositories.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">repo_id</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;repo_id&quot;</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;The :class:`pubtools.pulplib.Repository` ID this distributor is attached to.&quot;&quot;&quot;</span>
+
     <span class="n">last_publish</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;last_publish&quot;</span>
     <span class="p">)</span>

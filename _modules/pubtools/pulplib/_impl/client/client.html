@@ -46,7 +46,7 @@
 
 <span class="kn">from</span> <span class="nn">..page</span> <span class="k">import</span> <span class="n">Page</span>
 <span class="kn">from</span> <span class="nn">..criteria</span> <span class="k">import</span> <span class="n">Criteria</span>
-<span class="kn">from</span> <span class="nn">..model</span> <span class="k">import</span> <span class="n">Repository</span><span class="p">,</span> <span class="n">MaintenanceReport</span>
+<span class="kn">from</span> <span class="nn">..model</span> <span class="k">import</span> <span class="n">Repository</span><span class="p">,</span> <span class="n">MaintenanceReport</span><span class="p">,</span> <span class="n">Distributor</span>
 <span class="kn">from</span> <span class="nn">.search</span> <span class="k">import</span> <span class="n">filters_for_criteria</span>
 <span class="kn">from</span> <span class="nn">.errors</span> <span class="k">import</span> <span class="n">PulpException</span>
 <span class="kn">from</span> <span class="nn">.poller</span> <span class="k">import</span> <span class="n">TaskPoller</span>
@@ -201,21 +201,45 @@
 <span class="sd">                Each page will contain a collection of</span>
 <span class="sd">                :class:`~pubtools.pulplib.Repository` objects.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">search_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;distributors&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_search</span><span class="p">(</span>
+            <span class="n">Repository</span><span class="p">,</span> <span class="s2">&quot;repositories&quot;</span><span class="p">,</span> <span class="n">criteria</span><span class="o">=</span><span class="n">criteria</span><span class="p">,</span> <span class="n">search_options</span><span class="o">=</span><span class="n">search_options</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Client.search_distributor"><a class="viewcode-back" href="../../../../../api/client.html#pubtools.pulplib.Client.search_distributor">[docs]</a>    <span class="k">def</span> <span class="nf">search_distributor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">criteria</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Search the distributors matching the given criteria.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            criteria (:class:`~pubtools.pulplib.Criteria`)</span>
+<span class="sd">                A criteria object used for this search.</span>
+<span class="sd">                If None, search for all distributors.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Future[:class:`~pubtools.pulplib.Page`]</span>
+<span class="sd">                A future representing the first page of results.</span>
+
+<span class="sd">                Each page will contain a collection of</span>
+<span class="sd">                :class:`~pubtools.pulplib.Distributor` objects.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_search</span><span class="p">(</span><span class="n">Distributor</span><span class="p">,</span> <span class="s2">&quot;distributors&quot;</span><span class="p">,</span> <span class="n">criteria</span><span class="o">=</span><span class="n">criteria</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_type</span><span class="p">,</span> <span class="n">resource_type</span><span class="p">,</span> <span class="n">criteria</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">search_options</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">pulp_crit</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;skip&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
             <span class="s2">&quot;limit&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_PAGE_SIZE</span><span class="p">,</span>
-            <span class="s2">&quot;filters&quot;</span><span class="p">:</span> <span class="n">filters_for_criteria</span><span class="p">(</span><span class="n">criteria</span><span class="p">,</span> <span class="n">Repository</span><span class="p">),</span>
+            <span class="s2">&quot;filters&quot;</span><span class="p">:</span> <span class="n">filters_for_criteria</span><span class="p">(</span><span class="n">criteria</span><span class="p">,</span> <span class="n">return_type</span><span class="p">),</span>
         <span class="p">}</span>
-        <span class="n">search</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;criteria&quot;</span><span class="p">:</span> <span class="n">pulp_crit</span><span class="p">,</span> <span class="s2">&quot;distributors&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+        <span class="n">search</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;criteria&quot;</span><span class="p">:</span> <span class="n">pulp_crit</span><span class="p">}</span>
+        <span class="n">search</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">search_options</span> <span class="ow">or</span> <span class="p">{})</span>
 
-        <span class="n">response_f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_search</span><span class="p">(</span><span class="s2">&quot;repositories&quot;</span><span class="p">,</span> <span class="n">search</span><span class="p">)</span>
+        <span class="n">response_f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_search</span><span class="p">(</span><span class="n">resource_type</span><span class="p">,</span> <span class="n">search</span><span class="p">)</span>
 
         <span class="c1"># When this request is resolved, we&#39;ll have the first page of data.</span>
         <span class="c1"># We&#39;ll need to convert that into a page and also keep going with</span>
         <span class="c1"># the search if there&#39;s more to be done.</span>
         <span class="k">return</span> <span class="n">f_map</span><span class="p">(</span>
-            <span class="n">response_f</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">data</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_page</span><span class="p">(</span><span class="n">Repository</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
-        <span class="p">)</span></div>
+            <span class="n">response_f</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">data</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_page</span><span class="p">(</span><span class="n">return_type</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+        <span class="p">)</span>
 
 <div class="viewcode-block" id="Client.get_maintenance_report"><a class="viewcode-back" href="../../../../../api/client.html#pubtools.pulplib.Client.get_maintenance_report">[docs]</a>    <span class="k">def</span> <span class="nf">get_maintenance_report</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get the current maintenance mode status for this Pulp server.</span>

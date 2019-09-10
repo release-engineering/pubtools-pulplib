@@ -110,6 +110,27 @@ If None, search for all repositories.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="pubtools.pulplib.Client.search_distributor">
+<code class="sig-name descname">search_distributor</code><span class="sig-paren">(</span><em class="sig-param">criteria=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/client.html#Client.search_distributor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.Client.search_distributor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search the distributors matching the given criteria.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>criteria</strong> (<a class="reference internal" href="searching.html#pubtools.pulplib.Criteria" title="pubtools.pulplib.Criteria"><code class="xref py py-class docutils literal notranslate"><span class="pre">Criteria</span></code></a>) – A criteria object used for this search.
+If None, search for all distributors.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl>
+<dt>Future[<a class="reference internal" href="searching.html#pubtools.pulplib.Page" title="pubtools.pulplib.Page"><code class="xref py py-class docutils literal notranslate"><span class="pre">Page</span></code></a>]</dt><dd><p>A future representing the first page of results.</p>
+<p>Each page will contain a collection of
+<a class="reference internal" href="model.html#pubtools.pulplib.Distributor" title="pubtools.pulplib.Distributor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Distributor</span></code></a> objects.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
 <dt id="pubtools.pulplib.Client.get_maintenance_report">
 <code class="sig-name descname">get_maintenance_report</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/client.html#Client.get_maintenance_report"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.Client.get_maintenance_report" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the current maintenance mode status for this Pulp server.</p>
