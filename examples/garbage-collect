@@ -42,19 +42,20 @@ def make_client(args):
             log.warning("No password provided for %s", args.username)
         auth = (args.username, args.password)
 
-    return Client(args.url, auth=auth)
+    return Client(args.url, auth=auth, verify=not args.insecure)
 
 
 def main():
     log.setLevel(logging.INFO)
     logging.basicConfig(format="%(message)s")
 
-    parser = ArgumentParser(help="Garbage collect old repositories")
+    parser = ArgumentParser(description="Garbage collect old repositories")
     parser.add_argument("--url", help="Pulp server URL")
     parser.add_argument("--username", help="Pulp username")
     parser.add_argument(
         "--password", help="Pulp password (or set PULP_PASSWORD in env)"
     )
+    parser.add_argument("--insecure", default=False, action="store_true")
 
     p = parser.parse_args()
     if not p.url:

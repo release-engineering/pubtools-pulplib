@@ -13,6 +13,7 @@ from pubtools.pulplib._impl.criteria import (
     InMatcher,
     RegexMatcher,
     ExistsMatcher,
+    LessThanMatcher,
 )
 from pubtools.pulplib._impl.model.common import PULP2_FIELD
 
@@ -45,11 +46,9 @@ def get_field(field, obj):
     # - If it's a field on the model, no conversion is needed since we already
     #   are storing plain objects from the model
     # - If it's a Pulp field, conversion will be handled in pulp_value
-    mapped_field, _ = map_field_for_type(field, matcher=None, type_hint=obj.__class__)
+    using_model_field = map_field_for_type(field, matcher=None, type_hint=obj.__class__)
 
     # Are we looking for a field on our model, or a raw Pulp field?
-    using_model_field = mapped_field is not field
-
     if using_model_field:
         # If matching a field on the model, we can simply grab and compare
         # the attribute directly.
@@ -122,6 +121,12 @@ def match_in(matcher, field, obj):
         if elem == value:
             return True
     return False
+
+
+@visit(LessThanMatcher)
+def match_field_less(matcher, field, obj):
+    value = get_field(field, obj)
+    return value < matcher._value
 
 
 def pulp_value(pulp_field, obj):

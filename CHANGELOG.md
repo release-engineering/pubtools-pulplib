@@ -10,6 +10,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Introduced "proxy futures" for values produced by this library.
 
+## [2.1.0] - 2019-09-10
+
+### Added
+- A `search_distributor` API to search distributors on defined `Criteria`
+- `Matcher.less_than()` matcher to find the results with fields less than
+  the given value
+
+### Fixed
+- Fixed certain exceptions from requests library (such as SSL handshake errors) not being
+  propagated correctly.
+
 ## [2.0.0] - 2019-09-09
 
 ### Added
@@ -132,7 +143,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release to PyPI
 
-[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.1.0...HEAD
+[2.1.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v1.5.0...v2.0.0
 [1.5.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v1.3.0...v1.4.0

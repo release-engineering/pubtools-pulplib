@@ -2,7 +2,7 @@ import datetime
 
 import pytest
 
-from pubtools.pulplib import FakeController, Repository, Criteria, Matcher
+from pubtools.pulplib import FakeController, Repository, Criteria, Matcher, Distributor
 
 
 def test_can_search_id():
@@ -158,7 +158,10 @@ def test_search_null_and():
     """Search with an empty AND gives an error."""
     controller = FakeController()
 
-    repo1 = Repository(id="repo1")
+    dist1 = Distributor(
+        id="yum_distributor", type_id="yum_distributor", repo_id="repo1"
+    )
+    repo1 = Repository(id="repo1", distributors=[dist1])
 
     controller.insert_repository(repo1)
 
@@ -166,6 +169,9 @@ def test_search_null_and():
     crit = Criteria.and_()
     assert "Invalid AND in search query" in str(
         client.search_repository(crit).exception()
+    )
+    assert "Invalid AND in search query" in str(
+        client.search_distributor(crit).exception()
     )
 
 
@@ -194,10 +200,14 @@ def test_search_bad_criteria():
 
     client = controller.client
 
-    with pytest.raises(Exception) as exc:
+    with pytest.raises(Exception) as repo_exc:
         client.search_repository("not a valid criteria")
 
-    assert "Not a criteria" in str(exc.value)
+    with pytest.raises(Exception) as dist_exc:
+        client.search_distributor("invalid criteria")
+
+    assert "Not a criteria" in str(repo_exc.value)
+    assert "Not a criteria" in str(dist_exc.value)
 
 
 def test_search_created_timestamp():
@@ -334,3 +344,52 @@ def test_search_paginates():
 
     # All repos should have been found
     assert sorted(found_repos) == sorted(repos)
+
+
+def test_search_distributor():
+    controller = FakeController()
+
+    dist1 = Distributor(
+        id="yum_distributor", type_id="yum_distributor", repo_id="repo1"
+    )
+    dist2 = Distributor(
+        id="cdn_distributor", type_id="rpm_rsync_distributor", repo_id="repo1"
+    )
+    repo1 = Repository(id="repo1", distributors=(dist1, dist2))
+
+    controller.insert_repository(repo1)
+
+    client = controller.client
+    crit = Criteria.true()
+
+    found = client.search_distributor(crit).result().data
+
+    assert sorted(found) == [dist2, dist1]
+
+
+def test_search_mapped_field_less_than():
+    controller = FakeController()
+
+    dist1 = Distributor(
+        id="yum_distributor",
+        type_id="yum_distributor",
+        repo_id="repo1",
+        last_publish=datetime.datetime(2019, 8, 23, 2, 5, 0, tzinfo=None),
+    )
+    dist2 = Distributor(
+        id="cdn_distributor",
+        type_id="rpm_rsync_distributor",
+        repo_id="repo1",
+        last_publish=datetime.datetime(2019, 8, 27, 2, 5, 0, tzinfo=None),
+    )
+    repo1 = Repository(id="repo1", distributors=(dist1, dist2))
+
+    controller.insert_repository(repo1)
+
+    client = controller.client
+    crit = Criteria.with_field(
+        "last_publish", Matcher.less_than(datetime.datetime(2019, 8, 24, 0, 0, 0))
+    )
+    found = client.search_distributor(crit).result().data
+
+    assert found == [dist1]

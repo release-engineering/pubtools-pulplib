@@ -17,6 +17,9 @@ definitions:
       distributor_type_id:
         # String ID of distributor's type, e.g. "yum_distributor"
         type: string
+      repo_id:
+        # String ID of distributor's repository
+        type: string
       config:
         # Config dict for this distributor, different per distributor type.
         # We won't mandate which config keys are used with each distributor,

@@ -15,13 +15,13 @@ def set_maintenance(client, regex):
 
     crit = Criteria.with_field("id", Matcher.regex(regex))
     # search repo
-    repos = self.search_repository(crit).result()
+    repos = client.search_repository(crit).result()
 
     repo_ids = [repo.id for repo in repos]
     report = report.add(repo_ids)
     # get the repo ids and feed to report
 
-    tasks = client.set_maintainenance(report).result()
+    tasks = client.set_maintenance(report).result()
 
     report = client.get_maintenance_report().result()
     log.info("maintenance mode set: %s", report.entries)
