@@ -238,6 +238,8 @@ class Matcher(object):
                     'last_publish',
                     Matcher.less_than(datetime.datetime(2019, 8, 27, 0, 0, 0))
                 )
+
+        .. versionadded:: 2.1.0
         """
         return LessThanMatcher(value)
 

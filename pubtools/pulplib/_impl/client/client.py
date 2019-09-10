@@ -187,6 +187,8 @@ class Client(object):
 
                 Each page will contain a collection of
                 :class:`~pubtools.pulplib.Distributor` objects.
+
+        .. versionadded:: 2.1.0
         """
         return self._search(Distributor, "distributors", criteria=criteria)
 
