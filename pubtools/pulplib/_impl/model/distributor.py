@@ -29,6 +29,10 @@ class Distributor(PulpObject):
     repo_id = pulp_attrib(type=str, default=None, pulp_field="repo_id")
     """The :class:`pubtools.pulplib.Repository` ID this distributor is attached to."""
 
+    relative_url = pulp_attrib(type=str, default=None, pulp_field="config.relative_url")
+    """Default distribution URL for the repository which the distributor is attached to,
+    relative to the Pulp content root."""
+
     last_publish = pulp_attrib(
         default=None, type=datetime.datetime, pulp_field="last_publish"
     )
