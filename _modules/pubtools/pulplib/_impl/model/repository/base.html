@@ -35,7 +35,7 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 
 <span class="kn">from</span> <span class="nn">attr</span> <span class="k">import</span> <span class="n">validators</span>
-<span class="kn">from</span> <span class="nn">more_executors.futures</span> <span class="k">import</span> <span class="n">f_map</span>
+<span class="kn">from</span> <span class="nn">more_executors.futures</span> <span class="k">import</span> <span class="n">f_map</span><span class="p">,</span> <span class="n">f_proxy</span>
 
 <span class="kn">from</span> <span class="nn">..common</span> <span class="k">import</span> <span class="n">PulpObject</span><span class="p">,</span> <span class="n">DetachedException</span>
 <span class="kn">from</span> <span class="nn">..attr</span> <span class="k">import</span> <span class="n">pulp_attrib</span>
@@ -251,7 +251,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s2">&quot;_client&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">return</span> <span class="n">tasks</span>
 
-        <span class="k">return</span> <span class="n">f_map</span><span class="p">(</span><span class="n">delete_f</span><span class="p">,</span> <span class="n">detach</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">f_proxy</span><span class="p">(</span><span class="n">f_map</span><span class="p">(</span><span class="n">delete_f</span><span class="p">,</span> <span class="n">detach</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="Repository.publish"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.Repository.publish">[docs]</a>    <span class="k">def</span> <span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">PublishOptions</span><span class="p">()):</span>
         <span class="sd">&quot;&quot;&quot;Publish this repository.</span>
@@ -300,7 +300,7 @@
             <span class="n">config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config_for_distributor</span><span class="p">(</span><span class="n">distributor</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
             <span class="n">to_publish</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">distributor</span><span class="p">,</span> <span class="n">config</span><span class="p">))</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_publish_repository</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to_publish</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">f_proxy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_publish_repository</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to_publish</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="Repository.remove_content"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.Repository.remove_content">[docs]</a>    <span class="k">def</span> <span class="nf">remove_content</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Remove all content of requested types from this repository.</span>
@@ -336,7 +336,7 @@
         <span class="c1"># argument order at least until then.</span>
 
         <span class="n">type_ids</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;type_ids&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_do_unassociate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">type_ids</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">f_proxy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_do_unassociate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">type_ids</span><span class="p">))</span></div>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>

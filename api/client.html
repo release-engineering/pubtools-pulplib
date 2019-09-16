@@ -50,6 +50,30 @@ is asynchronous (e.g. publish)</p></li>
 </ul>
 <p>If a future is currently awaiting one or more Pulp tasks, cancelling the future
 will attempt to cancel those tasks.</p>
+<p><strong>Proxy futures:</strong></p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.1.0.</span></p>
+</div>
+<p>All <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a> objects produced by this client are
+<em>proxy futures</em>, meaning that attribute and method lookups on the objects are
+proxied to the future’s result, blocking as needed.</p>
+<p>This allows the client to be used within blocking code without having to
+scatter calls to <code class="docutils literal notranslate"><span class="pre">.result()</span></code> throughout.</p>
+<p>For example, this block of code:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">repo</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_repository</span><span class="p">(</span><span class="n">repo_id</span><span class="p">)</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+<span class="n">publish_tasks</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">publish</span><span class="p">()</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+<span class="n">task_ids</span> <span class="o">=</span> <span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">t</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">publish_tasks</span><span class="p">])</span>
+<span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Published </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">repo</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">task_ids</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>…may be alternatively written without the calls to <code class="docutils literal notranslate"><span class="pre">.result()</span></code>, due to
+the usage of proxy futures:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">repo</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_repository</span><span class="p">(</span><span class="n">repo_id</span><span class="p">)</span>
+<span class="n">publish_tasks</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">publish</span><span class="p">()</span>
+<span class="n">task_ids</span> <span class="o">=</span> <span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">t</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">publish_tasks</span><span class="p">])</span>
+<span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Published </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">repo</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">task_ids</span><span class="p">)</span>
+</pre></div>
+</div>
 <p><strong>Retries:</strong></p>
 <p>In general, for all methods which represent an idempotent operation and
 which return a Future, the library may retry operations several times in case

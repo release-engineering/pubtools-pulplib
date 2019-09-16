@@ -35,7 +35,7 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 
 <span class="kn">from</span> <span class="nn">attr</span> <span class="k">import</span> <span class="n">validators</span>
-<span class="kn">from</span> <span class="nn">more_executors.futures</span> <span class="k">import</span> <span class="n">f_flat_map</span><span class="p">,</span> <span class="n">f_map</span>
+<span class="kn">from</span> <span class="nn">more_executors.futures</span> <span class="k">import</span> <span class="n">f_flat_map</span><span class="p">,</span> <span class="n">f_map</span><span class="p">,</span> <span class="n">f_proxy</span>
 
 <span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">Repository</span><span class="p">,</span> <span class="n">repo_type</span>
 <span class="kn">from</span> <span class="nn">..frozenlist</span> <span class="k">import</span> <span class="n">FrozenList</span>
@@ -132,7 +132,7 @@
             <span class="n">import_complete_f</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">_</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_delete_upload_request</span><span class="p">(</span><span class="n">upload_id</span><span class="p">)</span>
         <span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">import_complete_f</span></div>
+        <span class="k">return</span> <span class="n">f_proxy</span><span class="p">(</span><span class="n">import_complete_f</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_get_relative_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_obj</span><span class="p">,</span> <span class="n">relative_url</span><span class="p">):</span>
         <span class="n">is_file_object</span> <span class="o">=</span> <span class="s2">&quot;close&quot;</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">file_obj</span><span class="p">)</span>

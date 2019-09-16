@@ -42,7 +42,7 @@
 
 <span class="kn">import</span> <span class="nn">requests</span>
 <span class="kn">from</span> <span class="nn">more_executors</span> <span class="k">import</span> <span class="n">Executors</span>
-<span class="kn">from</span> <span class="nn">more_executors.futures</span> <span class="k">import</span> <span class="n">f_map</span><span class="p">,</span> <span class="n">f_flat_map</span><span class="p">,</span> <span class="n">f_return</span>
+<span class="kn">from</span> <span class="nn">more_executors.futures</span> <span class="k">import</span> <span class="n">f_map</span><span class="p">,</span> <span class="n">f_flat_map</span><span class="p">,</span> <span class="n">f_return</span><span class="p">,</span> <span class="n">f_proxy</span>
 
 <span class="kn">from</span> <span class="nn">..page</span> <span class="k">import</span> <span class="n">Page</span>
 <span class="kn">from</span> <span class="nn">..criteria</span> <span class="k">import</span> <span class="n">Criteria</span>
@@ -73,6 +73,36 @@
 
 <span class="sd">    If a future is currently awaiting one or more Pulp tasks, cancelling the future</span>
 <span class="sd">    will attempt to cancel those tasks.</span>
+
+<span class="sd">    **Proxy futures:**</span>
+
+<span class="sd">    .. versionadded:: 2.1.0</span>
+
+<span class="sd">    All :class:`~concurrent.futures.Future` objects produced by this client are</span>
+<span class="sd">    *proxy futures*, meaning that attribute and method lookups on the objects are</span>
+<span class="sd">    proxied to the future&#39;s result, blocking as needed.</span>
+
+<span class="sd">    This allows the client to be used within blocking code without having to</span>
+<span class="sd">    scatter calls to ``.result()`` throughout.</span>
+
+<span class="sd">    For example, this block of code:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        repo = client.get_repository(repo_id).result()</span>
+<span class="sd">        publish_tasks = repo.publish().result()</span>
+<span class="sd">        task_ids = &#39;,&#39;.join([t.id for t in publish_tasks])</span>
+<span class="sd">        log.info(&quot;Published %s: %s&quot;, repo.id, task_ids)</span>
+
+<span class="sd">    ...may be alternatively written without the calls to ``.result()``, due to</span>
+<span class="sd">    the usage of proxy futures:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        repo = client.get_repository(repo_id)</span>
+<span class="sd">        publish_tasks = repo.publish()</span>
+<span class="sd">        task_ids = &#39;,&#39;.join([t.id for t in publish_tasks])</span>
+<span class="sd">        log.info(&quot;Published %s: %s&quot;, repo.id, task_ids)</span>
 
 <span class="sd">    **Retries:**</span>
 
@@ -184,7 +214,7 @@
             <span class="k">return</span> <span class="n">page</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="n">repo_f</span> <span class="o">=</span> <span class="n">f_map</span><span class="p">(</span><span class="n">page_f</span><span class="p">,</span> <span class="n">unpack_page</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">repo_f</span></div>
+        <span class="k">return</span> <span class="n">f_proxy</span><span class="p">(</span><span class="n">repo_f</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Client.search_repository"><a class="viewcode-back" href="../../../../../api/client.html#pubtools.pulplib.Client.search_repository">[docs]</a>    <span class="k">def</span> <span class="nf">search_repository</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">criteria</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Search for repositories matching the given criteria.</span>
@@ -239,8 +269,8 @@
         <span class="c1"># When this request is resolved, we&#39;ll have the first page of data.</span>
         <span class="c1"># We&#39;ll need to convert that into a page and also keep going with</span>
         <span class="c1"># the search if there&#39;s more to be done.</span>
-        <span class="k">return</span> <span class="n">f_map</span><span class="p">(</span>
-            <span class="n">response_f</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">data</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_page</span><span class="p">(</span><span class="n">return_type</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">f_proxy</span><span class="p">(</span>
+            <span class="n">f_map</span><span class="p">(</span><span class="n">response_f</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">data</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_page</span><span class="p">(</span><span class="n">return_type</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">data</span><span class="p">))</span>
         <span class="p">)</span>
 
 <div class="viewcode-block" id="Client.get_maintenance_report"><a class="viewcode-back" href="../../../../../api/client.html#pubtools.pulplib.Client.get_maintenance_report">[docs]</a>    <span class="k">def</span> <span class="nf">get_maintenance_report</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -308,7 +338,7 @@
 
         <span class="c1"># The pulp API returns an object per supported type.</span>
         <span class="c1"># We only support returning the ID at this time.</span>
-        <span class="k">return</span> <span class="n">f_map</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">types</span><span class="p">:</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">t</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">types</span><span class="p">]))</span></div>
+        <span class="k">return</span> <span class="n">f_proxy</span><span class="p">(</span><span class="n">f_map</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">types</span><span class="p">:</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">t</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">types</span><span class="p">])))</span></div>
 
     <span class="k">def</span> <span class="nf">_do_upload_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">upload_id</span><span class="p">,</span> <span class="n">file_obj</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="k">def</span> <span class="nf">do_next_upload</span><span class="p">(</span><span class="n">checksum</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
@@ -437,8 +467,11 @@
             <span class="n">search</span><span class="p">[</span><span class="s2">&quot;criteria&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">search</span><span class="p">[</span><span class="s2">&quot;criteria&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
             <span class="n">search</span><span class="p">[</span><span class="s2">&quot;criteria&quot;</span><span class="p">][</span><span class="s2">&quot;skip&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">search</span><span class="p">[</span><span class="s2">&quot;criteria&quot;</span><span class="p">][</span><span class="s2">&quot;skip&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">limit</span>
             <span class="n">response_f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_search</span><span class="p">(</span><span class="s2">&quot;repositories&quot;</span><span class="p">,</span> <span class="n">search</span><span class="p">)</span>
-            <span class="n">next_page</span> <span class="o">=</span> <span class="n">f_map</span><span class="p">(</span>
-                <span class="n">response_f</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">data</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_page</span><span class="p">(</span><span class="n">object_class</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+            <span class="n">next_page</span> <span class="o">=</span> <span class="n">f_proxy</span><span class="p">(</span>
+                <span class="n">f_map</span><span class="p">(</span>
+                    <span class="n">response_f</span><span class="p">,</span>
+                    <span class="k">lambda</span> <span class="n">data</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_page</span><span class="p">(</span><span class="n">object_class</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">data</span><span class="p">),</span>
+                <span class="p">)</span>
             <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">Page</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">page_data</span><span class="p">,</span> <span class="nb">next</span><span class="o">=</span><span class="n">next_page</span><span class="p">)</span>
