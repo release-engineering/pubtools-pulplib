@@ -62,6 +62,10 @@
     <span class="n">repo_id</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;repo_id&quot;</span><span class="p">)</span>
     <span class="sd">&quot;&quot;&quot;The :class:`pubtools.pulplib.Repository` ID this distributor is attached to.&quot;&quot;&quot;</span>
 
+    <span class="n">relative_url</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;config.relative_url&quot;</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;Default distribution URL for the repository which the distributor is attached to,</span>
+<span class="sd">    relative to the Pulp content root.&quot;&quot;&quot;</span>
+
     <span class="n">last_publish</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;last_publish&quot;</span>
     <span class="p">)</span>
