@@ -367,6 +367,43 @@ def test_search_distributor():
     assert sorted(found) == [dist2, dist1]
 
 
+def test_search_distributor_with_relative_url():
+    controller = FakeController()
+
+    dist1 = Distributor(
+        id="yum_distributor",
+        type_id="yum_distributor",
+        repo_id="repo1",
+        relative_url="relative/path",
+    )
+    dist2 = Distributor(
+        id="cdn_distributor",
+        type_id="rpm_rsync_distributor",
+        repo_id="repo1",
+        relative_url="relative/path",
+    )
+    repo1 = Repository(id="repo1", distributors=(dist1, dist2))
+
+    dist3 = Distributor(
+        id="yum_distributor",
+        type_id="yum_distributor",
+        repo_id="repo2",
+        relative_url="another/path",
+    )
+
+    repo2 = Repository(id="repo2", distributors=(dist3,))
+
+    controller.insert_repository(repo1)
+    controller.insert_repository(repo2)
+
+    client = controller.client
+    crit = Criteria.with_field("relative_url", Matcher.regex("relative/path"))
+
+    found = client.search_distributor(crit).result().data
+
+    assert sorted(found) == [dist2, dist1]
+
+
 def test_search_mapped_field_less_than():
     controller = FakeController()
 
