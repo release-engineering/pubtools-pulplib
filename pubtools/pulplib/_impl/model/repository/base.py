@@ -2,7 +2,7 @@ import datetime
 import logging
 
 from attr import validators
-from more_executors.futures import f_map
+from more_executors.futures import f_map, f_proxy
 
 from ..common import PulpObject, DetachedException
 from ..attr import pulp_attrib
@@ -218,7 +218,7 @@ class Repository(PulpObject):
             self.__dict__["_client"] = None
             return tasks
 
-        return f_map(delete_f, detach)
+        return f_proxy(f_map(delete_f, detach))
 
     def publish(self, options=PublishOptions()):
         """Publish this repository.
@@ -267,7 +267,7 @@ class Repository(PulpObject):
             config = self._config_for_distributor(distributor, options)
             to_publish.append((distributor, config))
 
-        return self._client._publish_repository(self, to_publish)
+        return f_proxy(self._client._publish_repository(self, to_publish))
 
     def remove_content(self, **kwargs):
         """Remove all content of requested types from this repository.
@@ -303,7 +303,7 @@ class Repository(PulpObject):
         # argument order at least until then.
 
         type_ids = kwargs.get("type_ids")
-        return self._client._do_unassociate(self.id, type_ids)
+        return f_proxy(self._client._do_unassociate(self.id, type_ids))
 
     @classmethod
     def from_data(cls, data):

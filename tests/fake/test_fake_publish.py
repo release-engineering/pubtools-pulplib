@@ -17,7 +17,7 @@ def test_can_publish():
     controller.insert_repository(YumRepository(id="repo2"))
 
     client = controller.client
-    repo1 = client.get_repository("repo1").result()
+    repo1 = client.get_repository("repo1")
 
     # Call to publish should succeed
     publish_f = repo1.publish()
@@ -53,8 +53,8 @@ def test_publish_absent_raises():
     )
 
     client = controller.client
-    repo_copy1 = client.get_repository("repo1").result()
-    repo_copy2 = client.get_repository("repo1").result()
+    repo_copy1 = client.get_repository("repo1")
+    repo_copy2 = client.get_repository("repo1")
 
     # If I delete the repo through one handle...
     assert repo_copy1.delete().result()

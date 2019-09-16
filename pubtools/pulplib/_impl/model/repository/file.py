@@ -2,7 +2,7 @@ import os
 import logging
 
 from attr import validators
-from more_executors.futures import f_flat_map, f_map
+from more_executors.futures import f_flat_map, f_map, f_proxy
 
 from .base import Repository, repo_type
 from ..frozenlist import FrozenList
@@ -99,7 +99,7 @@ class FileRepository(Repository):
             import_complete_f, lambda _: self._client._delete_upload_request(upload_id)
         )
 
-        return import_complete_f
+        return f_proxy(import_complete_f)
 
     def _get_relative_url(self, file_obj, relative_url):
         is_file_object = "close" in dir(file_obj)

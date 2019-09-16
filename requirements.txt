@@ -1,5 +1,5 @@
 requests
-more-executors>=2.2.0
+more-executors>=2.3.0
 six
 PyYAML
 jsonschema

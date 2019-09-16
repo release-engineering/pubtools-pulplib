@@ -8,7 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Added a new attribute a`relative_url` to `Distributor`, so users can search distributors
+- Introduced "proxy futures" for values produced by this library.
+- Added a new attribute `relative_url` to `Distributor`, so users can search distributors
   by relative_url
 
 ## [2.1.0] - 2019-09-10

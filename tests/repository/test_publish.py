@@ -60,7 +60,7 @@ def test_publish_distributors(fast_poller, requests_mocker, client):
     )
 
     # It should have succeeded, with the tasks as retrieved from Pulp
-    assert sorted(repo.publish().result()) == [
+    assert sorted(repo.publish()) == [
         Task(id="task1", succeeded=True, completed=True),
         Task(id="task2", succeeded=True, completed=True),
         Task(id="task3", succeeded=True, completed=True),
@@ -125,7 +125,7 @@ def test_publish_with_options(requests_mocker, client):
     options = PublishOptions(clean=True, force=True, origin_only=True)
 
     # It should have succeeded, with the tasks as retrieved from Pulp
-    assert sorted(repo.publish(options).result()) == [
+    assert sorted(repo.publish(options)) == [
         Task(id="task1", succeeded=True, completed=True),
         Task(id="task2", succeeded=True, completed=True),
     ]

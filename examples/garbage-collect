@@ -16,7 +16,7 @@ def garbage_collect(client, gc_threshold=7):
         Criteria.with_field("notes.pub_temp_repo", True),
     )
 
-    repos = client.search_repository(crit).result()
+    repos = client.search_repository(crit)
     for repo in repos:
         created = repo.created
         if not created:

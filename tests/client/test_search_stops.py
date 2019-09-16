@@ -40,9 +40,8 @@ def test_search_stops_paginate(requests_mocker):
 
     # Imagine we have some function which processes two pages of results and
     # then stops
-    def do_something_first_two_pages(repos_f):
-        page = repos_f.result()
-        return len(page.data) + len(page.next.result().data)
+    def do_something_first_two_pages(page):
+        return len(page.data) + len(page.next.data)
 
     two_pages_len = do_something_first_two_pages(client.search_repository())
 

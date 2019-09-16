@@ -43,7 +43,7 @@ def test_upload_nonexistent_file_raises():
     controller.insert_repository(FileRepository(id="repo1"))
 
     client = controller.client
-    repo1 = client.get_repository("repo1").result()
+    repo1 = client.get_repository("repo1")
 
     # If file's not found, Python 2 raises IOError and Python 3 raises
     # FileNotFoundError. The latter one is not defined in Python 2.
@@ -61,13 +61,13 @@ def test_upload_repo_absent_raises(tmpdir):
     controller.insert_repository(FileRepository(id="repo1"))
 
     client = controller.client
-    repo1 = client.get_repository("repo1").result()
+    repo1 = client.get_repository("repo1")
 
     somefile = tmpdir.join("some-file.txt")
     somefile.write(b"there is some binary data:\x00\x01\x02")
 
-    repo_copy1 = client.get_repository("repo1").result()
-    repo_copy2 = client.get_repository("repo1").result()
+    repo_copy1 = client.get_repository("repo1")
+    repo_copy2 = client.get_repository("repo1")
 
     # if repo's deleted
     assert repo_copy1.delete().result()

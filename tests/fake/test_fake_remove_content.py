@@ -9,7 +9,7 @@ def test_can_remove_empty():
     repo = YumRepository(id="repo1")
     controller.insert_repository(repo)
 
-    remove_tasks = client.get_repository("repo1").result().remove_content().result()
+    remove_tasks = client.get_repository("repo1").remove_content()
 
     assert len(remove_tasks) == 1
     task = remove_tasks[0]
@@ -45,12 +45,7 @@ def test_can_remove_content():
     controller.insert_repository(repo)
     controller.insert_units(repo, units)
 
-    remove_rpms = (
-        client.get_repository("repo1")
-        .result()
-        .remove_content(type_ids=["rpm"])
-        .result()
-    )
+    remove_rpms = client.get_repository("repo1").remove_content(type_ids=["rpm"])
 
     assert len(remove_rpms) == 1
     task = remove_rpms[0]
@@ -63,12 +58,7 @@ def test_can_remove_content():
     assert sorted(task.units) == sorted(rpm_units)
 
     # Now if we ask to remove same content again...
-    remove_rpms = (
-        client.get_repository("repo1")
-        .result()
-        .remove_content(type_ids=["rpm"])
-        .result()
-    )
+    remove_rpms = client.get_repository("repo1").remove_content(type_ids=["rpm"])
 
     assert len(remove_rpms) == 1
     task = remove_rpms[0]
@@ -79,7 +69,7 @@ def test_can_remove_content():
     assert not task.units
 
     # It should still be possible to remove other content
-    remove_all = client.get_repository("repo1").result().remove_content().result()
+    remove_all = client.get_repository("repo1").remove_content()
 
     assert len(remove_all) == 1
     task = remove_all[0]
@@ -99,8 +89,8 @@ def test_remove_deleted_repo_fails():
     controller.insert_repository(repo)
 
     # Get two references to the same repo
-    repo_handle1 = client.get_repository("repo1").result()
-    repo_handle2 = client.get_repository("repo1").result()
+    repo_handle1 = client.get_repository("repo1")
+    repo_handle2 = client.get_repository("repo1")
 
     # Use one of them to delete the repo
     repo_handle1.delete().result()

@@ -9,7 +9,7 @@ log = logging.getLogger("upload")
 
 
 def upload(client, path, repo_id):
-    repo = client.get_repository(repo_id).result()
+    repo = client.get_repository(repo_id)
 
     uploads = []
     if os.path.isdir(path):

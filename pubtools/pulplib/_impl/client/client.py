@@ -9,7 +9,7 @@ from six.moves import StringIO
 
 import requests
 from more_executors import Executors
-from more_executors.futures import f_map, f_flat_map, f_return
+from more_executors.futures import f_map, f_flat_map, f_return, f_proxy
 
 from ..page import Page
 from ..criteria import Criteria
@@ -40,6 +40,36 @@ class Client(object):
 
     If a future is currently awaiting one or more Pulp tasks, cancelling the future
     will attempt to cancel those tasks.
+
+    **Proxy futures:**
+
+    .. versionadded:: 2.1.0
+
+    All :class:`~concurrent.futures.Future` objects produced by this client are
+    *proxy futures*, meaning that attribute and method lookups on the objects are
+    proxied to the future's result, blocking as needed.
+
+    This allows the client to be used within blocking code without having to
+    scatter calls to ``.result()`` throughout.
+
+    For example, this block of code:
+
+    .. code-block:: python
+
+        repo = client.get_repository(repo_id).result()
+        publish_tasks = repo.publish().result()
+        task_ids = ','.join([t.id for t in publish_tasks])
+        log.info("Published %s: %s", repo.id, task_ids)
+
+    ...may be alternatively written without the calls to ``.result()``, due to
+    the usage of proxy futures:
+
+    .. code-block:: python
+
+        repo = client.get_repository(repo_id)
+        publish_tasks = repo.publish()
+        task_ids = ','.join([t.id for t in publish_tasks])
+        log.info("Published %s: %s", repo.id, task_ids)
 
     **Retries:**
 
@@ -151,7 +181,7 @@ class Client(object):
             return page.data[0]
 
         repo_f = f_map(page_f, unpack_page)
-        return repo_f
+        return f_proxy(repo_f)
 
     def search_repository(self, criteria=None):
         """Search for repositories matching the given criteria.
@@ -206,8 +236,8 @@ class Client(object):
         # When this request is resolved, we'll have the first page of data.
         # We'll need to convert that into a page and also keep going with
         # the search if there's more to be done.
-        return f_map(
-            response_f, lambda data: self._handle_page(return_type, search, data)
+        return f_proxy(
+            f_map(response_f, lambda data: self._handle_page(return_type, search, data))
         )
 
     def get_maintenance_report(self):
@@ -275,7 +305,7 @@ class Client(object):
 
         # The pulp API returns an object per supported type.
         # We only support returning the ID at this time.
-        return f_map(out, lambda types: sorted([t["id"] for t in types]))
+        return f_proxy(f_map(out, lambda types: sorted([t["id"] for t in types])))
 
     def _do_upload_file(self, upload_id, file_obj, name):
         def do_next_upload(checksum, size):
@@ -404,8 +434,11 @@ class Client(object):
             search["criteria"] = search["criteria"].copy()
             search["criteria"]["skip"] = search["criteria"]["skip"] + limit
             response_f = self._do_search("repositories", search)
-            next_page = f_map(
-                response_f, lambda data: self._handle_page(object_class, search, data)
+            next_page = f_proxy(
+                f_map(
+                    response_f,
+                    lambda data: self._handle_page(object_class, search, data),
+                )
             )
 
         return Page(data=page_data, next=next_page)

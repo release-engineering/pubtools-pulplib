@@ -29,7 +29,7 @@ def test_delete_success(fast_poller, requests_mocker, client):
     )
 
     # It should have succeeded, with the tasks as retrieved from Pulp
-    assert sorted(repo.delete().result()) == [
+    assert sorted(repo.delete()) == [
         Task(id="task1", succeeded=True, completed=True),
         Task(id="task2", succeeded=True, completed=True),
     ]
@@ -91,9 +91,7 @@ def test_delete_absent(fast_poller, requests_mocker, client):
     )
 
     # Delete via first handle succeeds with the spawned task
-    assert sorted(repo1.delete().result()) == [
-        Task(id="task1", succeeded=True, completed=True)
-    ]
+    assert sorted(repo1.delete()) == [Task(id="task1", succeeded=True, completed=True)]
 
     # Delete via second handle also succeeds, but with no tasks
-    assert sorted(repo2.delete().result()) == []
+    assert sorted(repo2.delete()) == []
