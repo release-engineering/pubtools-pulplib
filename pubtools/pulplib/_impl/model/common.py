@@ -2,6 +2,8 @@ import logging
 
 import jsonschema
 
+from more_executors.futures import f_map, f_proxy
+
 from pubtools.pulplib._impl import compat_attr as attr
 from pubtools.pulplib._impl.util import lookup
 
@@ -111,3 +113,31 @@ class PulpObject(object):
                     out[field.name] = value
 
         return out
+
+
+@attr.s(kw_only=True, frozen=True)
+class WithClient(object):
+    # A mixin for objects holding a private reference to client.
+
+    _client = attr.ib(default=None, init=False, repr=False, cmp=False, hash=False)
+
+    def _set_client(self, client):
+        self.__dict__["_client"] = client
+
+
+class Deletable(WithClient):
+    # A mixin for objects representing deletable resources.
+
+    def __detach(self, retval):
+        LOG.debug("Detaching %s after successful delete", self)
+        self._set_client(None)
+        return retval
+
+    def _delete(self, resource_type, resource_id):
+        client = self._client
+        if not client:
+            raise DetachedException()
+
+        delete_f = client._delete_resource(resource_type, resource_id)
+        delete_f = f_map(delete_f, self.__detach)
+        return f_proxy(delete_f)

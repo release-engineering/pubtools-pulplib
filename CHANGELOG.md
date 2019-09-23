@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- n/a
+### Added
+- Introduced `Distributor.delete` for deleting a distributor from Pulp.
 
 ## [2.2.0] - 2019-09-16
 

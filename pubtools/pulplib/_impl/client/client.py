@@ -422,7 +422,7 @@ class Client(object):
 
         page_data = [object_class.from_data(elem) for elem in raw_data]
         for obj in page_data:
-            obj.__dict__["_client"] = self
+            obj._set_client(self)
 
         # Do we need a next page?
         next_page = None
