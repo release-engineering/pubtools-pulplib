@@ -399,6 +399,31 @@ if known.</p>
 (e.g. <code class="docutils literal notranslate"><span class="pre">rpm_rsync_distributor</span></code>).</p>
 </dd></dl>
 
+<dl class="method">
+<dt id="pubtools.pulplib.Distributor.delete">
+<code class="sig-name descname">delete</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/distributor.html#Distributor.delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.Distributor.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete this distributor from Pulp.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><dl>
+<dt>Future[list[<a class="reference internal" href="#pubtools.pulplib.Task" title="pubtools.pulplib.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a>]]</dt><dd><p>A future which is resolved when the distributor deletion has completed.</p>
+<p>The future contains a list of zero or more tasks triggered and awaited
+during the delete operation.</p>
+<p>This object also becomes detached from the client; no further updates
+are possible.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference internal" href="#pubtools.pulplib.DetachedException" title="pubtools.pulplib.DetachedException"><strong>DetachedException</strong></a> – If this instance is not attached to a Pulp client or repository.</p>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.3.0.</span></p>
+</div>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
