@@ -3,6 +3,7 @@ import uuid
 import threading
 import hashlib
 import json
+import re
 
 from collections import namedtuple
 
@@ -80,7 +81,7 @@ class FakeClient(object):
         try:
             for repo in self._repositories:
                 if match_object(criteria, repo):
-                    repos.append(self._attach(repo))
+                    repos.append(self._attach_repo(repo))
         except Exception as ex:  # pylint: disable=broad-except
             return f_return_error(ex)
 
@@ -243,6 +244,10 @@ class FakeClient(object):
         if resource_type == "repositories":
             return self._delete_repository(resource_id)
 
+        match = re.match(r"^repositories/([^/]+)/distributors$", resource_type)
+        if match:
+            return self._delete_distributor(match.group(1), resource_id)
+
         # There is no way to get here using public API
         raise AssertionError(
             "Asked to delete unexpected %s" % resource_type
@@ -266,6 +271,41 @@ class FakeClient(object):
                 [Task(id=self._next_task_id(), completed=True, succeeded=True)]
             )
 
+    def _delete_distributor(self, repo_id, distributor_id):
+        with self._lock:
+            repo_f = self.get_repository(repo_id)
+            if repo_f.exception():
+                # Repo can't be found, let that exception propagate
+                return repo_f
+
+            repo = repo_f.result()
+            new_distributors = [
+                dist for dist in repo.distributors if dist.id != distributor_id
+            ]
+            dist_found = new_distributors != repo.distributors
+
+            if not dist_found:
+                # Deleting something which already doesn't exist is fine
+                return f_return([])
+
+            idx = self._repositories.index(repo)
+            self._repositories[idx] = attr.evolve(repo, distributors=new_distributors)
+
+            return f_return(
+                [
+                    Task(
+                        id=self._next_task_id(),
+                        completed=True,
+                        succeeded=True,
+                        tags=[
+                            "pulp:repository:%s" % repo_id,
+                            "pulp:repository_distributor:%s" % distributor_id,
+                            "pulp:action:remove_distributor",
+                        ],
+                    )
+                ]
+            )
+
     def _publish_repository(self, repo, distributors_with_config):
         repo_f = self.get_repository(repo.id)
         if repo_f.exception():
@@ -280,10 +320,15 @@ class FakeClient(object):
 
         return f_return(tasks)
 
-    def _attach(self, pulp_object):
-        pulp_object = attr.evolve(pulp_object)
-        pulp_object.__dict__["_client"] = self
-        return pulp_object
+    def _attach_repo(self, repo):
+        kwargs = {}
+        if repo.distributors:
+            # Deep copy for accurate attach/detach semantics
+            kwargs["distributors"] = [attr.evolve(dist) for dist in repo.distributors]
+
+        repo = attr.evolve(repo, **kwargs)
+        repo._set_client(self)
+        return repo
 
     def _next_task_id(self):
         with self._lock:
