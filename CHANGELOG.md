@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- n/a
+
+## [2.3.0] - 2019-09-25
+
 ### Added
 - Introduced `Distributor.delete` for deleting a distributor from Pulp.
 
@@ -150,7 +154,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release to PyPI
 
-[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.2.0...HEAD
+[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.3.0...HEAD
+[2.3.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.2.0...v2.3.0
 [2.2.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v1.5.0...v2.0.0
