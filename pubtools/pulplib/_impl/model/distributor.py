@@ -1,13 +1,13 @@
 import datetime
 
-from .common import PulpObject
+from .common import PulpObject, Deletable, DetachedException
 from .attr import pulp_attrib
 from ..schema import load_schema
 from .. import compat_attr as attr
 
 
 @attr.s(kw_only=True, frozen=True)
-class Distributor(PulpObject):
+class Distributor(PulpObject, Deletable):
     """Represents a Pulp distributor."""
 
     _SCHEMA = load_schema("repository", "distributor")
@@ -53,3 +53,27 @@ class Distributor(PulpObject):
     """True for distributors in the 'rsync distributor' family
     (e.g. ``rpm_rsync_distributor``).
     """
+
+    def delete(self):
+        """Delete this distributor from Pulp.
+
+        Returns:
+            Future[list[:class:`~pubtools.pulplib.Task`]]
+                A future which is resolved when the distributor deletion has completed.
+
+                The future contains a list of zero or more tasks triggered and awaited
+                during the delete operation.
+
+                This object also becomes detached from the client; no further updates
+                are possible.
+
+        Raises:
+            DetachedException
+                If this instance is not attached to a Pulp client or repository.
+
+        .. versionadded:: 2.3.0
+        """
+        if not self.repo_id:
+            raise DetachedException()
+
+        return self._delete("repositories/%s/distributors" % self.repo_id, self.id)

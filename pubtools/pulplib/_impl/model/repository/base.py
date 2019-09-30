@@ -2,9 +2,9 @@ import datetime
 import logging
 
 from attr import validators
-from more_executors.futures import f_map, f_proxy
+from more_executors.futures import f_proxy
 
-from ..common import PulpObject, DetachedException
+from ..common import PulpObject, Deletable, DetachedException
 from ..attr import pulp_attrib
 from ..distributor import Distributor
 from ..frozenlist import FrozenList
@@ -58,7 +58,7 @@ class PublishOptions(object):
 
 
 @attr.s(kw_only=True, frozen=True)
-class Repository(PulpObject):
+class Repository(PulpObject, Deletable):
     """Represents a Pulp repository."""
 
     _SCHEMA = load_schema("repository")
@@ -156,9 +156,6 @@ class Repository(PulpObject):
     this repository will not publish repository metadata to remote hosts.
     """
 
-    _client = attr.ib(default=None, init=False, repr=False, cmp=False, hash=False)
-    # hidden attribute for client attached to this object
-
     @distributors.validator
     def _check_repo_id(self, _, value):
         # checks if distributor's repository id is same as the repository it
@@ -208,17 +205,7 @@ class Repository(PulpObject):
             DetachedException
                 If this instance is not attached to a Pulp client.
         """
-        if not self._client:
-            raise DetachedException()
-
-        delete_f = self._client._delete_resource("repositories", self.id)
-
-        def detach(tasks):
-            LOG.debug("Detaching %s after successful delete", self)
-            self.__dict__["_client"] = None
-            return tasks
-
-        return f_proxy(f_map(delete_f, detach))
+        return self._delete("repositories", self.id)
 
     def publish(self, options=PublishOptions()):
         """Publish this repository.
@@ -345,3 +332,10 @@ class Repository(PulpObject):
             out["force_full"] = options.force
 
         return out
+
+    def _set_client(self, client):
+        super(Repository, self)._set_client(client)
+
+        # distributors use the same client as owning repository
+        for distributor in self.distributors or []:
+            distributor._set_client(client)
