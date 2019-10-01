@@ -8,8 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Fixed
-- Fixed minor bug in map_404_to_none, where the response could have response equals to None
-- rewrite set-maintenace example, make it more realistic
+- Fixed certain exceptions from requests library not being propagated properly while
+  getting maintenance report.
 
 ## [2.3.0] - 2019-09-25
 
