@@ -12,6 +12,17 @@ LOG = logging.getLogger("pubtools.pulplib")
 # pylint: disable=broad-except
 
 
+def task_log(task):
+    parts = [task.id]
+    for tag in task.tags or []:
+        # All tags start with 'pulp:' prefix, which makes it useless noise
+        # in the logs, so filter them out to save some horizontal space
+        if tag.startswith("pulp:"):
+            tag = tag[len("pulp:") :]
+        parts.append(tag)
+    return ", ".join(parts)
+
+
 class TaskPoller(object):
     # Poll function used with PollExecutor.
     # Takes care of polling for Pulp task completion and resolving futures.
@@ -94,7 +105,7 @@ class TaskPoller(object):
                 return True
 
             if task.completed and not task.succeeded:
-                LOG.warning("Pulp task failed: %s", task.id)
+                LOG.warning("Pulp task failed: %s", task_log(task))
 
                 exception = TaskFailedException(task)
                 descriptor.yield_exception(exception)
@@ -107,7 +118,7 @@ class TaskPoller(object):
                 # can't resolve the future yet since there's a pending task
                 return False
 
-            LOG.info("Pulp task completed: %s", task.id)
+            LOG.info("Pulp task completed: %s", task_log(task))
 
         # OK, future can be resolved with the completed tasks
         descriptor.yield_result(out)
