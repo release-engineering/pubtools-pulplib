@@ -256,6 +256,13 @@ class RegexMatcher(Matcher):
 
     @_pattern.validator
     def _check_pattern(self, _, pattern):
+        # It must be a string.
+        # Need an explicit check here because re.compile also succeeds
+        # on already-compiled regex objects.
+        if not isinstance(pattern, six.string_types):
+            raise TypeError("Regex matcher expected string, got: %s" % repr(pattern))
+
+        # Verify that the given value can really be compiled as a regex.
         re.compile(pattern)
 
     # Note: regex matcher does not implement _map since regex is defined only
