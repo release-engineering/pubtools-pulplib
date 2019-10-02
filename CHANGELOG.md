@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed certain exceptions from requests library not being propagated properly while
   getting maintenance report.
 
+### Changed
+- Task failure/completion logs now include task tags.
+
 ## [2.3.0] - 2019-09-25
 
 ### Added
