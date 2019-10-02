@@ -547,7 +547,10 @@
     <span class="k">def</span> <span class="nf">_do_get_maintenance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">def</span> <span class="nf">map_404_to_none</span><span class="p">(</span><span class="n">exception</span><span class="p">):</span>
             <span class="c1"># Translates 404 errors to a None response (no maintenance report).</span>
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">exception</span><span class="p">,</span> <span class="s2">&quot;response&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">exception</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">404</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="nb">getattr</span><span class="p">(</span><span class="n">exception</span><span class="p">,</span> <span class="s2">&quot;response&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="ow">and</span> <span class="n">exception</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">404</span>
+            <span class="p">):</span>
                 <span class="k">return</span> <span class="kc">None</span>
             <span class="c1"># Any other types of errors are raised unchanged.</span>
             <span class="k">raise</span> <span class="n">exception</span>
