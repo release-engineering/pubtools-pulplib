@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- n/a
+
+## [2.3.1] - 2019-10-03
+
 ### Fixed
 - Fixed certain exceptions from requests library not being propagated properly while
   getting maintenance report.
@@ -160,7 +164,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release to PyPI
 
-[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.3.0...HEAD
+[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.3.1...HEAD
+[2.3.1]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.3.0...v2.3.1
 [2.3.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.2.0...v2.3.0
 [2.2.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.0.0...v2.1.0
