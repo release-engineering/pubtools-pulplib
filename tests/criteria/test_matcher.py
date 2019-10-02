@@ -10,3 +10,10 @@ def test_matcher_regex_invalid():
 
     with pytest.raises(re.error):
         Matcher.regex("foo [bar")
+
+
+def test_matcher_regex_compiled():
+    """Matcher.regex raises if passed value is a compiled regex."""
+
+    with pytest.raises(TypeError):
+        Matcher.regex(re.compile("foobar"))

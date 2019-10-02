@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Task failure/completion logs now include task tags.
+- Patterns to `Matcher.regex` are now more strictly typechecked when the matcher is created.
 
 ## [2.3.0] - 2019-09-25
 
