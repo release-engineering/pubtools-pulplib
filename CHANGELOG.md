@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- n/a
+### Fixed
+- Fixed certain exceptions from requests library not being propagated properly while
+  getting maintenance report.
 
 ## [2.3.0] - 2019-09-25
 

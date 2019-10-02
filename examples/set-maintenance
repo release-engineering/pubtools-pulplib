@@ -13,11 +13,11 @@ def set_maintenance(client, regex):
 
     report = client.get_maintenance_report().result()
 
-    crit = Criteria.with_field("id", Matcher.regex(regex))
-    # search repo
-    repos = client.search_repository(crit).result()
+    crit = Criteria.with_field("relative_url", Matcher.regex(regex))
+    # search repos by distributor's relative_url
+    distributors = client.search_distributor(crit).result()
 
-    repo_ids = [repo.id for repo in repos]
+    repo_ids = [dist.repo_id for dist in distributors]
     report = report.add(repo_ids)
     # get the repo ids and feed to report
 
@@ -26,13 +26,8 @@ def set_maintenance(client, regex):
     report = client.get_maintenance_report().result()
     log.info("maintenance mode set: %s", report.entries)
 
-    to_remove = []
-    for entry in report.entries:
-        if re.match(regex, entry.id):
-            to_remove.append(entry.id)
-
-    report = report.remove(to_remove)
-    tasks = client.set_maintainenance(report).result()
+    report = report.remove(repo_ids)
+    tasks = client.set_maintenance(report).result()
 
     report = client.get_maintenance_report().result()
     log.info("maintenance mode unset: %s", report.entries)
@@ -64,22 +59,22 @@ def main():
     )
     parser.add_argument("--debug", action="store_true")
     parser.add_argument("--insecure", default=False, action="store_true")
-    parser.add_argument("--regex", action="store")
+    parser.add_argument("--repo-url-regex", action="store")
 
     p = parser.parse_args()
 
     if not p.url:
         parser.error("--url is required")
 
-    if not p.regex:
-        parser.error("--regex is required")
+    if not p.repo_url_regex:
+        parser.error("--repo-url-regex is required")
 
     if p.debug:
         logging.getLogger("pubtools.pulplib").setLevel(logging.DEBUG)
         log.setLevel(logging.DEBUG)
 
     client = make_client(p)
-    return set_maintenance(client, p.regex)
+    return set_maintenance(client, p.repo_url_regex)
 
 
 if __name__ == "__main__":

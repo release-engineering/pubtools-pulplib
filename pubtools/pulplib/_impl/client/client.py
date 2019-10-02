@@ -514,7 +514,10 @@ class Client(object):
     def _do_get_maintenance(self):
         def map_404_to_none(exception):
             # Translates 404 errors to a None response (no maintenance report).
-            if hasattr(exception, "response") and exception.response.status_code == 404:
+            if (
+                getattr(exception, "response", None) is not None
+                and exception.response.status_code == 404
+            ):
                 return None
             # Any other types of errors are raised unchanged.
             raise exception
