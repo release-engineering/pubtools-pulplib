@@ -10,6 +10,8 @@ from ..distributor import Distributor
 from ..frozenlist import FrozenList
 from ...schema import load_schema
 from ... import compat_attr as attr
+from ...criteria import Criteria, Matcher
+from ..unit.base import Unit
 
 
 LOG = logging.getLogger("pubtools.pulplib")
@@ -187,6 +189,53 @@ class Repository(PulpObject, Deletable):
                 If this repository has no distributor with the given ID.
         """
         return self._distributors_by_id.get(distributor_id)
+
+    def search_content(self, name=None, arch=None, filename=None, stream=None):
+        """Search this repository for content matching the given criteria.
+
+        Args:
+            name (str)
+                Name of the desired unit.
+            arch (str)
+                Architecture of the desired unit.
+            filename (str)
+                File name of the desired unit.
+            stream (str)
+                Stream of the desired modulemd or modulemd_defaults unit.
+
+        Returns:
+            Future[list[:class:`~pubtools.pulplib.Task`]]
+                A future which is resolved when search succeeds.
+
+                The future contains a list of zero or more tasks triggered and awaited
+                during the search operation.
+
+        Raises:
+            DetachedException
+                If this instance is not attached to a Pulp client.
+
+        """
+        if not self._client:
+            raise DetachedException()
+
+        criteria = (
+            Criteria.with_field("type_ids", Matcher.in_(
+                ["rpm", "srpm", "modulemd", "modulemd_defaults"]
+            )),
+        )
+
+        if name:
+            criteria = criteria + (Criteria.with_field("unit.name", name),)
+        if arch:
+            criteria = criteria + (Criteria.with_field("unit.arch", arch),)
+        if filename:
+            criteria = criteria + (Criteria.with_field("unit.filename", filename),)
+        if stream:
+            criteria = criteria + (Criteria.with_field("unit.stream", stream),)
+
+        return f_proxy(self._client._search(
+            Unit, "repositories/%s" % self.id, criteria=Criteria.and_(*criteria)
+        ))
 
     def delete(self):
         """Delete this repository from Pulp.

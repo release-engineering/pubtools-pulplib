@@ -95,7 +95,9 @@ definitions:
     properties:
       # Type of the unit
       _content_type_id:
-        const: modulemd
+        enum:
+        - modulemd
+        - modulemd_defaults
 
       # NSVCA components
       name:
