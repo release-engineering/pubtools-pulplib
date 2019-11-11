@@ -1,5 +1,5 @@
 import pytest
-from pubtools.pulplib import Repository, DetachedException, RpmUnit, ModulemdUnit
+from pubtools.pulplib import Repository, DetachedException
 
 
 def test_detached():
@@ -26,6 +26,7 @@ class TestSearchContent(object):
                     "_content_type_id": "srpm",
                     "name": "bash",
                     "epoch": "0",
+                    "filename": "bash-x86_64.srpm",
                     "version": "4.0",
                     "release": "1",
                     "arch": "x86_64",
@@ -34,6 +35,7 @@ class TestSearchContent(object):
                     "_content_type_id": "rpm",
                     "name": "bash",
                     "epoch": "0",
+                    "filename": "bash-x86_64.rpm",
                     "version": "4.0",
                     "release": "1",
                     "arch": "x86_64",
@@ -68,13 +70,21 @@ class TestSearchContent(object):
         assert sorted(units)[2].content_type_id == "rpm"
         assert sorted(units)[3].content_type_id == "srpm"
 
-    def test_search_matched_content(self):
+    def test_search_modulemd_content(self):
         """search_content gets only matching content from the repository"""
         units_f = self.repo.search_content(arch="s390x", stream="s1")
         units = [unit for unit in units_f.result().as_iter()]
 
         assert len(units) == 1
         assert units[0].content_type_id == "modulemd"
+
+    def test_search_rpm_content(self):
+        """search_content gets only matching content from the repository"""
+        units_f = self.repo.search_content(name="bash", filename="bash-x86_64.rpm")
+        units = [unit for unit in units_f.result().as_iter()]
+
+        assert len(units) == 1
+        assert units[0].content_type_id == "rpm"
 
     def test_search_no_matched_content(self):
         """search_content gets no matching content from the repository"""
