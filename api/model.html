@@ -55,7 +55,7 @@ to <a class="reference internal" href="#pubtools.pulplib.PulpObject.from_data" t
 <p>Objects which are created via a client may be used to issue further requests
 to Pulp (for example, to update or delete the object).</p>
 <p>Pulp objects use <a class="reference external" href="http://www.attrs.org/en/stable/">attrs</a>.
-Attributes are immutable. Helper functions such as <a class="reference external" href="https://www.attrs.org/en/stable/api.html#attr.evolve" title="(in attrs v19.2)"><code class="xref py py-func docutils literal notranslate"><span class="pre">attr.evolve()</span></code></a>
+Attributes are immutable. Helper functions such as <a class="reference external" href="https://www.attrs.org/en/stable/api.html#attr.evolve" title="(in attrs v19.3)"><code class="xref py py-func docutils literal notranslate"><span class="pre">attr.evolve()</span></code></a>
 may be used to produce new instances.</p>
 <p>Attributes exposed on these Pulp objects include some generic attributes
 applicable to any Pulp installation, but also some custom attributes
@@ -72,7 +72,7 @@ matching <code class="docutils literal notranslate"><span class="pre">data</span
 with a repository object provided by Pulp’s API.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – A dict containing a raw representation of a Pulp object, as rendered
+<dd class="field-odd"><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) – A dict containing a raw representation of a Pulp object, as rendered
 by Pulp’s API.</p>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -117,7 +117,7 @@ this repository, e.g. <code class="docutils literal notranslate"><span class="pr
 <dl class="attribute">
 <dt id="pubtools.pulplib.Repository.created">
 <code class="sig-name descname">created</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.Repository.created" title="Permalink to this definition">¶</a></dt>
-<dd><p><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a> in UTC at which this repository was created,
+<dd><p><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a> in UTC at which this repository was created,
 or None if this information is unavailable.</p>
 </dd></dl>
 
@@ -252,7 +252,7 @@ during the publish operation.</p>
 <dd><p>Remove all content of requested types from this repository.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>type_ids</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>]</em>) – <p>IDs of content type(s) to be removed.
+<dd class="field-odd"><p><strong>type_ids</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>]</em>) – <p>IDs of content type(s) to be removed.
 See <a class="reference internal" href="client.html#pubtools.pulplib.Client.get_content_type_ids" title="pubtools.pulplib.Client.get_content_type_ids"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_content_type_ids()</span></code></a>.</p>
 <p>If omitted, content of all types will be removed.</p>
 </p>
@@ -296,10 +296,10 @@ during the removal.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>file_obj</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>file object</em>) – If it’s a string, then it’s the path of file to upload.
+<li><p><strong>file_obj</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><em>file object</em>) – If it’s a string, then it’s the path of file to upload.
 Else, it ought to be a
 <a class="reference external" href="https://docs.python.org/3/glossary.html#term-file-object">file-like object</a>.</p></li>
-<li><p><strong>relative_url</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – <p>Path that should be used in remote repository, can either
+<li><p><strong>relative_url</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – <p>Path that should be used in remote repository, can either
 be a path to a directory or a path to a file, e.g:</p>
 <ul>
 <li><p>if relative_url is ‘foo/bar/’ and file_obj has name ‘f.txt’,
@@ -388,7 +388,7 @@ relative to the Pulp content root.</p>
 <dl class="attribute">
 <dt id="pubtools.pulplib.Distributor.last_publish">
 <code class="sig-name descname">last_publish</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.Distributor.last_publish" title="Permalink to this definition">¶</a></dt>
-<dd><p>The <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a> at which this distributor was last published,
+<dd><p>The <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a> at which this distributor was last published,
 if known.</p>
 </dd></dl>
 
@@ -821,7 +821,7 @@ and the object is not attached to any client, this exception is raised.</p>
       &copy;2019, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

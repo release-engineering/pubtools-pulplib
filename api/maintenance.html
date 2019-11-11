@@ -48,7 +48,7 @@ will be blocked.  Other operations remain possible.</p>
 <dl class="attribute">
 <dt id="pubtools.pulplib.MaintenanceReport.last_updated">
 <code class="sig-name descname">last_updated</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.MaintenanceReport.last_updated" title="Permalink to this definition">¶</a></dt>
-<dd><p><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a> in UTC when this report was last updated,
+<dd><p><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a> in UTC when this report was last updated,
 if it’s the first time the report is created, current time is used.</p>
 </dd></dl>
 
@@ -74,13 +74,13 @@ entry added to the report represents a repository in maintenance mode.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>repo_ids</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>]</em>) – <p>A list of repository ids. New entries with these repository ids will
+<li><p><strong>repo_ids</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>]</em>) – <p>A list of repository ids. New entries with these repository ids will
 be added to the maintenance report.</p>
 <p>Note: it’s users’ responsibility to make sure the repository exists in
 the Pulp server, this method doesn’t check for the existence of repositories.</p>
 </p></li>
-<li><p><strong>message</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>) </em><em>(</em><em>optional</em>) – Reason why put the repo to maintenance.</p></li>
-<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>) </em><em>(</em><em>optional</em>) – Who set the maintenance mode.</p></li>
+<li><p><strong>message</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>) </em><em>(</em><em>optional</em>) – Reason why put the repo to maintenance.</p></li>
+<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>) </em><em>(</em><em>optional</em>) – Who set the maintenance mode.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -101,9 +101,9 @@ removing corresponding repositories from maintenance mode.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>repo_ids</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>]</em>) – A list of repository ids. Entries match repository ids will be removed
+<li><p><strong>repo_ids</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>]</em>) – A list of repository ids. Entries match repository ids will be removed
 from the maintenance report.</p></li>
-<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>) </em><em>(</em><em>optional</em>) – Who unset the maintenance mode.</p></li>
+<li><p><strong>owner</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>) </em><em>(</em><em>optional</em>) – Who unset the maintenance mode.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -148,7 +148,7 @@ in the Pulp server.</p>
 <dl class="attribute">
 <dt id="pubtools.pulplib.MaintenanceEntry.started">
 <code class="sig-name descname">started</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.MaintenanceEntry.started" title="Permalink to this definition">¶</a></dt>
-<dd><p><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a> in UTC at when the maintenance started.</p>
+<dd><p><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a> in UTC at when the maintenance started.</p>
 </dd></dl>
 
 </dd></dl>
@@ -238,7 +238,7 @@ in the Pulp server.</p>
       &copy;2019, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
