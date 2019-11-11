@@ -242,7 +242,10 @@ class Client(object):
         # We'll need to convert that into a page and also keep going with
         # the search if there's more to be done.
         return f_proxy(
-            f_map(response_f, lambda data: self._handle_page(url, return_type, search, data))
+            f_map(
+                response_f,
+                lambda data: self._handle_page(url, return_type, search, data),
+            )
         )
 
     def get_maintenance_report(self):

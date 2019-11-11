@@ -54,7 +54,7 @@ class TestSearchContent(object):
                     "context": "a1b2c3",
                     "arch": "s390x",
                 },
-            ]
+            ],
         )
 
     def test_search_content(self):

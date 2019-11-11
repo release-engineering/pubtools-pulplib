@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Introduced `Repository.search_content` API for retrieving content units
+  from Pulp repositories.
+
 ### Fixed
 - Fixed a bug that export an empty maintenance report would crash.
 

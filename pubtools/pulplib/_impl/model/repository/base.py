@@ -214,14 +214,16 @@ class Repository(PulpObject, Deletable):
             DetachedException
                 If this instance is not attached to a Pulp client.
 
+        .. versionadded:: 2.4.0
         """
         if not self._client:
             raise DetachedException()
 
         criteria = (
-            Criteria.with_field("type_ids", Matcher.in_(
-                ["rpm", "srpm", "modulemd", "modulemd_defaults"]
-            )),
+            Criteria.with_field(
+                "type_ids",
+                Matcher.in_(["rpm", "srpm", "modulemd", "modulemd_defaults"]),
+            ),
         )
 
         if name:
@@ -233,9 +235,11 @@ class Repository(PulpObject, Deletable):
         if stream:
             criteria = criteria + (Criteria.with_field("unit.stream", stream),)
 
-        return f_proxy(self._client._search(
-            Unit, "repositories/%s" % self.id, criteria=Criteria.and_(*criteria)
-        ))
+        return f_proxy(
+            self._client._search(
+                Unit, "repositories/%s" % self.id, criteria=Criteria.and_(*criteria)
+            )
+        )
 
     def delete(self):
         """Delete this repository from Pulp.
