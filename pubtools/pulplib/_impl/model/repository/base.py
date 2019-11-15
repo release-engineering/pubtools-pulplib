@@ -4,7 +4,7 @@ import logging
 from attr import validators
 from more_executors.futures import f_proxy
 
-from ..common import PulpObject, Deletable, DetachedException
+from ..common import PulpObject, Deletable, DetachedException, InvalidContentTypeException
 from ..attr import pulp_attrib
 from ..distributor import Distributor
 from ..frozenlist import FrozenList
@@ -190,25 +190,20 @@ class Repository(PulpObject, Deletable):
         """
         return self._distributors_by_id.get(distributor_id)
 
-    def search_content(self, name=None, arch=None, filename=None, stream=None):
+    def search_content(self, type_id, criteria=None):
         """Search this repository for content matching the given criteria.
 
         Args:
-            name (str)
-                Name of the desired unit.
-            arch (str)
-                Architecture of the desired unit.
-            filename (str)
-                File name of the desired unit.
-            stream (str)
-                Stream of the desired modulemd or modulemd_defaults unit.
+            type_id (str)
+                Type of the desired unit.
+            criteria (:class:`~pubtools.pulplib.Criteria`)
 
         Returns:
-            Future[list[:class:`~pubtools.pulplib.Task`]]
+            Future[list[:class:`~pubtools.pulplib.Unit`]]
                 A future which is resolved when search succeeds.
 
-                The future contains a list of zero or more tasks triggered and awaited
-                during the search operation.
+                The future contains a list of zero or more units returned
+                by the search operation.
 
         Raises:
             DetachedException
@@ -219,27 +214,13 @@ class Repository(PulpObject, Deletable):
         if not self._client:
             raise DetachedException()
 
-        criteria = (
-            Criteria.with_field(
-                "type_ids",
-                Matcher.in_(["rpm", "srpm", "modulemd", "modulemd_defaults"]),
-            ),
-        )
+        if type_id not in [cls.__name__ for cls in Unit.__subclasses__()]:
+            raise InvalidContentTypeException()
 
-        if name:
-            criteria = criteria + (Criteria.with_field("unit.name", name),)
-        if arch:
-            criteria = criteria + (Criteria.with_field("unit.arch", arch),)
-        if filename:
-            criteria = criteria + (Criteria.with_field("unit.filename", filename),)
-        if stream:
-            criteria = criteria + (Criteria.with_field("unit.stream", stream),)
+        type_crit = Criteria.with_field("_content_type_ids", Matcher.in_([type_id]))
+        criteria = (type_crit, criteria) if criteria else (type_crit,)
 
-        return f_proxy(
-            self._client._search(
-                Unit, "repositories/%s" % self.id, criteria=Criteria.and_(*criteria)
-            )
-        )
+        return f_proxy(self._client._search(Unit, "repositories/%s" % self.id, criteria=Criteria.and_(*criteria)))
 
     def delete(self):
         """Delete this repository from Pulp.

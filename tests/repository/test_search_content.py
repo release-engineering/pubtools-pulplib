@@ -1,11 +1,11 @@
 import pytest
-from pubtools.pulplib import Repository, DetachedException
+from pubtools.pulplib import Repository, DetachedException, InvalidContentTypeException, Criteria
 
 
 def test_detached():
     """search_content raises if called on a detached repo"""
     with pytest.raises(DetachedException):
-        Repository(id="some-repo").search_content()
+        Repository(id="some-repo").search_content(type_id="rpm")
 
 
 class TestSearchContent(object):
@@ -52,43 +52,33 @@ class TestSearchContent(object):
                     "_content_type_id": "modulemd_defaults",
                     "name": "m2",
                     "stream": "s2",
-                    "version": 1234,
-                    "context": "a1b2c3",
-                    "arch": "s390x",
+                    "repo_id": "some-repo",
                 },
             ],
         )
 
-    def test_search_content(self):
-        """search_content gets all rpm and modulemd content from the repository"""
-        units_f = self.repo.search_content()
-        units = [unit for unit in units_f.result().as_iter()]
-
-        assert len(units) == 4
-        assert sorted(units)[0].content_type_id == "modulemd"
-        assert sorted(units)[1].content_type_id == "modulemd_defaults"
-        assert sorted(units)[2].content_type_id == "rpm"
-        assert sorted(units)[3].content_type_id == "srpm"
-
-    def test_search_modulemd_content(self):
-        """search_content gets only matching content from the repository"""
-        units_f = self.repo.search_content(arch="s390x", stream="s1")
+    @pytest.mark.parametrize("type_id", ["rpm", "srpm", "iso", "modulemd", "modulemd_defaults"])
+    def test_search_content(self, type_id):
+        """search_content gets all content from the repository"""
+        units_f = self.repo.search_content(type_id)
         units = [unit for unit in units_f.result().as_iter()]
 
         assert len(units) == 1
-        assert units[0].content_type_id == "modulemd"
+        assert sorted(units)[0].content_type_id == type_id
 
-    def test_search_rpm_content(self):
+    def test_search_content_with_criteria(self):
         """search_content gets only matching content from the repository"""
-        units_f = self.repo.search_content(name="bash", filename="bash-x86_64.rpm")
+        crit = Criteria.and_(
+            Criteria.with_field("arch", "s390x"),
+            Criteria.with_field("stream", "s1")
+        )
+        units_f = self.repo.search_content(type_id="modulemd", criteria=crit)
         units = [unit for unit in units_f.result().as_iter()]
 
         assert len(units) == 1
-        assert units[0].content_type_id == "rpm"
+        assert units[0].name == "m1"
 
-    def test_search_no_matched_content(self):
+    def test_search_content_with_bad_type_id(self):
         """search_content gets no matching content from the repository"""
-        units_f = self.repo.search_content(name="hello.txt")
-        units = [unit for unit in units_f.result().as_iter()]
-
-        assert len(units) == 0
+        with pytest.raises(InvalidContentTypeException):
+            self.repo.search_content(type_id="foo")

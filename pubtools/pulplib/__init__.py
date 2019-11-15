@@ -4,6 +4,7 @@ from ._impl.page import Page
 from ._impl.model import (
     PulpObject,
     DetachedException,
+    InvalidContentTypeException,
     InvalidDataException,
     Repository,
     YumRepository,
