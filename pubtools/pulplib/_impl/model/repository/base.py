@@ -4,7 +4,12 @@ import logging
 from attr import validators
 from more_executors.futures import f_proxy
 
-from ..common import PulpObject, Deletable, DetachedException, InvalidContentTypeException
+from ..common import (
+    PulpObject,
+    Deletable,
+    DetachedException,
+    InvalidContentTypeException,
+)
 from ..attr import pulp_attrib
 from ..distributor import Distributor
 from ..frozenlist import FrozenList
@@ -220,7 +225,11 @@ class Repository(PulpObject, Deletable):
         type_crit = Criteria.with_field("_content_type_ids", Matcher.in_([type_id]))
         criteria = (type_crit, criteria) if criteria else (type_crit,)
 
-        return f_proxy(self._client._search(Unit, "repositories/%s" % self.id, criteria=Criteria.and_(*criteria)))
+        return f_proxy(
+            self._client._search(
+                Unit, "repositories/%s" % self.id, criteria=Criteria.and_(*criteria)
+            )
+        )
 
     def delete(self):
         """Delete this repository from Pulp.

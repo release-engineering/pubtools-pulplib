@@ -1,5 +1,10 @@
 import pytest
-from pubtools.pulplib import Repository, DetachedException, InvalidContentTypeException, Criteria
+from pubtools.pulplib import (
+    Repository,
+    DetachedException,
+    InvalidContentTypeException,
+    Criteria,
+)
 
 
 def test_detached():
@@ -57,7 +62,9 @@ class TestSearchContent(object):
             ],
         )
 
-    @pytest.mark.parametrize("type_id", ["rpm", "srpm", "iso", "modulemd", "modulemd_defaults"])
+    @pytest.mark.parametrize(
+        "type_id", ["rpm", "srpm", "iso", "modulemd", "modulemd_defaults"]
+    )
     def test_search_content(self, type_id):
         """search_content gets all content from the repository"""
         units_f = self.repo.search_content(type_id)
@@ -69,8 +76,7 @@ class TestSearchContent(object):
     def test_search_content_with_criteria(self):
         """search_content gets only matching content from the repository"""
         crit = Criteria.and_(
-            Criteria.with_field("arch", "s390x"),
-            Criteria.with_field("stream", "s1")
+            Criteria.with_field("arch", "s390x"), Criteria.with_field("stream", "s1")
         )
         units_f = self.repo.search_content(type_id="modulemd", criteria=crit)
         units = [unit for unit in units_f.result().as_iter()]

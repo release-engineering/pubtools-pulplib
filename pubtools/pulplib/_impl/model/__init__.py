@@ -1,4 +1,9 @@
-from .common import PulpObject, DetachedException, InvalidContentTypeException, InvalidDataException
+from .common import (
+    PulpObject,
+    DetachedException,
+    InvalidContentTypeException,
+    InvalidDataException,
+)
 from .repository import (
     Repository,
     YumRepository,
