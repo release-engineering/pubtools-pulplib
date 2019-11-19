@@ -15,8 +15,8 @@ from ..distributor import Distributor
 from ..frozenlist import FrozenList
 from ...schema import load_schema
 from ... import compat_attr as attr
-from ...criteria import Criteria, Matcher
-from ..unit.base import Unit
+from ...criteria import Criteria, FieldMatchCriteria, AndCriteria, Matcher
+from ..unit import Unit, SUPPORTED_UNIT_TYPES
 
 
 LOG = logging.getLogger("pubtools.pulplib")
@@ -195,41 +195,39 @@ class Repository(PulpObject, Deletable):
         """
         return self._distributors_by_id.get(distributor_id)
 
-    def search_content(self, type_id, criteria=None):
-        """Search this repository for content matching the given criteria.
+    @property
+    def rpm_content(self):
+        """A list of rpm units stored in this repository"""
+        return self._search_content(Criteria.with_field("_content_type_id", "rpm"))
 
-        Args:
-            type_id (str)
-                Type of the desired unit.
-            criteria (:class:`~pubtools.pulplib.Criteria`)
+    @property
+    def srpm_content(self):
+        """A list of srpm units stored in this repository"""
+        return self._search_content(Criteria.with_field("_content_type_id", "srpm"))
 
-        Returns:
-            Future[list[:class:`~pubtools.pulplib.Unit`]]
-                A future which is resolved when search succeeds.
+    @property
+    def iso_content(self):
+        """A list of iso units stored in this repository"""
+        return self._search_content(Criteria.with_field("_content_type_id", "iso"))
 
-                The future contains a list of zero or more units returned
-                by the search operation.
+    @property
+    def modulemd_content(self):
+        """A list of modulemd units stored in this repository"""
+        return self._search_content(Criteria.with_field("_content_type_id", "modulemd"))
 
-        Raises:
-            DetachedException
-                If this instance is not attached to a Pulp client.
+    @property
+    def modulemd_defaults_content(self):
+        """A list of modulemd_defaults units stored in this repository"""
+        return self._search_content(
+            Criteria.with_field("_content_type_id", "modulemd_defaults")
+        )
 
-        .. versionadded:: 2.4.0
-        """
+    def _search_content(self, criteria=None):
+        # Search this repository for content matching the given criteria
         if not self._client:
             raise DetachedException()
 
-        if type_id not in [cls.__name__ for cls in Unit.__subclasses__()]:
-            raise InvalidContentTypeException()
-
-        type_crit = Criteria.with_field("_content_type_ids", Matcher.in_([type_id]))
-        criteria = (type_crit, criteria) if criteria else (type_crit,)
-
-        return f_proxy(
-            self._client._search(
-                Unit, "repositories/%s" % self.id, criteria=Criteria.and_(*criteria)
-            )
-        )
+        return self._client.search_repository_content(self.id, criteria)
 
     def delete(self):
         """Delete this repository from Pulp.

@@ -14,6 +14,7 @@ from ._impl.model import (
     FileUnit,
     RpmUnit,
     ModulemdUnit,
+    ModulemdDefaultsUnit,
     Distributor,
     PublishOptions,
     Task,

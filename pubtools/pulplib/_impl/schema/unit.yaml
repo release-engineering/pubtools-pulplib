@@ -126,17 +126,14 @@ definitions:
       _content_type_id:
         const: modulemd_defaults
 
-      # Name of the unit
       name:
         type: string
-
-      # Repository associated with the unit
       repo_id:
         type: string
-
-      # Stream of the unit
       stream:
         type: string
+      profiles:
+        type: object
 
     required:
     - _content_type_id

@@ -2,7 +2,14 @@ import datetime
 
 import pytest
 
-from pubtools.pulplib import FakeController, Repository, Criteria, Matcher, Distributor
+from pubtools.pulplib import (
+    FakeController,
+    Repository,
+    Unit,
+    Criteria,
+    Matcher,
+    Distributor,
+)
 
 
 def test_can_search_id():
@@ -344,6 +351,43 @@ def test_search_paginates():
 
     # All repos should have been found
     assert sorted(found_repos) == sorted(repos)
+
+
+def test_search_repository_content():
+    controller = FakeController()
+
+    repo1 = Repository(id="repo1")
+    controller.insert_repository(repo1)
+
+    units = [
+        Unit.from_data(
+            {
+                "_content_type_id": "iso",
+                "name": "hello.txt",
+                "size": 23,
+                "checksum": "a" * 64,
+            }
+        ),
+        Unit.from_data(
+            {
+                "_content_type_id": "rpm",
+                "name": "bash",
+                "epoch": "0",
+                "filename": "bash-x86_64.rpm",
+                "version": "4.0",
+                "release": "1",
+                "arch": "x86_64",
+            }
+        ),
+    ]
+    controller.insert_units(repo1, units)
+
+    client = controller.client
+    crit = Criteria.with_field("_content_type_id", "rpm")
+
+    found = client.search_repository_content("repo1", crit)
+
+    assert sorted(found) == [units[1]]
 
 
 def test_search_distributor():

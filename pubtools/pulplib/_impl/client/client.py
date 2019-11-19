@@ -12,8 +12,10 @@ from more_executors import Executors
 from more_executors.futures import f_map, f_flat_map, f_return, f_proxy
 
 from ..page import Page
-from ..criteria import Criteria
+from ..criteria import Criteria, AndCriteria, FieldMatchCriteria
 from ..model import Repository, MaintenanceReport, Distributor, Unit
+from ..model.common import InvalidContentTypeException
+from ..model.unit import SUPPORTED_UNIT_TYPES
 from .search import filters_for_criteria
 from .errors import PulpException
 from .poller import TaskPoller
@@ -202,6 +204,49 @@ class Client(object):
         return self._search(
             Repository, "repositories", criteria=criteria, search_options=search_options
         )
+
+    def search_repository_content(self, repository_id, criteria=None):
+        """Search the given repository for content matching the given criteria.
+
+        Args:
+            repository_id
+                The ID of the repository in which to search
+            criteria (:class:`~pubtools.pulplib.Criteria`)
+                A criteria object used for this search.
+
+        Returns:
+            list[:class:`~pubtools.pulplib.Unit`]
+                A list of zero or more :class:`~pubtools.pulplib.Unit`
+                subclasses found by the search operation.
+
+        Raises:
+            :class:`~pubtools.pulplib.InvalidContentTypeException`
+                If the criteria does not contain a valid _content_type_id.
+
+        .. versionadded:: 2.4.0
+        """
+
+        def get_type_id(crit):
+            if (
+                isinstance(crit, FieldMatchCriteria)
+                and crit._field is "_content_type_id"
+            ):
+                return crit._matcher._value
+
+        type_id = None
+        if isinstance(criteria, AndCriteria):
+            for c in criteria._operands:
+                type_id = get_type_id(c)
+                if type_id:
+                    break
+        else:
+            type_id = get_type_id(criteria)
+
+        if type_id not in SUPPORTED_UNIT_TYPES:
+            raise InvalidContentTypeException()
+
+        search_f = self._search(Unit, "repositories/%s" % repository_id, criteria)
+        return [unit for unit in search_f.result().as_iter()]
 
     def search_distributor(self, criteria=None):
         """Search the distributors matching the given criteria.
@@ -427,6 +472,10 @@ class Client(object):
 
     def _handle_page(self, url, object_class, search, raw_data):
         LOG.debug("Got pulp response for %s, %s elems", search, len(raw_data))
+
+        # Extract metadata from Pulp units
+        if object_class is Unit and url.endswith("units/"):
+            raw_data = [elem["metadata"] for elem in raw_data]
 
         page_data = [object_class.from_data(elem) for elem in raw_data]
         for obj in page_data:

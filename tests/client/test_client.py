@@ -13,7 +13,9 @@ from pubtools.pulplib import (
     Criteria,
     Matcher,
     Repository,
+    ModulemdDefaultsUnit,
     PulpException,
+    InvalidContentTypeException,
     MaintenanceReport,
     Task,
     Distributor,
@@ -56,6 +58,53 @@ def test_can_search(client, requests_mocker):
 
     # It should have issued only a single search
     assert requests_mocker.call_count == 1
+
+
+def test_can_search_repository_content(client, requests_mocker):
+    """search_repository_content issues /search/units/ POST requests as expected"""
+    requests_mocker.post(
+        "https://pulp.example.com/pulp/api/v2/repositories/some-repo/search/units/",
+        json=[
+            {
+                "metadata": {
+                    "_content_type_id": "modulemd_defaults",
+                    "name": "mdd",
+                    "repo_id": "mdd-repo",
+                    "stream": "1.0",
+                    "profiles": {"p1": ["something"]},
+                }
+            },
+            {
+                "metadata": {
+                    "_content_type_id": "iso",
+                    "name": "hello.txt",
+                    "size": 23,
+                    "checksum": "a" * 64,
+                }
+            },
+        ],
+    )
+
+    crit = Criteria.with_field("_content_type_id", "modulemd_defaults")
+    units = client.search_repository_content("some-repo", crit)
+
+    # It should have returned one ModulemdDefaultsUnit
+    assert units == [
+        ModulemdDefaultsUnit(
+            content_type_id="modulemd_defaults",
+            name="mdd",
+            repository_id="mdd-repo",
+            stream="1.0",
+            profiles={"p1": ["something"]},
+        )
+    ]
+
+
+def test_cannot_search_repository_content_without_content_type(client):
+    """search_content raises if called without criteria containing _content_type_id"""
+
+    with pytest.raises(InvalidContentTypeException):
+        client.search_repository_content("some-repo")
 
 
 def test_can_search_distributor(client, requests_mocker):
