@@ -12,7 +12,7 @@ from more_executors import Executors
 from more_executors.futures import f_map, f_flat_map, f_return, f_proxy
 
 from ..page import Page
-from ..criteria import Criteria, AndCriteria, FieldMatchCriteria
+from ..criteria import Criteria, AndCriteria, OrCriteria, FieldMatchCriteria
 from ..model import Repository, MaintenanceReport, Distributor, Unit
 from ..model.common import InvalidContentTypeException
 from ..model.unit import SUPPORTED_UNIT_TYPES
@@ -205,6 +205,39 @@ class Client(object):
             Repository, "repositories", criteria=criteria, search_options=search_options
         )
 
+    @staticmethod
+    def _filter_type_id_criteria(criteria):
+        type_ids = []
+        filtered_criteria = None
+
+        def extract_type_ids(crit):
+            if isinstance(crit, FieldMatchCriteria) and crit._field is "type_ids":
+                for type_id in crit._matcher._value:
+                    if type_id in SUPPORTED_UNIT_TYPES:
+                        type_ids.append(type_id)
+
+        def criteria_set(crit):
+            other_crit = ()
+            for c in crit._operands:
+                extract_type_ids(c)
+                if type_ids:
+                    continue
+                else:
+                    other_crit += (c,)
+            return other_crit
+
+        if isinstance(criteria, AndCriteria):
+            filtered_criteria = Criteria.and_(*criteria_set(criteria))
+        elif isinstance(criteria, OrCriteria):
+            filtered_criteria = Criteria.or_(*criteria_set(criteria))
+        else:
+            extract_type_ids(criteria)
+
+        if not type_ids:
+            raise InvalidContentTypeException()
+
+        return type_ids, filtered_criteria
+
     def search_repository_content(self, repository_id, criteria=None):
         """Search the given repository for content matching the given criteria.
 
@@ -225,27 +258,14 @@ class Client(object):
 
         .. versionadded:: 2.4.0
         """
+        # We have to extract criteria with type_ids, as they are not
+        # placed in "filters" with other criteria.
+        type_ids, criteria = self._filter_type_id_criteria(criteria)
+        search_options = {"type_ids": type_ids}
 
-        def get_type_id(crit):
-            if (
-                isinstance(crit, FieldMatchCriteria)
-                and crit._field is "_content_type_id"
-            ):
-                return crit._matcher._value
-
-        type_id = None
-        if isinstance(criteria, AndCriteria):
-            for c in criteria._operands:
-                type_id = get_type_id(c)
-                if type_id:
-                    break
-        else:
-            type_id = get_type_id(criteria)
-
-        if type_id not in SUPPORTED_UNIT_TYPES:
-            raise InvalidContentTypeException()
-
-        search_f = self._search(Unit, "repositories/%s" % repository_id, criteria)
+        search_f = self._search(
+            Unit, "repositories/%s" % repository_id, criteria=criteria, search_options=search_options
+        )
         return [unit for unit in search_f.result().as_iter()]
 
     def search_distributor(self, criteria=None):
@@ -278,7 +298,7 @@ class Client(object):
 
         url = os.path.join(self._url, "pulp/api/v2/%s/search/" % resource_type)
 
-        if return_type is Unit and "repositories/" in resource_type:
+        if "type_ids" in search:
             url = os.path.join(url, "units/")
 
         response_f = self._do_search(url, search)
@@ -479,7 +499,7 @@ class Client(object):
 
         page_data = [object_class.from_data(elem) for elem in raw_data]
         for obj in page_data:
-            # Set client is only applicable for repository and distributor objects
+            # set_client is only applicable for repository and distributor objects
             if hasattr(obj, "_set_client"):
                 obj._set_client(self)
 

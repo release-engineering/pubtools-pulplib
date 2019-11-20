@@ -5,7 +5,7 @@ from argparse import ArgumentParser
 
 from pubtools.pulplib import Client, Criteria
 
-log = logging.getLogger("repository-content")
+log = logging.getLogger("repository-content-search")
 
 
 def make_client(args):
@@ -42,9 +42,10 @@ def main():
         log.setLevel(logging.DEBUG)
 
     client = make_client(p)
-    repo = client.get_repository(p.repo_id)
-    criteria = Criteria.with_field("_content_type_id", p.content_type)
-    return repo.search_content(criteria)
+    criteria = Criteria.with_field("type_ids", [p.content_type])
+    units = client.search_repository_content(p.repo_id, criteria)
+    print(units)
+    return units
 
 
 if __name__ == "__main__":

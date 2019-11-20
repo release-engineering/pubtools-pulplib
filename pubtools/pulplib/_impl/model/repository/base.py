@@ -198,28 +198,28 @@ class Repository(PulpObject, Deletable):
     @property
     def rpm_content(self):
         """A list of rpm units stored in this repository"""
-        return self._search_content(Criteria.with_field("_content_type_id", "rpm"))
+        return self._search_content(Criteria.with_field("type_ids", ["rpm"]))
 
     @property
     def srpm_content(self):
         """A list of srpm units stored in this repository"""
-        return self._search_content(Criteria.with_field("_content_type_id", "srpm"))
+        return self._search_content(Criteria.with_field("type_ids", ["srpm"]))
 
     @property
     def iso_content(self):
         """A list of iso units stored in this repository"""
-        return self._search_content(Criteria.with_field("_content_type_id", "iso"))
+        return self._search_content(Criteria.with_field("type_ids", ["iso"]))
 
     @property
     def modulemd_content(self):
         """A list of modulemd units stored in this repository"""
-        return self._search_content(Criteria.with_field("_content_type_id", "modulemd"))
+        return self._search_content(Criteria.with_field("type_ids", ["modulemd"]))
 
     @property
     def modulemd_defaults_content(self):
         """A list of modulemd_defaults units stored in this repository"""
         return self._search_content(
-            Criteria.with_field("_content_type_id", "modulemd_defaults")
+            Criteria.with_field("type_ids", ["modulemd_defaults"])
         )
 
     def _search_content(self, criteria=None):

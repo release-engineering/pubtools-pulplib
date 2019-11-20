@@ -1,10 +1,6 @@
 import pytest
 from pubtools.pulplib import (
     Repository,
-    FileUnit,
-    RpmUnit,
-    ModulemdUnit,
-    ModulemdDefaultsUnit,
     DetachedException,
     InvalidContentTypeException,
 )

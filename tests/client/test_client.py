@@ -2,7 +2,6 @@ import logging
 import datetime
 import json
 import pytest
-import requests_mock
 
 from mock import patch
 
@@ -85,7 +84,7 @@ def test_can_search_repository_content(client, requests_mocker):
         ],
     )
 
-    crit = Criteria.with_field("_content_type_id", "modulemd_defaults")
+    crit = Criteria.with_field("type_ids", ["modulemd_defaults"])
     units = client.search_repository_content("some-repo", crit)
 
     # It should have returned one ModulemdDefaultsUnit
