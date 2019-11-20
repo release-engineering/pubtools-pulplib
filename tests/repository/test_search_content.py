@@ -74,7 +74,7 @@ def test_search_content_without_content_type(client, requests_mocker):
     )
 
     with pytest.raises(InvalidContentTypeException):
-        assert not repo._search_content()
+        assert not repo.search_content()
 
 
 def test_iso_content(client, requests_mocker):

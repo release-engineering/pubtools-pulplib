@@ -196,34 +196,76 @@ class Repository(PulpObject, Deletable):
         return self._distributors_by_id.get(distributor_id)
 
     @property
+    def iso_content(self):
+        """A list of iso units stored in this repository.
+
+        Returns:
+            list[:class:`~pubtools.pulplib.FileUnit`]
+
+        .. versionadded:: 2.4.0
+        """
+        return self.search_content(Criteria.with_field("type_ids", ["iso"]))
+
+    @property
     def rpm_content(self):
-        """A list of rpm units stored in this repository"""
-        return self._search_content(Criteria.with_field("type_ids", ["rpm"]))
+        """A list of rpm units stored in this repository.
+
+        Returns:
+            list[:class:`~pubtools.pulplib.RpmUnit`]
+
+        .. versionadded:: 2.4.0
+        """
+        return self.search_content(Criteria.with_field("type_ids", ["rpm"]))
 
     @property
     def srpm_content(self):
-        """A list of srpm units stored in this repository"""
-        return self._search_content(Criteria.with_field("type_ids", ["srpm"]))
+        """A list of srpm units stored in this repository.
 
-    @property
-    def iso_content(self):
-        """A list of iso units stored in this repository"""
-        return self._search_content(Criteria.with_field("type_ids", ["iso"]))
+        Returns:
+            list[:class:`~pubtools.pulplib.Unit`]
+
+        .. versionadded:: 2.4.0
+        """
+        return self.search_content(Criteria.with_field("type_ids", ["srpm"]))
 
     @property
     def modulemd_content(self):
-        """A list of modulemd units stored in this repository"""
-        return self._search_content(Criteria.with_field("type_ids", ["modulemd"]))
+        """A list of modulemd units stored in this repository.
+
+        Returns:
+            list[:class:`~pubtools.pulplib.ModulemdUnit`]
+
+        .. versionadded:: 2.4.0
+        """
+        return self.search_content(Criteria.with_field("type_ids", ["modulemd"]))
 
     @property
     def modulemd_defaults_content(self):
-        """A list of modulemd_defaults units stored in this repository"""
-        return self._search_content(
+        """A list of modulemd_defaults units stored in this repository.
+
+        Returns:
+            list[:class:`~pubtools.pulplib.ModulemdDefaultsUnit`]
+
+        .. versionadded:: 2.4.0
+        """
+        return self.search_content(
             Criteria.with_field("type_ids", ["modulemd_defaults"])
         )
 
-    def _search_content(self, criteria=None):
-        # Search this repository for content matching the given criteria
+    def search_content(self, criteria=None):
+        """Search this repository for content matching the given criteria.
+
+        Args:
+            criteria (:class:`~pubtools.pulplib.Criteria`)
+                A criteria object used for this search.
+
+        Returns:
+            list[:class:`~pubtools.pulplib.Unit`]
+                A list of zero or more :class:`~pubtools.pulplib.Unit`
+                subclasses found by the search operation.
+
+        .. versionadded:: 2.4.0
+        """
         if not self._client:
             raise DetachedException()
 

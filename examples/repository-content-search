@@ -44,7 +44,6 @@ def main():
     client = make_client(p)
     criteria = Criteria.with_field("type_ids", [p.content_type])
     units = client.search_repository_content(p.repo_id, criteria)
-    print(units)
     return units
 
 

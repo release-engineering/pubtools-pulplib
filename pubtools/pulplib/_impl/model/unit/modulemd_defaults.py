@@ -22,4 +22,6 @@ class ModulemdDefaultsUnit(Unit):
     """The repository ID bound to this modulemd defaults unit"""
 
     profiles = pulp_attrib(pulp_field="profiles")
-    """The profiles of this modulemd defaults unit"""
+    """The profiles of this modulemd defaults unit
+    The type for this attribute is omitted to allow for either dict or None.
+    """

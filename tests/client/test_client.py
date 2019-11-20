@@ -101,7 +101,6 @@ def test_can_search_repository_content(client, requests_mocker):
 
 def test_cannot_search_repository_content_without_content_type(client):
     """search_content raises if called without criteria containing _content_type_id"""
-
     with pytest.raises(InvalidContentTypeException):
         client.search_repository_content("some-repo")
 

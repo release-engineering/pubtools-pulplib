@@ -134,6 +134,7 @@ definitions:
         type: string
       profiles:
         type: object
+        nullable: true
 
     required:
     - _content_type_id
