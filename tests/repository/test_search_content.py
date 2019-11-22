@@ -1,61 +1,5 @@
 import pytest
-from pubtools.pulplib import (
-    Repository,
-    DetachedException,
-    InvalidContentTypeException,
-)
-
-FAKE_UNIT_SEARCH = [
-    {
-        "metadata": {
-            "_content_type_id": "iso",
-            "name": "hello.txt",
-            "size": 23,
-            "checksum": "a" * 64,
-        }
-    },
-    {
-        "metadata": {
-            "_content_type_id": "srpm",
-            "name": "bash",
-            "epoch": "0",
-            "filename": "bash-x86_64.srpm",
-            "version": "4.0",
-            "release": "1",
-            "arch": "x86_64",
-        }
-    },
-    {
-        "metadata": {
-            "_content_type_id": "rpm",
-            "name": "bash",
-            "epoch": "0",
-            "filename": "bash-x86_64.rpm",
-            "version": "4.0",
-            "release": "1",
-            "arch": "x86_64",
-        }
-    },
-    {
-        "metadata": {
-            "_content_type_id": "modulemd",
-            "name": "md",
-            "stream": "s1",
-            "version": 1234,
-            "context": "a1b2c3",
-            "arch": "s390x",
-        }
-    },
-    {
-        "metadata": {
-            "_content_type_id": "modulemd_defaults",
-            "name": "mdd",
-            "stream": "1.0",
-            "repo_id": "some-repo",
-            "profiles": {"p1": ["something"]},
-        }
-    },
-]
+from pubtools.pulplib import Repository, DetachedException
 
 
 def test_detached():
@@ -64,79 +8,130 @@ def test_detached():
         assert not Repository(id="some-repo").iso_content
 
 
-def test_search_content_without_content_type(client, requests_mocker):
-    """search_content raises if called without criteria containing _content_type_id"""
-    repo = Repository(id="some-repo")
-    repo.__dict__["_client"] = client
-    requests_mocker.post(
-        "https://pulp.example.com/pulp/api/v2/repositories/some-repo/search/units/",
-        json=FAKE_UNIT_SEARCH,
-    )
-
-    with pytest.raises(InvalidContentTypeException):
-        assert not repo.search_content()
-
-
 def test_iso_content(client, requests_mocker):
-    """iso_content returns correct units from the repository"""
+    """iso_content returns correct unit types"""
     repo = Repository(id="some-repo")
     repo.__dict__["_client"] = client
     requests_mocker.post(
         "https://pulp.example.com/pulp/api/v2/repositories/some-repo/search/units/",
-        json=FAKE_UNIT_SEARCH,
+        json=[
+            {
+                "metadata": {
+                    "_content_type_id": "iso",
+                    "name": "hello.txt",
+                    "size": 23,
+                    "checksum": "a" * 64,
+                }
+            }
+        ],
     )
 
-    assert len(repo.iso_content) == 1
-    assert repo.iso_content[0].content_type_id == "iso"
+    isos = repo.iso_content
+
+    assert len(isos) == 1
+    assert isos[0].content_type_id == "iso"
 
 
 def test_rpm_content(client, requests_mocker):
-    """rpm_content returns correct units from the repository"""
+    """rpm_content returns correct unit types"""
     repo = Repository(id="some-repo")
     repo.__dict__["_client"] = client
     requests_mocker.post(
         "https://pulp.example.com/pulp/api/v2/repositories/some-repo/search/units/",
-        json=FAKE_UNIT_SEARCH,
+        json=[
+            {
+                "metadata": {
+                    "_content_type_id": "rpm",
+                    "name": "bash",
+                    "epoch": "0",
+                    "filename": "bash-x86_64.rpm",
+                    "version": "4.0",
+                    "release": "1",
+                    "arch": "x86_64",
+                }
+            }
+        ],
     )
 
-    assert len(repo.rpm_content) == 1
-    assert repo.rpm_content[0].content_type_id == "rpm"
+    rpms = repo.rpm_content
+
+    assert len(rpms) == 1
+    assert rpms[0].content_type_id == "rpm"
 
 
 def test_srpm_content(client, requests_mocker):
-    """srpm_content returns correct units from the repository"""
+    """srpm_content returns correct unit types"""
     repo = Repository(id="some-repo")
     repo.__dict__["_client"] = client
     requests_mocker.post(
         "https://pulp.example.com/pulp/api/v2/repositories/some-repo/search/units/",
-        json=FAKE_UNIT_SEARCH,
+        json=[
+            {
+                "metadata": {
+                    "_content_type_id": "srpm",
+                    "name": "bash",
+                    "epoch": "0",
+                    "filename": "bash-x86_64.srpm",
+                    "version": "4.0",
+                    "release": "1",
+                    "arch": "x86_64",
+                }
+            }
+        ],
     )
 
-    assert len(repo.srpm_content) == 1
-    assert repo.srpm_content[0].content_type_id == "srpm"
+    srpms = repo.srpm_content
+
+    assert len(srpms) == 1
+    assert srpms[0].content_type_id == "srpm"
 
 
 def test_modulemd_content(client, requests_mocker):
-    """modulemd_content returns correct units from the repository"""
+    """modulemd_content returns correct unit types"""
     repo = Repository(id="some-repo")
     repo.__dict__["_client"] = client
     requests_mocker.post(
         "https://pulp.example.com/pulp/api/v2/repositories/some-repo/search/units/",
-        json=FAKE_UNIT_SEARCH,
+        json=[
+            {
+                "metadata": {
+                    "_content_type_id": "modulemd",
+                    "name": "md",
+                    "stream": "s1",
+                    "version": 1234,
+                    "context": "a1b2c3",
+                    "arch": "s390x",
+                }
+            }
+        ],
     )
 
-    assert len(repo.modulemd_content) == 1
-    assert repo.modulemd_content[0].content_type_id == "modulemd"
+    modulemds = repo.modulemd_content
+
+    assert len(modulemds) == 1
+    assert modulemds[0].content_type_id == "modulemd"
 
 
 def test_modulemd_defaults_content(client, requests_mocker):
-    """modulemd_defaults_content returns correct units from the repository"""
+    """modulemd_defaults_content returns correct unit types"""
     repo = Repository(id="some-repo")
     repo.__dict__["_client"] = client
     requests_mocker.post(
         "https://pulp.example.com/pulp/api/v2/repositories/some-repo/search/units/",
-        json=FAKE_UNIT_SEARCH,
+        json=[
+            {
+                "metadata": {
+                    "_content_type_id": "modulemd_defaults",
+                    "name": "mdd",
+                    "stream": "1.0",
+                    "repo_id": "some-repo",
+                    "profiles": {"p1": ["something"]},
+                }
+            }
+        ],
     )
 
-    assert len(repo.modulemd_defaults_content) == 1
-    assert repo.modulemd_defaults_content[0].content_type_id == "modulemd_defaults"
+    modulemd_defaults = repo.modulemd_defaults_content
+
+    assert len(modulemd_defaults) == 1
+    assert modulemd_defaults[0].content_type_id == "modulemd_defaults"

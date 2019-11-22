@@ -8,15 +8,12 @@ from ..common import (
     PulpObject,
     Deletable,
     DetachedException,
-    InvalidContentTypeException,
 )
 from ..attr import pulp_attrib
 from ..distributor import Distributor
 from ..frozenlist import FrozenList
 from ...schema import load_schema
 from ... import compat_attr as attr
-from ...criteria import Criteria, FieldMatchCriteria, AndCriteria, Matcher
-from ..unit import Unit, SUPPORTED_UNIT_TYPES
 
 
 LOG = logging.getLogger("pubtools.pulplib")
@@ -204,7 +201,7 @@ class Repository(PulpObject, Deletable):
 
         .. versionadded:: 2.4.0
         """
-        return self.search_content(Criteria.with_field("type_ids", ["iso"]))
+        return self.search_content("iso")
 
     @property
     def rpm_content(self):
@@ -215,7 +212,7 @@ class Repository(PulpObject, Deletable):
 
         .. versionadded:: 2.4.0
         """
-        return self.search_content(Criteria.with_field("type_ids", ["rpm"]))
+        return self.search_content("rpm")
 
     @property
     def srpm_content(self):
@@ -226,7 +223,7 @@ class Repository(PulpObject, Deletable):
 
         .. versionadded:: 2.4.0
         """
-        return self.search_content(Criteria.with_field("type_ids", ["srpm"]))
+        return self.search_content("srpm")
 
     @property
     def modulemd_content(self):
@@ -237,7 +234,7 @@ class Repository(PulpObject, Deletable):
 
         .. versionadded:: 2.4.0
         """
-        return self.search_content(Criteria.with_field("type_ids", ["modulemd"]))
+        return self.search_content("modulemd")
 
     @property
     def modulemd_defaults_content(self):
@@ -248,14 +245,14 @@ class Repository(PulpObject, Deletable):
 
         .. versionadded:: 2.4.0
         """
-        return self.search_content(
-            Criteria.with_field("type_ids", ["modulemd_defaults"])
-        )
+        return self.search_content("modulemd_defaults")
 
-    def search_content(self, criteria=None):
+    def search_content(self, type_id, criteria=None):
         """Search this repository for content matching the given criteria.
 
         Args:
+            type_id (str)
+                The content type to search
             criteria (:class:`~pubtools.pulplib.Criteria`)
                 A criteria object used for this search.
 
@@ -269,7 +266,7 @@ class Repository(PulpObject, Deletable):
         if not self._client:
             raise DetachedException()
 
-        return self._client.search_repository_content(self.id, criteria)
+        return self._client.search_repository_content(self.id, type_id, criteria)
 
     def delete(self):
         """Delete this repository from Pulp.

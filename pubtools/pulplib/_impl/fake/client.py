@@ -15,7 +15,6 @@ from more_executors.futures import f_return, f_return_error, f_flat_map, f_proxy
 from pubtools.pulplib import (
     Page,
     PulpException,
-    InvalidContentTypeException,
     Criteria,
     Task,
     Repository,
@@ -23,9 +22,7 @@ from pubtools.pulplib import (
     Unit,
     MaintenanceReport,
 )
-from pubtools.pulplib._impl.criteria import FieldMatchCriteria, AndCriteria
-from pubtools.pulplib._impl.client.search import filters_for_criteria
-from ..model.unit import SUPPORTED_UNIT_TYPES
+from pubtools.pulplib._impl.client.search import filters_for_criteria, validate_type_ids
 from .. import compat_attr as attr
 
 from .match import match_object
@@ -94,35 +91,17 @@ class FakeClient(object):
         random.shuffle(repos)
         return self._prepare_pages(repos)
 
-    def search_repository_content(self, repository_id, criteria=None):
+    def search_repository_content(self, repository_id, type_ids, criteria=None):
+        criteria = criteria or Criteria.true()
         units = []
 
-        def get_type_id(crit):
-            if (
-                isinstance(crit, FieldMatchCriteria)
-                and crit._field is "_content_type_id"
-            ):
-                return crit._matcher._value
-
-        type_id = None
-        if isinstance(criteria, AndCriteria):
-            for c in criteria._operands:
-                type_id = get_type_id(c)
-                if type_id:
-                    break
-        else:
-            type_id = get_type_id(criteria)
-
-        if type_id not in SUPPORTED_UNIT_TYPES:
-            raise InvalidContentTypeException()
-
-        print(criteria)
         filters_for_criteria(criteria, Unit)
 
         try:
             for unit in self._repo_units[repository_id]:
-                print(unit)
-                if match_object(criteria, unit):
+                if unit.content_type_id in validate_type_ids(type_ids) and match_object(
+                    criteria, unit
+                ):
                     units.append(attr.evolve(unit))
         except Exception as ex:  # pylint: disable=broad-except
             return f_return_error(ex)

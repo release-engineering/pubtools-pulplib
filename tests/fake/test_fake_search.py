@@ -383,9 +383,8 @@ def test_search_repository_content():
     controller.insert_units(repo1, units)
 
     client = controller.client
-    crit = Criteria.with_field("_content_type_id", "rpm")
 
-    found = client.search_repository_content("repo1", crit)
+    found = client.search_repository_content("repo1", type_ids="rpm")
 
     assert sorted(found) == [units[1]]
 

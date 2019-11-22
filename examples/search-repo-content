@@ -3,9 +3,9 @@ import os
 import logging
 from argparse import ArgumentParser
 
-from pubtools.pulplib import Client, Criteria
+from pubtools.pulplib import Client
 
-log = logging.getLogger("repository-content-search")
+log = logging.getLogger("search-repo-content")
 
 
 def make_client(args):
@@ -26,7 +26,9 @@ def main():
     log.setLevel(logging.INFO)
     logging.basicConfig(format="%(message)s", level=logging.INFO)
 
-    parser = ArgumentParser(description="Retrieve unit objects of the specified type from a repository")
+    parser = ArgumentParser(
+        description="Retrieve unit objects of the given type from the given repository"
+    )
     parser.add_argument("--url", help="Pulp server URL", required=True)
     parser.add_argument("--username", help="Pulp username")
     parser.add_argument("--password", help="Pulp password (or set PULP_PASSWORD in env)")
@@ -42,8 +44,16 @@ def main():
         log.setLevel(logging.DEBUG)
 
     client = make_client(p)
-    criteria = Criteria.with_field("type_ids", [p.content_type])
-    units = client.search_repository_content(p.repo_id, criteria)
+    units = client.search_repository_content(p.repo_id, type_ids=p.content_type)
+
+    if units:
+        log.info("Found %s %s units: \n\t%s" % (
+            len(units), p.content_type,
+            "\n\t".join(str(unit) for unit in units)
+        ))
+    else:
+        log.info("No %s units found." % p.content_type)
+
     return units
 
 

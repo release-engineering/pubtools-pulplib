@@ -1,3 +1,4 @@
+import logging
 import datetime
 from pubtools.pulplib._impl.criteria import (
     AndCriteria,
@@ -13,6 +14,9 @@ from pubtools.pulplib._impl.criteria import (
 
 from pubtools.pulplib._impl import compat_attr as attr
 from pubtools.pulplib._impl.model.attr import PULP2_FIELD, PY_PULP2_CONVERTER
+from pubtools.pulplib._impl.model.unit import SUPPORTED_UNIT_TYPES
+
+LOG = logging.getLogger("pubtools.pulplib")
 
 
 def all_subclasses(klass):
@@ -113,3 +117,34 @@ def field_match(to_match):
         return {"$lt": to_mongo_json(to_match._value)}
 
     raise TypeError("Not a matcher: %s" % repr(to_match))
+
+
+def validate_type_ids(type_ids):
+    valid_type_ids = []
+    invalid_type_ids = []
+
+    if isinstance(type_ids, str):
+        type_ids = [type_ids]
+
+    if not isinstance(type_ids, (list, tuple)):
+        raise TypeError("Expected str, list, or tuple, got %s" % type(type_ids))
+
+    for type_id in type_ids:
+        if type_id in SUPPORTED_UNIT_TYPES:
+            valid_type_ids.append(type_id)
+        else:
+            invalid_type_ids.append(type_id)
+
+    if invalid_type_ids:
+        LOG.error(
+            "Invalid content type IDs: \n\t%s",
+            ", ".join(type_id for type_id in invalid_type_ids),
+        )
+
+    if valid_type_ids:
+        return valid_type_ids
+
+    raise ValueError(
+        "Must provide valid content type ID(s):\n\t%s"
+        ", ".join(type_id for type_id in SUPPORTED_UNIT_TYPES)
+    )

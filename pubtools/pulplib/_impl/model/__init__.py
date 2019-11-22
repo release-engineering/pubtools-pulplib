@@ -1,7 +1,6 @@
 from .common import (
     PulpObject,
     DetachedException,
-    InvalidContentTypeException,
     InvalidDataException,
 )
 from .repository import (

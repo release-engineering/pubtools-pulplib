@@ -19,12 +19,6 @@ class DetachedException(Exception):
     """
 
 
-class InvalidContentTypeException(Exception):
-    """Raised if a content type id is provided which appears to be invalid
-    (i.e. not among :class:`pubtools.pulplib.Unit` subclasses).
-    """
-
-
 class InvalidDataException(Exception):
     """Raised if raw Pulp data appears to be invalid (i.e. not matching expected schema).
     """

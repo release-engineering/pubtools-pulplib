@@ -12,11 +12,9 @@ from more_executors import Executors
 from more_executors.futures import f_map, f_flat_map, f_return, f_proxy
 
 from ..page import Page
-from ..criteria import Criteria, AndCriteria, OrCriteria, FieldMatchCriteria
+from ..criteria import Criteria
 from ..model import Repository, MaintenanceReport, Distributor, Unit
-from ..model.common import InvalidContentTypeException
-from ..model.unit import SUPPORTED_UNIT_TYPES
-from .search import filters_for_criteria
+from .search import filters_for_criteria, validate_type_ids
 from .errors import PulpException
 from .poller import TaskPoller
 from . import retry
@@ -205,45 +203,14 @@ class Client(object):
             Repository, "repositories", criteria=criteria, search_options=search_options
         )
 
-    @staticmethod
-    def _filter_type_id_criteria(criteria):
-        type_ids = []
-        filtered_criteria = None
-
-        def extract_type_ids(crit):
-            if isinstance(crit, FieldMatchCriteria) and crit._field is "type_ids":
-                for type_id in crit._matcher._value:
-                    if type_id in SUPPORTED_UNIT_TYPES:
-                        type_ids.append(type_id)
-
-        def criteria_set(crit):
-            other_crit = ()
-            for c in crit._operands:
-                extract_type_ids(c)
-                if type_ids:
-                    continue
-                else:
-                    other_crit += (c,)
-            return other_crit
-
-        if isinstance(criteria, AndCriteria):
-            filtered_criteria = Criteria.and_(*criteria_set(criteria))
-        elif isinstance(criteria, OrCriteria):
-            filtered_criteria = Criteria.or_(*criteria_set(criteria))
-        else:
-            extract_type_ids(criteria)
-
-        if not type_ids:
-            raise InvalidContentTypeException()
-
-        return type_ids, filtered_criteria
-
-    def search_repository_content(self, repository_id, criteria=None):
+    def search_repository_content(self, repository_id, type_ids, criteria=None):
         """Search the given repository for content matching the given criteria.
 
         Args:
-            repository_id
+            repository_id (str)
                 The ID of the repository in which to search
+            type_ids (str, list, tuple)
+                A list of content types to search
             criteria (:class:`~pubtools.pulplib.Criteria`)
                 A criteria object used for this search.
 
@@ -258,13 +225,11 @@ class Client(object):
 
         .. versionadded:: 2.4.0
         """
-        # We have to extract criteria with type_ids, as they are not
-        # placed in "filters" with other criteria.
-        type_ids, criteria = self._filter_type_id_criteria(criteria)
-        search_options = {"type_ids": type_ids}
-
         search_f = self._search(
-            Unit, "repositories/%s" % repository_id, criteria=criteria, search_options=search_options
+            Unit,
+            "repositories/%s" % repository_id,
+            criteria=criteria,
+            type_ids=validate_type_ids(type_ids),
         )
         return [unit for unit in search_f.result().as_iter()]
 
@@ -287,18 +252,26 @@ class Client(object):
         """
         return self._search(Distributor, "distributors", criteria=criteria)
 
-    def _search(self, return_type, resource_type, criteria=None, search_options=None):
+    def _search(
+        self,
+        return_type,
+        resource_type,
+        criteria=None,
+        search_options=None,
+        type_ids=None,
+    ):
         pulp_crit = {
             "skip": 0,
             "limit": self._PAGE_SIZE,
             "filters": filters_for_criteria(criteria, return_type),
+            "type_ids": type_ids,
         }
         search = {"criteria": pulp_crit}
         search.update(search_options or {})
 
         url = os.path.join(self._url, "pulp/api/v2/%s/search/" % resource_type)
 
-        if "type_ids" in search:
+        if return_type is Unit and search["criteria"]["type_ids"]:
             url = os.path.join(url, "units/")
 
         response_f = self._do_search(url, search)
