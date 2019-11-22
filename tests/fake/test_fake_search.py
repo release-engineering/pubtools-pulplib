@@ -213,8 +213,12 @@ def test_search_bad_criteria():
     with pytest.raises(Exception) as dist_exc:
         client.search_distributor("invalid criteria")
 
+    with pytest.raises(Exception) as repo_cont_exc:
+        client.search_repository_content("some-repo", "rpm", "criteria?")
+
     assert "Not a criteria" in str(repo_exc.value)
     assert "Not a criteria" in str(dist_exc.value)
+    assert "Not a criteria" in str(repo_cont_exc.value)
 
 
 def test_search_created_timestamp():
