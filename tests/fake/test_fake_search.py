@@ -357,7 +357,9 @@ def test_search_paginates():
     assert sorted(found_repos) == sorted(repos)
 
 
-def test_search_repository_content():
+@pytest.mark.parametrize("type_id", ["rpm", "quark"])
+def test_search_repository_content(type_id):
+    """Can return desired units when type ID is valid and raises otherwise"""
     controller = FakeController()
 
     repo1 = Repository(id="repo1")
@@ -386,11 +388,13 @@ def test_search_repository_content():
     ]
     controller.insert_units(repo1, units)
 
-    client = controller.client
-
-    found = client.search_repository_content("repo1", type_ids="rpm")
-
-    assert sorted(found) == [units[1]]
+    if type_id is "quark":
+        with pytest.raises(Exception) as ex:
+            controller.client.search_repository_content("repo1", type_ids=type_id)
+            assert "Invalid content type ID(s)" in str(ex.value)
+    else:
+        found = controller.client.search_repository_content("repo1", type_ids="rpm")
+        assert sorted(found) == [units[1]]
 
 
 def test_search_distributor():

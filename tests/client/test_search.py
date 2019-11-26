@@ -105,7 +105,7 @@ def test_dict_matcher_value():
 
 def test_valid_type_ids(caplog):
     assert validate_type_ids(["srpm", "iso", "quark", "rpm"]) == ["srpm", "iso", "rpm"]
-    for m in ["Invalid content type IDs:", "quark"]:
+    for m in ["Invalid content type ID(s):", "quark"]:
         assert m in caplog.text
 
 

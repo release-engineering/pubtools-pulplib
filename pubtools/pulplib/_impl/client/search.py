@@ -137,7 +137,7 @@ def validate_type_ids(type_ids):
 
     if invalid_type_ids:
         LOG.error(
-            "Invalid content type IDs: \n\t%s",
+            "Invalid content type ID(s): \n\t%s",
             ", ".join(type_id for type_id in invalid_type_ids),
         )
 
