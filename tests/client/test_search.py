@@ -114,8 +114,7 @@ def test_invalid_type_ids():
     with pytest.raises(ValueError) as e:
         validate_type_ids("quark")
 
-    assert "Must provide valid content type ID(s):" in str(e)
-    assert "iso, rpm, srpm, modulemd, modulemd_defaults" in str(e)
+    assert "Must provide valid content type ID(s)" in str(e)
 
 
 def test_invalid_type_ids_type():

@@ -208,9 +208,9 @@ class Client(object):
 
         Args:
             repository_id (str)
-                The ID of the repository in which to search
+                The ID of the repository to search.
             type_ids (str, list, tuple)
-                A list of content types to search
+                A list of content types to search.
             criteria (:class:`~pubtools.pulplib.Criteria`)
                 A criteria object used for this search.
 
@@ -225,13 +225,13 @@ class Client(object):
 
         .. versionadded:: 2.4.0
         """
-        search_f = self._search(
-            Unit,
-            "repositories/%s" % repository_id,
-            criteria=criteria,
-            type_ids=validate_type_ids(type_ids),
+        resource_type = "repositories/%s" % repository_id
+        search_options = {"type_ids": validate_type_ids(type_ids)}
+        return list(
+            self._search(
+                Unit, resource_type, criteria=criteria, search_options=search_options
+            )
         )
-        return [unit for unit in search_f]
 
     def search_distributor(self, criteria=None):
         """Search the distributors matching the given criteria.
@@ -252,14 +252,8 @@ class Client(object):
         """
         return self._search(Distributor, "distributors", criteria=criteria)
 
-    def _search(
-        self,
-        return_type,
-        resource_type,
-        criteria=None,
-        search_options=None,
-        type_ids=None,
-    ):
+    def _search(self, return_type, resource_type, criteria=None, search_options=None):
+        type_ids = search_options.pop("type_ids", None) if search_options else None
         pulp_crit = {
             "skip": 0,
             "limit": self._PAGE_SIZE,
