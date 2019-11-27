@@ -145,6 +145,6 @@ def validate_type_ids(type_ids):
         return valid_type_ids
 
     raise ValueError(
-        "Must provide valid content type ID(s):\n\t%s"
+        "Must provide valid content type ID(s): \n\t%s",
         ", ".join(type_id for type_id in SUPPORTED_UNIT_TYPES)
     )
