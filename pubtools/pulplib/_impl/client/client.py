@@ -231,7 +231,7 @@ class Client(object):
             criteria=criteria,
             type_ids=validate_type_ids(type_ids),
         )
-        return [unit for unit in search_f.result().as_iter()]
+        return [unit for unit in search_f]
 
     def search_distributor(self, criteria=None):
         """Search the distributors matching the given criteria.
