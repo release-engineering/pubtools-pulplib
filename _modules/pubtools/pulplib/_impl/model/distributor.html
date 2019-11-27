@@ -33,10 +33,10 @@
   <h1>Source code for pubtools.pulplib._impl.model.distributor</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">datetime</span>
 
-<span class="kn">from</span> <span class="nn">.common</span> <span class="k">import</span> <span class="n">PulpObject</span><span class="p">,</span> <span class="n">Deletable</span><span class="p">,</span> <span class="n">DetachedException</span>
-<span class="kn">from</span> <span class="nn">.attr</span> <span class="k">import</span> <span class="n">pulp_attrib</span>
-<span class="kn">from</span> <span class="nn">..schema</span> <span class="k">import</span> <span class="n">load_schema</span>
-<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">compat_attr</span> <span class="k">as</span> <span class="n">attr</span>
+<span class="kn">from</span> <span class="nn">.common</span> <span class="kn">import</span> <span class="n">PulpObject</span><span class="p">,</span> <span class="n">Deletable</span><span class="p">,</span> <span class="n">DetachedException</span>
+<span class="kn">from</span> <span class="nn">.attr</span> <span class="kn">import</span> <span class="n">pulp_attrib</span>
+<span class="kn">from</span> <span class="nn">..schema</span> <span class="kn">import</span> <span class="n">load_schema</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">compat_attr</span> <span class="k">as</span> <span class="n">attr</span>
 
 
 <div class="viewcode-block" id="Distributor"><a class="viewcode-back" href="../../../../../api/model.html#pubtools.pulplib.Distributor">[docs]</a><span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>

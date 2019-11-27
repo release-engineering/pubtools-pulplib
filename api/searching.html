@@ -312,7 +312,7 @@ a search query. Futures are chained and composed using
         <span class="c1"># There&#39;s more data, handle that too when it&#39;s ready</span>
         <span class="k">return</span> <span class="n">f_flat_map</span><span class="p">(</span><span class="n">page</span><span class="o">.</span><span class="n">next</span><span class="p">,</span> <span class="n">handle_results</span><span class="p">)</span>
     <span class="c1"># No more data, we&#39;re done</span>
-    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Handled results!&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Handled results!&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">f_return</span><span class="p">()</span>
 
 <span class="n">page_f</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">search_repository</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>

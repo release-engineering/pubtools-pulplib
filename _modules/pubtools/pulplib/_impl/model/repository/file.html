@@ -34,14 +34,14 @@
 <span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 
-<span class="kn">from</span> <span class="nn">attr</span> <span class="k">import</span> <span class="n">validators</span>
-<span class="kn">from</span> <span class="nn">more_executors.futures</span> <span class="k">import</span> <span class="n">f_flat_map</span><span class="p">,</span> <span class="n">f_map</span><span class="p">,</span> <span class="n">f_proxy</span>
+<span class="kn">from</span> <span class="nn">attr</span> <span class="kn">import</span> <span class="n">validators</span>
+<span class="kn">from</span> <span class="nn">more_executors.futures</span> <span class="kn">import</span> <span class="n">f_flat_map</span><span class="p">,</span> <span class="n">f_map</span><span class="p">,</span> <span class="n">f_proxy</span>
 
-<span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">Repository</span><span class="p">,</span> <span class="n">repo_type</span>
-<span class="kn">from</span> <span class="nn">..frozenlist</span> <span class="k">import</span> <span class="n">FrozenList</span>
-<span class="kn">from</span> <span class="nn">..attr</span> <span class="k">import</span> <span class="n">pulp_attrib</span>
-<span class="kn">from</span> <span class="nn">..common</span> <span class="k">import</span> <span class="n">DetachedException</span>
-<span class="kn">from</span> <span class="nn">...</span> <span class="k">import</span> <span class="n">compat_attr</span> <span class="k">as</span> <span class="n">attr</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">Repository</span><span class="p">,</span> <span class="n">repo_type</span>
+<span class="kn">from</span> <span class="nn">..frozenlist</span> <span class="kn">import</span> <span class="n">FrozenList</span>
+<span class="kn">from</span> <span class="nn">..attr</span> <span class="kn">import</span> <span class="n">pulp_attrib</span>
+<span class="kn">from</span> <span class="nn">..common</span> <span class="kn">import</span> <span class="n">DetachedException</span>
+<span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">compat_attr</span> <span class="k">as</span> <span class="n">attr</span>
 
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;pubtools.pulplib&quot;</span><span class="p">)</span>

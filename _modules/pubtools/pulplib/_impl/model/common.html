@@ -35,13 +35,13 @@
 
 <span class="kn">import</span> <span class="nn">jsonschema</span>
 
-<span class="kn">from</span> <span class="nn">more_executors.futures</span> <span class="k">import</span> <span class="n">f_map</span><span class="p">,</span> <span class="n">f_proxy</span>
+<span class="kn">from</span> <span class="nn">more_executors.futures</span> <span class="kn">import</span> <span class="n">f_map</span><span class="p">,</span> <span class="n">f_proxy</span>
 
-<span class="kn">from</span> <span class="nn">pubtools.pulplib._impl</span> <span class="k">import</span> <span class="n">compat_attr</span> <span class="k">as</span> <span class="n">attr</span>
-<span class="kn">from</span> <span class="nn">pubtools.pulplib._impl.util</span> <span class="k">import</span> <span class="n">lookup</span>
+<span class="kn">from</span> <span class="nn">pubtools.pulplib._impl</span> <span class="kn">import</span> <span class="n">compat_attr</span> <span class="k">as</span> <span class="n">attr</span>
+<span class="kn">from</span> <span class="nn">pubtools.pulplib._impl.util</span> <span class="kn">import</span> <span class="n">lookup</span>
 
-<span class="kn">from</span> <span class="nn">.attr</span> <span class="k">import</span> <span class="n">PULP2_FIELD</span>
-<span class="kn">from</span> <span class="nn">.convert</span> <span class="k">import</span> <span class="n">get_converter</span>
+<span class="kn">from</span> <span class="nn">.attr</span> <span class="kn">import</span> <span class="n">PULP2_FIELD</span>
+<span class="kn">from</span> <span class="nn">.convert</span> <span class="kn">import</span> <span class="n">get_converter</span>
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;pubtools.pulplib&quot;</span><span class="p">)</span>
 
