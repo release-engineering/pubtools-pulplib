@@ -46,6 +46,17 @@ def main():
     client = make_client(p)
     units = client.search_repository_content(p.repo_id, type_ids=p.content_type)
 
+    """
+    Alternatively, one could use the following:
+
+    .. code-block:: python
+        repository = client.get_repository(p.repo_id)
+        units = repository.search_content(type_id=p.content_type)
+
+    This is functionally equivalent to client.search_repository_content
+    but is useful if further operations on the repository are required.
+    """
+
     if units:
         log.info("Found %s %s units: \n\t%s" % (
             len(units), p.content_type,
