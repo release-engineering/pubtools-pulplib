@@ -50,7 +50,7 @@ def test_load_invalid_report_raise_exception():
 
 def test_create_export_report():
     data = {
-        "last_updated": "2019-08-15T14:21:12Z",  # invalid timestamp
+        "last_updated": "2019-08-15T14:21:12Z",
         "last_updated_by": "pubtools.pulplib",
         "repos": {
             "repo1": {
@@ -70,7 +70,7 @@ def test_create_export_report():
 
 def test_report_add_remove():
     data = {
-        "last_updated": "2019-08-15T14:21:12Z",  # invalid timestamp
+        "last_updated": "2019-08-15T14:21:12Z",
         "last_updated_by": "pubtools.pulplib",
         "repos": {
             "repo1": {
@@ -92,3 +92,14 @@ def test_report_add_remove():
 
     assert len(report.entries) == 1
     assert report.last_updated_by == "jazhang"
+
+
+def test_export_empty_report():
+    # create an empty report with out data passed
+    report = MaintenanceReport()
+    assert report.last_updated is None
+
+    # export empty report shouldn't have problem
+    data = report._export_dict()
+    # exported report should have a timestamp
+    assert datetime.datetime.strptime(data["last_updated"], "%Y-%m-%dT%H:%M:%SZ")
