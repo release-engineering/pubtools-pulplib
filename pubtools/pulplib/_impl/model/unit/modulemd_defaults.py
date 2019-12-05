@@ -18,7 +18,7 @@ class ModulemdDefaultsUnit(Unit):
     stream = pulp_attrib(type=str, pulp_field="stream")
     """The stream of this modulemd defaults unit"""
 
-    repository_id = pulp_attrib(type=str, pulp_field="repo_id")
+    repo_id = pulp_attrib(type=str, pulp_field="repo_id")
     """The repository ID bound to this modulemd defaults unit"""
 
     profiles = pulp_attrib(pulp_field="profiles")

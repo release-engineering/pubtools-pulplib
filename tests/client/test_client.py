@@ -82,7 +82,7 @@ def test_can_search_repository_content(client, requests_mocker):
         ModulemdDefaultsUnit(
             content_type_id="modulemd_defaults",
             name="mdd",
-            repository_id="mdd-repo",
+            repo_id="mdd-repo",
             stream="1.0",
             profiles={"p1": ["something"]},
         )

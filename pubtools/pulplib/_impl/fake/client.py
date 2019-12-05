@@ -91,14 +91,14 @@ class FakeClient(object):
         random.shuffle(repos)
         return self._prepare_pages(repos)
 
-    def search_repository_content(self, repository_id, type_ids, criteria=None):
+    def search_repository_content(self, repo_id, type_ids, criteria=None):
         criteria = criteria or Criteria.true()
         units = []
 
         filters_for_criteria(criteria, Unit)
 
         try:
-            for unit in self._repo_units[repository_id]:
+            for unit in self._repo_units[repo_id]:
                 if unit.content_type_id in validate_type_ids(type_ids) and match_object(
                     criteria, unit
                 ):

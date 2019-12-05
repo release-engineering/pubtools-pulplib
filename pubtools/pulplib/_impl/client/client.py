@@ -203,11 +203,11 @@ class Client(object):
             Repository, "repositories", criteria=criteria, search_options=search_options
         )
 
-    def search_repository_content(self, repository_id, type_ids, criteria=None):
+    def search_repository_content(self, repo_id, type_ids, criteria=None):
         """Search the given repository for content matching the given criteria.
 
         Args:
-            repository_id (str)
+            repo_id (str)
                 The ID of the repository to search.
             type_ids (str, list, tuple)
                 A list of content types to search.
@@ -225,7 +225,7 @@ class Client(object):
 
         .. versionadded:: 2.4.0
         """
-        resource_type = "repositories/%s" % repository_id
+        resource_type = "repositories/%s" % repo_id
         search_options = {"type_ids": validate_type_ids(type_ids)}
         return list(
             self._search(
