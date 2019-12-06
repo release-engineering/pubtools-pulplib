@@ -32,7 +32,7 @@ def read_timestamp(value):
 
 
 def write_timestamp(value):
-    # value could be None if the report is empty
+    # defaults to current time if value is None
     if value is None:
         value = datetime.datetime.utcnow()
     return value.strftime("%Y-%m-%dT%H:%M:%SZ")
