@@ -14,7 +14,7 @@ from more_executors.futures import f_map, f_flat_map, f_return, f_proxy
 from ..page import Page
 from ..criteria import Criteria
 from ..model import Repository, MaintenanceReport, Distributor, Unit
-from .search import filters_for_criteria, validate_type_ids
+from .search import filters_for_criteria
 from .errors import PulpException
 from .poller import TaskPoller
 from . import retry
@@ -203,36 +203,6 @@ class Client(object):
             Repository, "repositories", criteria=criteria, search_options=search_options
         )
 
-    def search_repository_content(self, repo_id, type_ids, criteria=None):
-        """Search the given repository for content matching the given criteria.
-
-        Args:
-            repo_id (str)
-                The ID of the repository to search.
-            type_ids (str, list, tuple)
-                A list of content types to search.
-            criteria (:class:`~pubtools.pulplib.Criteria`)
-                A criteria object used for this search.
-
-        Returns:
-            list[:class:`~pubtools.pulplib.Unit`]
-                A list of zero or more :class:`~pubtools.pulplib.Unit`
-                subclasses found by the search operation.
-
-        Raises:
-            :class:`~pubtools.pulplib.InvalidContentTypeException`
-                If the criteria does not contain a valid _content_type_id.
-
-        .. versionadded:: 2.4.0
-        """
-        resource_type = "repositories/%s" % repo_id
-        search_options = {"type_ids": validate_type_ids(type_ids)}
-        return list(
-            self._search(
-                Unit, resource_type, criteria=criteria, search_options=search_options
-            )
-        )
-
     def search_distributor(self, criteria=None):
         """Search the distributors matching the given criteria.
 
@@ -253,13 +223,16 @@ class Client(object):
         return self._search(Distributor, "distributors", criteria=criteria)
 
     def _search(self, return_type, resource_type, criteria=None, search_options=None):
-        type_ids = search_options.pop("type_ids", None) if search_options else None
         pulp_crit = {
             "skip": 0,
             "limit": self._PAGE_SIZE,
             "filters": filters_for_criteria(criteria, return_type),
-            "type_ids": type_ids,
         }
+
+        type_ids = search_options.pop("type_ids", None) if search_options else None
+        if type_ids:
+            pulp_crit["type_ids"] = type_ids
+
         search = {"criteria": pulp_crit}
         search.update(search_options or {})
 

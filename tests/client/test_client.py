@@ -58,37 +58,6 @@ def test_can_search(client, requests_mocker):
     assert requests_mocker.call_count == 1
 
 
-def test_can_search_repository_content(client, requests_mocker):
-    """search_repository_content issues /search/units/ POST requests as expected"""
-    requests_mocker.post(
-        "https://pulp.example.com/pulp/api/v2/repositories/some-repo/search/units/",
-        json=[
-            {
-                "metadata": {
-                    "_content_type_id": "modulemd_defaults",
-                    "name": "mdd",
-                    "repo_id": "mdd-repo",
-                    "stream": "1.0",
-                    "profiles": {"p1": ["something"]},
-                }
-            }
-        ],
-    )
-
-    units = client.search_repository_content("some-repo", type_ids="modulemd_defaults")
-
-    # It should have returned one ModulemdDefaultsUnit
-    assert units == [
-        ModulemdDefaultsUnit(
-            content_type_id="modulemd_defaults",
-            name="mdd",
-            repo_id="mdd-repo",
-            stream="1.0",
-            profiles={"p1": ["something"]},
-        )
-    ]
-
-
 def test_can_search_distributor(client, requests_mocker):
     """search_distributor issues distributors/search POST request as expected."""
     requests_mocker.post(
@@ -248,10 +217,10 @@ def test_search_can_paginate(client, requests_mocker):
     # We'll just sample a few of the requests here.
     history = requests_mocker.request_history
     criteria = [h.json()["criteria"] for h in history]
-    assert criteria[0] == {"filters": {}, "skip": 0, "limit": 10, "type_ids": None}
-    assert criteria[1] == {"filters": {}, "skip": 10, "limit": 10, "type_ids": None}
-    assert criteria[2] == {"filters": {}, "skip": 20, "limit": 10, "type_ids": None}
-    assert criteria[-1] == {"filters": {}, "skip": 990, "limit": 10, "type_ids": None}
+    assert criteria[0] == {"filters": {}, "skip": 0, "limit": 10}
+    assert criteria[1] == {"filters": {}, "skip": 10, "limit": 10}
+    assert criteria[2] == {"filters": {}, "skip": 20, "limit": 10}
+    assert criteria[-1] == {"filters": {}, "skip": 990, "limit": 10}
 
 
 def test_can_get(client, requests_mocker):

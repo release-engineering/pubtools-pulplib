@@ -12,6 +12,8 @@ from ..common import (
 from ..attr import pulp_attrib
 from ..distributor import Distributor
 from ..frozenlist import FrozenList
+from ..unit import Unit
+from ...client.search import validate_type_ids
 from ...schema import load_schema
 from ... import compat_attr as attr
 
@@ -266,7 +268,13 @@ class Repository(PulpObject, Deletable):
         if not self._client:
             raise DetachedException()
 
-        return self._client.search_repository_content(self.id, type_id, criteria)
+        resource_type = "repositories/%s" % self.id
+        search_options = {"type_ids": validate_type_ids(type_id)}
+        return list(
+            self._client._search(
+                Unit, resource_type, criteria=criteria, search_options=search_options
+            )
+        )
 
     def delete(self):
         """Delete this repository from Pulp.

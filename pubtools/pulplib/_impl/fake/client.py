@@ -19,10 +19,9 @@ from pubtools.pulplib import (
     Task,
     Repository,
     Distributor,
-    Unit,
     MaintenanceReport,
 )
-from pubtools.pulplib._impl.client.search import filters_for_criteria, validate_type_ids
+from pubtools.pulplib._impl.client.search import filters_for_criteria
 from .. import compat_attr as attr
 
 from .match import match_object
@@ -90,24 +89,6 @@ class FakeClient(object):
         # values. Encourage that by returning output in unpredictable order
         random.shuffle(repos)
         return self._prepare_pages(repos)
-
-    def search_repository_content(self, repo_id, type_ids, criteria=None):
-        criteria = criteria or Criteria.true()
-        units = []
-
-        filters_for_criteria(criteria, Unit)
-
-        try:
-            for unit in self._repo_units[repo_id]:
-                if unit.content_type_id in validate_type_ids(type_ids) and match_object(
-                    criteria, unit
-                ):
-                    units.append(attr.evolve(unit))
-        except Exception as ex:  # pylint: disable=broad-except
-            return f_return_error(ex)
-
-        random.shuffle(units)
-        return self._prepare_pages(units)
 
     def search_distributor(self, criteria=None):
         criteria = criteria or Criteria.true()

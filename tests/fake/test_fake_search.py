@@ -213,12 +213,8 @@ def test_search_bad_criteria():
     with pytest.raises(Exception) as dist_exc:
         client.search_distributor("invalid criteria")
 
-    with pytest.raises(Exception) as repo_cont_exc:
-        client.search_repository_content("some-repo", "rpm", "criteria?")
-
     assert "Not a criteria" in str(repo_exc.value)
     assert "Not a criteria" in str(dist_exc.value)
-    assert "Not a criteria" in str(repo_cont_exc.value)
 
 
 def test_search_created_timestamp():
@@ -355,46 +351,6 @@ def test_search_paginates():
 
     # All repos should have been found
     assert sorted(found_repos) == sorted(repos)
-
-
-@pytest.mark.parametrize("type_id", ["rpm", "quark"])
-def test_search_repository_content(type_id):
-    """Can return desired units when type ID is valid and raises otherwise"""
-    controller = FakeController()
-
-    repo1 = Repository(id="repo1")
-    controller.insert_repository(repo1)
-
-    units = [
-        Unit.from_data(
-            {
-                "_content_type_id": "iso",
-                "name": "hello.txt",
-                "size": 23,
-                "checksum": "a" * 64,
-            }
-        ),
-        Unit.from_data(
-            {
-                "_content_type_id": "rpm",
-                "name": "bash",
-                "epoch": "0",
-                "filename": "bash-x86_64.rpm",
-                "version": "4.0",
-                "release": "1",
-                "arch": "x86_64",
-            }
-        ),
-    ]
-    controller.insert_units(repo1, units)
-
-    if type_id is "quark":
-        with pytest.raises(Exception) as ex:
-            controller.client.search_repository_content("repo1", type_ids=type_id)
-            assert "Invalid content type ID(s)" in str(ex.value)
-    else:
-        found = controller.client.search_repository_content("repo1", type_ids="rpm")
-        assert sorted(found) == [units[1]]
 
 
 def test_search_distributor():
