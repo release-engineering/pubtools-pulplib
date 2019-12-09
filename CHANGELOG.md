@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- n/a
+### Fixed
+- Fixed a bug that export an empty maintenance report would crash.
 
 ## [2.3.1] - 2019-10-03
 
