@@ -12,7 +12,6 @@ from pubtools.pulplib import (
     Criteria,
     Matcher,
     Repository,
-    ModulemdDefaultsUnit,
     PulpException,
     MaintenanceReport,
     Task,

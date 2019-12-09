@@ -2,14 +2,7 @@ import datetime
 
 import pytest
 
-from pubtools.pulplib import (
-    FakeController,
-    Repository,
-    Unit,
-    Criteria,
-    Matcher,
-    Distributor,
-)
+from pubtools.pulplib import FakeController, Repository, Criteria, Matcher, Distributor
 
 
 def test_can_search_id():
