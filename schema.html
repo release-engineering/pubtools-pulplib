@@ -364,6 +364,30 @@ definitions:
     - context
     - arch
 
+  # modulemd_defaults units
+  modulemd_defaults:
+    type: object
+
+    properties:
+      # Type of the unit
+      _content_type_id:
+        const: modulemd_defaults
+
+      name:
+        type: string
+      repo_id:
+        type: string
+      stream:
+        type: string
+      profiles:
+        type: object
+
+    required:
+    - _content_type_id
+    - name
+    - stream
+    - repo_id
+
   # Schema for any unknown type of unit
   unknown:
     type: object
@@ -380,6 +404,7 @@ definitions:
             - rpm
             - srpm
             - modulemd
+            - modulemd_defaults
 
     required:
     - _content_type_id
@@ -388,6 +413,7 @@ anyOf:
 - $ref: &quot;#/definitions/iso&quot;
 - $ref: &quot;#/definitions/rpm&quot;
 - $ref: &quot;#/definitions/modulemd&quot;
+- $ref: &quot;#/definitions/modulemd_defaults&quot;
 - $ref: &quot;#/definitions/unknown&quot;
 </pre></div>
 </div>

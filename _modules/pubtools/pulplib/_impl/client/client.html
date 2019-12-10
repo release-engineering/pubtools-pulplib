@@ -46,7 +46,7 @@
 
 <span class="kn">from</span> <span class="nn">..page</span> <span class="kn">import</span> <span class="n">Page</span>
 <span class="kn">from</span> <span class="nn">..criteria</span> <span class="kn">import</span> <span class="n">Criteria</span>
-<span class="kn">from</span> <span class="nn">..model</span> <span class="kn">import</span> <span class="n">Repository</span><span class="p">,</span> <span class="n">MaintenanceReport</span><span class="p">,</span> <span class="n">Distributor</span>
+<span class="kn">from</span> <span class="nn">..model</span> <span class="kn">import</span> <span class="n">Repository</span><span class="p">,</span> <span class="n">MaintenanceReport</span><span class="p">,</span> <span class="n">Distributor</span><span class="p">,</span> <span class="n">Unit</span>
 <span class="kn">from</span> <span class="nn">.search</span> <span class="kn">import</span> <span class="n">filters_for_criteria</span>
 <span class="kn">from</span> <span class="nn">.errors</span> <span class="kn">import</span> <span class="n">PulpException</span>
 <span class="kn">from</span> <span class="nn">.poller</span> <span class="kn">import</span> <span class="n">TaskPoller</span>
@@ -261,16 +261,29 @@
             <span class="s2">&quot;limit&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_PAGE_SIZE</span><span class="p">,</span>
             <span class="s2">&quot;filters&quot;</span><span class="p">:</span> <span class="n">filters_for_criteria</span><span class="p">(</span><span class="n">criteria</span><span class="p">,</span> <span class="n">return_type</span><span class="p">),</span>
         <span class="p">}</span>
+
+        <span class="n">type_ids</span> <span class="o">=</span> <span class="n">search_options</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;type_ids&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">if</span> <span class="n">search_options</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">type_ids</span><span class="p">:</span>
+            <span class="n">pulp_crit</span><span class="p">[</span><span class="s2">&quot;type_ids&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">type_ids</span>
+
         <span class="n">search</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;criteria&quot;</span><span class="p">:</span> <span class="n">pulp_crit</span><span class="p">}</span>
         <span class="n">search</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">search_options</span> <span class="ow">or</span> <span class="p">{})</span>
 
-        <span class="n">response_f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_search</span><span class="p">(</span><span class="n">resource_type</span><span class="p">,</span> <span class="n">search</span><span class="p">)</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_url</span><span class="p">,</span> <span class="s2">&quot;pulp/api/v2/</span><span class="si">%s</span><span class="s2">/search/&quot;</span> <span class="o">%</span> <span class="n">resource_type</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">return_type</span> <span class="ow">is</span> <span class="n">Unit</span> <span class="ow">and</span> <span class="n">search</span><span class="p">[</span><span class="s2">&quot;criteria&quot;</span><span class="p">][</span><span class="s2">&quot;type_ids&quot;</span><span class="p">]:</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="s2">&quot;units/&quot;</span><span class="p">)</span>
+
+        <span class="n">response_f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_search</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">search</span><span class="p">)</span>
 
         <span class="c1"># When this request is resolved, we&#39;ll have the first page of data.</span>
         <span class="c1"># We&#39;ll need to convert that into a page and also keep going with</span>
         <span class="c1"># the search if there&#39;s more to be done.</span>
         <span class="k">return</span> <span class="n">f_proxy</span><span class="p">(</span>
-            <span class="n">f_map</span><span class="p">(</span><span class="n">response_f</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">data</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_page</span><span class="p">(</span><span class="n">return_type</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">data</span><span class="p">))</span>
+            <span class="n">f_map</span><span class="p">(</span>
+                <span class="n">response_f</span><span class="p">,</span>
+                <span class="k">lambda</span> <span class="n">data</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_page</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">return_type</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">data</span><span class="p">),</span>
+            <span class="p">)</span>
         <span class="p">)</span>
 
 <div class="viewcode-block" id="Client.get_maintenance_report"><a class="viewcode-back" href="../../../../../api/client.html#pubtools.pulplib.Client.get_maintenance_report">[docs]</a>    <span class="k">def</span> <span class="nf">get_maintenance_report</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -450,12 +463,18 @@
             <span class="k">pass</span>
         <span class="k">return</span> <span class="n">taskdata</span>
 
-    <span class="k">def</span> <span class="nf">_handle_page</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">object_class</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">raw_data</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_handle_page</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">object_class</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">raw_data</span><span class="p">):</span>
         <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Got pulp response for </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2"> elems&quot;</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw_data</span><span class="p">))</span>
+
+        <span class="c1"># Extract metadata from Pulp units</span>
+        <span class="k">if</span> <span class="n">object_class</span> <span class="ow">is</span> <span class="n">Unit</span> <span class="ow">and</span> <span class="n">url</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;units/&quot;</span><span class="p">):</span>
+            <span class="n">raw_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">elem</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">raw_data</span><span class="p">]</span>
 
         <span class="n">page_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">object_class</span><span class="o">.</span><span class="n">from_data</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span> <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">raw_data</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">page_data</span><span class="p">:</span>
-            <span class="n">obj</span><span class="o">.</span><span class="n">_set_client</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="c1"># set_client is only applicable for repository and distributor objects</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;_set_client&quot;</span><span class="p">):</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">_set_client</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
         <span class="c1"># Do we need a next page?</span>
         <span class="n">next_page</span> <span class="o">=</span> <span class="kc">None</span>
@@ -466,11 +485,11 @@
             <span class="n">search</span> <span class="o">=</span> <span class="n">search</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
             <span class="n">search</span><span class="p">[</span><span class="s2">&quot;criteria&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">search</span><span class="p">[</span><span class="s2">&quot;criteria&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
             <span class="n">search</span><span class="p">[</span><span class="s2">&quot;criteria&quot;</span><span class="p">][</span><span class="s2">&quot;skip&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">search</span><span class="p">[</span><span class="s2">&quot;criteria&quot;</span><span class="p">][</span><span class="s2">&quot;skip&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">limit</span>
-            <span class="n">response_f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_search</span><span class="p">(</span><span class="s2">&quot;repositories&quot;</span><span class="p">,</span> <span class="n">search</span><span class="p">)</span>
+            <span class="n">response_f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_search</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">search</span><span class="p">)</span>
             <span class="n">next_page</span> <span class="o">=</span> <span class="n">f_proxy</span><span class="p">(</span>
                 <span class="n">f_map</span><span class="p">(</span>
                     <span class="n">response_f</span><span class="p">,</span>
-                    <span class="k">lambda</span> <span class="n">data</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_page</span><span class="p">(</span><span class="n">object_class</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">data</span><span class="p">),</span>
+                    <span class="k">lambda</span> <span class="n">data</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_page</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">object_class</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">data</span><span class="p">),</span>
                 <span class="p">)</span>
             <span class="p">)</span>
 
@@ -491,9 +510,7 @@
     <span class="k">def</span> <span class="nf">_do_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_do_search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resource_type</span><span class="p">,</span> <span class="n">search</span><span class="p">):</span>
-        <span class="n">url</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_url</span><span class="p">,</span> <span class="s2">&quot;pulp/api/v2/</span><span class="si">{0}</span><span class="s2">/search/&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">resource_type</span><span class="p">))</span>
-
+    <span class="k">def</span> <span class="nf">_do_search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">search</span><span class="p">):</span>
         <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Submitting </span><span class="si">%s</span><span class="s2"> search: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">search</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_do_request</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">search</span>

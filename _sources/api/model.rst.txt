@@ -49,6 +49,8 @@ Units
 .. autoclass:: pubtools.pulplib.ModulemdUnit()
    :members:
 
+.. autoclass:: pubtools.pulplib.ModulemdDefaultUnit()
+   :members:
 
 Task
 ----

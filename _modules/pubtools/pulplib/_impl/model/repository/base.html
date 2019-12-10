@@ -37,10 +37,16 @@
 <span class="kn">from</span> <span class="nn">attr</span> <span class="kn">import</span> <span class="n">validators</span>
 <span class="kn">from</span> <span class="nn">more_executors.futures</span> <span class="kn">import</span> <span class="n">f_proxy</span>
 
-<span class="kn">from</span> <span class="nn">..common</span> <span class="kn">import</span> <span class="n">PulpObject</span><span class="p">,</span> <span class="n">Deletable</span><span class="p">,</span> <span class="n">DetachedException</span>
+<span class="kn">from</span> <span class="nn">..common</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">PulpObject</span><span class="p">,</span>
+    <span class="n">Deletable</span><span class="p">,</span>
+    <span class="n">DetachedException</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">..attr</span> <span class="kn">import</span> <span class="n">pulp_attrib</span>
 <span class="kn">from</span> <span class="nn">..distributor</span> <span class="kn">import</span> <span class="n">Distributor</span>
 <span class="kn">from</span> <span class="nn">..frozenlist</span> <span class="kn">import</span> <span class="n">FrozenList</span>
+<span class="kn">from</span> <span class="nn">..unit</span> <span class="kn">import</span> <span class="n">Unit</span>
+<span class="kn">from</span> <span class="nn">...client.search</span> <span class="kn">import</span> <span class="n">validate_type_ids</span>
 <span class="kn">from</span> <span class="nn">...schema</span> <span class="kn">import</span> <span class="n">load_schema</span>
 <span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">compat_attr</span> <span class="k">as</span> <span class="n">attr</span>
 
@@ -220,6 +226,88 @@
 <span class="sd">                If this repository has no distributor with the given ID.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distributors_by_id</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">distributor_id</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">iso_content</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A list of iso units stored in this repository.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list[:class:`~pubtools.pulplib.FileUnit`]</span>
+
+<span class="sd">        .. versionadded:: 2.4.0</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_content</span><span class="p">(</span><span class="s2">&quot;iso&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">rpm_content</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A list of rpm units stored in this repository.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list[:class:`~pubtools.pulplib.RpmUnit`]</span>
+
+<span class="sd">        .. versionadded:: 2.4.0</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_content</span><span class="p">(</span><span class="s2">&quot;rpm&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">srpm_content</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A list of srpm units stored in this repository.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list[:class:`~pubtools.pulplib.Unit`]</span>
+
+<span class="sd">        .. versionadded:: 2.4.0</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_content</span><span class="p">(</span><span class="s2">&quot;srpm&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">modulemd_content</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A list of modulemd units stored in this repository.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list[:class:`~pubtools.pulplib.ModulemdUnit`]</span>
+
+<span class="sd">        .. versionadded:: 2.4.0</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_content</span><span class="p">(</span><span class="s2">&quot;modulemd&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">modulemd_defaults_content</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A list of modulemd_defaults units stored in this repository.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list[:class:`~pubtools.pulplib.ModulemdDefaultsUnit`]</span>
+
+<span class="sd">        .. versionadded:: 2.4.0</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_content</span><span class="p">(</span><span class="s2">&quot;modulemd_defaults&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Repository.search_content"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.Repository.search_content">[docs]</a>    <span class="k">def</span> <span class="nf">search_content</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_id</span><span class="p">,</span> <span class="n">criteria</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Search this repository for content matching the given criteria.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            type_id (str)</span>
+<span class="sd">                The content type to search</span>
+<span class="sd">            criteria (:class:`~pubtools.pulplib.Criteria`)</span>
+<span class="sd">                A criteria object used for this search.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list[:class:`~pubtools.pulplib.Unit`]</span>
+<span class="sd">                A list of zero or more :class:`~pubtools.pulplib.Unit`</span>
+<span class="sd">                subclasses found by the search operation.</span>
+
+<span class="sd">        .. versionadded:: 2.4.0</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DetachedException</span><span class="p">()</span>
+
+        <span class="n">resource_type</span> <span class="o">=</span> <span class="s2">&quot;repositories/</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span>
+        <span class="n">search_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;type_ids&quot;</span><span class="p">:</span> <span class="n">validate_type_ids</span><span class="p">(</span><span class="n">type_id</span><span class="p">)}</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_search</span><span class="p">(</span>
+                <span class="n">Unit</span><span class="p">,</span> <span class="n">resource_type</span><span class="p">,</span> <span class="n">criteria</span><span class="o">=</span><span class="n">criteria</span><span class="p">,</span> <span class="n">search_options</span><span class="o">=</span><span class="n">search_options</span>
+            <span class="p">)</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Repository.delete"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.Repository.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Delete this repository from Pulp.</span>
