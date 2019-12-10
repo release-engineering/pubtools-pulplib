@@ -4,10 +4,16 @@ import logging
 from attr import validators
 from more_executors.futures import f_proxy
 
-from ..common import PulpObject, Deletable, DetachedException
+from ..common import (
+    PulpObject,
+    Deletable,
+    DetachedException,
+)
 from ..attr import pulp_attrib
 from ..distributor import Distributor
 from ..frozenlist import FrozenList
+from ..unit import Unit
+from ...client.search import validate_type_ids
 from ...schema import load_schema
 from ... import compat_attr as attr
 
@@ -187,6 +193,88 @@ class Repository(PulpObject, Deletable):
                 If this repository has no distributor with the given ID.
         """
         return self._distributors_by_id.get(distributor_id)
+
+    @property
+    def iso_content(self):
+        """A list of iso units stored in this repository.
+
+        Returns:
+            list[:class:`~pubtools.pulplib.FileUnit`]
+
+        .. versionadded:: 2.4.0
+        """
+        return self.search_content("iso")
+
+    @property
+    def rpm_content(self):
+        """A list of rpm units stored in this repository.
+
+        Returns:
+            list[:class:`~pubtools.pulplib.RpmUnit`]
+
+        .. versionadded:: 2.4.0
+        """
+        return self.search_content("rpm")
+
+    @property
+    def srpm_content(self):
+        """A list of srpm units stored in this repository.
+
+        Returns:
+            list[:class:`~pubtools.pulplib.Unit`]
+
+        .. versionadded:: 2.4.0
+        """
+        return self.search_content("srpm")
+
+    @property
+    def modulemd_content(self):
+        """A list of modulemd units stored in this repository.
+
+        Returns:
+            list[:class:`~pubtools.pulplib.ModulemdUnit`]
+
+        .. versionadded:: 2.4.0
+        """
+        return self.search_content("modulemd")
+
+    @property
+    def modulemd_defaults_content(self):
+        """A list of modulemd_defaults units stored in this repository.
+
+        Returns:
+            list[:class:`~pubtools.pulplib.ModulemdDefaultsUnit`]
+
+        .. versionadded:: 2.4.0
+        """
+        return self.search_content("modulemd_defaults")
+
+    def search_content(self, type_id, criteria=None):
+        """Search this repository for content matching the given criteria.
+
+        Args:
+            type_id (str)
+                The content type to search
+            criteria (:class:`~pubtools.pulplib.Criteria`)
+                A criteria object used for this search.
+
+        Returns:
+            list[:class:`~pubtools.pulplib.Unit`]
+                A list of zero or more :class:`~pubtools.pulplib.Unit`
+                subclasses found by the search operation.
+
+        .. versionadded:: 2.4.0
+        """
+        if not self._client:
+            raise DetachedException()
+
+        resource_type = "repositories/%s" % self.id
+        search_options = {"type_ids": validate_type_ids(type_id)}
+        return list(
+            self._client._search(
+                Unit, resource_type, criteria=criteria, search_options=search_options
+            )
+        )
 
     def delete(self):
         """Delete this repository from Pulp.

@@ -13,7 +13,7 @@ from more_executors.futures import f_map, f_flat_map, f_return, f_proxy
 
 from ..page import Page
 from ..criteria import Criteria
-from ..model import Repository, MaintenanceReport, Distributor
+from ..model import Repository, MaintenanceReport, Distributor, Unit
 from .search import filters_for_criteria
 from .errors import PulpException
 from .poller import TaskPoller
@@ -228,16 +228,29 @@ class Client(object):
             "limit": self._PAGE_SIZE,
             "filters": filters_for_criteria(criteria, return_type),
         }
+
+        type_ids = search_options.pop("type_ids", None) if search_options else None
+        if type_ids:
+            pulp_crit["type_ids"] = type_ids
+
         search = {"criteria": pulp_crit}
         search.update(search_options or {})
 
-        response_f = self._do_search(resource_type, search)
+        url = os.path.join(self._url, "pulp/api/v2/%s/search/" % resource_type)
+
+        if return_type is Unit and search["criteria"]["type_ids"]:
+            url = os.path.join(url, "units/")
+
+        response_f = self._do_search(url, search)
 
         # When this request is resolved, we'll have the first page of data.
         # We'll need to convert that into a page and also keep going with
         # the search if there's more to be done.
         return f_proxy(
-            f_map(response_f, lambda data: self._handle_page(return_type, search, data))
+            f_map(
+                response_f,
+                lambda data: self._handle_page(url, return_type, search, data),
+            )
         )
 
     def get_maintenance_report(self):
@@ -417,12 +430,18 @@ class Client(object):
             pass
         return taskdata
 
-    def _handle_page(self, object_class, search, raw_data):
+    def _handle_page(self, url, object_class, search, raw_data):
         LOG.debug("Got pulp response for %s, %s elems", search, len(raw_data))
+
+        # Extract metadata from Pulp units
+        if object_class is Unit and url.endswith("units/"):
+            raw_data = [elem["metadata"] for elem in raw_data]
 
         page_data = [object_class.from_data(elem) for elem in raw_data]
         for obj in page_data:
-            obj._set_client(self)
+            # set_client is only applicable for repository and distributor objects
+            if hasattr(obj, "_set_client"):
+                obj._set_client(self)
 
         # Do we need a next page?
         next_page = None
@@ -433,11 +452,11 @@ class Client(object):
             search = search.copy()
             search["criteria"] = search["criteria"].copy()
             search["criteria"]["skip"] = search["criteria"]["skip"] + limit
-            response_f = self._do_search("repositories", search)
+            response_f = self._do_search(url, search)
             next_page = f_proxy(
                 f_map(
                     response_f,
-                    lambda data: self._handle_page(object_class, search, data),
+                    lambda data: self._handle_page(url, object_class, search, data),
                 )
             )
 
@@ -458,9 +477,7 @@ class Client(object):
     def _do_request(self, **kwargs):
         return self._session.request(**kwargs)
 
-    def _do_search(self, resource_type, search):
-        url = os.path.join(self._url, "pulp/api/v2/{0}/search/".format(resource_type))
-
+    def _do_search(self, url, search):
         LOG.debug("Submitting %s search: %s", url, search)
         return self._request_executor.submit(
             self._do_request, method="POST", url=url, json=search

@@ -2,7 +2,6 @@ import logging
 import datetime
 import json
 import pytest
-import requests_mock
 
 from mock import patch
 

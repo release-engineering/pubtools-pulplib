@@ -3,7 +3,11 @@ import datetime
 
 from pubtools.pulplib import Criteria, Matcher
 
-from pubtools.pulplib._impl.client.search import filters_for_criteria, field_match
+from pubtools.pulplib._impl.client.search import (
+    filters_for_criteria,
+    field_match,
+    validate_type_ids,
+)
 
 
 def test_null_criteria():
@@ -97,3 +101,25 @@ def test_dict_matcher_value():
     assert filters_for_criteria(crit) == {
         "created": {"$lt": {"created_date": {"$date": "2019-09-04T00:00:00Z"}}}
     }
+
+
+def test_valid_type_ids(caplog):
+    assert validate_type_ids(["srpm", "iso", "quark", "rpm"]) == ["srpm", "iso", "rpm"]
+    for m in ["Invalid content type ID(s):", "quark"]:
+        assert m in caplog.text
+
+
+def test_invalid_type_ids():
+    """validate_type_ids raises if called without valid criteria"""
+    with pytest.raises(ValueError) as e:
+        validate_type_ids("quark")
+
+    assert "Must provide valid content type ID(s)" in str(e)
+
+
+def test_invalid_type_ids_type():
+    """validate_type_ids raises if called without valid criteria"""
+    with pytest.raises(TypeError) as e:
+        validate_type_ids({"srpm": "some-srpm"})
+
+    assert "Expected str, list, or tuple, got %s" % type({}) in str(e)

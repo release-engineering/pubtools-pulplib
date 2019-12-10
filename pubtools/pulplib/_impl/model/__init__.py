@@ -1,4 +1,8 @@
-from .common import PulpObject, DetachedException, InvalidDataException
+from .common import (
+    PulpObject,
+    DetachedException,
+    InvalidDataException,
+)
 from .repository import (
     Repository,
     YumRepository,
@@ -6,7 +10,7 @@ from .repository import (
     ContainerImageRepository,
     PublishOptions,
 )
-from .unit import Unit, FileUnit, RpmUnit, ModulemdUnit
+from .unit import Unit, FileUnit, RpmUnit, ModulemdUnit, ModulemdDefaultsUnit
 from .task import Task
 from .distributor import Distributor
 from .maintenance import MaintenanceReport, MaintenanceEntry
