@@ -1,8 +1,4 @@
-from .common import (
-    PulpObject,
-    DetachedException,
-    InvalidDataException,
-)
+from .common import PulpObject, DetachedException, InvalidDataException
 from .repository import (
     Repository,
     YumRepository,

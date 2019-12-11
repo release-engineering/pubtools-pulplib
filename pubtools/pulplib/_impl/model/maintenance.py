@@ -122,7 +122,7 @@ class MaintenanceReport(object):
         """export a raw dictionary of maintenance report"""
         report = {
             "last_updated": write_timestamp(self.last_updated),
-            "last_updated_by": self.last_updated_by,
+            "last_updated_by": self.last_updated_by or self._OWNER,
             "repos": {},
         }
 
@@ -219,4 +219,9 @@ class MaintenanceReport(object):
             if entry.repo_id not in repo_ids:
                 new_entries.append(entry)
 
-        return attr.evolve(self, last_updated_by=owner, entries=new_entries)
+        return attr.evolve(
+            self,
+            entries=new_entries,
+            last_updated_by=owner,
+            last_updated=datetime.datetime.utcnow(),
+        )

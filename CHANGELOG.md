@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Fixed a bug that export an empty maintenance report would crash.
+- Fixed another bug that maintenance report could have an invalid `last_updated_by` value.
 
 ## [2.3.1] - 2019-10-03
 
