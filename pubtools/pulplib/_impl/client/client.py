@@ -14,7 +14,7 @@ from more_executors.futures import f_map, f_flat_map, f_return, f_proxy
 from ..page import Page
 from ..criteria import Criteria
 from ..model import Repository, MaintenanceReport, Distributor, Unit
-from .search import filters_for_criteria
+from .search import filters_for_criteria, validate_type_ids
 from .errors import PulpException
 from .poller import TaskPoller
 from . import retry
@@ -223,23 +223,20 @@ class Client(object):
         return self._search(Distributor, "distributors", criteria=criteria)
 
     def _search(self, return_type, resource_type, criteria=None, search_options=None):
-        pulp_crit = {
-            "skip": 0,
-            "limit": self._PAGE_SIZE,
-            "filters": filters_for_criteria(criteria, return_type),
-        }
-
-        type_ids = search_options.pop("type_ids", None) if search_options else None
-        if type_ids:
-            pulp_crit["type_ids"] = type_ids
-
-        search = {"criteria": pulp_crit}
-        search.update(search_options or {})
-
         url = os.path.join(self._url, "pulp/api/v2/%s/search/" % resource_type)
+        filtered_crit = filters_for_criteria(criteria, return_type)
+        type_ids = search_options.pop("type_ids", None) if search_options else None
+        type_ids = {"type_ids": validate_type_ids(type_ids)} if type_ids else {}
 
-        if return_type is Unit and search["criteria"]["type_ids"]:
+        if return_type is Unit and type_ids:
             url = os.path.join(url, "units/")
+            filtered_crit = {"unit": filtered_crit} if filtered_crit else {}
+
+        search = {
+            "criteria": {"skip": 0, "limit": self._PAGE_SIZE, "filters": filtered_crit}
+        }
+        search["criteria"].update(type_ids)
+        search.update(search_options or {})
 
         response_f = self._do_search(url, search)
 
