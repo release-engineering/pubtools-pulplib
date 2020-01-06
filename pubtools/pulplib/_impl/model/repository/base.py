@@ -13,7 +13,6 @@ from ..attr import pulp_attrib
 from ..distributor import Distributor
 from ..frozenlist import FrozenList
 from ..unit import Unit
-from ...client.search import validate_type_ids
 from ...schema import load_schema
 from ... import compat_attr as attr
 
@@ -269,7 +268,7 @@ class Repository(PulpObject, Deletable):
             raise DetachedException()
 
         resource_type = "repositories/%s" % self.id
-        search_options = {"type_ids": validate_type_ids(type_id)}
+        search_options = {"type_ids": type_id}
         return list(
             self._client._search(
                 Unit, resource_type, criteria=criteria, search_options=search_options
