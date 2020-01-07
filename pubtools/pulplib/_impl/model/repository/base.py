@@ -202,7 +202,7 @@ class Repository(PulpObject, Deletable):
 
         .. versionadded:: 2.4.0
         """
-        return self.search_content("iso")
+        return list(self.search_content("iso"))
 
     @property
     def rpm_content(self):
@@ -213,7 +213,7 @@ class Repository(PulpObject, Deletable):
 
         .. versionadded:: 2.4.0
         """
-        return self.search_content("rpm")
+        return list(self.search_content("rpm"))
 
     @property
     def srpm_content(self):
@@ -224,7 +224,7 @@ class Repository(PulpObject, Deletable):
 
         .. versionadded:: 2.4.0
         """
-        return self.search_content("srpm")
+        return list(self.search_content("srpm"))
 
     @property
     def modulemd_content(self):
@@ -235,7 +235,7 @@ class Repository(PulpObject, Deletable):
 
         .. versionadded:: 2.4.0
         """
-        return self.search_content("modulemd")
+        return list(self.search_content("modulemd"))
 
     @property
     def modulemd_defaults_content(self):
@@ -246,7 +246,7 @@ class Repository(PulpObject, Deletable):
 
         .. versionadded:: 2.4.0
         """
-        return self.search_content("modulemd_defaults")
+        return list(self.search_content("modulemd_defaults"))
 
     def search_content(self, type_id, criteria=None):
         """Search this repository for content matching the given criteria.
@@ -258,9 +258,11 @@ class Repository(PulpObject, Deletable):
                 A criteria object used for this search.
 
         Returns:
-            list[:class:`~pubtools.pulplib.Unit`]
-                A list of zero or more :class:`~pubtools.pulplib.Unit`
-                subclasses found by the search operation.
+            Future[:class:`~pubtools.pulplib.Page`]
+                A future representing the first page of results.
+
+                Each page will contain a collection of
+                :class:`~pubtools.pulplib.Unit` objects.
 
         .. versionadded:: 2.4.0
         """
@@ -269,10 +271,8 @@ class Repository(PulpObject, Deletable):
 
         resource_type = "repositories/%s" % self.id
         search_options = {"type_ids": type_id}
-        return list(
-            self._client._search(
-                Unit, resource_type, criteria=criteria, search_options=search_options
-            )
+        return self._client._search(
+            Unit, resource_type, criteria=criteria, search_options=search_options
         )
 
     def delete(self):
