@@ -194,8 +194,8 @@ class Repository(PulpObject, Deletable):
         return self._distributors_by_id.get(distributor_id)
 
     @property
-    def iso_content(self):
-        """A list of iso units stored in this repository.
+    def file_content(self):
+        """A list of file units stored in this repository.
 
         Returns:
             list[:class:`~pubtools.pulplib.FileUnit`]

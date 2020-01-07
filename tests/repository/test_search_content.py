@@ -5,11 +5,11 @@ from pubtools.pulplib import Repository, DetachedException
 def test_detached():
     """content searches raise if called on a detached repository object"""
     with pytest.raises(DetachedException):
-        assert not Repository(id="some-repo").iso_content
+        assert not Repository(id="some-repo").file_content
 
 
-def test_iso_content(client, requests_mocker):
-    """iso_content returns correct unit types"""
+def test_file_content(client, requests_mocker):
+    """file_content returns correct unit types"""
     repo = Repository(id="some-repo")
     repo.__dict__["_client"] = client
     requests_mocker.post(
@@ -26,10 +26,10 @@ def test_iso_content(client, requests_mocker):
         ],
     )
 
-    isos = repo.iso_content
+    files = repo.file_content
 
-    assert len(isos) == 1
-    assert isos[0].content_type_id == "iso"
+    assert len(files) == 1
+    assert files[0].content_type_id == "iso"
 
 
 def test_rpm_content(client, requests_mocker):
