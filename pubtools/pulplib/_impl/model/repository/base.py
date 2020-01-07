@@ -273,11 +273,7 @@ class Repository(PulpObject, Deletable):
         if not self._client:
             raise DetachedException()
 
-        resource_type = "repositories/%s" % self.id
-
-        return self._client._search(
-            Unit, resource_type, search_type="search/units", criteria=criteria
-        )
+        return self._client._search_repo_units(self.id, criteria)
 
     def delete(self):
         """Delete this repository from Pulp.

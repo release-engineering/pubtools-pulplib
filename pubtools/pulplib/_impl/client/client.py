@@ -265,6 +265,13 @@ class Client(object):
             )
         )
 
+    def _search_repo_units(self, repo_id, criteria):
+        resource_type = "repositories/%s" % repo_id
+
+        return self._search(
+            Unit, resource_type, search_type="search/units", criteria=criteria
+        )
+
     def get_maintenance_report(self):
         """Get the current maintenance mode status for this Pulp server.
 
