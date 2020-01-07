@@ -3,7 +3,7 @@ import os
 import logging
 from argparse import ArgumentParser
 
-from pubtools.pulplib import Client
+from pubtools.pulplib import Client, Criteria
 
 log = logging.getLogger("search-repo-content")
 
@@ -47,7 +47,9 @@ def main():
 
     client = make_client(p)
     repository = client.get_repository(p.repo_id)
-    units = repository.search_content(type_id=p.content_type)
+    units = repository.search_content(
+        Criteria.with_field("content_type_id", p.content_type)
+    )
 
     count = 0
     for unit in units:

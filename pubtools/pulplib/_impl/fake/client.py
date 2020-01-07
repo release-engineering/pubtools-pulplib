@@ -21,7 +21,7 @@ from pubtools.pulplib import (
     Distributor,
     MaintenanceReport,
 )
-from pubtools.pulplib._impl.client.search import filters_for_criteria
+from pubtools.pulplib._impl.client.search import search_for_criteria
 from .. import compat_attr as attr
 
 from .match import match_object
@@ -76,7 +76,7 @@ class FakeClient(object):
         # we're not accessing a real Pulp server. The point is to ensure the
         # same validation and error behavior as used by the real client also
         # applies to the fake.
-        filters_for_criteria(criteria, Repository)
+        search_for_criteria(criteria, Repository)
 
         try:
             for repo in self._repositories:
@@ -94,7 +94,7 @@ class FakeClient(object):
         criteria = criteria or Criteria.true()
         distributors = []
 
-        filters_for_criteria(criteria, Distributor)
+        search_for_criteria(criteria, Distributor)
 
         try:
             for repo in self._repositories:
