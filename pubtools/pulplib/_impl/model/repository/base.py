@@ -4,7 +4,11 @@ import logging
 from attr import validators
 from more_executors.futures import f_proxy
 
-from ..common import PulpObject, Deletable, DetachedException
+from ..common import (
+    PulpObject,
+    Deletable,
+    DetachedException,
+)
 from ..attr import pulp_attrib
 from ..distributor import Distributor
 from ..frozenlist import FrozenList
