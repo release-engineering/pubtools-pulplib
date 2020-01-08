@@ -219,9 +219,4 @@ class MaintenanceReport(object):
             if entry.repo_id not in repo_ids:
                 new_entries.append(entry)
 
-        return attr.evolve(
-            self,
-            entries=new_entries,
-            last_updated_by=owner,
-            last_updated=datetime.datetime.utcnow(),
-        )
+        return attr.evolve(self, last_updated_by=owner, entries=new_entries)
