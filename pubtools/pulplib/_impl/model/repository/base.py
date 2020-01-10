@@ -12,7 +12,7 @@ from ..common import (
 from ..attr import pulp_attrib
 from ..distributor import Distributor
 from ..frozenlist import FrozenList
-from ..unit import Unit
+from ...criteria import Criteria
 from ...schema import load_schema
 from ... import compat_attr as attr
 
@@ -194,15 +194,15 @@ class Repository(PulpObject, Deletable):
         return self._distributors_by_id.get(distributor_id)
 
     @property
-    def iso_content(self):
-        """A list of iso units stored in this repository.
+    def file_content(self):
+        """A list of file units stored in this repository.
 
         Returns:
             list[:class:`~pubtools.pulplib.FileUnit`]
 
         .. versionadded:: 2.4.0
         """
-        return self.search_content("iso")
+        return list(self.search_content(Criteria.with_field("content_type_id", "iso")))
 
     @property
     def rpm_content(self):
@@ -213,7 +213,7 @@ class Repository(PulpObject, Deletable):
 
         .. versionadded:: 2.4.0
         """
-        return self.search_content("rpm")
+        return list(self.search_content(Criteria.with_field("content_type_id", "rpm")))
 
     @property
     def srpm_content(self):
@@ -224,7 +224,7 @@ class Repository(PulpObject, Deletable):
 
         .. versionadded:: 2.4.0
         """
-        return self.search_content("srpm")
+        return list(self.search_content(Criteria.with_field("content_type_id", "srpm")))
 
     @property
     def modulemd_content(self):
@@ -235,7 +235,9 @@ class Repository(PulpObject, Deletable):
 
         .. versionadded:: 2.4.0
         """
-        return self.search_content("modulemd")
+        return list(
+            self.search_content(Criteria.with_field("content_type_id", "modulemd"))
+        )
 
     @property
     def modulemd_defaults_content(self):
@@ -246,34 +248,32 @@ class Repository(PulpObject, Deletable):
 
         .. versionadded:: 2.4.0
         """
-        return self.search_content("modulemd_defaults")
+        return list(
+            self.search_content(
+                Criteria.with_field("content_type_id", "modulemd_defaults")
+            )
+        )
 
-    def search_content(self, type_id, criteria=None):
+    def search_content(self, criteria=None):
         """Search this repository for content matching the given criteria.
 
         Args:
-            type_id (str)
-                The content type to search
             criteria (:class:`~pubtools.pulplib.Criteria`)
                 A criteria object used for this search.
 
         Returns:
-            list[:class:`~pubtools.pulplib.Unit`]
-                A list of zero or more :class:`~pubtools.pulplib.Unit`
-                subclasses found by the search operation.
+            Future[:class:`~pubtools.pulplib.Page`]
+                A future representing the first page of results.
+
+                Each page will contain a collection of
+                :class:`~pubtools.pulplib.Unit` objects.
 
         .. versionadded:: 2.4.0
         """
         if not self._client:
             raise DetachedException()
 
-        resource_type = "repositories/%s" % self.id
-        search_options = {"type_ids": type_id}
-        return list(
-            self._client._search(
-                Unit, resource_type, criteria=criteria, search_options=search_options
-            )
-        )
+        return self._client._search_repo_units(self.id, criteria)
 
     def delete(self):
         """Delete this repository from Pulp.

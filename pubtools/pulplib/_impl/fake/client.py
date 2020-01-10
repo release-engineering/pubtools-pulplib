@@ -19,9 +19,10 @@ from pubtools.pulplib import (
     Task,
     Repository,
     Distributor,
+    Unit,
     MaintenanceReport,
 )
-from pubtools.pulplib._impl.client.search import filters_for_criteria
+from pubtools.pulplib._impl.client.search import search_for_criteria
 from .. import compat_attr as attr
 
 from .match import match_object
@@ -76,7 +77,7 @@ class FakeClient(object):
         # we're not accessing a real Pulp server. The point is to ensure the
         # same validation and error behavior as used by the real client also
         # applies to the fake.
-        filters_for_criteria(criteria, Repository)
+        search_for_criteria(criteria, Repository)
 
         try:
             for repo in self._repositories:
@@ -94,7 +95,7 @@ class FakeClient(object):
         criteria = criteria or Criteria.true()
         distributors = []
 
-        filters_for_criteria(criteria, Distributor)
+        search_for_criteria(criteria, Distributor)
 
         try:
             for repo in self._repositories:
@@ -106,6 +107,31 @@ class FakeClient(object):
 
         random.shuffle(distributors)
         return self._prepare_pages(distributors)
+
+    def _search_repo_units(self, repo_id, criteria):
+        criteria = criteria or Criteria.true()
+
+        # Pass the criteria through the same handling as used by the real client
+        # for serialization, to ensure we reject criteria also rejected by real client.
+        # We don't actually use the result, this is only for validation.
+        search_for_criteria(criteria, Unit)
+
+        repo_f = self.get_repository(repo_id)
+        if repo_f.exception():
+            return repo_f
+
+        units = self._repo_units.get(repo_id, set())
+        out = []
+
+        try:
+            for unit in units:
+                if match_object(criteria, unit):
+                    out.append(unit)
+        except Exception as ex:  # pylint: disable=broad-except
+            return f_return_error(ex)
+
+        random.shuffle(out)
+        return self._prepare_pages(out)
 
     def _prepare_pages(self, resource_list):
         # Split resource_list into pages

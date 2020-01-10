@@ -1,5 +1,6 @@
 import logging
 import datetime
+import contextlib
 from pubtools.pulplib._impl.criteria import (
     AndCriteria,
     OrCriteria,
@@ -14,7 +15,7 @@ from pubtools.pulplib._impl.criteria import (
 
 from pubtools.pulplib._impl import compat_attr as attr
 from pubtools.pulplib._impl.model.attr import PULP2_FIELD, PY_PULP2_CONVERTER
-from pubtools.pulplib._impl.model.unit import SUPPORTED_UNIT_TYPES
+from pubtools.pulplib._impl.model.unit.base import Unit
 
 LOG = logging.getLogger("pubtools.pulplib")
 
@@ -71,23 +72,95 @@ def map_field_for_type(field_name, matcher, type_hint):
     return None
 
 
-def filters_for_criteria(criteria, type_hint=None):
-    # convert a Criteria object to a filters dict as used in the Pulp 2.x API:
+@attr.s
+class PulpSearch(object):
+    # Helper class representing a prepared Pulp search.
+    # Usually just a filters dict, but may include type_ids
+    # for unit searches.
+    filters = attr.ib(type=dict)
+    type_ids = attr.ib(type=list, default=None)
+
+
+class TypeIdAccumulator(object):
+    def __init__(self):
+        self.can_accumulate = True
+        self.values = []
+
+    def accumulate_from_match(self, match_expr):
+        # Are we still in a state where accumulation is possible?
+        if not self.can_accumulate:
+            raise ValueError(
+                (
+                    "Can't serialize criteria for Pulp query; too complicated. "
+                    "Try simplifying the query with respect to content_type_id."
+                )
+            )
+
+        # OK, we can accumulate if it's a supported expression type.
+        if isinstance(match_expr, dict) and list(match_expr.keys()) == ["$eq"]:
+            self.values = [match_expr["$eq"]]
+        elif isinstance(match_expr, dict) and list(match_expr.keys()) == ["$in"]:
+            self.values = match_expr["$in"]
+        else:
+            raise ValueError(
+                (
+                    "Can't serialize criteria for Pulp query, "
+                    "unsupported expression for content_type_id: %s\n"
+                )
+                % repr(match_expr)
+            )
+
+        # It is only possible to accumulate once.
+        self.can_accumulate = False
+
+    @property
+    @contextlib.contextmanager
+    def no_accumulate(self):
+        old_can_accumulate = self.can_accumulate
+        self.can_accumulate = False
+        try:
+            yield
+        finally:
+            self.can_accumulate = old_can_accumulate
+
+
+def search_for_criteria(criteria, type_hint=None, type_ids_accum=None):
+    # convert a Criteria object to a PulpSearch with filters as used in the Pulp 2.x API:
     # https://docs.pulpproject.org/dev-guide/conventions/criteria.html#search-criteria
     #
     # type_hint optionally provides the class expected to be found by this search.
     # This can impact the application of certain criteria, e.g. it will affect
     # field mappings looked up by FieldMatchCriteria.
     if criteria is None or isinstance(criteria, TrueCriteria):
-        return {}
+        return PulpSearch(filters={})
+
+    type_ids_accum = type_ids_accum or TypeIdAccumulator()
 
     if isinstance(criteria, AndCriteria):
-        return {"$and": [filters_for_criteria(c) for c in criteria._operands]}
+        clauses = [
+            search_for_criteria(c, type_hint, type_ids_accum).filters
+            for c in criteria._operands
+        ]
 
-    if isinstance(criteria, OrCriteria):
-        return {"$or": [filters_for_criteria(c) for c in criteria._operands]}
+        # Empty filters do not affect the result and can be simplified.
+        clauses = [c for c in clauses if c != {}]
 
-    if isinstance(criteria, FieldMatchCriteria):
+        # A single clause is the same as no $and at all.
+        if len(clauses) == 1:
+            filters = clauses[0]
+        else:
+            filters = {"$and": clauses}
+
+    elif isinstance(criteria, OrCriteria):
+        with type_ids_accum.no_accumulate:
+            filters = {
+                "$or": [
+                    search_for_criteria(c, type_hint, type_ids_accum).filters
+                    for c in criteria._operands
+                ]
+            }
+
+    elif isinstance(criteria, FieldMatchCriteria):
         field = criteria._field
         matcher = criteria._matcher
 
@@ -95,9 +168,30 @@ def filters_for_criteria(criteria, type_hint=None):
         if mapped:
             field, matcher = mapped
 
-        return {field: field_match(matcher)}
+        match_expr = field_match(matcher)
 
-    raise TypeError("Not a criteria: %s" % repr(criteria))
+        # If we are looking at the special _content_type_id field
+        # for the purpose of a unit search...
+        if field == "_content_type_id" and type_hint is Unit:
+            # We should not include this into filters, but instead
+            # attempt to accumulate it into type_ids_out.
+            # This is because type_ids needs to be serialized into the
+            # top-level 'criteria' and not 'filters', and there are
+            # additional restrictions on its usage.
+            type_ids_accum.accumulate_from_match(match_expr)
+
+            filters = {}
+        else:
+            filters = {field: match_expr}
+
+    else:
+        raise TypeError("Not a criteria: %s" % repr(criteria))
+
+    return PulpSearch(filters=filters, type_ids=type_ids_accum.values[:])
+
+
+def filters_for_criteria(criteria, type_hint=None):
+    return search_for_criteria(criteria, type_hint).filters
 
 
 def field_match(to_match):
@@ -117,28 +211,3 @@ def field_match(to_match):
         return {"$lt": to_mongo_json(to_match._value)}
 
     raise TypeError("Not a matcher: %s" % repr(to_match))
-
-
-def validate_type_ids(type_ids):
-    valid_type_ids = []
-    invalid_type_ids = []
-
-    if isinstance(type_ids, str):
-        type_ids = [type_ids]
-
-    if not isinstance(type_ids, (list, tuple)):
-        raise TypeError("Expected str, list, or tuple, got %s" % type(type_ids))
-
-    for type_id in type_ids:
-        if type_id in SUPPORTED_UNIT_TYPES:
-            valid_type_ids.append(type_id)
-        else:
-            invalid_type_ids.append(type_id)
-
-    if invalid_type_ids:
-        LOG.error("Invalid content type ID(s): \n\t%s", ", ".join(invalid_type_ids))
-
-    if valid_type_ids:
-        return valid_type_ids
-
-    raise ValueError("Must provide valid content type ID(s)")

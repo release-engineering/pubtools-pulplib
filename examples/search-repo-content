@@ -3,7 +3,7 @@ import os
 import logging
 from argparse import ArgumentParser
 
-from pubtools.pulplib import Client
+from pubtools.pulplib import Client, Criteria
 
 log = logging.getLogger("search-repo-content")
 
@@ -31,7 +31,9 @@ def main():
     )
     parser.add_argument("--url", help="Pulp server URL", required=True)
     parser.add_argument("--username", help="Pulp username")
-    parser.add_argument("--password", help="Pulp password (or set PULP_PASSWORD in env)")
+    parser.add_argument(
+        "--password", help="Pulp password (or set PULP_PASSWORD in env)"
+    )
     parser.add_argument("--repo-id", action="store", required=True)
     parser.add_argument("--content-type", action="store", required=True)
     parser.add_argument("--debug", action="store_true")
@@ -45,15 +47,19 @@ def main():
 
     client = make_client(p)
     repository = client.get_repository(p.repo_id)
-    units = repository.search_content(type_id=p.content_type)
+    units = repository.search_content(
+        Criteria.with_field("content_type_id", p.content_type)
+    )
 
-    if units:
-        log.info("Found %s %s units: \n\t%s" % (
-            len(units), p.content_type,
-            "\n\t".join(str(unit) for unit in units)
-        ))
+    count = 0
+    for unit in units:
+        log.info("\t%s", unit)
+        count += 1
+
+    if count:
+        log.info("Found %s %s units", count, p.content_type)
     else:
-        log.info("No %s units found." % p.content_type)
+        log.info("No %s units found.", p.content_type)
 
     return units
 
