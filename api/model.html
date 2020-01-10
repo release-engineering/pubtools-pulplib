@@ -198,9 +198,9 @@ this repository will not publish repository metadata to remote hosts.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pubtools.pulplib.Repository.iso_content">
-<em class="property">property </em><code class="sig-name descname">iso_content</code><a class="headerlink" href="#pubtools.pulplib.Repository.iso_content" title="Permalink to this definition">¶</a></dt>
-<dd><p>A list of iso units stored in this repository.</p>
+<dt id="pubtools.pulplib.Repository.file_content">
+<em class="property">property </em><code class="sig-name descname">file_content</code><a class="headerlink" href="#pubtools.pulplib.Repository.file_content" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of file units stored in this repository.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>list[<a class="reference internal" href="#pubtools.pulplib.FileUnit" title="pubtools.pulplib.FileUnit"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileUnit</span></code></a>]</p>
@@ -269,19 +269,17 @@ this repository will not publish repository metadata to remote hosts.</p>
 
 <dl class="method">
 <dt id="pubtools.pulplib.Repository.search_content">
-<code class="sig-name descname">search_content</code><span class="sig-paren">(</span><em class="sig-param">type_id</em>, <em class="sig-param">criteria=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository/base.html#Repository.search_content"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.Repository.search_content" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search_content</code><span class="sig-paren">(</span><em class="sig-param">criteria=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository/base.html#Repository.search_content"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.Repository.search_content" title="Permalink to this definition">¶</a></dt>
 <dd><p>Search this repository for content matching the given criteria.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>type_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The content type to search</p></li>
-<li><p><strong>criteria</strong> (<a class="reference internal" href="searching.html#pubtools.pulplib.Criteria" title="pubtools.pulplib.Criteria"><code class="xref py py-class docutils literal notranslate"><span class="pre">Criteria</span></code></a>) – A criteria object used for this search.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>criteria</strong> (<a class="reference internal" href="searching.html#pubtools.pulplib.Criteria" title="pubtools.pulplib.Criteria"><code class="xref py py-class docutils literal notranslate"><span class="pre">Criteria</span></code></a>) – A criteria object used for this search.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>list[<a class="reference internal" href="#pubtools.pulplib.Unit" title="pubtools.pulplib.Unit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unit</span></code></a>]</dt><dd><p>A list of zero or more <a class="reference internal" href="#pubtools.pulplib.Unit" title="pubtools.pulplib.Unit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unit</span></code></a>
-subclasses found by the search operation.</p>
+<dd class="field-even"><p><dl>
+<dt>Future[<a class="reference internal" href="searching.html#pubtools.pulplib.Page" title="pubtools.pulplib.Page"><code class="xref py py-class docutils literal notranslate"><span class="pre">Page</span></code></a>]</dt><dd><p>A future representing the first page of results.</p>
+<p>Each page will contain a collection of
+<a class="reference internal" href="#pubtools.pulplib.Unit" title="pubtools.pulplib.Unit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unit</span></code></a> objects.</p>
 </dd>
 </dl>
 </p>

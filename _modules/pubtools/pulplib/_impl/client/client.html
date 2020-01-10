@@ -47,7 +47,7 @@
 <span class="kn">from</span> <span class="nn">..page</span> <span class="kn">import</span> <span class="n">Page</span>
 <span class="kn">from</span> <span class="nn">..criteria</span> <span class="kn">import</span> <span class="n">Criteria</span>
 <span class="kn">from</span> <span class="nn">..model</span> <span class="kn">import</span> <span class="n">Repository</span><span class="p">,</span> <span class="n">MaintenanceReport</span><span class="p">,</span> <span class="n">Distributor</span><span class="p">,</span> <span class="n">Unit</span>
-<span class="kn">from</span> <span class="nn">.search</span> <span class="kn">import</span> <span class="n">filters_for_criteria</span><span class="p">,</span> <span class="n">validate_type_ids</span>
+<span class="kn">from</span> <span class="nn">.search</span> <span class="kn">import</span> <span class="n">search_for_criteria</span>
 <span class="kn">from</span> <span class="nn">.errors</span> <span class="kn">import</span> <span class="n">PulpException</span>
 <span class="kn">from</span> <span class="nn">.poller</span> <span class="kn">import</span> <span class="n">TaskPoller</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">retry</span>
@@ -255,21 +255,36 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_search</span><span class="p">(</span><span class="n">Distributor</span><span class="p">,</span> <span class="s2">&quot;distributors&quot;</span><span class="p">,</span> <span class="n">criteria</span><span class="o">=</span><span class="n">criteria</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_type</span><span class="p">,</span> <span class="n">resource_type</span><span class="p">,</span> <span class="n">criteria</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">search_options</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="n">url</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_url</span><span class="p">,</span> <span class="s2">&quot;pulp/api/v2/</span><span class="si">%s</span><span class="s2">/search/&quot;</span> <span class="o">%</span> <span class="n">resource_type</span><span class="p">)</span>
-        <span class="n">filtered_crit</span> <span class="o">=</span> <span class="n">filters_for_criteria</span><span class="p">(</span><span class="n">criteria</span><span class="p">,</span> <span class="n">return_type</span><span class="p">)</span>
-        <span class="n">type_ids</span> <span class="o">=</span> <span class="n">search_options</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;type_ids&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">if</span> <span class="n">search_options</span> <span class="k">else</span> <span class="kc">None</span>
-        <span class="n">type_ids</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;type_ids&quot;</span><span class="p">:</span> <span class="n">validate_type_ids</span><span class="p">(</span><span class="n">type_ids</span><span class="p">)}</span> <span class="k">if</span> <span class="n">type_ids</span> <span class="k">else</span> <span class="p">{}</span>
-
-        <span class="k">if</span> <span class="n">return_type</span> <span class="ow">is</span> <span class="n">Unit</span> <span class="ow">and</span> <span class="n">type_ids</span><span class="p">:</span>
-            <span class="n">url</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="s2">&quot;units/&quot;</span><span class="p">)</span>
-            <span class="n">filtered_crit</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="n">filtered_crit</span><span class="p">}</span> <span class="k">if</span> <span class="n">filtered_crit</span> <span class="k">else</span> <span class="p">{}</span>
+    <span class="k">def</span> <span class="nf">_search</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">return_type</span><span class="p">,</span>
+        <span class="n">resource_type</span><span class="p">,</span>
+        <span class="n">search_type</span><span class="o">=</span><span class="s2">&quot;search&quot;</span><span class="p">,</span>
+        <span class="n">search_options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">criteria</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_url</span><span class="p">,</span> <span class="s2">&quot;pulp/api/v2/</span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">/&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">resource_type</span><span class="p">,</span> <span class="n">search_type</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">prepared_search</span> <span class="o">=</span> <span class="n">search_for_criteria</span><span class="p">(</span><span class="n">criteria</span><span class="p">,</span> <span class="n">return_type</span><span class="p">)</span>
 
         <span class="n">search</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;criteria&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;skip&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;limit&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_PAGE_SIZE</span><span class="p">,</span> <span class="s2">&quot;filters&quot;</span><span class="p">:</span> <span class="n">filtered_crit</span><span class="p">}</span>
+            <span class="s2">&quot;criteria&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;skip&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="s2">&quot;limit&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_PAGE_SIZE</span><span class="p">,</span>
+                <span class="s2">&quot;filters&quot;</span><span class="p">:</span> <span class="n">prepared_search</span><span class="o">.</span><span class="n">filters</span><span class="p">,</span>
+            <span class="p">}</span>
         <span class="p">}</span>
-        <span class="n">search</span><span class="p">[</span><span class="s2">&quot;criteria&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">type_ids</span><span class="p">)</span>
         <span class="n">search</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">search_options</span> <span class="ow">or</span> <span class="p">{})</span>
+
+        <span class="k">if</span> <span class="n">search_type</span> <span class="o">==</span> <span class="s2">&quot;search/units&quot;</span><span class="p">:</span>
+            <span class="c1"># Unit searches need a little special handling:</span>
+            <span class="c1"># - serialization might have extracted some type_ids</span>
+            <span class="c1"># - filters should be wrapped under &#39;unit&#39;</span>
+            <span class="c1">#   (we do not support searching on associations right now)</span>
+            <span class="k">if</span> <span class="n">prepared_search</span><span class="o">.</span><span class="n">type_ids</span><span class="p">:</span>
+                <span class="n">search</span><span class="p">[</span><span class="s2">&quot;criteria&quot;</span><span class="p">][</span><span class="s2">&quot;type_ids&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">prepared_search</span><span class="o">.</span><span class="n">type_ids</span>
+            <span class="n">search</span><span class="p">[</span><span class="s2">&quot;criteria&quot;</span><span class="p">][</span><span class="s2">&quot;filters&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="n">search</span><span class="p">[</span><span class="s2">&quot;criteria&quot;</span><span class="p">][</span><span class="s2">&quot;filters&quot;</span><span class="p">]}</span>
 
         <span class="n">response_f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_search</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">search</span><span class="p">)</span>
 
@@ -281,6 +296,13 @@
                 <span class="n">response_f</span><span class="p">,</span>
                 <span class="k">lambda</span> <span class="n">data</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_page</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">return_type</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">data</span><span class="p">),</span>
             <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_search_repo_units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repo_id</span><span class="p">,</span> <span class="n">criteria</span><span class="p">):</span>
+        <span class="n">resource_type</span> <span class="o">=</span> <span class="s2">&quot;repositories/</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">repo_id</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_search</span><span class="p">(</span>
+            <span class="n">Unit</span><span class="p">,</span> <span class="n">resource_type</span><span class="p">,</span> <span class="n">search_type</span><span class="o">=</span><span class="s2">&quot;search/units&quot;</span><span class="p">,</span> <span class="n">criteria</span><span class="o">=</span><span class="n">criteria</span>
         <span class="p">)</span>
 
 <div class="viewcode-block" id="Client.get_maintenance_report"><a class="viewcode-back" href="../../../../../api/client.html#pubtools.pulplib.Client.get_maintenance_report">[docs]</a>    <span class="k">def</span> <span class="nf">get_maintenance_report</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
