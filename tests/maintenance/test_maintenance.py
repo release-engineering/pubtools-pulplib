@@ -103,3 +103,5 @@ def test_export_empty_report():
     data = report._export_dict()
     # exported report should have a timestamp
     assert datetime.datetime.strptime(data["last_updated"], "%Y-%m-%dT%H:%M:%SZ")
+    # exported report should have the default owner
+    assert data["last_updated_by"] == "ContentDelivery"

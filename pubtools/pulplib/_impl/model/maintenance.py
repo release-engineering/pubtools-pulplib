@@ -122,7 +122,7 @@ class MaintenanceReport(object):
         """export a raw dictionary of maintenance report"""
         report = {
             "last_updated": write_timestamp(self.last_updated),
-            "last_updated_by": self.last_updated_by,
+            "last_updated_by": self.last_updated_by or self._OWNER,
             "repos": {},
         }
 
