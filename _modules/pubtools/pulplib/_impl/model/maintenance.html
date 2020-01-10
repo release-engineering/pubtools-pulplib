@@ -155,7 +155,7 @@
         <span class="sd">&quot;&quot;&quot;export a raw dictionary of maintenance report&quot;&quot;&quot;</span>
         <span class="n">report</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;last_updated&quot;</span><span class="p">:</span> <span class="n">write_timestamp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">last_updated</span><span class="p">),</span>
-            <span class="s2">&quot;last_updated_by&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_updated_by</span><span class="p">,</span>
+            <span class="s2">&quot;last_updated_by&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_updated_by</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_OWNER</span><span class="p">,</span>
             <span class="s2">&quot;repos&quot;</span><span class="p">:</span> <span class="p">{},</span>
         <span class="p">}</span>
 
