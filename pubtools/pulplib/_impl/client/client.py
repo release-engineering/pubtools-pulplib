@@ -316,7 +316,9 @@ class Client(object):
 
         return f_flat_map(upload_ft, lambda _: repo.publish())
 
-    def copy_repo_content(self, origin_repo, dest_repo, criteria=None, override_config=None):
+    def copy_repo_content(
+        self, origin_repo, dest_repo, criteria=None, override_config=None
+    ):
         """
         Args:
             origin_repo:
@@ -333,15 +335,14 @@ class Client(object):
                 to the destination repo
         """
         url = os.path.join(
-            self._url,
-            "pulp/api/v2/repositories/%s/actions/associate/" % dest_repo
+            self._url, "pulp/api/v2/repositories/%s/actions/associate/" % dest_repo
         )
 
         data = {"source_repo_id": origin_repo}
         if criteria:
-            data['criteria'] = criteria
+            data["criteria"] = criteria
         if override_config:
-            data['override_config'] = override_config
+            data["override_config"] = override_config
 
         return self._task_executor.submit(
             self._do_request, method="POST", url=url, json=data
