@@ -316,6 +316,18 @@ class Client(object):
 
         return f_flat_map(upload_ft, lambda _: repo.publish())
 
+    def copy_repo_content(self, origin_repo, dest_repo):
+        url = os.path.join(
+            self._url,
+            "pulp/api/v2/repositories/%s/actions/associate/" % dest_repo
+        )
+
+        body = {"source_repo_id": origin_repo}
+
+        return self._task_executor.submit(
+            self._do_request, method="POST", url=url, json=body
+        )
+
     def get_content_type_ids(self):
         """Get the content types supported by this Pulp server.
 
