@@ -317,6 +317,21 @@ class Client(object):
         return f_flat_map(upload_ft, lambda _: repo.publish())
 
     def copy_repo_content(self, origin_repo, dest_repo, criteria=None, override_config=None):
+        """
+        Args:
+            origin_repo:
+                String of the origin repo name
+            dest_repo:
+                String of the destination repo name
+            criteria:
+                optional Criteria object with filter parameters
+            override_config:
+                optional dictionary to override configuration options
+        Return:
+            Future[list[:class:`~pubtools.pulplib.Task`]]
+                A future which is resolved when the packages have been copied 
+                to the destination repo
+        """
         url = os.path.join(
             self._url,
             "pulp/api/v2/repositories/%s/actions/associate/" % dest_repo
