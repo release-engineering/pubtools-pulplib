@@ -4,7 +4,7 @@ import logging
 from attr import validators
 from more_executors.futures import f_flat_map, f_map, f_proxy
 
-from .base import Repository, repo_type
+from .base import Repository, SyncOptions, repo_type
 from ..frozenlist import FrozenList
 from ..attr import pulp_attrib
 from ..common import DetachedException
@@ -12,6 +12,21 @@ from ... import compat_attr as attr
 
 
 LOG = logging.getLogger("pubtools.pulplib")
+
+
+@attr.s(kw_only=True, frozen=True)
+class FileSyncOptions(SyncOptions):
+    """Options controlling a file repository
+    :meth:`~pubtools.pulplib.FileRepository.sync`.
+    """
+
+    remove_missing = pulp_attrib(default=False, type=bool)
+    """If true, as the repository is synchronized, old rpms will be removed.
+    """
+
+    validate = pulp_attrib(default=None, type=bool)
+    """If True, checksum of each file will be verified against the metadata's expectation
+    """
 
 
 @repo_type("iso-repo")

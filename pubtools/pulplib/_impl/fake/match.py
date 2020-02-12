@@ -29,7 +29,7 @@ def visit(klass):
     return wrap
 
 
-def match_object(*args, **kwargs):
+def match_object(*args, **kwargs):  # pylint:disable=inconsistent-return-statements
     dispatch = args[0]
     for (klass, func) in CLASS_MATCHERS:
         if isinstance(dispatch, klass):

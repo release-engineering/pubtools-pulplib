@@ -9,6 +9,10 @@ from .repository import (
     FileRepository,
     ContainerImageRepository,
     PublishOptions,
+    SyncOptions,
+    FileSyncOptions,
+    ContainerSyncOptions,
+    YumSyncOptions,
 )
 from .unit import Unit, FileUnit, RpmUnit, ModulemdUnit, ModulemdDefaultsUnit
 from .task import Task
