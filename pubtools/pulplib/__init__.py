@@ -16,6 +16,7 @@ from ._impl.model import (
     ModulemdDefaultsUnit,
     Distributor,
     PublishOptions,
+    SyncOptions,
     Task,
     MaintenanceReport,
     MaintenanceEntry,

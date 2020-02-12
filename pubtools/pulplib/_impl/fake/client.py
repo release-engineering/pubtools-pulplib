@@ -29,9 +29,10 @@ from .match import match_object
 
 Publish = namedtuple("Publish", ["repository", "tasks"])
 Upload = namedtuple("Upload", ["repository", "tasks", "name", "sha256"])
+Sync = namedtuple("Sync", ["repository", "tasks"])
 
 
-class FakeClient(object):
+class FakeClient(object):  # pylint:disable = too-many-instance-attributes
     # Client implementation holding data in memory rather than
     # using a remote Pulp server.
     #
@@ -62,6 +63,7 @@ class FakeClient(object):
         self._repo_units = {}
         self._publish_history = []
         self._upload_history = []
+        self._sync_history = []
         self._maintenance_report = None
         self._type_ids = self._DEFAULT_TYPE_IDS[:]
         self._lock = threading.RLock()
@@ -355,6 +357,18 @@ class FakeClient(object):
         repo = attr.evolve(repo, **kwargs)
         repo._set_client(self)
         return repo
+
+    def _do_sync(self, repo_id, sync_config):  # pylint:disable = unused-argument
+        repo_f = self.get_repository(repo_id)
+        if repo_f.exception():
+            # Repo can't be found, let that exception propagate
+            return repo_f
+
+        task = Task(id=self._next_task_id(), completed=True, succeeded=True)
+
+        self._sync_history.append(Sync(repo_f.result(), [task]))
+
+        return f_return([task])
 
     def _next_task_id(self):
         with self._lock:

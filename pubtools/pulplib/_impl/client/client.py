@@ -229,7 +229,7 @@ class Client(object):
         search_type="search",
         search_options=None,
         criteria=None,
-    ):
+    ):  # pylint:disable = too-many-arguments
         url = os.path.join(
             self._url, "pulp/api/v2/%s/%s/" % (resource_type, search_type)
         )
@@ -565,3 +565,18 @@ class Client(object):
         )
 
         return f_map(response, error_fn=map_404_to_none)
+
+    def _do_sync(self, repo_id, sync_options):
+        if not sync_options["feed"]:
+            raise ValueError("Cannot sync with empty feed: '%s'" % sync_options["feed"])
+
+        url = os.path.join(
+            self._url, "pulp/api/v2/repositories/%s/actions/sync/" % repo_id
+        )
+
+        body = {"override_config": sync_options}
+
+        LOG.debug("Syncing repository %s with feed %s", repo_id, sync_options["feed"])
+        return self._task_executor.submit(
+            self._do_request, method="POST", url=url, json=body
+        )

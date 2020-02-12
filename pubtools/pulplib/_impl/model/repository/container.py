@@ -1,6 +1,33 @@
-from .base import Repository, repo_type
+from .base import Repository, SyncOptions, repo_type
 from ..attr import pulp_attrib
 from ... import compat_attr as attr
+
+
+@attr.s(kw_only=True, frozen=True)
+class ContainerSyncOptions(SyncOptions):
+    """Options controlling a container repository
+    :meth:`~pubtools.pulplib.ContainerImageRepository.sync`.
+    """
+
+    upstream_name = pulp_attrib(default=None, type=str)
+    """The name of the repository to import from the upstream repository.
+    """
+
+    tags = pulp_attrib(default=None, type=str)
+    """List of tags to include on sync.
+    """
+
+    enable_v1 = pulp_attrib(default=False, type=bool)
+    """Boolean to control whether to attempt using registry API v1 during synchronization.
+
+    Default is False
+    """
+
+    enable_v2 = pulp_attrib(default=False, type=bool)
+    """Boolean to control whether to attempt using registry API v2 during synchronization.
+
+    Default is True
+    """
 
 
 @repo_type("docker-repo")

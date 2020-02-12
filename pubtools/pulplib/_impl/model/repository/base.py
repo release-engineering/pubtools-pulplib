@@ -1,14 +1,10 @@
 import datetime
 import logging
 
-from attr import validators
+from attr import validators, asdict
 from more_executors.futures import f_proxy
 
-from ..common import (
-    PulpObject,
-    Deletable,
-    DetachedException,
-)
+from ..common import PulpObject, Deletable, DetachedException
 from ..attr import pulp_attrib
 from ..distributor import Distributor
 from ..frozenlist import FrozenList
@@ -59,6 +55,53 @@ class PublishOptions(object):
 
     Only relevant if a repository has one or more distributors where
     :meth:`~pubtools.pulplib.Distributor.is_rsync` is ``True``.
+    """
+
+
+@attr.s(kw_only=True, frozen=True)
+class SyncOptions(object):
+    """Options controlling a repository
+    :meth:`~pubtools.pulplib.Repository.sync`.
+    """
+
+    feed = pulp_attrib(type=str)
+    """URL where the repository's content will be synchronized from.
+    """
+
+    ssl_validation = pulp_attrib(default=None, type=bool)
+    """Indicates if the server's SSL certificate is verified against the CA certificate uploaded.
+    """
+
+    ssl_ca_cert = pulp_attrib(default=None, type=str)
+    """CA certificate string used to validate the feed source's SSL certificate
+    """
+
+    ssl_client_cert = pulp_attrib(default=None, type=str)
+    """Certificate used as the client certificate when synchronizing the repository
+    """
+
+    ssl_client_key = pulp_attrib(default=None, type=str)
+    """Private key to the certificate specified in ssl_client_cert
+    """
+
+    max_speed = pulp_attrib(default=None, type=int)
+    """Representing the maximum speed that the importer should be allowed to transfer
+    """
+
+    proxy_host = pulp_attrib(default=None, type=str)
+    """A string representing the URL of the proxy server that should be used when synchronizing
+    """
+
+    proxy_port = pulp_attrib(default=None, type=int)
+    """An integer representing the port that should be used when connecting to proxy_host.
+    """
+
+    proxy_username = pulp_attrib(default=None, type=str)
+    """A string representing the username that should be used to authenticate with the proxy server
+    """
+
+    proxy_password = pulp_attrib(default=None, type=str)
+    """A string representing the password that should be used to authenticate with the proxy server
     """
 
 
@@ -168,7 +211,7 @@ class Repository(PulpObject, Deletable):
         for distributor in value:
             if not distributor.repo_id:
                 return
-            elif distributor.repo_id == self.id:
+            if distributor.repo_id == self.id:
                 return
             raise ValueError(
                 "repo_id doesn't match for %s. repo_id: %s, distributor.repo_id: %s"
@@ -342,6 +385,34 @@ class Repository(PulpObject, Deletable):
             to_publish.append((distributor, config))
 
         return f_proxy(self._client._publish_repository(self, to_publish))
+
+    def sync(self, options=SyncOptions(feed="")):
+        """Sync repository with feed
+
+        Args:
+            options (SyncOptions)
+                Options used to customize the behavior of sync process.
+                If omitted, the Pulp server's defaults apply.
+
+        Returns:
+            Future[list[:class:`~pubtools.pulplib.Task`]]
+                A future which is resolved when publish succeeds.
+
+                The future contains a list of zero or more tasks triggered and awaited
+                during the publish operation.
+
+        Raises:
+            DetachedException
+                If this instance is not attached to a Pulp client.
+        """
+        if not self._client:
+            raise DetachedException()
+
+        return f_proxy(
+            self._client._do_sync(
+                self.id, asdict(options, filter=lambda name, val: val is not None)
+            )
+        )
 
     def remove_content(self, **kwargs):
         """Remove all content of requested types from this repository.
