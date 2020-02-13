@@ -29,7 +29,7 @@ def fixture_search_task_response(requests_mocker):
 
 
 def test_detached():
-    """publish raises if called on a detached repo"""
+    """sync raises if called on a detached repo"""
     with pytest.raises(DetachedException):
         Repository(id="some-repo").sync()
 
