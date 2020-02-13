@@ -21,7 +21,7 @@ class FileSyncOptions(SyncOptions):
     """
 
     remove_missing = pulp_attrib(default=False, type=bool)
-    """If true, as the repository is synchronized, old rpms will be removed.
+    """If true, as the repository is synchronized, old files will be removed.
     """
 
     validate = pulp_attrib(default=None, type=bool)
