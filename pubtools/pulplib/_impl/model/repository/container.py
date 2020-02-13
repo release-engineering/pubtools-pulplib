@@ -18,18 +18,6 @@ class ContainerSyncOptions(SyncOptions):
     """List of tags to include on sync.
     """
 
-    enable_v1 = pulp_attrib(default=False, type=bool)
-    """Boolean to control whether to attempt using registry API v1 during synchronization.
-
-    Default is False
-    """
-
-    enable_v2 = pulp_attrib(default=False, type=bool)
-    """Boolean to control whether to attempt using registry API v2 during synchronization.
-
-    Default is True
-    """
-
 
 @repo_type("docker-repo")
 @attr.s(kw_only=True, frozen=True)
