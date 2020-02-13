@@ -22,7 +22,7 @@ def test_can_sync():
     for task in tasks:
         assert task.succeeded
 
-    # The change should be reflected in the controller's publish history
+    # The change should be reflected in the controller's sync history
     history = controller.sync_history
 
     assert len(history) == 1
