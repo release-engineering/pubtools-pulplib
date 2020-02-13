@@ -396,7 +396,7 @@ class Repository(PulpObject, Deletable):
 
         Returns:
             Future[list[:class:`~pubtools.pulplib.Task`]]
-                A future which is resolved when publish succeeds.
+                A future which is resolved when sync succeeds.
 
                 The future contains a list of zero or more tasks triggered and awaited
                 during the publish operation.
