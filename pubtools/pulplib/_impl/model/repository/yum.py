@@ -64,8 +64,8 @@ class YumSyncOptions(SyncOptions):
     """Requires that imported packages like RPM/DRPM/SRPM should be signed
     """
 
-    allowed_keys = pulp_attrib(default=None, type=str)
-    """Comma-separated list of allowed signature key IDs that imported packages can be signed with
+    allowed_keys = pulp_attrib(default=None, type=list)
+    """List of allowed signature key IDs that imported packages can be signed with
     """
 
     recursive = pulp_attrib(default=None, type=bool)

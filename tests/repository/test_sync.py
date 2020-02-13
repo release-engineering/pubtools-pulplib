@@ -34,14 +34,14 @@ def test_detached():
         Repository(id="some-repo").sync()
 
 
-def test_sync(
+def test_sync_no_feed(
     fast_poller,
     client,
     requests_mocker,
     fixture_sync_async_response,
     fixture_search_task_response,
 ):
-    """publish succeeds and returns tasks from each applicable distributor"""
+    """Test sync fail as no feed is provided."""
     repo = YumRepository(id="some-repo")
     repo.__dict__["_client"] = client
 
@@ -56,7 +56,7 @@ def test_sync(
 def test_sync_with_options(
     requests_mocker, client, fixture_sync_async_response, fixture_search_task_response
 ):
-    """publish passes expected config into distributors based on publish options"""
+    """Test sync passes, test whether sync options are passed to override config."""
     repo = YumRepository(id="some-repo")
     repo.__dict__["_client"] = client
 
