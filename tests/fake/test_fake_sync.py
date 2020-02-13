@@ -31,7 +31,7 @@ def test_can_sync():
 
 
 def test_sync_absent_raises():
-    """repo.publish() of a nonexistent repo raises."""
+    """repo.sync() of a nonexistent repo raises."""
     controller = FakeController()
 
     controller.insert_repository(YumRepository(id="repo1"))
