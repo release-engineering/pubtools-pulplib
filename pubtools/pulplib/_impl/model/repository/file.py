@@ -24,10 +24,6 @@ class FileSyncOptions(SyncOptions):
     """If true, as the repository is synchronized, old files will be removed.
     """
 
-    validate = pulp_attrib(default=None, type=bool)
-    """If True, checksum of each file will be verified against the metadata's expectation
-    """
-
 
 @repo_type("iso-repo")
 @attr.s(kw_only=True, frozen=True)

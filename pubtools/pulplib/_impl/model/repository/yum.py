@@ -14,10 +14,6 @@ class YumSyncOptions(SyncOptions):
     """An authorization token that will be added to every request made to the feed URL's server
     """
 
-    validate = pulp_attrib(default=None, type=bool)
-    """If True, checksum of each file will be verified against the metadata's expectation
-    """
-
     max_downloads = pulp_attrib(default=None, type=int)
     """Number of threads used when synchronizing the repository.
     """
@@ -46,10 +42,6 @@ class YumSyncOptions(SyncOptions):
     Default is to 2.
     """
 
-    copy_children = pulp_attrib(default=None, type=bool)
-    """when False, will not attempt to locate and copy child packages of errata, groups, or categories
-    """
-
     download_policy = pulp_attrib(default=None, type=str)
     """Set the download policy for a repository.
 
@@ -66,18 +58,6 @@ class YumSyncOptions(SyncOptions):
 
     allowed_keys = pulp_attrib(default=None, type=list)
     """List of allowed signature key IDs that imported packages can be signed with
-    """
-
-    recursive = pulp_attrib(default=None, type=bool)
-    """If true, units are copied together with the latest versions of their dependencies
-    """
-
-    recursive_conservative = pulp_attrib(default=None, type=bool)
-    """If true, units are copied together with their dependencies, unless those are already satisfied by the content in the target repository.
-    """
-
-    additional_repos = pulp_attrib(default=None, type=bool)
-    """This option allows for dependencies to be found in repositories ouside of the one the specified in the copy command
     """
 
 
