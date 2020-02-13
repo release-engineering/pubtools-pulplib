@@ -43,7 +43,7 @@ def test_publish_absent_raises():
     # If I delete the repo through one handle...
     assert repo_copy1.delete().result()
 
-    # ...then publish through the other handle becomes impossible
+    # ...then sync through the other handle becomes impossible
     exception = repo_copy2.sync(SyncOptions(feed="mock://feed/")).exception()
     assert isinstance(exception, PulpException)
     assert "repo1 not found" in str(exception)
