@@ -11,6 +11,7 @@ class ContainerSyncOptions(SyncOptions):
 
     upstream_name = pulp_attrib(default=None, type=str)
     """The name of the repository to import from the upstream repository.
+    For example, if syncing from repository `quay.io/fedora/fedora`, upstream_name should be set to `fedora/fedora`.
     """
 
     tags = pulp_attrib(default=None, type=str)
