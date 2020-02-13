@@ -399,7 +399,7 @@ class Repository(PulpObject, Deletable):
                 A future which is resolved when sync succeeds.
 
                 The future contains a list of zero or more tasks triggered and awaited
-                during the publish operation.
+                during the sync operation.
 
         Raises:
             DetachedException
