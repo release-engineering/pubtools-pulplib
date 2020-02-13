@@ -30,7 +30,7 @@ def test_can_sync():
     assert history[0].tasks == tasks
 
 
-def test_publish_absent_raises():
+def test_sync_absent_raises():
     """repo.publish() of a nonexistent repo raises."""
     controller = FakeController()
 
