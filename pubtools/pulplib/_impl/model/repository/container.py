@@ -14,7 +14,7 @@ class ContainerSyncOptions(SyncOptions):
     For example, if syncing from repository `quay.io/fedora/fedora`, upstream_name should be set to `fedora/fedora`.
     """
 
-    tags = pulp_attrib(default=None, type=str)
+    tags = pulp_attrib(default=None, type=list)
     """List of tags to include on sync.
     """
 

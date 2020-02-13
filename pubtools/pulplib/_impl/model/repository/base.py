@@ -85,7 +85,9 @@ class SyncOptions(object):
     """
 
     max_speed = pulp_attrib(default=None, type=int)
-    """Representing the maximum speed that the importer should be allowed to transfer
+    """The maximum download speed in bytes/sec for a task (such as a sync).
+
+    Default is None
     """
 
     proxy_host = pulp_attrib(default=None, type=str)

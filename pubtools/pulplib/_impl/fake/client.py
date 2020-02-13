@@ -29,7 +29,7 @@ from .match import match_object
 
 Publish = namedtuple("Publish", ["repository", "tasks"])
 Upload = namedtuple("Upload", ["repository", "tasks", "name", "sha256"])
-Sync = namedtuple("Sync", ["repository", "tasks"])
+Sync = namedtuple("Sync", ["repository", "tasks", "sync_config"])
 
 
 class FakeClient(object):  # pylint:disable = too-many-instance-attributes
@@ -366,7 +366,7 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
 
         task = Task(id=self._next_task_id(), completed=True, succeeded=True)
 
-        self._sync_history.append(Sync(repo_f.result(), [task]))
+        self._sync_history.append(Sync(repo_f.result(), [task], sync_config))
 
         return f_return([task])
 
