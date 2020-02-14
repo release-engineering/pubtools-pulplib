@@ -1,4 +1,9 @@
-from pubtools.pulplib import FakeController, YumRepository, SyncOptions, PulpException
+from pubtools.pulplib import (
+    FakeController,
+    YumRepository,
+    YumSyncOptions,
+    PulpException,
+)
 
 
 def test_can_sync():
@@ -12,7 +17,7 @@ def test_can_sync():
     repo1 = client.get_repository("repo1")
 
     # Call to sync should succeed
-    sync_f = repo1.sync(SyncOptions(feed="mock://feed/"))
+    sync_f = repo1.sync(YumSyncOptions(feed="mock://feed/"))
 
     # The future should resolve successfully
     tasks = sync_f.result()
@@ -44,6 +49,6 @@ def test_sync_absent_raises():
     assert repo_copy1.delete().result()
 
     # ...then sync through the other handle becomes impossible
-    exception = repo_copy2.sync(SyncOptions(feed="mock://feed/")).exception()
+    exception = repo_copy2.sync(YumSyncOptions(feed="mock://feed/")).exception()
     assert isinstance(exception, PulpException)
     assert "repo1 not found" in str(exception)

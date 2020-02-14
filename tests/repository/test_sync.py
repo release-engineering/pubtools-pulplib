@@ -7,7 +7,7 @@ from pubtools.pulplib import (
     Task,
     Distributor,
     DetachedException,
-    SyncOptions,
+    YumSyncOptions,
     TaskFailedException,
 )
 
@@ -60,7 +60,7 @@ def test_sync_with_options(
     repo = YumRepository(id="some-repo")
     repo.__dict__["_client"] = client
 
-    options = SyncOptions(ssl_validation=False, feed="mock://example.com/")
+    options = YumSyncOptions(ssl_validation=False, feed="mock://example.com/")
 
     # It should have succeeded, with the tasks as retrieved from Pulp
     assert repo.sync(options).result() == [
