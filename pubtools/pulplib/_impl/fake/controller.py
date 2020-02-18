@@ -123,7 +123,7 @@ class FakeController(object):
                 :class:`~pubtools.pulplib.Repository` for which sync was triggered
             ``tasks``:
                 list of :class:`~pubtools.pulplib.Task` generated as a result
-                of this publish
+                of this sync
         """
         return self.client._sync_history[:]
 
