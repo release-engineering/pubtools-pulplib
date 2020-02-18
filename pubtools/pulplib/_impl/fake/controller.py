@@ -120,7 +120,7 @@ class FakeController(object):
         in order:
 
             ``repository``:
-                :class:`~pubtools.pulplib.Repository` for which publish was triggered
+                :class:`~pubtools.pulplib.Repository` for which sync was triggered
             ``tasks``:
                 list of :class:`~pubtools.pulplib.Task` generated as a result
                 of this publish
