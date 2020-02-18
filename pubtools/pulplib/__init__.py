@@ -19,6 +19,7 @@ from ._impl.model import (
     FileSyncOptions,
     ContainerSyncOptions,
     YumSyncOptions,
+    SyncOptions,
     Task,
     MaintenanceReport,
     MaintenanceEntry,
