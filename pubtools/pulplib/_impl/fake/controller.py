@@ -124,6 +124,8 @@ class FakeController(object):
             ``tasks``:
                 list of :class:`~pubtools.pulplib.Task` generated as a result
                 of this sync
+            ``sync_config``:
+                :class:`~pubtools.pulplib.SyncConfig` (of the appropriate subclass) used for this sync
         """
         return self.client._sync_history[:]
 
