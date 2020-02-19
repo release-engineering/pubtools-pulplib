@@ -6,8 +6,8 @@ from ... import compat_attr as attr
 
 @attr.s(kw_only=True, frozen=True)
 class YumSyncOptions(SyncOptions):
-    """Options controlling a container repository
-    :meth:`~pubtools.pulplib.YumRepository.sync`.
+    """Options controlling a yum repository
+    :meth:`~pubtools.pulplib.Repository.sync`.
     """
 
     query_auth_token = pulp_attrib(default=None, type=str)

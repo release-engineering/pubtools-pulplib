@@ -6,7 +6,7 @@ from ... import compat_attr as attr
 @attr.s(kw_only=True, frozen=True)
 class ContainerSyncOptions(SyncOptions):
     """Options controlling a container repository
-    :meth:`~pubtools.pulplib.ContainerImageRepository.sync`.
+    :meth:`~pubtools.pulplib.Repository.sync`.
     """
 
     upstream_name = pulp_attrib(default=None, type=str)

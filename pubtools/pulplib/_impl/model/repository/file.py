@@ -17,7 +17,7 @@ LOG = logging.getLogger("pubtools.pulplib")
 @attr.s(kw_only=True, frozen=True)
 class FileSyncOptions(SyncOptions):
     """Options controlling a file repository
-    :meth:`~pubtools.pulplib.FileRepository.sync`.
+    :meth:`~pubtools.pulplib.Repository.sync`.
     """
 
     remove_missing = pulp_attrib(default=False, type=bool)

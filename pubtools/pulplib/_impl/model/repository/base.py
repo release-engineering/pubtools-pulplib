@@ -62,6 +62,11 @@ class PublishOptions(object):
 class SyncOptions(object):
     """Options controlling a repository
     :meth:`~pubtools.pulplib.Repository.sync`.
+
+    .. seealso:: Subclasses for specific repository
+                 types: :py:class:`~pubtools.pulplib.FileSyncOptions`,
+                 :py:class:`~pubtools.pulplib.YumSyncOptions`,
+                 :py:class:`~pubtools.pulplib.ContainerSyncOptions`
     """
 
     feed = pulp_attrib(type=str)
@@ -388,8 +393,8 @@ class Repository(PulpObject, Deletable):
 
         return f_proxy(self._client._publish_repository(self, to_publish))
 
-    def sync(self, options=SyncOptions(feed="")):
-        """Sync repository with feed
+    def sync(self, options=None):
+        """Sync repository with feed.
 
         Args:
             options (SyncOptions)
@@ -406,7 +411,11 @@ class Repository(PulpObject, Deletable):
         Raises:
             DetachedException
                 If this instance is not attached to a Pulp client.
+
+        .. versionadded:: 2.5.0
         """
+        options = options or SyncOptions(feed="")
+
         if not self._client:
             raise DetachedException()
 
