@@ -113,6 +113,23 @@ class FakeController(object):
         return self.client._publish_history[:]
 
     @property
+    def sync_history(self):
+        """A list of repository syncs triggered via this client.
+
+        Each element of this list is a named tuple with the following attributes,
+        in order:
+
+            ``repository``:
+                :class:`~pubtools.pulplib.Repository` for which sync was triggered
+            ``tasks``:
+                list of :class:`~pubtools.pulplib.Task` generated as a result
+                of this sync
+            ``sync_config``:
+                :class:`~pubtools.pulplib.SyncConfig` (of the appropriate subclass) used for this sync
+        """
+        return self.client._sync_history[:]
+
+    @property
     def upload_history(self):
         """A list of upload tasks triggered via this client.
 

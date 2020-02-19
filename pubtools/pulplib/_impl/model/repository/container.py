@@ -1,6 +1,22 @@
-from .base import Repository, repo_type
+from .base import Repository, SyncOptions, repo_type
 from ..attr import pulp_attrib
 from ... import compat_attr as attr
+
+
+@attr.s(kw_only=True, frozen=True)
+class ContainerSyncOptions(SyncOptions):
+    """Options controlling a container repository
+    :meth:`~pubtools.pulplib.ContainerImageRepository.sync`.
+    """
+
+    upstream_name = pulp_attrib(default=None, type=str)
+    """The name of the repository to import from the upstream repository.
+    For example, if syncing from repository `quay.io/fedora/fedora`, upstream_name should be set to `fedora/fedora`.
+    """
+
+    tags = pulp_attrib(default=None, type=list)
+    """List of tags to include on sync.
+    """
 
 
 @repo_type("docker-repo")
