@@ -146,6 +146,23 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">_publish_history</span><span class="p">[:]</span>
 
     <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">sync_history</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A list of repository syncs triggered via this client.</span>
+
+<span class="sd">        Each element of this list is a named tuple with the following attributes,</span>
+<span class="sd">        in order:</span>
+
+<span class="sd">            ``repository``:</span>
+<span class="sd">                :class:`~pubtools.pulplib.Repository` for which sync was triggered</span>
+<span class="sd">            ``tasks``:</span>
+<span class="sd">                list of :class:`~pubtools.pulplib.Task` generated as a result</span>
+<span class="sd">                of this sync</span>
+<span class="sd">            ``sync_config``:</span>
+<span class="sd">                :class:`~pubtools.pulplib.SyncConfig` (of the appropriate subclass) used for this sync</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">_sync_history</span><span class="p">[:]</span>
+
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">upload_history</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;A list of upload tasks triggered via this client.</span>
 
@@ -238,7 +255,7 @@
       &copy;2019, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

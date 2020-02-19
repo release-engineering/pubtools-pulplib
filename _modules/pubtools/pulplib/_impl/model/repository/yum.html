@@ -31,10 +31,67 @@
           <div class="body" role="main">
             
   <h1>Source code for pubtools.pulplib._impl.model.repository.yum</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">Repository</span><span class="p">,</span> <span class="n">repo_type</span>
+<span></span><span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">Repository</span><span class="p">,</span> <span class="n">SyncOptions</span><span class="p">,</span> <span class="n">repo_type</span>
 <span class="kn">from</span> <span class="nn">..frozenlist</span> <span class="kn">import</span> <span class="n">FrozenList</span>
 <span class="kn">from</span> <span class="nn">..attr</span> <span class="kn">import</span> <span class="n">pulp_attrib</span>
 <span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">compat_attr</span> <span class="k">as</span> <span class="n">attr</span>
+
+
+<span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">YumSyncOptions</span><span class="p">(</span><span class="n">SyncOptions</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Options controlling a container repository</span>
+<span class="sd">    :meth:`~pubtools.pulplib.YumRepository.sync`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">query_auth_token</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;An authorization token that will be added to every request made to the feed URL&#39;s server</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">max_downloads</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;Number of threads used when synchronizing the repository.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">remove_missing</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;If true, as the repository is synchronized, old rpms will be removed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">retain_old_count</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;Count indicating how many old rpm versions to retain.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">skip</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;List of content types to be skipped during the repository synchronization</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">checksum_type</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;checksum type to use for metadata generation.</span>
+
+<span class="sd">    Defaults to source checksum type of sha256</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">num_retries</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;Number of times to retry before declaring an error during repository synchronization</span>
+
+<span class="sd">    Default is to 2.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">download_policy</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;Set the download policy for a repository.</span>
+
+<span class="sd">    Supported options are immediate,on_demand,background</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">force_full</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;Boolean flag. If true, full re-sync is triggered.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">require_signature</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;Requires that imported packages like RPM/DRPM/SRPM should be signed</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">allowed_keys</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;List of allowed signature key IDs that imported packages can be signed with</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
 
 <div class="viewcode-block" id="YumRepository"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.YumRepository">[docs]</a><span class="nd">@repo_type</span><span class="p">(</span><span class="s2">&quot;rpm-repo&quot;</span><span class="p">)</span>
@@ -126,7 +183,7 @@
       &copy;2019, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

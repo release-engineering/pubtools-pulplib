@@ -34,14 +34,10 @@
 <span></span><span class="kn">import</span> <span class="nn">datetime</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 
-<span class="kn">from</span> <span class="nn">attr</span> <span class="kn">import</span> <span class="n">validators</span>
+<span class="kn">from</span> <span class="nn">attr</span> <span class="kn">import</span> <span class="n">validators</span><span class="p">,</span> <span class="n">asdict</span>
 <span class="kn">from</span> <span class="nn">more_executors.futures</span> <span class="kn">import</span> <span class="n">f_proxy</span>
 
-<span class="kn">from</span> <span class="nn">..common</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">PulpObject</span><span class="p">,</span>
-    <span class="n">Deletable</span><span class="p">,</span>
-    <span class="n">DetachedException</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">..common</span> <span class="kn">import</span> <span class="n">PulpObject</span><span class="p">,</span> <span class="n">Deletable</span><span class="p">,</span> <span class="n">DetachedException</span>
 <span class="kn">from</span> <span class="nn">..attr</span> <span class="kn">import</span> <span class="n">pulp_attrib</span>
 <span class="kn">from</span> <span class="nn">..distributor</span> <span class="kn">import</span> <span class="n">Distributor</span>
 <span class="kn">from</span> <span class="nn">..frozenlist</span> <span class="kn">import</span> <span class="n">FrozenList</span>
@@ -93,6 +89,55 @@
 <span class="sd">    Only relevant if a repository has one or more distributors where</span>
 <span class="sd">    :meth:`~pubtools.pulplib.Distributor.is_rsync` is ``True``.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
+
+
+<span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">SyncOptions</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Options controlling a repository</span>
+<span class="sd">    :meth:`~pubtools.pulplib.Repository.sync`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">feed</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;URL where the repository&#39;s content will be synchronized from.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">ssl_validation</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;Indicates if the server&#39;s SSL certificate is verified against the CA certificate uploaded.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">ssl_ca_cert</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;CA certificate string used to validate the feed source&#39;s SSL certificate</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">ssl_client_cert</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;Certificate used as the client certificate when synchronizing the repository</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">ssl_client_key</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;Private key to the certificate specified in ssl_client_cert</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">max_speed</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;The maximum download speed in bytes/sec for a task (such as a sync).</span>
+
+<span class="sd">    Default is None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">proxy_host</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;A string representing the URL of the proxy server that should be used when synchronizing</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">proxy_port</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;An integer representing the port that should be used when connecting to proxy_host.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">proxy_username</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;A string representing the username that should be used to authenticate with the proxy server</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">proxy_password</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;A string representing the password that should be used to authenticate with the proxy server</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
 
 <div class="viewcode-block" id="Repository"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.Repository">[docs]</a><span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -201,7 +246,7 @@
         <span class="k">for</span> <span class="n">distributor</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">distributor</span><span class="o">.</span><span class="n">repo_id</span><span class="p">:</span>
                 <span class="k">return</span>
-            <span class="k">elif</span> <span class="n">distributor</span><span class="o">.</span><span class="n">repo_id</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">distributor</span><span class="o">.</span><span class="n">repo_id</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
                 <span class="k">return</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s2">&quot;repo_id doesn&#39;t match for </span><span class="si">%s</span><span class="s2">. repo_id: </span><span class="si">%s</span><span class="s2">, distributor.repo_id: </span><span class="si">%s</span><span class="s2">&quot;</span>
@@ -376,6 +421,34 @@
 
         <span class="k">return</span> <span class="n">f_proxy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_publish_repository</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to_publish</span><span class="p">))</span></div>
 
+<div class="viewcode-block" id="Repository.sync"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.Repository.sync">[docs]</a>    <span class="k">def</span> <span class="nf">sync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">SyncOptions</span><span class="p">(</span><span class="n">feed</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)):</span>
+        <span class="sd">&quot;&quot;&quot;Sync repository with feed</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            options (SyncOptions)</span>
+<span class="sd">                Options used to customize the behavior of sync process.</span>
+<span class="sd">                If omitted, the Pulp server&#39;s defaults apply.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Future[list[:class:`~pubtools.pulplib.Task`]]</span>
+<span class="sd">                A future which is resolved when sync succeeds.</span>
+
+<span class="sd">                The future contains a list of zero or more tasks triggered and awaited</span>
+<span class="sd">                during the sync operation.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            DetachedException</span>
+<span class="sd">                If this instance is not attached to a Pulp client.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DetachedException</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">f_proxy</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_do_sync</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">asdict</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="k">lambda</span> <span class="n">name</span><span class="p">,</span> <span class="n">val</span><span class="p">:</span> <span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">)</span></div>
+
 <div class="viewcode-block" id="Repository.remove_content"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.Repository.remove_content">[docs]</a>    <span class="k">def</span> <span class="nf">remove_content</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Remove all content of requested types from this repository.</span>
 
@@ -534,7 +607,7 @@
       &copy;2019, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

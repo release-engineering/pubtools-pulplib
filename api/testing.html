@@ -158,6 +158,25 @@ of this publish</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="pubtools.pulplib.FakeController.sync_history">
+<em class="property">property </em><code class="sig-name descname">sync_history</code><a class="headerlink" href="#pubtools.pulplib.FakeController.sync_history" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of repository syncs triggered via this client.</p>
+<p>Each element of this list is a named tuple with the following attributes,
+in order:</p>
+<blockquote>
+<div><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">repository</span></code>:</dt><dd><p><a class="reference internal" href="model.html#pubtools.pulplib.Repository" title="pubtools.pulplib.Repository"><code class="xref py py-class docutils literal notranslate"><span class="pre">Repository</span></code></a> for which sync was triggered</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">tasks</span></code>:</dt><dd><p>list of <a class="reference internal" href="model.html#pubtools.pulplib.Task" title="pubtools.pulplib.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a> generated as a result
+of this sync</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">sync_config</span></code>:</dt><dd><p><code class="xref py py-class docutils literal notranslate"><span class="pre">SyncConfig</span></code> (of the appropriate subclass) used for this sync</p>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
 <dt id="pubtools.pulplib.FakeController.upload_history">
 <em class="property">property </em><code class="sig-name descname">upload_history</code><a class="headerlink" href="#pubtools.pulplib.FakeController.upload_history" title="Permalink to this definition">¶</a></dt>
 <dd><p>A list of upload tasks triggered via this client.</p>
@@ -265,7 +284,7 @@ of this upload</p>
       &copy;2019, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
