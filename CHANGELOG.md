@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - N/A
 
+## [2.5.0] - 2020-02-21
+
+### Added
+- Introduced `Repository.sync` API for syncing repositories
+
+### Fixed
+- Fixed a bug that export an empty maintenance report would crash.
+- Fixed another bug that maintenance report could have an invalid `last_updated_by` value.
+
 ## [2.4.0] - 2020-01-13
 
 ### Added
