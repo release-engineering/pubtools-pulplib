@@ -47,15 +47,15 @@
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;pubtools.pulplib&quot;</span><span class="p">)</span>
 
 
-<span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="FileSyncOptions"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.FileSyncOptions">[docs]</a><span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">FileSyncOptions</span><span class="p">(</span><span class="n">SyncOptions</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Options controlling a file repository</span>
-<span class="sd">    :meth:`~pubtools.pulplib.FileRepository.sync`.</span>
+<span class="sd">    :meth:`~pubtools.pulplib.Repository.sync`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">remove_missing</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
     <span class="sd">&quot;&quot;&quot;If true, as the repository is synchronized, old files will be removed.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="FileRepository"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.FileRepository">[docs]</a><span class="nd">@repo_type</span><span class="p">(</span><span class="s2">&quot;iso-repo&quot;</span><span class="p">)</span>
@@ -233,7 +233,7 @@
       &copy;2019, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

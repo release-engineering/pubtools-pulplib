@@ -37,10 +37,10 @@
 <span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">compat_attr</span> <span class="k">as</span> <span class="n">attr</span>
 
 
-<span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="YumSyncOptions"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.YumSyncOptions">[docs]</a><span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">YumSyncOptions</span><span class="p">(</span><span class="n">SyncOptions</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Options controlling a container repository</span>
-<span class="sd">    :meth:`~pubtools.pulplib.YumRepository.sync`.</span>
+    <span class="sd">&quot;&quot;&quot;Options controlling a yum repository</span>
+<span class="sd">    :meth:`~pubtools.pulplib.Repository.sync`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">query_auth_token</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
@@ -91,7 +91,7 @@
 
     <span class="n">allowed_keys</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
     <span class="sd">&quot;&quot;&quot;List of allowed signature key IDs that imported packages can be signed with</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="YumRepository"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.YumRepository">[docs]</a><span class="nd">@repo_type</span><span class="p">(</span><span class="s2">&quot;rpm-repo&quot;</span><span class="p">)</span>
@@ -183,7 +183,7 @@
       &copy;2019, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

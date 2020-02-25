@@ -21,10 +21,19 @@ Repository
 .. autoclass:: pubtools.pulplib.YumRepository()
    :members:
 
+.. autoclass:: pubtools.pulplib.YumSyncOptions()
+   :members:
+
 .. autoclass:: pubtools.pulplib.FileRepository()
    :members:
 
+.. autoclass:: pubtools.pulplib.FileSyncOptions()
+   :members:
+
 .. autoclass:: pubtools.pulplib.ContainerImageRepository()
+   :members:
+
+.. autoclass:: pubtools.pulplib.ContainerSyncOptions()
    :members:
 
 .. autoclass:: pubtools.pulplib.Distributor()
@@ -32,6 +41,10 @@ Repository
 
 .. autoclass:: pubtools.pulplib.PublishOptions()
    :members:
+
+.. autoclass:: pubtools.pulplib.SyncOptions()
+   :members:
+
 
 
 Units
@@ -49,7 +62,7 @@ Units
 .. autoclass:: pubtools.pulplib.ModulemdUnit()
    :members:
 
-.. autoclass:: pubtools.pulplib.ModulemdDefaultUnit()
+.. autoclass:: pubtools.pulplib.ModulemdDefaultsUnit()
    :members:
 
 Task

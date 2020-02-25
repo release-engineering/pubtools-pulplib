@@ -259,7 +259,7 @@ this repository will not publish repository metadata to remote hosts.</p>
 <dd><p>A list of modulemd_defaults units stored in this repository.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>list[<code class="xref py py-class docutils literal notranslate"><span class="pre">ModulemdDefaultsUnit</span></code>]</p>
+<dd class="field-odd"><p>list[<a class="reference internal" href="#pubtools.pulplib.ModulemdDefaultsUnit" title="pubtools.pulplib.ModulemdDefaultsUnit"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModulemdDefaultsUnit</span></code></a>]</p>
 </dd>
 </dl>
 <div class="versionadded">
@@ -341,11 +341,11 @@ during the publish operation.</p>
 
 <dl class="method">
 <dt id="pubtools.pulplib.Repository.sync">
-<code class="sig-name descname">sync</code><span class="sig-paren">(</span><em class="sig-param">options=SyncOptions(feed=''</em>, <em class="sig-param">ssl_validation=None</em>, <em class="sig-param">ssl_ca_cert=None</em>, <em class="sig-param">ssl_client_cert=None</em>, <em class="sig-param">ssl_client_key=None</em>, <em class="sig-param">max_speed=None</em>, <em class="sig-param">proxy_host=None</em>, <em class="sig-param">proxy_port=None</em>, <em class="sig-param">proxy_username=None</em>, <em class="sig-param">proxy_password=None)</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository/base.html#Repository.sync"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.Repository.sync" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sync repository with feed</p>
+<code class="sig-name descname">sync</code><span class="sig-paren">(</span><em class="sig-param">options=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository/base.html#Repository.sync"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.Repository.sync" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sync repository with feed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>options</strong> (<em>SyncOptions</em>) – Options used to customize the behavior of sync process.
+<dd class="field-odd"><p><strong>options</strong> (<a class="reference internal" href="#pubtools.pulplib.SyncOptions" title="pubtools.pulplib.SyncOptions"><em>SyncOptions</em></a>) – Options used to customize the behavior of sync process.
 If omitted, the Pulp server’s defaults apply.</p>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -361,6 +361,9 @@ during the sync operation.</p>
 <dd class="field-odd"><p><a class="reference internal" href="#pubtools.pulplib.DetachedException" title="pubtools.pulplib.DetachedException"><strong>DetachedException</strong></a> – If this instance is not attached to a Pulp client.</p>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.5.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -400,6 +403,82 @@ during the removal.</p>
 <dt id="pubtools.pulplib.YumRepository">
 <em class="property">class </em><code class="sig-prename descclassname">pubtools.pulplib.</code><code class="sig-name descname">YumRepository</code><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository/yum.html#YumRepository"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.YumRepository" title="Permalink to this definition">¶</a></dt>
 <dd><p>A <a class="reference internal" href="#pubtools.pulplib.Repository" title="pubtools.pulplib.Repository"><code class="xref py py-class docutils literal notranslate"><span class="pre">Repository</span></code></a> for RPMs, errata and related content.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pubtools.pulplib.YumSyncOptions">
+<em class="property">class </em><code class="sig-prename descclassname">pubtools.pulplib.</code><code class="sig-name descname">YumSyncOptions</code><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository/yum.html#YumSyncOptions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.YumSyncOptions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Options controlling a yum repository
+<a class="reference internal" href="#pubtools.pulplib.Repository.sync" title="pubtools.pulplib.Repository.sync"><code class="xref py py-meth docutils literal notranslate"><span class="pre">sync()</span></code></a>.</p>
+<dl class="attribute">
+<dt id="pubtools.pulplib.YumSyncOptions.query_auth_token">
+<code class="sig-name descname">query_auth_token</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.YumSyncOptions.query_auth_token" title="Permalink to this definition">¶</a></dt>
+<dd><p>An authorization token that will be added to every request made to the feed URL’s server</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pubtools.pulplib.YumSyncOptions.max_downloads">
+<code class="sig-name descname">max_downloads</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.YumSyncOptions.max_downloads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of threads used when synchronizing the repository.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pubtools.pulplib.YumSyncOptions.remove_missing">
+<code class="sig-name descname">remove_missing</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.YumSyncOptions.remove_missing" title="Permalink to this definition">¶</a></dt>
+<dd><p>If true, as the repository is synchronized, old rpms will be removed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pubtools.pulplib.YumSyncOptions.retain_old_count">
+<code class="sig-name descname">retain_old_count</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.YumSyncOptions.retain_old_count" title="Permalink to this definition">¶</a></dt>
+<dd><p>Count indicating how many old rpm versions to retain.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pubtools.pulplib.YumSyncOptions.skip">
+<code class="sig-name descname">skip</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.YumSyncOptions.skip" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of content types to be skipped during the repository synchronization</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pubtools.pulplib.YumSyncOptions.checksum_type">
+<code class="sig-name descname">checksum_type</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.YumSyncOptions.checksum_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>checksum type to use for metadata generation.</p>
+<p>Defaults to source checksum type of sha256</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pubtools.pulplib.YumSyncOptions.num_retries">
+<code class="sig-name descname">num_retries</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.YumSyncOptions.num_retries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of times to retry before declaring an error during repository synchronization</p>
+<p>Default is to 2.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pubtools.pulplib.YumSyncOptions.download_policy">
+<code class="sig-name descname">download_policy</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.YumSyncOptions.download_policy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the download policy for a repository.</p>
+<p>Supported options are immediate,on_demand,background</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pubtools.pulplib.YumSyncOptions.force_full">
+<code class="sig-name descname">force_full</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.YumSyncOptions.force_full" title="Permalink to this definition">¶</a></dt>
+<dd><p>Boolean flag. If true, full re-sync is triggered.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pubtools.pulplib.YumSyncOptions.require_signature">
+<code class="sig-name descname">require_signature</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.YumSyncOptions.require_signature" title="Permalink to this definition">¶</a></dt>
+<dd><p>Requires that imported packages like RPM/DRPM/SRPM should be signed</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pubtools.pulplib.YumSyncOptions.allowed_keys">
+<code class="sig-name descname">allowed_keys</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.YumSyncOptions.allowed_keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of allowed signature key IDs that imported packages can be signed with</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
@@ -451,6 +530,19 @@ to repository.</p>
 </dd></dl>
 
 <dl class="class">
+<dt id="pubtools.pulplib.FileSyncOptions">
+<em class="property">class </em><code class="sig-prename descclassname">pubtools.pulplib.</code><code class="sig-name descname">FileSyncOptions</code><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository/file.html#FileSyncOptions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.FileSyncOptions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Options controlling a file repository
+<a class="reference internal" href="#pubtools.pulplib.Repository.sync" title="pubtools.pulplib.Repository.sync"><code class="xref py py-meth docutils literal notranslate"><span class="pre">sync()</span></code></a>.</p>
+<dl class="attribute">
+<dt id="pubtools.pulplib.FileSyncOptions.remove_missing">
+<code class="sig-name descname">remove_missing</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.FileSyncOptions.remove_missing" title="Permalink to this definition">¶</a></dt>
+<dd><p>If true, as the repository is synchronized, old files will be removed.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="pubtools.pulplib.ContainerImageRepository">
 <em class="property">class </em><code class="sig-prename descclassname">pubtools.pulplib.</code><code class="sig-name descname">ContainerImageRepository</code><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository/container.html#ContainerImageRepository"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.ContainerImageRepository" title="Permalink to this definition">¶</a></dt>
 <dd><p>A <a class="reference internal" href="#pubtools.pulplib.Repository" title="pubtools.pulplib.Repository"><code class="xref py py-class docutils literal notranslate"><span class="pre">Repository</span></code></a> for container images.</p>
@@ -465,6 +557,26 @@ to repository.</p>
 </ul>
 <p>The registry id is used by clients of the published repo, i.e.</p>
 <p><code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">pull</span> <span class="pre">registry.example.com/&lt;registry_id&gt;:latest</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pubtools.pulplib.ContainerSyncOptions">
+<em class="property">class </em><code class="sig-prename descclassname">pubtools.pulplib.</code><code class="sig-name descname">ContainerSyncOptions</code><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository/container.html#ContainerSyncOptions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.ContainerSyncOptions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Options controlling a container repository
+<a class="reference internal" href="#pubtools.pulplib.Repository.sync" title="pubtools.pulplib.Repository.sync"><code class="xref py py-meth docutils literal notranslate"><span class="pre">sync()</span></code></a>.</p>
+<dl class="attribute">
+<dt id="pubtools.pulplib.ContainerSyncOptions.upstream_name">
+<code class="sig-name descname">upstream_name</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.ContainerSyncOptions.upstream_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the repository to import from the upstream repository.
+For example, if syncing from repository <cite>quay.io/fedora/fedora</cite>, upstream_name should be set to <cite>fedora/fedora</cite>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pubtools.pulplib.ContainerSyncOptions.tags">
+<code class="sig-name descname">tags</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.ContainerSyncOptions.tags" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of tags to include on sync.</p>
 </dd></dl>
 
 </dd></dl>
@@ -572,6 +684,81 @@ in the repo.</p>
 remote hosts.</p>
 <p>Only relevant if a repository has one or more distributors where
 <a class="reference internal" href="#pubtools.pulplib.Distributor.is_rsync" title="pubtools.pulplib.Distributor.is_rsync"><code class="xref py py-meth docutils literal notranslate"><span class="pre">is_rsync()</span></code></a> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pubtools.pulplib.SyncOptions">
+<em class="property">class </em><code class="sig-prename descclassname">pubtools.pulplib.</code><code class="sig-name descname">SyncOptions</code><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository/base.html#SyncOptions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.SyncOptions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Options controlling a repository
+<a class="reference internal" href="#pubtools.pulplib.Repository.sync" title="pubtools.pulplib.Repository.sync"><code class="xref py py-meth docutils literal notranslate"><span class="pre">sync()</span></code></a>.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>Subclasses for specific repository
+types: <a class="reference internal" href="#pubtools.pulplib.FileSyncOptions" title="pubtools.pulplib.FileSyncOptions"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileSyncOptions</span></code></a>,
+<a class="reference internal" href="#pubtools.pulplib.YumSyncOptions" title="pubtools.pulplib.YumSyncOptions"><code class="xref py py-class docutils literal notranslate"><span class="pre">YumSyncOptions</span></code></a>,
+<a class="reference internal" href="#pubtools.pulplib.ContainerSyncOptions" title="pubtools.pulplib.ContainerSyncOptions"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContainerSyncOptions</span></code></a></p>
+</div>
+<dl class="attribute">
+<dt id="pubtools.pulplib.SyncOptions.feed">
+<code class="sig-name descname">feed</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.SyncOptions.feed" title="Permalink to this definition">¶</a></dt>
+<dd><p>URL where the repository’s content will be synchronized from.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pubtools.pulplib.SyncOptions.ssl_validation">
+<code class="sig-name descname">ssl_validation</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.SyncOptions.ssl_validation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Indicates if the server’s SSL certificate is verified against the CA certificate uploaded.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pubtools.pulplib.SyncOptions.ssl_ca_cert">
+<code class="sig-name descname">ssl_ca_cert</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.SyncOptions.ssl_ca_cert" title="Permalink to this definition">¶</a></dt>
+<dd><p>CA certificate string used to validate the feed source’s SSL certificate</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pubtools.pulplib.SyncOptions.ssl_client_cert">
+<code class="sig-name descname">ssl_client_cert</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.SyncOptions.ssl_client_cert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Certificate used as the client certificate when synchronizing the repository</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pubtools.pulplib.SyncOptions.ssl_client_key">
+<code class="sig-name descname">ssl_client_key</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.SyncOptions.ssl_client_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Private key to the certificate specified in ssl_client_cert</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pubtools.pulplib.SyncOptions.max_speed">
+<code class="sig-name descname">max_speed</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.SyncOptions.max_speed" title="Permalink to this definition">¶</a></dt>
+<dd><p>The maximum download speed in bytes/sec for a task (such as a sync).</p>
+<p>Default is None</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pubtools.pulplib.SyncOptions.proxy_host">
+<code class="sig-name descname">proxy_host</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.SyncOptions.proxy_host" title="Permalink to this definition">¶</a></dt>
+<dd><p>A string representing the URL of the proxy server that should be used when synchronizing</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pubtools.pulplib.SyncOptions.proxy_port">
+<code class="sig-name descname">proxy_port</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.SyncOptions.proxy_port" title="Permalink to this definition">¶</a></dt>
+<dd><p>An integer representing the port that should be used when connecting to proxy_host.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pubtools.pulplib.SyncOptions.proxy_username">
+<code class="sig-name descname">proxy_username</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.SyncOptions.proxy_username" title="Permalink to this definition">¶</a></dt>
+<dd><p>A string representing the username that should be used to authenticate with the proxy server</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pubtools.pulplib.SyncOptions.proxy_password">
+<code class="sig-name descname">proxy_password</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.SyncOptions.proxy_password" title="Permalink to this definition">¶</a></dt>
+<dd><p>A string representing the password that should be used to authenticate with the proxy server</p>
 </dd></dl>
 
 </dd></dl>
@@ -742,6 +929,40 @@ is “dca7b4a4”.</p>
 <dd><p>The architecture of this module.</p>
 <p>Example: the arch of javapackages-tools:201801:20180813043155:dca7b4a4:aarch64
 is “aarch64.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pubtools.pulplib.ModulemdDefaultsUnit">
+<em class="property">class </em><code class="sig-prename descclassname">pubtools.pulplib.</code><code class="sig-name descname">ModulemdDefaultsUnit</code><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/unit/modulemd_defaults.html#ModulemdDefaultsUnit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.ModulemdDefaultsUnit" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <a class="reference internal" href="#pubtools.pulplib.Unit" title="pubtools.pulplib.Unit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unit</span></code></a> representing a modulemd_defaults document.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.4.0.</span></p>
+</div>
+<dl class="attribute">
+<dt id="pubtools.pulplib.ModulemdDefaultsUnit.name">
+<code class="sig-name descname">name</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.ModulemdDefaultsUnit.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of this modulemd defaults unit</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pubtools.pulplib.ModulemdDefaultsUnit.stream">
+<code class="sig-name descname">stream</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.ModulemdDefaultsUnit.stream" title="Permalink to this definition">¶</a></dt>
+<dd><p>The stream of this modulemd defaults unit</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pubtools.pulplib.ModulemdDefaultsUnit.repo_id">
+<code class="sig-name descname">repo_id</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.ModulemdDefaultsUnit.repo_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The repository ID bound to this modulemd defaults unit</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pubtools.pulplib.ModulemdDefaultsUnit.profiles">
+<code class="sig-name descname">profiles</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.ModulemdDefaultsUnit.profiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>The profiles of this modulemd defaults unit.</p>
+<p>The type for this attribute is omitted to allow for either dict or None.</p>
 </dd></dl>
 
 </dd></dl>
@@ -938,7 +1159,7 @@ and the object is not attached to any client, this exception is raised.</p>
       &copy;2019, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
