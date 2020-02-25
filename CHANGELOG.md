@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- n/a
+
+## [2.5.0] - 2020-02-25
+
 ### Added
 - Introduced `Repository.sync` API (and associated `SyncOptions` classes)
   for synchronizing Pulp repositories.
@@ -176,7 +180,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release to PyPI
 
-[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.4.0...HEAD
+[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.5.0...HEAD
+[2.5.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.4.0...v2.5.0
 [2.4.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.3.1...v2.4.0
 [2.3.1]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.3.0...v2.3.1
 [2.3.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.2.0...v2.3.0
