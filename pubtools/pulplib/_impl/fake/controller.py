@@ -126,6 +126,8 @@ class FakeController(object):
                 of this sync
             ``sync_config``:
                 :class:`~pubtools.pulplib.SyncConfig` (of the appropriate subclass) used for this sync
+
+        .. versionadded:: 2.5.0
         """
         return self.client._sync_history[:]
 

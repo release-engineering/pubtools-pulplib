@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- N/A
+### Added
+- Introduced `Repository.sync` API (and associated `SyncOptions` classes)
+  for synchronizing Pulp repositories.
 
 ## [2.4.0] - 2020-01-13
 
