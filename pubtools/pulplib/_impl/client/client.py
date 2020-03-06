@@ -340,7 +340,8 @@ class Client(object):
 
         data = {"source_repo_id": origin_repo}
         if criteria:
-            data["criteria"] = criteria
+            prepared_search = search_for_criteria(criteria)
+            data["criteria"] = { "filters": prepared_search.filters}
         if override_config:
             data["override_config"] = override_config
 
