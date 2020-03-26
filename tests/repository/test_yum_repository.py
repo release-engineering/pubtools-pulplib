@@ -54,5 +54,19 @@ def test_from_data_skip_rsync_repodata():
             ],
         }
     )
-
     assert repo.skip_rsync_repodata
+
+
+def test_populate_sources():
+    """skip_rsync_repodata is initialized from distributors when possible"""
+    repo = Repository.from_data(
+        {
+            "id": "my-repo",
+            "notes": {
+                "_repo-type": "rpm-repo",
+                "population_sources": ["populate_repo1", "populate_repo2"],
+            },
+            "distributors": [],
+        }
+    )
+    assert repo.population_sources == ("populate_repo1", "populate_repo2")
