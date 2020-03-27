@@ -73,7 +73,7 @@ class YumRepository(Repository):
     population_sources = pulp_attrib(
         default=(), type=tuple, converter=tuple, pulp_field="notes.population_sources"
     )
-    """List of repositories used for populate the repository
+    """List of repository IDs used to populate this repository
     """
 
     ubi_population = pulp_attrib(
