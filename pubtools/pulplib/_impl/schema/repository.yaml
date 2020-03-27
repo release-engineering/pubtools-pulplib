@@ -83,6 +83,15 @@ properties:
       pub_temp_repo:
         type: boolean
 
+      # True if repository supposed to be populated from repositories
+      # mentioned in pupulation_sources
+      ubi_population:
+        type: boolean
+
+      # List of repositories used for populating the repository
+      population_sources:
+        type: array
+
   # List of repository distributors.
   # Note that order matters in this list.
   distributors:
