@@ -84,7 +84,7 @@ properties:
         type: boolean
 
       # True if repository supposed to be populated from repositories
-      # mentioned in pupulation_sources
+      # mentioned in population_sources
       ubi_population:
         type: boolean
 
