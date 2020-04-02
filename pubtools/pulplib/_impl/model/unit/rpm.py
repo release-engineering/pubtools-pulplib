@@ -53,6 +53,12 @@ class RpmUnit(Unit):
         :meth:`~pubtools.pulplib.Repository.signing_keys`
     """
 
+    sourcerpm = pulp_attrib(default=None, type=str, pulp_field="sourcerpm")
+    """Source rpm filename if package is not source package.
+
+    Example: gnu-efi-3.0c-1.1.src.rpm.
+    """
+
     # Checksums:
     # Note that "checksums" isn't part of the unit key, hence why these fields
     # are allowed to be omitted.

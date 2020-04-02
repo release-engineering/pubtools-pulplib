@@ -149,7 +149,14 @@ def test_remove_loads_units(fast_poller, requests_mocker, client):
     assert set(task.units) == set(
         [
             FileUnit(path="hello.txt", size=23, sha256sum="a" * 64),
-            RpmUnit(name="bash", epoch="0", version="4.0", release="1", arch="x86_64"),
+            RpmUnit(
+                name="bash",
+                epoch="0",
+                version="4.0",
+                release="1",
+                arch="x86_64",
+                sourcerpm=None,
+            ),
             ModulemdUnit(
                 name="module", stream="s1", version=1234, context="a1b2c3", arch="s390x"
             ),
