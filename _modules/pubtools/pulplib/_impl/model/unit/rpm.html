@@ -86,6 +86,12 @@
 <span class="sd">        :meth:`~pubtools.pulplib.Repository.signing_keys`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">sourcerpm</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;sourcerpm&quot;</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;Source rpm filename if package is not source package.</span>
+
+<span class="sd">    Example: gnu-efi-3.0c-1.1.src.rpm.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="c1"># Checksums:</span>
     <span class="c1"># Note that &quot;checksums&quot; isn&#39;t part of the unit key, hence why these fields</span>
     <span class="c1"># are allowed to be omitted.</span>
