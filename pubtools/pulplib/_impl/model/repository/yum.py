@@ -82,7 +82,7 @@ class YumRepository(Repository):
     ubi_population = pulp_attrib(
         default=False, type=bool, pulp_field="notes.ubi_population"
     )
-    """Flag indicating whether repo should be populated or not for the purposes of UBI
+    """Flag indicating whether repo should be populated from population_sources for the purposes of UBI
     """
 
     mutable_urls = attr.ib(
