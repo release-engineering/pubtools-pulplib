@@ -2,6 +2,7 @@ from .base import Unit, unit_type
 
 from ..attr import pulp_attrib
 from ... import compat_attr as attr
+from ..frozenlist import FrozenList
 
 
 # Note: Pulp2 models RPM and SRPM as separate unit types,
@@ -89,6 +90,17 @@ class RpmUnit(Unit):
     content_type_id = pulp_attrib(
         default="rpm", type=str, pulp_field="_content_type_id"
     )
+
+    repository_memberships = pulp_attrib(
+        default=attr.Factory(FrozenList),
+        type=list,
+        converter=FrozenList,
+        pulp_field="repository_memberships",
+    )
+    """List of repositories which unit belongs to
+
+    .. versionadded:: 2.6.0
+    """
 
     @md5sum.validator
     def _check_md5(self, _, value):

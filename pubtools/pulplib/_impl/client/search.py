@@ -85,16 +85,15 @@ class TypeIdAccumulator(object):
     def __init__(self):
         self.can_accumulate = True
         self.values = []
+        self._no_accumulate_error = (
+            "Can't serialize criteria for Pulp query; too complicated. "
+        )
+        "Try simplifying the query with respect to content_type_id."
 
     def accumulate_from_match(self, match_expr):
         # Are we still in a state where accumulation is possible?
         if not self.can_accumulate:
-            raise ValueError(
-                (
-                    "Can't serialize criteria for Pulp query; too complicated. "
-                    "Try simplifying the query with respect to content_type_id."
-                )
-            )
+            raise ValueError(self.no_accumulate_error)
 
         # OK, we can accumulate if it's a supported expression type.
         if isinstance(match_expr, dict) and list(match_expr.keys()) == ["$eq"]:
@@ -112,6 +111,14 @@ class TypeIdAccumulator(object):
 
         # It is only possible to accumulate once.
         self.can_accumulate = False
+
+    @property
+    def no_accumulate_error(self):
+        return self._no_accumulate_error
+
+    @no_accumulate_error.setter
+    def no_accumulate_error(self, error):
+        self._no_accumulate_error = error
 
     @property
     @contextlib.contextmanager

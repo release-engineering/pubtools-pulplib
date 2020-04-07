@@ -14,7 +14,7 @@ from more_executors.futures import f_map, f_flat_map, f_return, f_proxy
 from ..page import Page
 from ..criteria import Criteria
 from ..model import Repository, MaintenanceReport, Distributor, Unit
-from .search import search_for_criteria
+from .search import search_for_criteria, TypeIdAccumulator
 from .errors import PulpException
 from .poller import TaskPoller
 from . import retry
@@ -203,6 +203,33 @@ class Client(object):
             Repository, "repositories", criteria=criteria, search_options=search_options
         )
 
+    def search_units_by_type(self, content_type, criteria=None):
+        """Search for units of single type across all repositories.
+
+        Args:
+            criteria (:class:`~pubtools.pulplib.Criteria`)
+                A criteria object used for this search.
+                If None, search for all repositories.
+
+        Returns:
+            Future[:class:`~pubtools.pulplib.Page`]
+                A future representing the first page of results.
+
+                Each page will contain a collection of
+                :class:`~pubtools.pulplib.Repository` objects.
+        """
+        type_ids_acc = TypeIdAccumulator()
+        type_ids_acc.no_accumulate_error = (
+            "Cannot query for _content_type_id when search over all repositories"
+        )
+        with type_ids_acc.no_accumulate:
+            return self._search(
+                Unit,
+                "content/units/%s" % content_type,
+                criteria=criteria,
+                type_ids_accum=type_ids_acc,
+            )
+
     def search_distributor(self, criteria=None):
         """Search the distributors matching the given criteria.
 
@@ -229,11 +256,12 @@ class Client(object):
         search_type="search",
         search_options=None,
         criteria=None,
+        type_ids_accum=None,
     ):  # pylint:disable = too-many-arguments
         url = os.path.join(
             self._url, "pulp/api/v2/%s/%s/" % (resource_type, search_type)
         )
-        prepared_search = search_for_criteria(criteria, return_type)
+        prepared_search = search_for_criteria(criteria, return_type, type_ids_accum)
 
         search = {
             "criteria": {

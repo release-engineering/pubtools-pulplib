@@ -16,6 +16,7 @@ from pubtools.pulplib import (
     MaintenanceReport,
     Task,
     Distributor,
+    RpmUnit,
 )
 
 
@@ -359,3 +360,96 @@ def test_set_maintenance(client, requests_mocker):
     assert requests_mocker.call_count == 1
     assert mocked_publish.call_count == 1
     assert mocked_upload.call_count == 1
+
+
+RPM_TEST_UNITS = [
+    {
+        "_content_type_id": "rpm",
+        "_id": "d4633746-1ccc-4d85-9733-0007c87e0724",
+        "checksum": "1c4baac658fd56e6ec9cca37f440a4bd8c9c0b02a21f41b30b8ea17b402a1907",
+        "checksums": {
+            "sha1": "ca995eb1a635c97393466f67aaec8e9e753b8ed5",
+            "sha256": "1c4baac658fd56e6ec9cca37f440a4bd8c9c0b02a21f41b30b8ea17b402a1907",
+        },
+        "arch": "i386",
+        "epoch": "0",
+        "name": "gnu-efi-debuginfo",
+        "release": "1.1",
+        "repository_memberships": ["fake-repository-id-1", "fake-repository-id-2"],
+        "sourcerpm": "gnu-efi-3.0c-1.1.src.rpm",
+        "version": "3.0c",
+    },
+    {
+        "_content_type_id": "rpm",
+        "_id": "bd2e0321-48f6-4997-a5dc-e73c771bc17d",
+        "checksum": "4f5a3a0da6f404f6d9988987cd75f13982bd655a0a4f692406611afbbc597679",
+        "checksums": {
+            "sha256": "4f5a3a0da6f404f6d9988987cd75f13982bd655a0a4f692406611afbbc597679"
+        },
+        "arch": "ia64",
+        "epoch": "0",
+        "name": "glibc-headers",
+        "release": "2.57.el4.1",
+        "repository_memberships": ["fake-repository-id-3"],
+        "sourcerpm": "glibc-2.3.4-2.57.el4.1.src.rpm",
+        "version": "2.3.4",
+    },
+]
+
+
+def test_can_search_units_by_type(client, requests_mocker):
+    """search_repository issues /search/ POST requests as expected."""
+    requests_mocker.post(
+        "https://pulp.example.com/pulp/api/v2/content/units/rpm/search/",
+        json=RPM_TEST_UNITS,
+    )
+
+    units = client.search_units_by_type("rpm")
+
+    # It should have returned the repos as objects
+    assert sorted(units) == [
+        RpmUnit(
+            sha256sum="4f5a3a0da6f404f6d9988987cd75f13982bd655a0a4f692406611afbbc597679",
+            arch="ia64",
+            epoch="0",
+            name="glibc-headers",
+            release="2.57.el4.1",
+            repository_memberships=["fake-repository-id-3"],
+            sourcerpm="glibc-2.3.4-2.57.el4.1.src.rpm",
+            version="2.3.4",
+        ),
+        RpmUnit(
+            sha1sum="ca995eb1a635c97393466f67aaec8e9e753b8ed5",
+            sha256sum="1c4baac658fd56e6ec9cca37f440a4bd8c9c0b02a21f41b30b8ea17b402a1907",
+            arch="i386",
+            epoch="0",
+            name="gnu-efi-debuginfo",
+            release="1.1",
+            repository_memberships=["fake-repository-id-1", "fake-repository-id-2"],
+            sourcerpm="gnu-efi-3.0c-1.1.src.rpm",
+            version="3.0c",
+        ),
+    ]
+
+    # It should have issued only a single search
+    assert requests_mocker.call_count == 1
+
+
+def test_can_search_units_by_type_invalid_criteria(client, requests_mocker):
+    """search_repository issues /search/ POST requests as expected."""
+    requests_mocker.post(
+        "https://pulp.example.com/pulp/api/v2/content/units/rpm/search/",
+        json=RPM_TEST_UNITS,
+    )
+
+    with pytest.raises(ValueError) as e:
+        units = client.search_units_by_type(
+            "rpm", Criteria.with_field("_content_type_id", "rpm")
+        )
+
+    assert (
+        str(e.value)
+        == "Cannot query for _content_type_id when search over all repositories"
+    )
+    # It should have issued only a single search
+    assert requests_mocker.call_count == 0
