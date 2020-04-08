@@ -70,6 +70,21 @@ class YumRepository(Repository):
 
     type = pulp_attrib(default="rpm-repo", type=str, pulp_field="notes._repo-type")
 
+    population_sources = pulp_attrib(
+        default=attr.Factory(FrozenList),
+        type=list,
+        converter=FrozenList,
+        pulp_field="notes.population_sources",
+    )
+    """List of repository IDs used to populate this repository
+    """
+
+    ubi_population = pulp_attrib(
+        default=False, type=bool, pulp_field="notes.ubi_population"
+    )
+    """Flag indicating whether repo should be populated from population_sources for the purposes of UBI
+    """
+
     mutable_urls = attr.ib(
         default=attr.Factory(lambda: FrozenList(["repodata/repomd.xml"])),
         type=list,
