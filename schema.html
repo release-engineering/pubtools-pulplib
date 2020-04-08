@@ -133,6 +133,17 @@ properties:
       pub_temp_repo:
         type: boolean
 
+      # True if repository supposed to be populated from repositories
+      # mentioned in population_sources
+      ubi_population:
+        type: boolean
+
+      # List of repositories used for populating the repository
+      population_sources:
+        type: array
+        items:
+          type: string
+
   # List of repository distributors.
   # Note that order matters in this list.
   distributors:
@@ -308,7 +319,9 @@ definitions:
 
       # source rpm filename
       sourcerpm:
-        type: string
+        anyOf:
+        - type: string
+        - type: &quot;null&quot;
 
       # Short ID of key used to sign this RPM
       signing_key:
@@ -552,7 +565,7 @@ properties:
       &copy;2019, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

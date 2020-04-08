@@ -34,9 +34,9 @@
             
   <div class="section" id="maintenance-mode">
 <h1>Maintenance Mode<a class="headerlink" href="#maintenance-mode" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
+<dl class="py class">
 <dt id="pubtools.pulplib.MaintenanceReport">
-<em class="property">class </em><code class="sig-prename descclassname">pubtools.pulplib.</code><code class="sig-name descname">MaintenanceReport</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">last_updated: datetime.datetime = None</em>, <em class="sig-param">last_updated_by: str = None</em>, <em class="sig-param">entries=NOTHING</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/maintenance.html#MaintenanceReport"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.MaintenanceReport" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">pubtools.pulplib.</code><code class="sig-name descname">MaintenanceReport</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">last_updated</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.8)">datetime.datetime</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">last_updated_by</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">entries</span><span class="o">=</span><span class="default_value">NOTHING</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/maintenance.html#MaintenanceReport"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.MaintenanceReport" title="Permalink to this definition">¶</a></dt>
 <dd><p>Represents the maintenance status of Pulp repositories.</p>
 <p>On release-engineering Pulp servers, it’s possible to put individual repositories
 into “maintenance mode”.  When in maintenance mode, external publishes of a repository
@@ -45,20 +45,20 @@ will be blocked.  Other operations remain possible.</p>
 <div class="versionadded">
 <p><span class="versionmodified added">New in version 1.4.0.</span></p>
 </div>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="pubtools.pulplib.MaintenanceReport.last_updated">
 <code class="sig-name descname">last_updated</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.MaintenanceReport.last_updated" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a> in UTC when this report was last updated,
 if it’s the first time the report is created, current time is used.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="pubtools.pulplib.MaintenanceReport.last_updated_by">
 <code class="sig-name descname">last_updated_by</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.MaintenanceReport.last_updated_by" title="Permalink to this definition">¶</a></dt>
 <dd><p>Person/party who updated the report last time.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="pubtools.pulplib.MaintenanceReport.entries">
 <code class="sig-name descname">entries</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.MaintenanceReport.entries" title="Permalink to this definition">¶</a></dt>
 <dd><p>A list of <a class="reference internal" href="#pubtools.pulplib.MaintenanceEntry" title="pubtools.pulplib.MaintenanceEntry"><code class="xref py py-class docutils literal notranslate"><span class="pre">MaintenanceEntry</span></code></a> objects, indicating
@@ -66,9 +66,9 @@ which repositories are in maintenance mode and details.
 If empty, then it means no repositories are in maintenance mode.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="pubtools.pulplib.MaintenanceReport.add">
-<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param">repo_ids</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/maintenance.html#MaintenanceReport.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.MaintenanceReport.add" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">repo_ids</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/maintenance.html#MaintenanceReport.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.MaintenanceReport.add" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add entries to maintenance report and update the timestamp. Every
 entry added to the report represents a repository in maintenance mode.</p>
 <dl class="field-list simple">
@@ -93,9 +93,9 @@ the Pulp server, this method doesn’t check for the existence of repositories.<
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="pubtools.pulplib.MaintenanceReport.remove">
-<code class="sig-name descname">remove</code><span class="sig-paren">(</span><em class="sig-param">repo_ids</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/maintenance.html#MaintenanceReport.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.MaintenanceReport.remove" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">remove</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">repo_ids</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/maintenance.html#MaintenanceReport.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.MaintenanceReport.remove" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove entries from the maintenance report. Remove entries means the
 removing corresponding repositories from maintenance mode.</p>
 <dl class="field-list simple">
@@ -118,14 +118,14 @@ from the maintenance report.</p></li>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="pubtools.pulplib.MaintenanceEntry">
-<em class="property">class </em><code class="sig-prename descclassname">pubtools.pulplib.</code><code class="sig-name descname">MaintenanceEntry</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">repo_id: str</em>, <em class="sig-param">message: str = None</em>, <em class="sig-param">owner: str = None</em>, <em class="sig-param">started: datetime.datetime = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/maintenance.html#MaintenanceEntry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.MaintenanceEntry" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">pubtools.pulplib.</code><code class="sig-name descname">MaintenanceEntry</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">repo_id</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">message</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">owner</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">started</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.8)">datetime.datetime</a></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/maintenance.html#MaintenanceEntry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.MaintenanceEntry" title="Permalink to this definition">¶</a></dt>
 <dd><p>Details about the maintenance status of a specific repository.</p>
 <div class="versionadded">
 <p><span class="versionmodified added">New in version 1.4.0.</span></p>
 </div>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="pubtools.pulplib.MaintenanceEntry.repo_id">
 <code class="sig-name descname">repo_id</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.MaintenanceEntry.repo_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>ID of repository in maintenance.</p>
@@ -133,19 +133,19 @@ from the maintenance report.</p></li>
 in the Pulp server.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="pubtools.pulplib.MaintenanceEntry.message">
 <code class="sig-name descname">message</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.MaintenanceEntry.message" title="Permalink to this definition">¶</a></dt>
 <dd><p>Why this repository is in maintenance.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="pubtools.pulplib.MaintenanceEntry.owner">
 <code class="sig-name descname">owner</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.MaintenanceEntry.owner" title="Permalink to this definition">¶</a></dt>
 <dd><p>Who set this repository in maintenance mode.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="pubtools.pulplib.MaintenanceEntry.started">
 <code class="sig-name descname">started</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.MaintenanceEntry.started" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a> in UTC at when the maintenance started.</p>
@@ -238,7 +238,7 @@ in the Pulp server.</p>
       &copy;2019, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
