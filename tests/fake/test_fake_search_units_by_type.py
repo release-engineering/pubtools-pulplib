@@ -104,7 +104,9 @@ def test_search_content_by_type_criteria(populated_units, controller):
     assert len(units1) == 1
 
 
-def test_search_content_by_type_criteria_wrong_content_type(populated_units, controller):
+def test_search_content_by_type_criteria_wrong_content_type(
+    populated_units, controller
+):
     units1 = [
         u
         for u in controller.client.search_content_by_type(
