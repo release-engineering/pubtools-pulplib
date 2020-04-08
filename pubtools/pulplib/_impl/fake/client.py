@@ -93,7 +93,7 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
         random.shuffle(repos)
         return self._prepare_pages(repos)
 
-    def search_units_by_type(self, content_type, criteria=None):
+    def search_content_by_type(self, content_type, criteria=None):
         criteria = criteria or Criteria.true()
         out = []
 

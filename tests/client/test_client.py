@@ -397,14 +397,14 @@ RPM_TEST_UNITS = [
 ]
 
 
-def test_can_search_units_by_type(client, requests_mocker):
+def test_can_search_content_by_type(client, requests_mocker):
     """search_repository issues /search/ POST requests as expected."""
     requests_mocker.post(
         "https://pulp.example.com/pulp/api/v2/content/units/rpm/search/",
         json=RPM_TEST_UNITS,
     )
 
-    units = client.search_units_by_type("rpm")
+    units = client.search_content_by_type("rpm")
 
     # It should have returned the repos as objects
     assert sorted(units) == [
@@ -435,7 +435,7 @@ def test_can_search_units_by_type(client, requests_mocker):
     assert requests_mocker.call_count == 1
 
 
-def test_can_search_units_by_type_invalid_criteria(client, requests_mocker):
+def test_can_search_content_by_type_invalid_criteria(client, requests_mocker):
     """search_repository issues /search/ POST requests as expected."""
     requests_mocker.post(
         "https://pulp.example.com/pulp/api/v2/content/units/rpm/search/",
@@ -443,7 +443,7 @@ def test_can_search_units_by_type_invalid_criteria(client, requests_mocker):
     )
 
     with pytest.raises(ValueError) as e:
-        units = client.search_units_by_type(
+        units = client.search_content_by_type(
             "rpm", Criteria.with_field("_content_type_id", "rpm")
         )
 

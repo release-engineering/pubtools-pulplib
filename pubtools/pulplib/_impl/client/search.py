@@ -88,7 +88,6 @@ class TypeIdAccumulator(object):
         self._no_accumulate_error = (
             "Can't serialize criteria for Pulp query; too complicated. "
         )
-        "Try simplifying the query with respect to content_type_id."
 
     def accumulate_from_match(self, match_expr):
         # Are we still in a state where accumulation is possible?

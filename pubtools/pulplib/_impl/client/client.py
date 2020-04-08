@@ -203,20 +203,22 @@ class Client(object):
             Repository, "repositories", criteria=criteria, search_options=search_options
         )
 
-    def search_units_by_type(self, content_type, criteria=None):
+    def search_content_by_type(self, content_type, criteria=None):
         """Search for units of single type across all repositories.
 
         Args:
             criteria (:class:`~pubtools.pulplib.Criteria`)
                 A criteria object used for this search.
-                If None, search for all repositories.
+                If None, search for all unit of content_type.
 
         Returns:
             Future[:class:`~pubtools.pulplib.Page`]
                 A future representing the first page of results.
 
                 Each page will contain a collection of
-                :class:`~pubtools.pulplib.Repository` objects.
+                :class:`~pubtools.pulplib.Unit` subclasses objects.
+
+        .. versionadded:: 2.6.0
         """
         type_ids_acc = TypeIdAccumulator()
         type_ids_acc.no_accumulate_error = (

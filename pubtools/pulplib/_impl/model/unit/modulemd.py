@@ -58,7 +58,7 @@ class ModulemdUnit(Unit):
         converter=FrozenList,
         pulp_field="repository_memberships",
     )
-    """List of repositories which unit belongs to
+    """IDs of repositories which unit belongs to
 
     .. versionadded:: 2.6.0
     """

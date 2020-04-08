@@ -3,9 +3,7 @@ import pytest
 from pubtools.pulplib import (
     FakeController,
     Criteria,
-    Matcher,
     RpmUnit,
-    FileUnit,
     ModulemdUnit,
     YumRepository,
 )
@@ -83,10 +81,10 @@ def populated_units(controller):
     controller.insert_units(repo2, units2)
 
 
-def test_search_units_by_type_all(populated_units, controller):
-    """search_units_by_type with no criteria specified"""
-    units1 = [u for u in controller.client.search_units_by_type("rpm").result()]
-    units2 = [u for u in controller.client.search_units_by_type("srpm").result()]
+def test_search_content_by_type_all(populated_units, controller):
+    """search_content_by_type with no criteria specified"""
+    units1 = [u for u in controller.client.search_content_by_type("rpm").result()]
+    units2 = [u for u in controller.client.search_content_by_type("srpm").result()]
     assert len([u for u in units1 if u.content_type_id == "rpm"]) == 3
     assert len([u for u in units2 if u.content_type_id == "srpm"]) == 2
 
@@ -95,8 +93,8 @@ def test_search_units_by_type_all(populated_units, controller):
     )
 
 
-def test_search_units_by_type_criteria(populated_units, controller):
-    """search_units_by_type with criteria"""
+def test_search_content_by_type_criteria(populated_units, controller):
+    """search_content_by_type with criteria"""
     units1 = [
         u
         for u in controller.client.search_units_by_type(
@@ -106,68 +104,11 @@ def test_search_units_by_type_criteria(populated_units, controller):
     assert len(units1) == 1
 
 
-def test_search_units_by_type_criteria_wrong_content_type(populated_units, controller):
+def test_search_content_by_type_criteria_wrong_content_type(populated_units, controller):
     units1 = [
         u
-        for u in controller.client.search_units_by_type(
+        for u in controller.client.search_content_by_type(
             "srpm", Criteria.with_field("name", "glibc")
         ).result()
     ]
     assert len(units1) == 0
-
-
-# def test_search_null_and(populated_repo):
-#     """Search with an empty AND gives an error."""
-#     crit = Criteria.and_()
-#     assert "Invalid AND in search query" in str(
-#         populated_repo.search_content(crit).exception()
-#     )
-
-
-# def test_search_content_default_crit(populated_repo):
-#     """search_content with default criteria on populated repo finds all units"""
-
-#     units = list(populated_repo.search_content())
-#     assert len(units) == 5
-
-
-# def test_search_content_by_type(populated_repo):
-#     """search_content for particular type returns matching content"""
-
-#     crit = Criteria.with_field("content_type_id", "rpm")
-#     units = list(populated_repo.search_content(crit))
-#     assert sorted(units) == [
-#         RpmUnit(name="bash", version="4.0", release="1", arch="x86_64"),
-#         RpmUnit(name="glibc", version="5.0", release="1", arch="x86_64"),
-#     ]
-
-
-# def test_search_content_by_unit_field(populated_repo):
-#     """search_content on regular field returns matching content"""
-
-#     crit = Criteria.with_field("name", "bash")
-#     units = list(populated_repo.search_content(crit))
-#     assert sorted(units) == [
-#         RpmUnit(
-#             content_type_id="srpm", name="bash", version="4.0", release="1", arch="src"
-#         ),
-#         RpmUnit(name="bash", version="4.0", release="1", arch="x86_64"),
-#     ]
-
-
-# def test_search_content_mixed_fields(populated_repo):
-#     """search_content crossing multiple fields and types returns matching units"""
-
-#     crit = Criteria.and_(
-#         Criteria.with_field_in("content_type_id", ["rpm", "modulemd"]),
-#         Criteria.with_field_in("name", ["bash", "module1"]),
-#     )
-#     units = list(populated_repo.search_content(crit))
-
-#     # Note: sorting different types not natively supported, hence sorting by repr
-#     assert sorted(units, key=repr) == [
-#         ModulemdUnit(
-#             name="module1", stream="s1", version=1234, context="a1b2", arch="x86_64"
-#         ),
-#         RpmUnit(name="bash", version="4.0", release="1", arch="x86_64"),
-#     ]
