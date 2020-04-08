@@ -22,7 +22,13 @@ def populated_repo(controller):
         RpmUnit(
             content_type_id="srpm", name="bash", version="4.0", release="1", arch="src"
         ),
-        RpmUnit(name="glibc", version="5.0", release="1", arch="x86_64"),
+        RpmUnit(
+            name="glibc",
+            version="5.0",
+            release="1",
+            arch="x86_64",
+            sourcerpm="glibc-5.0-1.el5_11.1.src.rpm",
+        ),
         ModulemdUnit(
             name="module1", stream="s1", version=1234, context="a1b2", arch="x86_64"
         ),
@@ -91,7 +97,13 @@ def test_search_content_by_type(populated_repo):
     units = list(populated_repo.search_content(crit))
     assert sorted(units) == [
         RpmUnit(name="bash", version="4.0", release="1", arch="x86_64"),
-        RpmUnit(name="glibc", version="5.0", release="1", arch="x86_64"),
+        RpmUnit(
+            name="glibc",
+            version="5.0",
+            release="1",
+            arch="x86_64",
+            sourcerpm="glibc-5.0-1.el5_11.1.src.rpm",
+        ),
     ]
 
 

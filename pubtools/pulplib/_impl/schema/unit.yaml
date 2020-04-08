@@ -61,7 +61,9 @@ definitions:
 
       # source rpm filename
       sourcerpm:
-        type: string
+        anyOf:
+        - type: string
+        - type: "null"
 
       # Short ID of key used to sign this RPM
       signing_key:
