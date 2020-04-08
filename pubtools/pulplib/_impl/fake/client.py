@@ -102,7 +102,7 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
         # we're not accessing a real Pulp server. The point is to ensure the
         # same validation and error behavior as used by the real client also
         # applies to the fake.
-        search_for_criteria(criteria, Repository)
+        search_for_criteria(criteria, Unit)
 
         for unit in sum([list(x) for x in self._repo_units.values()], []):
             if unit.content_type_id != content_type:
