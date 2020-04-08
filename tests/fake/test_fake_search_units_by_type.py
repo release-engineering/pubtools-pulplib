@@ -97,7 +97,7 @@ def test_search_content_by_type_criteria(populated_units, controller):
     """search_content_by_type with criteria"""
     units1 = [
         u
-        for u in controller.client.search_units_by_type(
+        for u in controller.client.search_content_by_type(
             "rpm", Criteria.with_field("name", "bash")
         ).result()
     ]
