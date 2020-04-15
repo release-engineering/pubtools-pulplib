@@ -9,12 +9,12 @@ from six.moves import StringIO
 
 import requests
 from more_executors import Executors
-from more_executors.futures import f_map, f_flat_map, f_return, f_proxy
+from more_executors.futures import f_map, f_flat_map, f_return, f_proxy, f_sequence
 
 from ..page import Page
 from ..criteria import Criteria
 from ..model import Repository, MaintenanceReport, Distributor, Unit
-from .search import search_for_criteria, TypeIdAccumulator
+from .search import search_for_criteria
 from .errors import PulpException
 from .poller import TaskPoller
 from . import retry
@@ -203,7 +203,7 @@ class Client(object):
             Repository, "repositories", criteria=criteria, search_options=search_options
         )
 
-    def search_content_by_type(self, content_type, criteria=None):
+    def search_content(self, criteria=None):
         """Search for units of single type across all repositories.
 
         Args:
@@ -220,17 +220,21 @@ class Client(object):
 
         .. versionadded:: 2.6.0
         """
-        type_ids_acc = TypeIdAccumulator()
-        type_ids_acc.no_accumulate_error = (
-            "Cannot query for _content_type_id when search over all repositories"
-        )
-        with type_ids_acc.no_accumulate:
-            return self._search(
-                Unit,
-                "content/units/%s" % content_type,
-                criteria=criteria,
-                type_ids_accum=type_ids_acc,
+
+        server_type_ids = self.get_content_type_ids()
+        prepared_search = search_for_criteria(criteria, Unit, None)
+        type_ids = prepared_search.type_ids
+        if not type_ids:
+            type_ids = server_type_ids
+        missing = set(type_ids) - set(server_type_ids)
+        if missing:
+            raise ValueError(
+                "Content type: %s is not supported by server" % ",".join(missing)
             )
+
+        return self._search(
+            Unit, ["content/units/%s" % x for x in type_ids], criteria=criteria
+        )
 
     def search_distributor(self, criteria=None):
         """Search the distributors matching the given criteria.
@@ -254,44 +258,54 @@ class Client(object):
     def _search(
         self,
         return_type,
-        resource_type,
+        resource_types,
         search_type="search",
         search_options=None,
         criteria=None,
         type_ids_accum=None,
     ):  # pylint:disable = too-many-arguments
-        url = os.path.join(
-            self._url, "pulp/api/v2/%s/%s/" % (resource_type, search_type)
-        )
-        prepared_search = search_for_criteria(criteria, return_type, type_ids_accum)
 
-        search = {
-            "criteria": {
-                "skip": 0,
-                "limit": self._PAGE_SIZE,
-                "filters": prepared_search.filters,
+        if not isinstance(resource_types, list) or isinstance(resource_types, tuple):
+            resource_types = [resource_types]
+
+        responses = []
+        searches = []
+        urls = []
+        for resource_type in resource_types:
+            url = os.path.join(
+                self._url, "pulp/api/v2/%s/%s/" % (resource_type, search_type)
+            )
+            urls.append(url)
+            prepared_search = search_for_criteria(criteria, return_type, type_ids_accum)
+
+            search = {
+                "criteria": {
+                    "skip": 0,
+                    "limit": self._PAGE_SIZE,
+                    "filters": prepared_search.filters,
+                }
             }
-        }
-        search.update(search_options or {})
+            search.update(search_options or {})
 
-        if search_type == "search/units":
-            # Unit searches need a little special handling:
-            # - serialization might have extracted some type_ids
-            # - filters should be wrapped under 'unit'
-            #   (we do not support searching on associations right now)
-            if prepared_search.type_ids:
-                search["criteria"]["type_ids"] = prepared_search.type_ids
-            search["criteria"]["filters"] = {"unit": search["criteria"]["filters"]}
+            if search_type == "search/units":
+                # Unit searches need a little special handling:
+                # - serialization might have extracted some type_ids
+                # - filters should be wrapped under 'unit'
+                #   (we do not support searching on associations right now)
+                if prepared_search.type_ids:
+                    search["criteria"]["type_ids"] = prepared_search.type_ids
+                search["criteria"]["filters"] = {"unit": search["criteria"]["filters"]}
 
-        response_f = self._do_search(url, search)
+            searches.append(search)
+            responses.append(self._do_search(url, search))
 
         # When this request is resolved, we'll have the first page of data.
         # We'll need to convert that into a page and also keep going with
         # the search if there's more to be done.
         return f_proxy(
             f_map(
-                response_f,
-                lambda data: self._handle_page(url, return_type, search, data),
+                f_sequence(responses),
+                lambda data: self._handle_page(urls, return_type, searches, data),
             )
         )
 
@@ -479,14 +493,17 @@ class Client(object):
             pass
         return taskdata
 
-    def _handle_page(self, url, object_class, search, raw_data):
-        LOG.debug("Got pulp response for %s, %s elems", search, len(raw_data))
+    def _handle_page(self, urls, object_class, searches, raw_data_list):
 
-        # Extract metadata from Pulp units
-        if object_class is Unit and url.endswith("units/"):
-            raw_data = [elem["metadata"] for elem in raw_data]
+        page_data = []
+        for url, search, raw_data in zip(urls, searches, raw_data_list):
+            # Extract metadata from Pulp units
+            LOG.debug("Got pulp response for %s, %s elems", search, len(raw_data))
+            if object_class is Unit and url.endswith("units/"):
+                raw_data = [elem["metadata"] for elem in raw_data]
 
-        page_data = [object_class.from_data(elem) for elem in raw_data]
+            page_data.extend([object_class.from_data(elem) for elem in raw_data])
+
         for obj in page_data:
             # set_client is only applicable for repository and distributor objects
             if hasattr(obj, "_set_client"):
@@ -495,20 +512,30 @@ class Client(object):
         # Do we need a next page?
         next_page = None
 
-        limit = search["criteria"]["limit"]
-        if len(raw_data) == limit:
-            # Yeah, we might...
-            search = search.copy()
-            search["criteria"] = search["criteria"].copy()
-            search["criteria"]["skip"] = search["criteria"]["skip"] + limit
-            response_f = self._do_search(url, search)
+        next_responses = []
+        next_searches = []
+        next_urls = []
+        for url, search, raw_data in zip(urls, searches, raw_data_list):
+            limit = search["criteria"]["limit"]
+            if len(raw_data) == limit:
+                # Yeah, we might...
+                search = search.copy()
+                search["criteria"] = search["criteria"].copy()
+                search["criteria"]["skip"] = search["criteria"]["skip"] + limit
+                response_f = self._do_search(url, search)
+                next_searches.append(search)
+                next_responses.append(response_f)
+                next_urls.append(url)
+
+        if next_responses:
             next_page = f_proxy(
                 f_map(
-                    response_f,
-                    lambda data: self._handle_page(url, object_class, search, data),
+                    f_sequence(next_responses),
+                    lambda data: self._handle_page(
+                        next_urls, object_class, next_searches, data
+                    ),
                 )
             )
-
         return Page(data=page_data, next=next_page)
 
     @property

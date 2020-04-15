@@ -396,18 +396,55 @@ RPM_TEST_UNITS = [
     },
 ]
 
+SRPM_TEST_UNITS = [
+    {
+        "_content_type_id": "srpm",
+        "_id": "bd2e0321-48f6-4997-a5dc-e73c771bc17d",
+        "checksum": "4f5a3a0da6f404f6d9988987cd75f13982bd655a0a4f692406611afbbc597679",
+        "checksums": {
+            "sha256": "4f5a3a0da6f404f6d9988987cd75f13982bd655a0a4f692406611afbbc597679"
+        },
+        "arch": "src",
+        "epoch": "0",
+        "name": "glibc",
+        "release": "2.57.el4.1",
+        "repository_memberships": ["fake-repository-id-3"],
+        "sourcerpm": None,
+        "version": "2.3.4",
+    }
+]
 
-def test_can_search_content_by_type(client, requests_mocker):
-    """search_repository issues /search/ POST requests as expected."""
+
+def test_can_search_content(client, requests_mocker):
+    """search_content basic call"""
+    requests_mocker.get(
+        "https://pulp.example.com/pulp/api/v2/plugins/types/",
+        json=[{"id": "rpm"}, {"id": "srpm"}],
+    )
     requests_mocker.post(
         "https://pulp.example.com/pulp/api/v2/content/units/rpm/search/",
         json=RPM_TEST_UNITS,
     )
+    requests_mocker.post(
+        "https://pulp.example.com/pulp/api/v2/content/units/srpm/search/",
+        json=SRPM_TEST_UNITS,
+    )
 
-    units = client.search_content_by_type("rpm")
+    units = client.search_content()
 
     # It should have returned the repos as objects
     assert sorted(units) == [
+        RpmUnit(
+            content_type_id="srpm",
+            sha256sum="4f5a3a0da6f404f6d9988987cd75f13982bd655a0a4f692406611afbbc597679",
+            arch="src",
+            epoch="0",
+            name="glibc",
+            release="2.57.el4.1",
+            repository_memberships=["fake-repository-id-3"],
+            sourcerpm=None,
+            version="2.3.4",
+        ),
         RpmUnit(
             sha256sum="4f5a3a0da6f404f6d9988987cd75f13982bd655a0a4f692406611afbbc597679",
             arch="ia64",
@@ -431,25 +468,88 @@ def test_can_search_content_by_type(client, requests_mocker):
         ),
     ]
 
-    # It should have issued only a single search
-    assert requests_mocker.call_count == 1
+    # 3 requests, 1 for server type_ids, 1 for rpm, 1 for srpm
+    assert requests_mocker.call_count == 3
 
 
-def test_can_search_content_by_type_invalid_criteria(client, requests_mocker):
-    """search_repository issues /search/ POST requests as expected."""
+def test_can_search_content_invalid_criteria(client, requests_mocker):
+    """search_content issues /search/ POST requests as expected."""
+    requests_mocker.get(
+        "https://pulp.example.com/pulp/api/v2/plugins/types/",
+        json=[{"id": "rpm"}, {"id": "srpm"}],
+    )
     requests_mocker.post(
         "https://pulp.example.com/pulp/api/v2/content/units/rpm/search/",
         json=RPM_TEST_UNITS,
     )
 
     with pytest.raises(ValueError) as e:
-        units = client.search_content_by_type(
-            "rpm", Criteria.with_field("_content_type_id", "rpm")
-        )
+        _ = client.search_content(Criteria.with_field("_content_type_id", "foobar"))
+    assert str(e.value) == "Content type: foobar is not supported by server"
 
-    assert (
-        str(e.value)
-        == "Cannot query for _content_type_id when search over all repositories"
+    assert requests_mocker.call_count == 1
+
+
+def test_can_search_content_pagination(client, requests_mocker):
+    """search_content pagination should search only for types that returns non-empty"""
+    requests_mocker.get(
+        "https://pulp.example.com/pulp/api/v2/plugins/types/",
+        json=[{"id": "rpm"}, {"id": "srpm"}],
     )
-    # It should have issued only a single search
-    assert requests_mocker.call_count == 0
+    requests_mocker.register_uri(
+        "POST",
+        "https://pulp.example.com/pulp/api/v2/content/units/rpm/search/",
+        [{"json": [RPM_TEST_UNITS[0]]}, {"json": [RPM_TEST_UNITS[1]]}, {"json": []}],
+    )
+    requests_mocker.register_uri(
+        "POST",
+        "https://pulp.example.com/pulp/api/v2/content/units/srpm/search/",
+        [{"json": SRPM_TEST_UNITS}, {"json": []}],
+    )
+    client._PAGE_SIZE = 1
+
+    units = client.search_content()
+
+    # It should have returned the repos as objects
+    assert sorted(units) == [
+        RpmUnit(
+            content_type_id="srpm",
+            sha256sum="4f5a3a0da6f404f6d9988987cd75f13982bd655a0a4f692406611afbbc597679",
+            arch="src",
+            epoch="0",
+            name="glibc",
+            release="2.57.el4.1",
+            repository_memberships=["fake-repository-id-3"],
+            sourcerpm=None,
+            version="2.3.4",
+        ),
+        RpmUnit(
+            sha256sum="4f5a3a0da6f404f6d9988987cd75f13982bd655a0a4f692406611afbbc597679",
+            arch="ia64",
+            epoch="0",
+            name="glibc-headers",
+            release="2.57.el4.1",
+            repository_memberships=["fake-repository-id-3"],
+            sourcerpm="glibc-2.3.4-2.57.el4.1.src.rpm",
+            version="2.3.4",
+        ),
+        RpmUnit(
+            sha1sum="ca995eb1a635c97393466f67aaec8e9e753b8ed5",
+            sha256sum="1c4baac658fd56e6ec9cca37f440a4bd8c9c0b02a21f41b30b8ea17b402a1907",
+            arch="i386",
+            epoch="0",
+            name="gnu-efi-debuginfo",
+            release="1.1",
+            repository_memberships=["fake-repository-id-1", "fake-repository-id-2"],
+            sourcerpm="gnu-efi-3.0c-1.1.src.rpm",
+            version="3.0c",
+        ),
+    ]
+
+    # 3 requests, 1 for server type_ids, 1 for rpm, 1 for srpm
+    assert [h.url for h in requests_mocker.request_history].count(
+        "https://pulp.example.com/pulp/api/v2/content/units/rpm/search/"
+    ) == 3
+    assert [h.url for h in requests_mocker.request_history].count(
+        "https://pulp.example.com/pulp/api/v2/content/units/srpm/search/"
+    ) == 2

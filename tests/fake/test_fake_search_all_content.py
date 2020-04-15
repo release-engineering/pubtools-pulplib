@@ -81,36 +81,68 @@ def populated_units(controller):
     controller.insert_units(repo2, units2)
 
 
-def test_search_content_by_type_all(populated_units, controller):
+def test_search_content_all(populated_units, controller):
     """search_content_by_type with no criteria specified"""
-    units1 = [u for u in controller.client.search_content_by_type("rpm").result()]
-    units2 = [u for u in controller.client.search_content_by_type("srpm").result()]
+    units1 = [
+        u
+        for u in controller.client.search_content(
+            Criteria.with_field("content_type_id", "rpm")
+        ).result()
+    ]
+    units2 = [
+        u
+        for u in controller.client.search_content(
+            Criteria.with_field("content_type_id", "srpm")
+        ).result()
+    ]
+    units3 = [u for u in controller.client.search_content().result()]
+    assert len(units1) == 3
     assert len([u for u in units1 if u.content_type_id == "rpm"]) == 3
+    assert len(units2) == 2
     assert len([u for u in units2 if u.content_type_id == "srpm"]) == 2
+    # + two modulemd
+    assert len(units3) == 7
 
     assert set(sum([u.repository_memberships for u in units1], [])) == set(
         ["repo1", "repo2"]
     )
 
 
-def test_search_content_by_type_criteria(populated_units, controller):
+def test_search_content_criteria(populated_units, controller):
     """search_content_by_type with criteria"""
     units1 = [
         u
-        for u in controller.client.search_content_by_type(
-            "rpm", Criteria.with_field("name", "bash")
+        for u in controller.client.search_content(
+            Criteria.with_field("name", "bash")
         ).result()
     ]
-    assert len(units1) == 1
+    # match both srpm and rpm
+    assert len(units1) == 2
+    assert sorted([u.arch for u in units1]) == ["src", "x86_64"]
 
 
-def test_search_content_by_type_criteria_wrong_content_type(
-    populated_units, controller
-):
+def test_search_content_all_pagination(populated_units, controller):
+    """search_content_by_type with no criteria specified"""
     units1 = [
         u
-        for u in controller.client.search_content_by_type(
-            "srpm", Criteria.with_field("name", "glibc")
+        for u in controller.client.search_content(
+            Criteria.with_field("content_type_id", "rpm")
         ).result()
     ]
-    assert len(units1) == 0
+    units2 = [
+        u
+        for u in controller.client.search_content(
+            Criteria.with_field("content_type_id", "srpm")
+        ).result()
+    ]
+    units3 = [u for u in controller.client.search_content().result()]
+    assert len(units1) == 3
+    assert len([u for u in units1 if u.content_type_id == "rpm"]) == 3
+    assert len(units2) == 2
+    assert len([u for u in units2 if u.content_type_id == "srpm"]) == 2
+    # + two modulemd
+    assert len(units3) == 7
+
+    assert set(sum([u.repository_memberships for u in units1], [])) == set(
+        ["repo1", "repo2"]
+    )
