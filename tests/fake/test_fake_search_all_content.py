@@ -6,6 +6,7 @@ from pubtools.pulplib import (
     RpmUnit,
     ModulemdUnit,
     YumRepository,
+    PulpException,
 )
 
 
@@ -119,6 +120,15 @@ def test_search_content_criteria(populated_units, controller):
     # match both srpm and rpm
     assert len(units1) == 2
     assert sorted([u.arch for u in units1]) == ["src", "x86_64"]
+
+
+def test_search_content_invalid_content_type(populated_units, controller):
+    """search_content_by_type with invalid content type"""
+    with pytest.raises(PulpException):
+        for x in controller.client.search_content(
+            Criteria.with_field("content_type_id", "invalid")
+        ).result():
+            pass
 
 
 def test_search_content_all_pagination(populated_units, controller):

@@ -264,7 +264,9 @@ class Client(object):
         criteria=None,
     ):  # pylint:disable = too-many-arguments
 
-        if not isinstance(resource_types, list) or isinstance(resource_types, tuple):
+        if not isinstance(resource_types, list) and not isinstance(
+            resource_types, tuple
+        ):
             resource_types = [resource_types]
 
         responses = []
@@ -275,7 +277,7 @@ class Client(object):
                 self._url, "pulp/api/v2/%s/%s/" % (resource_type, search_type)
             )
             urls.append(url)
-            prepared_search = search_for_criteria(criteria, return_type, type_ids_accum)
+            prepared_search = search_for_criteria(criteria, return_type)
 
             search = {
                 "criteria": {

@@ -104,6 +104,22 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
         # applies to the fake.
         prepared_search = search_for_criteria(criteria, Unit)
 
+        available_type_ids = set(
+            [
+                unit.content_type_id
+                for units in self._repo_units.values()
+                for unit in units
+            ]
+        )
+        missing_type_ids = set(prepared_search.type_ids or []) - available_type_ids
+        if missing_type_ids:
+            return f_return_error(
+                PulpException(
+                    "following type ids are not supported on the server: %s"
+                    % ",".join(missing_type_ids)
+                )
+            )
+
         for unit in sum([list(x) for x in self._repo_units.values()], []):
             if (
                 prepared_search.type_ids
