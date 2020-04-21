@@ -209,7 +209,7 @@ class Client(object):
         Args:
             criteria (:class:`~pubtools.pulplib.Criteria`)
                 A criteria object used for this search.
-                If None, search for all unit of content_type.
+                If None, search for all units.
 
         Returns:
             Future[:class:`~pubtools.pulplib.Page`]
