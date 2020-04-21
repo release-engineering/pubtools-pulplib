@@ -262,7 +262,6 @@ class Client(object):
         search_type="search",
         search_options=None,
         criteria=None,
-        type_ids_accum=None,
     ):  # pylint:disable = too-many-arguments
 
         if not isinstance(resource_types, list) or isinstance(resource_types, tuple):
