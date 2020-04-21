@@ -204,7 +204,7 @@ class Client(object):
         )
 
     def search_content(self, criteria=None):
-        """Search for units of single type across all repositories.
+        """Search for units across all repositories.
 
         Args:
             criteria (:class:`~pubtools.pulplib.Criteria`)
