@@ -38,7 +38,7 @@ class FileUnit(Unit):
         converter=FrozenList,
         pulp_field="repository_memberships",
     )
-    """IDs of repositories which unit belongs to
+    """IDs of repositories containing the unit, or ``None`` if this information is unavailable.
 
     .. versionadded:: 2.6.0
     """
