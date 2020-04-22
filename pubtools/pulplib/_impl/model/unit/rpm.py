@@ -2,7 +2,7 @@ from .base import Unit, unit_type
 
 from ..attr import pulp_attrib
 from ... import compat_attr as attr
-from ..frozenlist import FrozenList
+from ..frozenlist import frozenlist_or_none_converter
 
 
 # Note: Pulp2 models RPM and SRPM as separate unit types,
@@ -92,12 +92,12 @@ class RpmUnit(Unit):
     )
 
     repository_memberships = pulp_attrib(
-        default=attr.Factory(FrozenList),
+        default=None,
         type=list,
-        converter=FrozenList,
+        converter=frozenlist_or_none_converter,
         pulp_field="repository_memberships",
     )
-    """IDs of repositories which unit belongs to
+    """IDs of repositories containing the unit, or ``None`` if this information is unavailable.
 
     .. versionadded:: 2.6.0
     """

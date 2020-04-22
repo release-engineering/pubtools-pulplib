@@ -2,7 +2,7 @@ from .base import Unit, unit_type
 
 from ..attr import pulp_attrib
 from ... import compat_attr as attr
-from ..frozenlist import FrozenList
+from ..frozenlist import frozenlist_or_none_converter
 
 
 @unit_type("iso")
@@ -35,7 +35,7 @@ class FileUnit(Unit):
     repository_memberships = pulp_attrib(
         default=None,
         type=list,
-        converter=FrozenList,
+        converter=frozenlist_or_none_converter,
         pulp_field="repository_memberships",
     )
     """IDs of repositories containing the unit, or ``None`` if this information is unavailable.
