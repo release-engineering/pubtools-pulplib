@@ -264,9 +264,7 @@ class Client(object):
         criteria=None,
     ):  # pylint:disable = too-many-arguments
 
-        if not isinstance(resource_types, list) and not isinstance(
-            resource_types, tuple
-        ):
+        if not isinstance(resource_types, (list, tuple)):
             resource_types = [resource_types]
 
         responses = []
