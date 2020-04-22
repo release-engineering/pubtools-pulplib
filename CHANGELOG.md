@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - sourcerpm attribute for Rpm unit
-- client.search_content_by_type method
+- client.search_content method
 - Introduced 'population_sources' and 'ubi_population' attributes for yum repository
 
 ## [2.5.0] - 2020-02-25
