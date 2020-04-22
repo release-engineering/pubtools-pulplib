@@ -33,7 +33,7 @@ class FileUnit(Unit):
     )
 
     repository_memberships = pulp_attrib(
-        default=attr.Factory(FrozenList),
+        default=None,
         type=list,
         converter=FrozenList,
         pulp_field="repository_memberships",
