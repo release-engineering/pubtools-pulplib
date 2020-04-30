@@ -198,7 +198,6 @@ def test_modulemd_defaults_content(client, requests_mocker):
                 "metadata": {
                     "_content_type_id": "modulemd_defaults",
                     "name": "mdd",
-                    "stream": "1.0",
                     "repo_id": "some-repo",
                     "profiles": {"p1": ["something"]},
                 }

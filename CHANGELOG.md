@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - sourcerpm attribute for Rpm unit
 - Introduced 'population_sources' and 'ubi_population' attributes for yum repository
 
+### Fixed
+- 'stream' and 'profiles' are now optional on modulemd_defaults units, rather
+  than incorrectly mandatory (leading to schema validation errors)
+
 ## [2.5.0] - 2020-02-25
 
 ### Added
