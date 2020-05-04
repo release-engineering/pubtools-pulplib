@@ -2,6 +2,7 @@ from .base import Unit, unit_type
 
 from ..attr import pulp_attrib
 from ... import compat_attr as attr
+from ..frozenlist import frozenlist_or_none_converter
 
 
 @unit_type("iso")
@@ -30,6 +31,17 @@ class FileUnit(Unit):
     content_type_id = pulp_attrib(
         default="iso", type=str, pulp_field="_content_type_id"
     )
+
+    repository_memberships = pulp_attrib(
+        default=None,
+        type=list,
+        converter=frozenlist_or_none_converter,
+        pulp_field="repository_memberships",
+    )
+    """IDs of repositories containing the unit, or ``None`` if this information is unavailable.
+
+    .. versionadded:: 2.6.0
+    """
 
     @size.validator
     def _check_size(self, _, value):
