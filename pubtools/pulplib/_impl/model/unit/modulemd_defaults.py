@@ -16,17 +16,14 @@ class ModulemdDefaultsUnit(Unit):
     name = pulp_attrib(type=str, pulp_field="name")
     """The name of this modulemd defaults unit"""
 
-    stream = pulp_attrib(type=str, pulp_field="stream")
-    """The stream of this modulemd defaults unit"""
-
     repo_id = pulp_attrib(type=str, pulp_field="repo_id")
     """The repository ID bound to this modulemd defaults unit"""
 
-    profiles = pulp_attrib(pulp_field="profiles")
-    """The profiles of this modulemd defaults unit.
+    stream = pulp_attrib(type=str, pulp_field="stream", default=None)
+    """The stream of this modulemd defaults unit"""
 
-    The type for this attribute is omitted to allow for either dict or None.
-    """
+    profiles = pulp_attrib(type=dict, pulp_field="profiles", default=None)
+    """The profiles of this modulemd defaults unit."""
 
     repository_memberships = pulp_attrib(
         default=None,
