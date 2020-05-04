@@ -33,3 +33,9 @@ class FrozenList(list):
     # FrozenList is hashable if everything within it is hashable
     def __hash__(self):
         return hash(tuple(self))
+
+
+def frozenlist_or_none_converter(obj):
+    if obj is not None:
+        return FrozenList(obj)
+    return None

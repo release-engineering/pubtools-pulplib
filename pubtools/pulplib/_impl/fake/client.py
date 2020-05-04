@@ -93,6 +93,41 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
         random.shuffle(repos)
         return self._prepare_pages(repos)
 
+    def search_content(self, criteria=None):
+        criteria = criteria or Criteria.true()
+        out = []
+
+        # Pass the criteria through the code used by the real client to build
+        # up the Pulp query. We don't actually *use* the resulting query since
+        # we're not accessing a real Pulp server. The point is to ensure the
+        # same validation and error behavior as used by the real client also
+        # applies to the fake.
+        prepared_search = search_for_criteria(criteria, Unit)
+
+        available_type_ids = set(self._type_ids)
+        missing_type_ids = set(prepared_search.type_ids or []) - available_type_ids
+        if missing_type_ids:
+            return f_return_error(
+                PulpException(
+                    "following type ids are not supported on the server: %s"
+                    % ",".join(missing_type_ids)
+                )
+            )
+
+        for unit in sum([list(x) for x in self._repo_units.values()], []):
+            if (
+                prepared_search.type_ids
+                and unit.content_type_id not in prepared_search.type_ids
+            ):
+                continue
+            if match_object(criteria, unit):
+                out.append(unit)
+
+        # callers should not make any assumption about the order of returned
+        # values. Encourage that by returning output in unpredictable order
+        random.shuffle(out)
+        return self._prepare_pages(out)
+
     def search_distributor(self, criteria=None):
         criteria = criteria or Criteria.true()
         distributors = []
