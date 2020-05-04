@@ -286,6 +286,11 @@ definitions:
       size:
         type: integer
 
+      repository_memberships:
+        type: array
+        items:
+          type: string
+
     required:
     - _content_type_id
     - name
@@ -344,6 +349,11 @@ definitions:
             type: string
             pattern: &quot;^[a-f0-9]{64}$&quot;
 
+      repository_memberships:
+        type: array
+        items:
+          type: string
+
     required:
     - _content_type_id
     - name
@@ -373,6 +383,11 @@ definitions:
       arch:
         type: string
 
+      repository_memberships:
+        type: array
+        items:
+          type: string
+
     required:
     - _content_type_id
     - name
@@ -380,6 +395,7 @@ definitions:
     - version
     - context
     - arch
+
 
   # modulemd_defaults units
   modulemd_defaults:
@@ -398,6 +414,11 @@ definitions:
         type: string
       profiles:
         type: object
+
+      repository_memberships:
+        type: array
+        items:
+          type: string
 
     required:
     - _content_type_id
@@ -565,7 +586,7 @@ properties:
       &copy;2019, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

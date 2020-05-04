@@ -42,7 +42,7 @@
 
 <span class="kn">import</span> <span class="nn">requests</span>
 <span class="kn">from</span> <span class="nn">more_executors</span> <span class="kn">import</span> <span class="n">Executors</span>
-<span class="kn">from</span> <span class="nn">more_executors.futures</span> <span class="kn">import</span> <span class="n">f_map</span><span class="p">,</span> <span class="n">f_flat_map</span><span class="p">,</span> <span class="n">f_return</span><span class="p">,</span> <span class="n">f_proxy</span>
+<span class="kn">from</span> <span class="nn">more_executors.futures</span> <span class="kn">import</span> <span class="n">f_map</span><span class="p">,</span> <span class="n">f_flat_map</span><span class="p">,</span> <span class="n">f_return</span><span class="p">,</span> <span class="n">f_proxy</span><span class="p">,</span> <span class="n">f_sequence</span>
 
 <span class="kn">from</span> <span class="nn">..page</span> <span class="kn">import</span> <span class="n">Page</span>
 <span class="kn">from</span> <span class="nn">..criteria</span> <span class="kn">import</span> <span class="n">Criteria</span>
@@ -236,6 +236,39 @@
             <span class="n">Repository</span><span class="p">,</span> <span class="s2">&quot;repositories&quot;</span><span class="p">,</span> <span class="n">criteria</span><span class="o">=</span><span class="n">criteria</span><span class="p">,</span> <span class="n">search_options</span><span class="o">=</span><span class="n">search_options</span>
         <span class="p">)</span></div>
 
+<div class="viewcode-block" id="Client.search_content"><a class="viewcode-back" href="../../../../../api/client.html#pubtools.pulplib.Client.search_content">[docs]</a>    <span class="k">def</span> <span class="nf">search_content</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">criteria</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Search for units across all repositories.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            criteria (:class:`~pubtools.pulplib.Criteria`)</span>
+<span class="sd">                A criteria object used for this search.</span>
+<span class="sd">                If None, search for all units.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Future[:class:`~pubtools.pulplib.Page`]</span>
+<span class="sd">                A future representing the first page of results.</span>
+
+<span class="sd">                Each page will contain a collection of</span>
+<span class="sd">                :class:`~pubtools.pulplib.Unit` subclasses objects.</span>
+
+<span class="sd">        .. versionadded:: 2.6.0</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">server_type_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_content_type_ids</span><span class="p">()</span>
+        <span class="n">prepared_search</span> <span class="o">=</span> <span class="n">search_for_criteria</span><span class="p">(</span><span class="n">criteria</span><span class="p">,</span> <span class="n">Unit</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">type_ids</span> <span class="o">=</span> <span class="n">prepared_search</span><span class="o">.</span><span class="n">type_ids</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">type_ids</span><span class="p">:</span>
+            <span class="n">type_ids</span> <span class="o">=</span> <span class="n">server_type_ids</span>
+        <span class="n">missing</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">type_ids</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">server_type_ids</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">missing</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Content type: </span><span class="si">%s</span><span class="s2"> is not supported by server&quot;</span> <span class="o">%</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">missing</span><span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_search</span><span class="p">(</span>
+            <span class="n">Unit</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;content/units/</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">type_ids</span><span class="p">],</span> <span class="n">criteria</span><span class="o">=</span><span class="n">criteria</span>
+        <span class="p">)</span></div>
+
 <div class="viewcode-block" id="Client.search_distributor"><a class="viewcode-back" href="../../../../../api/client.html#pubtools.pulplib.Client.search_distributor">[docs]</a>    <span class="k">def</span> <span class="nf">search_distributor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">criteria</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Search the distributors matching the given criteria.</span>
 
@@ -258,43 +291,53 @@
     <span class="k">def</span> <span class="nf">_search</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">return_type</span><span class="p">,</span>
-        <span class="n">resource_type</span><span class="p">,</span>
+        <span class="n">resource_types</span><span class="p">,</span>
         <span class="n">search_type</span><span class="o">=</span><span class="s2">&quot;search&quot;</span><span class="p">,</span>
         <span class="n">search_options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">criteria</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>  <span class="c1"># pylint:disable = too-many-arguments</span>
-        <span class="n">url</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_url</span><span class="p">,</span> <span class="s2">&quot;pulp/api/v2/</span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">/&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">resource_type</span><span class="p">,</span> <span class="n">search_type</span><span class="p">)</span>
-        <span class="p">)</span>
-        <span class="n">prepared_search</span> <span class="o">=</span> <span class="n">search_for_criteria</span><span class="p">(</span><span class="n">criteria</span><span class="p">,</span> <span class="n">return_type</span><span class="p">)</span>
 
-        <span class="n">search</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;criteria&quot;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s2">&quot;skip&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-                <span class="s2">&quot;limit&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_PAGE_SIZE</span><span class="p">,</span>
-                <span class="s2">&quot;filters&quot;</span><span class="p">:</span> <span class="n">prepared_search</span><span class="o">.</span><span class="n">filters</span><span class="p">,</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">resource_types</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+            <span class="n">resource_types</span> <span class="o">=</span> <span class="p">[</span><span class="n">resource_types</span><span class="p">]</span>
+
+        <span class="n">responses</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">searches</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">urls</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">resource_type</span> <span class="ow">in</span> <span class="n">resource_types</span><span class="p">:</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_url</span><span class="p">,</span> <span class="s2">&quot;pulp/api/v2/</span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">/&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">resource_type</span><span class="p">,</span> <span class="n">search_type</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">urls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+            <span class="n">prepared_search</span> <span class="o">=</span> <span class="n">search_for_criteria</span><span class="p">(</span><span class="n">criteria</span><span class="p">,</span> <span class="n">return_type</span><span class="p">)</span>
+
+            <span class="n">search</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;criteria&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;skip&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                    <span class="s2">&quot;limit&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_PAGE_SIZE</span><span class="p">,</span>
+                    <span class="s2">&quot;filters&quot;</span><span class="p">:</span> <span class="n">prepared_search</span><span class="o">.</span><span class="n">filters</span><span class="p">,</span>
+                <span class="p">}</span>
             <span class="p">}</span>
-        <span class="p">}</span>
-        <span class="n">search</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">search_options</span> <span class="ow">or</span> <span class="p">{})</span>
+            <span class="n">search</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">search_options</span> <span class="ow">or</span> <span class="p">{})</span>
 
-        <span class="k">if</span> <span class="n">search_type</span> <span class="o">==</span> <span class="s2">&quot;search/units&quot;</span><span class="p">:</span>
-            <span class="c1"># Unit searches need a little special handling:</span>
-            <span class="c1"># - serialization might have extracted some type_ids</span>
-            <span class="c1"># - filters should be wrapped under &#39;unit&#39;</span>
-            <span class="c1">#   (we do not support searching on associations right now)</span>
-            <span class="k">if</span> <span class="n">prepared_search</span><span class="o">.</span><span class="n">type_ids</span><span class="p">:</span>
-                <span class="n">search</span><span class="p">[</span><span class="s2">&quot;criteria&quot;</span><span class="p">][</span><span class="s2">&quot;type_ids&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">prepared_search</span><span class="o">.</span><span class="n">type_ids</span>
-            <span class="n">search</span><span class="p">[</span><span class="s2">&quot;criteria&quot;</span><span class="p">][</span><span class="s2">&quot;filters&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="n">search</span><span class="p">[</span><span class="s2">&quot;criteria&quot;</span><span class="p">][</span><span class="s2">&quot;filters&quot;</span><span class="p">]}</span>
+            <span class="k">if</span> <span class="n">search_type</span> <span class="o">==</span> <span class="s2">&quot;search/units&quot;</span><span class="p">:</span>
+                <span class="c1"># Unit searches need a little special handling:</span>
+                <span class="c1"># - serialization might have extracted some type_ids</span>
+                <span class="c1"># - filters should be wrapped under &#39;unit&#39;</span>
+                <span class="c1">#   (we do not support searching on associations right now)</span>
+                <span class="k">if</span> <span class="n">prepared_search</span><span class="o">.</span><span class="n">type_ids</span><span class="p">:</span>
+                    <span class="n">search</span><span class="p">[</span><span class="s2">&quot;criteria&quot;</span><span class="p">][</span><span class="s2">&quot;type_ids&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">prepared_search</span><span class="o">.</span><span class="n">type_ids</span>
+                <span class="n">search</span><span class="p">[</span><span class="s2">&quot;criteria&quot;</span><span class="p">][</span><span class="s2">&quot;filters&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="n">search</span><span class="p">[</span><span class="s2">&quot;criteria&quot;</span><span class="p">][</span><span class="s2">&quot;filters&quot;</span><span class="p">]}</span>
 
-        <span class="n">response_f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_search</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">search</span><span class="p">)</span>
+            <span class="n">searches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">search</span><span class="p">)</span>
+            <span class="n">responses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_search</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">search</span><span class="p">))</span>
 
         <span class="c1"># When this request is resolved, we&#39;ll have the first page of data.</span>
         <span class="c1"># We&#39;ll need to convert that into a page and also keep going with</span>
         <span class="c1"># the search if there&#39;s more to be done.</span>
         <span class="k">return</span> <span class="n">f_proxy</span><span class="p">(</span>
             <span class="n">f_map</span><span class="p">(</span>
-                <span class="n">response_f</span><span class="p">,</span>
-                <span class="k">lambda</span> <span class="n">data</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_page</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">return_type</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">data</span><span class="p">),</span>
+                <span class="n">f_sequence</span><span class="p">(</span><span class="n">responses</span><span class="p">),</span>
+                <span class="k">lambda</span> <span class="n">data</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_page</span><span class="p">(</span><span class="n">urls</span><span class="p">,</span> <span class="n">return_type</span><span class="p">,</span> <span class="n">searches</span><span class="p">,</span> <span class="n">data</span><span class="p">),</span>
             <span class="p">)</span>
         <span class="p">)</span>
 
@@ -482,14 +525,17 @@
             <span class="k">pass</span>
         <span class="k">return</span> <span class="n">taskdata</span>
 
-    <span class="k">def</span> <span class="nf">_handle_page</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">object_class</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">raw_data</span><span class="p">):</span>
-        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Got pulp response for </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2"> elems&quot;</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw_data</span><span class="p">))</span>
+    <span class="k">def</span> <span class="nf">_handle_page</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">urls</span><span class="p">,</span> <span class="n">object_class</span><span class="p">,</span> <span class="n">searches</span><span class="p">,</span> <span class="n">raw_data_list</span><span class="p">):</span>
 
-        <span class="c1"># Extract metadata from Pulp units</span>
-        <span class="k">if</span> <span class="n">object_class</span> <span class="ow">is</span> <span class="n">Unit</span> <span class="ow">and</span> <span class="n">url</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;units/&quot;</span><span class="p">):</span>
-            <span class="n">raw_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">elem</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">raw_data</span><span class="p">]</span>
+        <span class="n">page_data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">url</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">raw_data</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">urls</span><span class="p">,</span> <span class="n">searches</span><span class="p">,</span> <span class="n">raw_data_list</span><span class="p">):</span>
+            <span class="c1"># Extract metadata from Pulp units</span>
+            <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Got pulp response for </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2"> elems&quot;</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw_data</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">object_class</span> <span class="ow">is</span> <span class="n">Unit</span> <span class="ow">and</span> <span class="n">url</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;units/&quot;</span><span class="p">):</span>
+                <span class="n">raw_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">elem</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">raw_data</span><span class="p">]</span>
 
-        <span class="n">page_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">object_class</span><span class="o">.</span><span class="n">from_data</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span> <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">raw_data</span><span class="p">]</span>
+            <span class="n">page_data</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">object_class</span><span class="o">.</span><span class="n">from_data</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span> <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">raw_data</span><span class="p">])</span>
+
         <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">page_data</span><span class="p">:</span>
             <span class="c1"># set_client is only applicable for repository and distributor objects</span>
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;_set_client&quot;</span><span class="p">):</span>
@@ -498,20 +544,30 @@
         <span class="c1"># Do we need a next page?</span>
         <span class="n">next_page</span> <span class="o">=</span> <span class="kc">None</span>
 
-        <span class="n">limit</span> <span class="o">=</span> <span class="n">search</span><span class="p">[</span><span class="s2">&quot;criteria&quot;</span><span class="p">][</span><span class="s2">&quot;limit&quot;</span><span class="p">]</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw_data</span><span class="p">)</span> <span class="o">==</span> <span class="n">limit</span><span class="p">:</span>
-            <span class="c1"># Yeah, we might...</span>
-            <span class="n">search</span> <span class="o">=</span> <span class="n">search</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-            <span class="n">search</span><span class="p">[</span><span class="s2">&quot;criteria&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">search</span><span class="p">[</span><span class="s2">&quot;criteria&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-            <span class="n">search</span><span class="p">[</span><span class="s2">&quot;criteria&quot;</span><span class="p">][</span><span class="s2">&quot;skip&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">search</span><span class="p">[</span><span class="s2">&quot;criteria&quot;</span><span class="p">][</span><span class="s2">&quot;skip&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">limit</span>
-            <span class="n">response_f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_search</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">search</span><span class="p">)</span>
+        <span class="n">next_responses</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">next_searches</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">next_urls</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">url</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">raw_data</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">urls</span><span class="p">,</span> <span class="n">searches</span><span class="p">,</span> <span class="n">raw_data_list</span><span class="p">):</span>
+            <span class="n">limit</span> <span class="o">=</span> <span class="n">search</span><span class="p">[</span><span class="s2">&quot;criteria&quot;</span><span class="p">][</span><span class="s2">&quot;limit&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw_data</span><span class="p">)</span> <span class="o">==</span> <span class="n">limit</span><span class="p">:</span>
+                <span class="c1"># Yeah, we might...</span>
+                <span class="n">search</span> <span class="o">=</span> <span class="n">search</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="n">search</span><span class="p">[</span><span class="s2">&quot;criteria&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">search</span><span class="p">[</span><span class="s2">&quot;criteria&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="n">search</span><span class="p">[</span><span class="s2">&quot;criteria&quot;</span><span class="p">][</span><span class="s2">&quot;skip&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">search</span><span class="p">[</span><span class="s2">&quot;criteria&quot;</span><span class="p">][</span><span class="s2">&quot;skip&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">limit</span>
+                <span class="n">response_f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_search</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">search</span><span class="p">)</span>
+                <span class="n">next_searches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">search</span><span class="p">)</span>
+                <span class="n">next_responses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">response_f</span><span class="p">)</span>
+                <span class="n">next_urls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">next_responses</span><span class="p">:</span>
             <span class="n">next_page</span> <span class="o">=</span> <span class="n">f_proxy</span><span class="p">(</span>
                 <span class="n">f_map</span><span class="p">(</span>
-                    <span class="n">response_f</span><span class="p">,</span>
-                    <span class="k">lambda</span> <span class="n">data</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_page</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">object_class</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">data</span><span class="p">),</span>
+                    <span class="n">f_sequence</span><span class="p">(</span><span class="n">next_responses</span><span class="p">),</span>
+                    <span class="k">lambda</span> <span class="n">data</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_page</span><span class="p">(</span>
+                        <span class="n">next_urls</span><span class="p">,</span> <span class="n">object_class</span><span class="p">,</span> <span class="n">next_searches</span><span class="p">,</span> <span class="n">data</span>
+                    <span class="p">),</span>
                 <span class="p">)</span>
             <span class="p">)</span>
-
         <span class="k">return</span> <span class="n">Page</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">page_data</span><span class="p">,</span> <span class="nb">next</span><span class="o">=</span><span class="n">next_page</span><span class="p">)</span>
 
     <span class="nd">@property</span>
@@ -688,7 +744,7 @@
       &copy;2019, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
