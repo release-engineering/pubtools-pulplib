@@ -49,17 +49,14 @@
     <span class="n">name</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
     <span class="sd">&quot;&quot;&quot;The name of this modulemd defaults unit&quot;&quot;&quot;</span>
 
-    <span class="n">stream</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;stream&quot;</span><span class="p">)</span>
-    <span class="sd">&quot;&quot;&quot;The stream of this modulemd defaults unit&quot;&quot;&quot;</span>
-
     <span class="n">repo_id</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;repo_id&quot;</span><span class="p">)</span>
     <span class="sd">&quot;&quot;&quot;The repository ID bound to this modulemd defaults unit&quot;&quot;&quot;</span>
 
-    <span class="n">profiles</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;profiles&quot;</span><span class="p">)</span>
-    <span class="sd">&quot;&quot;&quot;The profiles of this modulemd defaults unit.</span>
+    <span class="n">stream</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;stream&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;The stream of this modulemd defaults unit&quot;&quot;&quot;</span>
 
-<span class="sd">    The type for this attribute is omitted to allow for either dict or None.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">profiles</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;profiles&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;The profiles of this modulemd defaults unit.&quot;&quot;&quot;</span>
 
     <span class="n">repository_memberships</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
