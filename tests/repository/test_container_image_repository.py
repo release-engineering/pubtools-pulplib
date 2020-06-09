@@ -31,3 +31,22 @@ def test_registry_id_from_distributor():
     )
 
     assert repo.registry_id == "some/repo"
+
+
+def test_default_registry_id_from_distributor():
+    """default registry_id is used when it's not defined in distributor"""
+    repo = Repository.from_data(
+        {
+            "id": "my-repo",
+            "notes": {"_repo-type": "docker-repo"},
+            "distributors": [
+                {
+                    "id": "docker_web_distributor_name_cli",
+                    "distributor_type_id": "docker_distributor_web",
+                    "config": {},
+                }
+            ],
+        }
+    )
+
+    assert repo.registry_id == "my-repo"
