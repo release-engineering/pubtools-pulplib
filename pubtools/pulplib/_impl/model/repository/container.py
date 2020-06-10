@@ -47,8 +47,9 @@ class ContainerImageRepository(Repository):
 
         for dist in data.get("distributors") or []:
             if dist["distributor_type_id"] == "docker_distributor_web":
-                if "repo-registry-id" in dist["config"]:
-                    out["registry_id"] = dist["config"].get("repo-registry-id")
+                registry_id = dist["config"].get("repo-registry-id")
+                if registry_id:
+                    out["registry_id"] = registry_id
                 break
 
         return out

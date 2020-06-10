@@ -1,3 +1,5 @@
+import pytest
+
 from pubtools.pulplib import Repository, ContainerImageRepository
 
 
@@ -32,9 +34,16 @@ def test_registry_id_from_distributor():
 
     assert repo.registry_id == "some/repo"
 
-
-def test_default_registry_id_from_distributor():
-    """default registry_id is used when it's not defined in distributor"""
+@pytest.mark.parametrize(
+    "config",
+    [
+        {},
+        {"repo-registry-id": ""},
+        {"repo-registry-id": None}
+    ],
+)
+def test_default_registry_id_from_distributor(config):
+    """default registry_id is used when it's not set in distributor or set to null/empty string"""
     repo = Repository.from_data(
         {
             "id": "my-repo",
@@ -43,7 +52,7 @@ def test_default_registry_id_from_distributor():
                 {
                     "id": "docker_web_distributor_name_cli",
                     "distributor_type_id": "docker_distributor_web",
-                    "config": {},
+                    "config": config,
                 }
             ],
         }

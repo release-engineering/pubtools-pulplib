@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- n/a
+### Fixed
+- Use repo id as registry_id when it's not set in distributor config or set to null or empty string
 
 ## [2.6.0] - 2020-05-05
 
