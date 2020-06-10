@@ -34,13 +34,9 @@ def test_registry_id_from_distributor():
 
     assert repo.registry_id == "some/repo"
 
+
 @pytest.mark.parametrize(
-    "config",
-    [
-        {},
-        {"repo-registry-id": ""},
-        {"repo-registry-id": None}
-    ],
+    "config", [{}, {"repo-registry-id": ""}, {"repo-registry-id": None}]
 )
 def test_default_registry_id_from_distributor(config):
     """default registry_id is used when it's not set in distributor or set to null/empty string"""
