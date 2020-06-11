@@ -4,6 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Maintenance Mode &#8212; pubtools-pulplib  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -47,20 +48,20 @@ will be blocked.  Other operations remain possible.</p>
 </div>
 <dl class="py attribute">
 <dt id="pubtools.pulplib.MaintenanceReport.last_updated">
-<code class="sig-name descname">last_updated</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.MaintenanceReport.last_updated" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">last_updated</code><a class="headerlink" href="#pubtools.pulplib.MaintenanceReport.last_updated" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a> in UTC when this report was last updated,
 if it’s the first time the report is created, current time is used.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.MaintenanceReport.last_updated_by">
-<code class="sig-name descname">last_updated_by</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.MaintenanceReport.last_updated_by" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">last_updated_by</code><a class="headerlink" href="#pubtools.pulplib.MaintenanceReport.last_updated_by" title="Permalink to this definition">¶</a></dt>
 <dd><p>Person/party who updated the report last time.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.MaintenanceReport.entries">
-<code class="sig-name descname">entries</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.MaintenanceReport.entries" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">entries</code><a class="headerlink" href="#pubtools.pulplib.MaintenanceReport.entries" title="Permalink to this definition">¶</a></dt>
 <dd><p>A list of <a class="reference internal" href="#pubtools.pulplib.MaintenanceEntry" title="pubtools.pulplib.MaintenanceEntry"><code class="xref py py-class docutils literal notranslate"><span class="pre">MaintenanceEntry</span></code></a> objects, indicating
 which repositories are in maintenance mode and details.
 If empty, then it means no repositories are in maintenance mode.</p>
@@ -127,7 +128,7 @@ from the maintenance report.</p></li>
 </div>
 <dl class="py attribute">
 <dt id="pubtools.pulplib.MaintenanceEntry.repo_id">
-<code class="sig-name descname">repo_id</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.MaintenanceEntry.repo_id" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">repo_id</code><a class="headerlink" href="#pubtools.pulplib.MaintenanceEntry.repo_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>ID of repository in maintenance.</p>
 <p>Note: there is no guarantee that a repository of this ID currently exists
 in the Pulp server.</p>
@@ -135,19 +136,19 @@ in the Pulp server.</p>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.MaintenanceEntry.message">
-<code class="sig-name descname">message</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.MaintenanceEntry.message" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">message</code><a class="headerlink" href="#pubtools.pulplib.MaintenanceEntry.message" title="Permalink to this definition">¶</a></dt>
 <dd><p>Why this repository is in maintenance.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.MaintenanceEntry.owner">
-<code class="sig-name descname">owner</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.MaintenanceEntry.owner" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">owner</code><a class="headerlink" href="#pubtools.pulplib.MaintenanceEntry.owner" title="Permalink to this definition">¶</a></dt>
 <dd><p>Who set this repository in maintenance mode.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.MaintenanceEntry.started">
-<code class="sig-name descname">started</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.MaintenanceEntry.started" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">started</code><a class="headerlink" href="#pubtools.pulplib.MaintenanceEntry.started" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a> in UTC at when the maintenance started.</p>
 </dd></dl>
 
@@ -238,7 +239,7 @@ in the Pulp server.</p>
       &copy;2019, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

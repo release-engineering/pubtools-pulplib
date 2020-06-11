@@ -4,6 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Searching &#8212; pubtools-pulplib  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -303,7 +304,7 @@ blocking on more data from Pulp as needed.</p>
 <p><strong>Non-blocking iteration</strong></p>
 <p>This example sets up non-blocking processing of all results from
 a search query. Futures are chained and composed using
-<a class="reference external" href="https://rohanpm.github.io/more-executors/reference/futures-map.html#more_executors.futures.f_flat_map" title="(in more-executors v2.5.0, revision d0e52c3)"><code class="xref py py-func docutils literal notranslate"><span class="pre">f_flat_map()</span></code></a> and friends.</p>
+<a class="reference external" href="https://rohanpm.github.io/more-executors/reference/futures-map.html#more_executors.futures.f_flat_map" title="(in more-executors v2.5.1, revision f3e438d)"><code class="xref py py-func docutils literal notranslate"><span class="pre">f_flat_map()</span></code></a> and friends.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">handle_results</span><span class="p">(</span><span class="n">page</span><span class="p">):</span>
     <span class="c1"># Returns a future for handling of a single page</span>
     <span class="k">for</span> <span class="n">repo</span> <span class="ow">in</span> <span class="n">page</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
@@ -332,7 +333,7 @@ occur to await more pages from Pulp.</p>
 </div>
 <dl class="py attribute">
 <dt id="pubtools.pulplib.Page.data">
-<code class="sig-name descname">data</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.Page.data" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">data</code><a class="headerlink" href="#pubtools.pulplib.Page.data" title="Permalink to this definition">¶</a></dt>
 <dd><p>List of Pulp objects in this page.</p>
 <p>This list will contain instances of the appropriate Pulp object type
 (e.g. <a class="reference internal" href="model.html#pubtools.pulplib.Repository" title="pubtools.pulplib.Repository"><code class="xref py py-class docutils literal notranslate"><span class="pre">Repository</span></code></a> for a repository search).</p>
@@ -340,7 +341,7 @@ occur to await more pages from Pulp.</p>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.Page.next">
-<code class="sig-name descname">next</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.Page.next" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">next</code><a class="headerlink" href="#pubtools.pulplib.Page.next" title="Permalink to this definition">¶</a></dt>
 <dd><p>None, if this is the last page of results.</p>
 <p>Otherwise, a Future[<a class="reference internal" href="#pubtools.pulplib.Page" title="pubtools.pulplib.Page"><code class="xref py py-class docutils literal notranslate"><span class="pre">Page</span></code></a>] for the next page of results.</p>
 </dd></dl>
@@ -433,7 +434,7 @@ occur to await more pages from Pulp.</p>
       &copy;2019, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

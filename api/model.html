@@ -4,6 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pulp objects &#8212; pubtools-pulplib  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -102,13 +103,13 @@ by Pulp’s API.</p>
 <dd><p>Represents a Pulp repository.</p>
 <dl class="py attribute">
 <dt id="pubtools.pulplib.Repository.id">
-<code class="sig-name descname">id</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.Repository.id" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">id</code><a class="headerlink" href="#pubtools.pulplib.Repository.id" title="Permalink to this definition">¶</a></dt>
 <dd><p>ID of this repository (str).</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.Repository.type">
-<code class="sig-name descname">type</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.Repository.type" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">type</code><a class="headerlink" href="#pubtools.pulplib.Repository.type" title="Permalink to this definition">¶</a></dt>
 <dd><p>Type of this repository (str).</p>
 <p>This is a brief string denoting the content / Pulp plugin type used with
 this repository, e.g. <code class="docutils literal notranslate"><span class="pre">rpm-repo</span></code>.</p>
@@ -116,47 +117,47 @@ this repository, e.g. <code class="docutils literal notranslate"><span class="pr
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.Repository.created">
-<code class="sig-name descname">created</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.Repository.created" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">created</code><a class="headerlink" href="#pubtools.pulplib.Repository.created" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a> in UTC at which this repository was created,
 or None if this information is unavailable.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.Repository.distributors">
-<code class="sig-name descname">distributors</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.Repository.distributors" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">distributors</code><a class="headerlink" href="#pubtools.pulplib.Repository.distributors" title="Permalink to this definition">¶</a></dt>
 <dd><p>list of <a class="reference internal" href="#pubtools.pulplib.Distributor" title="pubtools.pulplib.Distributor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Distributor</span></code></a> objects belonging to this
 repository.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.Repository.eng_product_id">
-<code class="sig-name descname">eng_product_id</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.Repository.eng_product_id" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">eng_product_id</code><a class="headerlink" href="#pubtools.pulplib.Repository.eng_product_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>ID of the product to which this repository belongs (if any).</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.Repository.relative_url">
-<code class="sig-name descname">relative_url</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.Repository.relative_url" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">relative_url</code><a class="headerlink" href="#pubtools.pulplib.Repository.relative_url" title="Permalink to this definition">¶</a></dt>
 <dd><p>Default publish URL for this repository, relative to the Pulp content root.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.Repository.mutable_urls">
-<code class="sig-name descname">mutable_urls</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.Repository.mutable_urls" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">mutable_urls</code><a class="headerlink" href="#pubtools.pulplib.Repository.mutable_urls" title="Permalink to this definition">¶</a></dt>
 <dd><p>A list of URLs relative to repository publish root which are expected
 to change at every publish (if any content of repo changed).</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.Repository.is_sigstore">
-<code class="sig-name descname">is_sigstore</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.Repository.is_sigstore" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">is_sigstore</code><a class="headerlink" href="#pubtools.pulplib.Repository.is_sigstore" title="Permalink to this definition">¶</a></dt>
 <dd><p>True if this is a sigstore repository, used for container image manifest
 signatures.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.Repository.is_temporary">
-<code class="sig-name descname">is_temporary</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.Repository.is_temporary" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">is_temporary</code><a class="headerlink" href="#pubtools.pulplib.Repository.is_temporary" title="Permalink to this definition">¶</a></dt>
 <dd><p>True if this is a temporary repository.</p>
 <p>A temporary repository is a repository created by release-engineering tools
 for temporary use during certain workflows.  Such repos are not expected to
@@ -169,13 +170,13 @@ or less.</p>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.Repository.signing_keys">
-<code class="sig-name descname">signing_keys</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.Repository.signing_keys" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">signing_keys</code><a class="headerlink" href="#pubtools.pulplib.Repository.signing_keys" title="Permalink to this definition">¶</a></dt>
 <dd><p>A list of GPG signing key IDs used to sign content in this repository.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.Repository.skip_rsync_repodata">
-<code class="sig-name descname">skip_rsync_repodata</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.Repository.skip_rsync_repodata" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">skip_rsync_repodata</code><a class="headerlink" href="#pubtools.pulplib.Repository.skip_rsync_repodata" title="Permalink to this definition">¶</a></dt>
 <dd><p>True if this repository is explicitly configured such that a publish of
 this repository will not publish repository metadata to remote hosts.</p>
 </dd></dl>
@@ -405,13 +406,13 @@ during the removal.</p>
 <dd><p>A <a class="reference internal" href="#pubtools.pulplib.Repository" title="pubtools.pulplib.Repository"><code class="xref py py-class docutils literal notranslate"><span class="pre">Repository</span></code></a> for RPMs, errata and related content.</p>
 <dl class="py attribute">
 <dt id="pubtools.pulplib.YumRepository.population_sources">
-<code class="sig-name descname">population_sources</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.YumRepository.population_sources" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">population_sources</code><a class="headerlink" href="#pubtools.pulplib.YumRepository.population_sources" title="Permalink to this definition">¶</a></dt>
 <dd><p>List of repository IDs used to populate this repository</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.YumRepository.ubi_population">
-<code class="sig-name descname">ubi_population</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.YumRepository.ubi_population" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">ubi_population</code><a class="headerlink" href="#pubtools.pulplib.YumRepository.ubi_population" title="Permalink to this definition">¶</a></dt>
 <dd><p>Flag indicating whether repo should be populated from population_sources for the purposes of UBI</p>
 </dd></dl>
 
@@ -424,70 +425,70 @@ during the removal.</p>
 <a class="reference internal" href="#pubtools.pulplib.Repository.sync" title="pubtools.pulplib.Repository.sync"><code class="xref py py-meth docutils literal notranslate"><span class="pre">sync()</span></code></a>.</p>
 <dl class="py attribute">
 <dt id="pubtools.pulplib.YumSyncOptions.query_auth_token">
-<code class="sig-name descname">query_auth_token</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.YumSyncOptions.query_auth_token" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">query_auth_token</code><a class="headerlink" href="#pubtools.pulplib.YumSyncOptions.query_auth_token" title="Permalink to this definition">¶</a></dt>
 <dd><p>An authorization token that will be added to every request made to the feed URL’s server</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.YumSyncOptions.max_downloads">
-<code class="sig-name descname">max_downloads</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.YumSyncOptions.max_downloads" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">max_downloads</code><a class="headerlink" href="#pubtools.pulplib.YumSyncOptions.max_downloads" title="Permalink to this definition">¶</a></dt>
 <dd><p>Number of threads used when synchronizing the repository.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.YumSyncOptions.remove_missing">
-<code class="sig-name descname">remove_missing</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.YumSyncOptions.remove_missing" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">remove_missing</code><a class="headerlink" href="#pubtools.pulplib.YumSyncOptions.remove_missing" title="Permalink to this definition">¶</a></dt>
 <dd><p>If true, as the repository is synchronized, old rpms will be removed.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.YumSyncOptions.retain_old_count">
-<code class="sig-name descname">retain_old_count</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.YumSyncOptions.retain_old_count" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">retain_old_count</code><a class="headerlink" href="#pubtools.pulplib.YumSyncOptions.retain_old_count" title="Permalink to this definition">¶</a></dt>
 <dd><p>Count indicating how many old rpm versions to retain.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.YumSyncOptions.skip">
-<code class="sig-name descname">skip</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.YumSyncOptions.skip" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">skip</code><a class="headerlink" href="#pubtools.pulplib.YumSyncOptions.skip" title="Permalink to this definition">¶</a></dt>
 <dd><p>List of content types to be skipped during the repository synchronization</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.YumSyncOptions.checksum_type">
-<code class="sig-name descname">checksum_type</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.YumSyncOptions.checksum_type" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">checksum_type</code><a class="headerlink" href="#pubtools.pulplib.YumSyncOptions.checksum_type" title="Permalink to this definition">¶</a></dt>
 <dd><p>checksum type to use for metadata generation.</p>
 <p>Defaults to source checksum type of sha256</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.YumSyncOptions.num_retries">
-<code class="sig-name descname">num_retries</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.YumSyncOptions.num_retries" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">num_retries</code><a class="headerlink" href="#pubtools.pulplib.YumSyncOptions.num_retries" title="Permalink to this definition">¶</a></dt>
 <dd><p>Number of times to retry before declaring an error during repository synchronization</p>
 <p>Default is to 2.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.YumSyncOptions.download_policy">
-<code class="sig-name descname">download_policy</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.YumSyncOptions.download_policy" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">download_policy</code><a class="headerlink" href="#pubtools.pulplib.YumSyncOptions.download_policy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the download policy for a repository.</p>
 <p>Supported options are immediate,on_demand,background</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.YumSyncOptions.force_full">
-<code class="sig-name descname">force_full</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.YumSyncOptions.force_full" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">force_full</code><a class="headerlink" href="#pubtools.pulplib.YumSyncOptions.force_full" title="Permalink to this definition">¶</a></dt>
 <dd><p>Boolean flag. If true, full re-sync is triggered.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.YumSyncOptions.require_signature">
-<code class="sig-name descname">require_signature</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.YumSyncOptions.require_signature" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">require_signature</code><a class="headerlink" href="#pubtools.pulplib.YumSyncOptions.require_signature" title="Permalink to this definition">¶</a></dt>
 <dd><p>Requires that imported packages like RPM/DRPM/SRPM should be signed</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.YumSyncOptions.allowed_keys">
-<code class="sig-name descname">allowed_keys</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.YumSyncOptions.allowed_keys" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">allowed_keys</code><a class="headerlink" href="#pubtools.pulplib.YumSyncOptions.allowed_keys" title="Permalink to this definition">¶</a></dt>
 <dd><p>List of allowed signature key IDs that imported packages can be signed with</p>
 </dd></dl>
 
@@ -548,7 +549,7 @@ to repository.</p>
 <a class="reference internal" href="#pubtools.pulplib.Repository.sync" title="pubtools.pulplib.Repository.sync"><code class="xref py py-meth docutils literal notranslate"><span class="pre">sync()</span></code></a>.</p>
 <dl class="py attribute">
 <dt id="pubtools.pulplib.FileSyncOptions.remove_missing">
-<code class="sig-name descname">remove_missing</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.FileSyncOptions.remove_missing" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">remove_missing</code><a class="headerlink" href="#pubtools.pulplib.FileSyncOptions.remove_missing" title="Permalink to this definition">¶</a></dt>
 <dd><p>If true, as the repository is synchronized, old files will be removed.</p>
 </dd></dl>
 
@@ -560,7 +561,7 @@ to repository.</p>
 <dd><p>A <a class="reference internal" href="#pubtools.pulplib.Repository" title="pubtools.pulplib.Repository"><code class="xref py py-class docutils literal notranslate"><span class="pre">Repository</span></code></a> for container images.</p>
 <dl class="py attribute">
 <dt id="pubtools.pulplib.ContainerImageRepository.registry_id">
-<code class="sig-name descname">registry_id</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.ContainerImageRepository.registry_id" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">registry_id</code><a class="headerlink" href="#pubtools.pulplib.ContainerImageRepository.registry_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>The ID of this repository in a container image registry.</p>
 <p>For example:</p>
 <ul class="simple">
@@ -580,14 +581,14 @@ to repository.</p>
 <a class="reference internal" href="#pubtools.pulplib.Repository.sync" title="pubtools.pulplib.Repository.sync"><code class="xref py py-meth docutils literal notranslate"><span class="pre">sync()</span></code></a>.</p>
 <dl class="py attribute">
 <dt id="pubtools.pulplib.ContainerSyncOptions.upstream_name">
-<code class="sig-name descname">upstream_name</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.ContainerSyncOptions.upstream_name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">upstream_name</code><a class="headerlink" href="#pubtools.pulplib.ContainerSyncOptions.upstream_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>The name of the repository to import from the upstream repository.
 For example, if syncing from repository <cite>quay.io/fedora/fedora</cite>, upstream_name should be set to <cite>fedora/fedora</cite>.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.ContainerSyncOptions.tags">
-<code class="sig-name descname">tags</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.ContainerSyncOptions.tags" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">tags</code><a class="headerlink" href="#pubtools.pulplib.ContainerSyncOptions.tags" title="Permalink to this definition">¶</a></dt>
 <dd><p>List of tags to include on sync.</p>
 </dd></dl>
 
@@ -599,14 +600,14 @@ For example, if syncing from repository <cite>quay.io/fedora/fedora</cite>, upst
 <dd><p>Represents a Pulp distributor.</p>
 <dl class="py attribute">
 <dt id="pubtools.pulplib.Distributor.id">
-<code class="sig-name descname">id</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.Distributor.id" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">id</code><a class="headerlink" href="#pubtools.pulplib.Distributor.id" title="Permalink to this definition">¶</a></dt>
 <dd><p>ID of this distributor (str).</p>
 <p>This is an arbitrary string, though often matches exactly the <cite>type_id</cite>.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.Distributor.type_id">
-<code class="sig-name descname">type_id</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.Distributor.type_id" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">type_id</code><a class="headerlink" href="#pubtools.pulplib.Distributor.type_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>Type ID of this distributor (str).</p>
 <p>The type ID of a distributor determines which content may be handled and
 which steps may be performed by the distributor. For example, distributors
@@ -615,27 +616,27 @@ of type <cite>yum_distributor</cite> may be used to create yum repositories.</p>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.Distributor.repo_id">
-<code class="sig-name descname">repo_id</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.Distributor.repo_id" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">repo_id</code><a class="headerlink" href="#pubtools.pulplib.Distributor.repo_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>The <a class="reference internal" href="#pubtools.pulplib.Repository" title="pubtools.pulplib.Repository"><code class="xref py py-class docutils literal notranslate"><span class="pre">pubtools.pulplib.Repository</span></code></a> ID this distributor is attached to.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.Distributor.relative_url">
-<code class="sig-name descname">relative_url</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.Distributor.relative_url" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">relative_url</code><a class="headerlink" href="#pubtools.pulplib.Distributor.relative_url" title="Permalink to this definition">¶</a></dt>
 <dd><p>Default distribution URL for the repository which the distributor is attached to,
 relative to the Pulp content root.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.Distributor.last_publish">
-<code class="sig-name descname">last_publish</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.Distributor.last_publish" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">last_publish</code><a class="headerlink" href="#pubtools.pulplib.Distributor.last_publish" title="Permalink to this definition">¶</a></dt>
 <dd><p>The <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a> at which this distributor was last published,
 if known.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.Distributor.is_rsync">
-<code class="sig-name descname">is_rsync</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.Distributor.is_rsync" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">is_rsync</code><a class="headerlink" href="#pubtools.pulplib.Distributor.is_rsync" title="Permalink to this definition">¶</a></dt>
 <dd><p>True for distributors in the ‘rsync distributor’ family
 (e.g. <code class="docutils literal notranslate"><span class="pre">rpm_rsync_distributor</span></code>).</p>
 </dd></dl>
@@ -674,7 +675,7 @@ are possible.</p>
 <a class="reference internal" href="#pubtools.pulplib.Repository.publish" title="pubtools.pulplib.Repository.publish"><code class="xref py py-meth docutils literal notranslate"><span class="pre">publish()</span></code></a>.</p>
 <dl class="py attribute">
 <dt id="pubtools.pulplib.PublishOptions.force">
-<code class="sig-name descname">force</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.PublishOptions.force" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">force</code><a class="headerlink" href="#pubtools.pulplib.PublishOptions.force" title="Permalink to this definition">¶</a></dt>
 <dd><p>If True, Pulp should publish all data within a repository, rather than attempting
 to publish only changed data (or even skipping the publish).</p>
 <p>Setting <code class="docutils literal notranslate"><span class="pre">force=True</span></code> may have a major performance impact when publishing large repos.</p>
@@ -682,7 +683,7 @@ to publish only changed data (or even skipping the publish).</p>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.PublishOptions.clean">
-<code class="sig-name descname">clean</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.PublishOptions.clean" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">clean</code><a class="headerlink" href="#pubtools.pulplib.PublishOptions.clean" title="Permalink to this definition">¶</a></dt>
 <dd><p>If True, certain publish tasks will not only publish new/changed content, but
 will also attempt to erase formerly published content which is no longer present
 in the repo.</p>
@@ -691,7 +692,7 @@ in the repo.</p>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.PublishOptions.origin_only">
-<code class="sig-name descname">origin_only</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.PublishOptions.origin_only" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">origin_only</code><a class="headerlink" href="#pubtools.pulplib.PublishOptions.origin_only" title="Permalink to this definition">¶</a></dt>
 <dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, Pulp should only update the content units / origin path on
 remote hosts.</p>
 <p>Only relevant if a repository has one or more distributors where
@@ -714,62 +715,62 @@ types: <a class="reference internal" href="#pubtools.pulplib.FileSyncOptions" ti
 </div>
 <dl class="py attribute">
 <dt id="pubtools.pulplib.SyncOptions.feed">
-<code class="sig-name descname">feed</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.SyncOptions.feed" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">feed</code><a class="headerlink" href="#pubtools.pulplib.SyncOptions.feed" title="Permalink to this definition">¶</a></dt>
 <dd><p>URL where the repository’s content will be synchronized from.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.SyncOptions.ssl_validation">
-<code class="sig-name descname">ssl_validation</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.SyncOptions.ssl_validation" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">ssl_validation</code><a class="headerlink" href="#pubtools.pulplib.SyncOptions.ssl_validation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Indicates if the server’s SSL certificate is verified against the CA certificate uploaded.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.SyncOptions.ssl_ca_cert">
-<code class="sig-name descname">ssl_ca_cert</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.SyncOptions.ssl_ca_cert" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">ssl_ca_cert</code><a class="headerlink" href="#pubtools.pulplib.SyncOptions.ssl_ca_cert" title="Permalink to this definition">¶</a></dt>
 <dd><p>CA certificate string used to validate the feed source’s SSL certificate</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.SyncOptions.ssl_client_cert">
-<code class="sig-name descname">ssl_client_cert</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.SyncOptions.ssl_client_cert" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">ssl_client_cert</code><a class="headerlink" href="#pubtools.pulplib.SyncOptions.ssl_client_cert" title="Permalink to this definition">¶</a></dt>
 <dd><p>Certificate used as the client certificate when synchronizing the repository</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.SyncOptions.ssl_client_key">
-<code class="sig-name descname">ssl_client_key</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.SyncOptions.ssl_client_key" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">ssl_client_key</code><a class="headerlink" href="#pubtools.pulplib.SyncOptions.ssl_client_key" title="Permalink to this definition">¶</a></dt>
 <dd><p>Private key to the certificate specified in ssl_client_cert</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.SyncOptions.max_speed">
-<code class="sig-name descname">max_speed</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.SyncOptions.max_speed" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">max_speed</code><a class="headerlink" href="#pubtools.pulplib.SyncOptions.max_speed" title="Permalink to this definition">¶</a></dt>
 <dd><p>The maximum download speed in bytes/sec for a task (such as a sync).</p>
 <p>Default is None</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.SyncOptions.proxy_host">
-<code class="sig-name descname">proxy_host</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.SyncOptions.proxy_host" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">proxy_host</code><a class="headerlink" href="#pubtools.pulplib.SyncOptions.proxy_host" title="Permalink to this definition">¶</a></dt>
 <dd><p>A string representing the URL of the proxy server that should be used when synchronizing</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.SyncOptions.proxy_port">
-<code class="sig-name descname">proxy_port</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.SyncOptions.proxy_port" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">proxy_port</code><a class="headerlink" href="#pubtools.pulplib.SyncOptions.proxy_port" title="Permalink to this definition">¶</a></dt>
 <dd><p>An integer representing the port that should be used when connecting to proxy_host.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.SyncOptions.proxy_username">
-<code class="sig-name descname">proxy_username</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.SyncOptions.proxy_username" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">proxy_username</code><a class="headerlink" href="#pubtools.pulplib.SyncOptions.proxy_username" title="Permalink to this definition">¶</a></dt>
 <dd><p>A string representing the username that should be used to authenticate with the proxy server</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.SyncOptions.proxy_password">
-<code class="sig-name descname">proxy_password</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.SyncOptions.proxy_password" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">proxy_password</code><a class="headerlink" href="#pubtools.pulplib.SyncOptions.proxy_password" title="Permalink to this definition">¶</a></dt>
 <dd><p>A string representing the password that should be used to authenticate with the proxy server</p>
 </dd></dl>
 
@@ -787,7 +788,7 @@ types: <a class="reference internal" href="#pubtools.pulplib.FileSyncOptions" ti
 </div>
 <dl class="py attribute">
 <dt id="pubtools.pulplib.Unit.content_type_id">
-<code class="sig-name descname">content_type_id</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.Unit.content_type_id" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">content_type_id</code><a class="headerlink" href="#pubtools.pulplib.Unit.content_type_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>The type of this unit.</p>
 <p>This value will match one of the content types returned by
 <a class="reference internal" href="client.html#pubtools.pulplib.Client.get_content_type_ids" title="pubtools.pulplib.Client.get_content_type_ids"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_content_type_ids()</span></code></a>.</p>
@@ -804,7 +805,7 @@ types: <a class="reference internal" href="#pubtools.pulplib.FileSyncOptions" ti
 </div>
 <dl class="py attribute">
 <dt id="pubtools.pulplib.FileUnit.path">
-<code class="sig-name descname">path</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.FileUnit.path" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">path</code><a class="headerlink" href="#pubtools.pulplib.FileUnit.path" title="Permalink to this definition">¶</a></dt>
 <dd><p>Full path for this file in the Pulp repository.</p>
 <p>This may include leading directory components, but
 in the common case, this is only a basename.</p>
@@ -812,19 +813,19 @@ in the common case, this is only a basename.</p>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.FileUnit.size">
-<code class="sig-name descname">size</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.FileUnit.size" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">size</code><a class="headerlink" href="#pubtools.pulplib.FileUnit.size" title="Permalink to this definition">¶</a></dt>
 <dd><p>Size of this file, in bytes.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.FileUnit.sha256sum">
-<code class="sig-name descname">sha256sum</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.FileUnit.sha256sum" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">sha256sum</code><a class="headerlink" href="#pubtools.pulplib.FileUnit.sha256sum" title="Permalink to this definition">¶</a></dt>
 <dd><p>SHA256 checksum of this file, as a hex string.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.FileUnit.repository_memberships">
-<code class="sig-name descname">repository_memberships</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.FileUnit.repository_memberships" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">repository_memberships</code><a class="headerlink" href="#pubtools.pulplib.FileUnit.repository_memberships" title="Permalink to this definition">¶</a></dt>
 <dd><p>IDs of repositories containing the unit, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if this information is unavailable.</p>
 <div class="versionadded">
 <p><span class="versionmodified added">New in version 2.6.0.</span></p>
@@ -842,42 +843,42 @@ in the common case, this is only a basename.</p>
 </div>
 <dl class="py attribute">
 <dt id="pubtools.pulplib.RpmUnit.name">
-<code class="sig-name descname">name</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.RpmUnit.name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">name</code><a class="headerlink" href="#pubtools.pulplib.RpmUnit.name" title="Permalink to this definition">¶</a></dt>
 <dd><p>The name of this RPM.</p>
 <p>Example: the name of bash-5.0.7-1.fc30.x86_64.rpm is “bash”.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.RpmUnit.version">
-<code class="sig-name descname">version</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.RpmUnit.version" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">version</code><a class="headerlink" href="#pubtools.pulplib.RpmUnit.version" title="Permalink to this definition">¶</a></dt>
 <dd><p>The version of this RPM.</p>
 <p>Example: the version of bash-5.0.7-1.fc30.x86_64.rpm is “5.0.7”.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.RpmUnit.release">
-<code class="sig-name descname">release</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.RpmUnit.release" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">release</code><a class="headerlink" href="#pubtools.pulplib.RpmUnit.release" title="Permalink to this definition">¶</a></dt>
 <dd><p>The release of this RPM.</p>
 <p>Example: the release of bash-5.0.7-1.fc30.x86_64.rpm is “1.fc30”.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.RpmUnit.arch">
-<code class="sig-name descname">arch</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.RpmUnit.arch" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">arch</code><a class="headerlink" href="#pubtools.pulplib.RpmUnit.arch" title="Permalink to this definition">¶</a></dt>
 <dd><p>The architecture of this RPM.</p>
 <p>Example: the arch of bash-5.0.7-1.fc30.x86_64.rpm is “x86_64”.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.RpmUnit.epoch">
-<code class="sig-name descname">epoch</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.RpmUnit.epoch" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">epoch</code><a class="headerlink" href="#pubtools.pulplib.RpmUnit.epoch" title="Permalink to this definition">¶</a></dt>
 <dd><p>The epoch of this RPM (most commonly “0”).</p>
 <p>Example: the epoch of 3:bash-5.0.7-1.fc30.x86_64.rpm is “3”.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.RpmUnit.signing_key">
-<code class="sig-name descname">signing_key</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.RpmUnit.signing_key" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">signing_key</code><a class="headerlink" href="#pubtools.pulplib.RpmUnit.signing_key" title="Permalink to this definition">¶</a></dt>
 <dd><p>The short ID of the GPG key used to sign this RPM.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
@@ -887,32 +888,32 @@ in the common case, this is only a basename.</p>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.RpmUnit.sourcerpm">
-<code class="sig-name descname">sourcerpm</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.RpmUnit.sourcerpm" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">sourcerpm</code><a class="headerlink" href="#pubtools.pulplib.RpmUnit.sourcerpm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Source rpm filename if package is not source package.</p>
 <p>Example: gnu-efi-3.0c-1.1.src.rpm.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.RpmUnit.md5sum">
-<code class="sig-name descname">md5sum</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.RpmUnit.md5sum" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">md5sum</code><a class="headerlink" href="#pubtools.pulplib.RpmUnit.md5sum" title="Permalink to this definition">¶</a></dt>
 <dd><p>MD5 checksum of this RPM, as a hex string.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.RpmUnit.sha1sum">
-<code class="sig-name descname">sha1sum</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.RpmUnit.sha1sum" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">sha1sum</code><a class="headerlink" href="#pubtools.pulplib.RpmUnit.sha1sum" title="Permalink to this definition">¶</a></dt>
 <dd><p>SHA1 checksum of this RPM, as a hex string.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.RpmUnit.sha256sum">
-<code class="sig-name descname">sha256sum</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.RpmUnit.sha256sum" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">sha256sum</code><a class="headerlink" href="#pubtools.pulplib.RpmUnit.sha256sum" title="Permalink to this definition">¶</a></dt>
 <dd><p>SHA256 checksum of this RPM, as a hex string.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.RpmUnit.repository_memberships">
-<code class="sig-name descname">repository_memberships</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.RpmUnit.repository_memberships" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">repository_memberships</code><a class="headerlink" href="#pubtools.pulplib.RpmUnit.repository_memberships" title="Permalink to this definition">¶</a></dt>
 <dd><p>IDs of repositories containing the unit, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if this information is unavailable.</p>
 <div class="versionadded">
 <p><span class="versionmodified added">New in version 2.6.0.</span></p>
@@ -930,7 +931,7 @@ in the common case, this is only a basename.</p>
 </div>
 <dl class="py attribute">
 <dt id="pubtools.pulplib.ModulemdUnit.name">
-<code class="sig-name descname">name</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.ModulemdUnit.name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">name</code><a class="headerlink" href="#pubtools.pulplib.ModulemdUnit.name" title="Permalink to this definition">¶</a></dt>
 <dd><p>The name of this module.</p>
 <p>Example: the name of javapackages-tools:201801:20180813043155:dca7b4a4:aarch64
 is “javapackages-tools”.</p>
@@ -938,7 +939,7 @@ is “javapackages-tools”.</p>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.ModulemdUnit.stream">
-<code class="sig-name descname">stream</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.ModulemdUnit.stream" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">stream</code><a class="headerlink" href="#pubtools.pulplib.ModulemdUnit.stream" title="Permalink to this definition">¶</a></dt>
 <dd><p>The stream of this module.</p>
 <p>Example: the stream of javapackages-tools:201801:20180813043155:dca7b4a4:aarch64
 is “201801”.</p>
@@ -946,7 +947,7 @@ is “201801”.</p>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.ModulemdUnit.version">
-<code class="sig-name descname">version</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.ModulemdUnit.version" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">version</code><a class="headerlink" href="#pubtools.pulplib.ModulemdUnit.version" title="Permalink to this definition">¶</a></dt>
 <dd><p>The version of this module.</p>
 <p>Example: the version of javapackages-tools:201801:20180813043155:dca7b4a4:aarch64
 is 20180813043155.</p>
@@ -954,7 +955,7 @@ is 20180813043155.</p>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.ModulemdUnit.context">
-<code class="sig-name descname">context</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.ModulemdUnit.context" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">context</code><a class="headerlink" href="#pubtools.pulplib.ModulemdUnit.context" title="Permalink to this definition">¶</a></dt>
 <dd><p>The context of this module.</p>
 <p>Example: the context of javapackages-tools:201801:20180813043155:dca7b4a4:aarch64
 is “dca7b4a4”.</p>
@@ -962,7 +963,7 @@ is “dca7b4a4”.</p>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.ModulemdUnit.arch">
-<code class="sig-name descname">arch</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.ModulemdUnit.arch" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">arch</code><a class="headerlink" href="#pubtools.pulplib.ModulemdUnit.arch" title="Permalink to this definition">¶</a></dt>
 <dd><p>The architecture of this module.</p>
 <p>Example: the arch of javapackages-tools:201801:20180813043155:dca7b4a4:aarch64
 is “aarch64.</p>
@@ -970,7 +971,7 @@ is “aarch64.</p>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.ModulemdUnit.repository_memberships">
-<code class="sig-name descname">repository_memberships</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.ModulemdUnit.repository_memberships" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">repository_memberships</code><a class="headerlink" href="#pubtools.pulplib.ModulemdUnit.repository_memberships" title="Permalink to this definition">¶</a></dt>
 <dd><p>IDs of repositories containing the unit, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if this information is unavailable.</p>
 <div class="versionadded">
 <p><span class="versionmodified added">New in version 2.6.0.</span></p>
@@ -988,31 +989,31 @@ is “aarch64.</p>
 </div>
 <dl class="py attribute">
 <dt id="pubtools.pulplib.ModulemdDefaultsUnit.name">
-<code class="sig-name descname">name</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.ModulemdDefaultsUnit.name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">name</code><a class="headerlink" href="#pubtools.pulplib.ModulemdDefaultsUnit.name" title="Permalink to this definition">¶</a></dt>
 <dd><p>The name of this modulemd defaults unit</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.ModulemdDefaultsUnit.repo_id">
-<code class="sig-name descname">repo_id</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.ModulemdDefaultsUnit.repo_id" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">repo_id</code><a class="headerlink" href="#pubtools.pulplib.ModulemdDefaultsUnit.repo_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>The repository ID bound to this modulemd defaults unit</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.ModulemdDefaultsUnit.stream">
-<code class="sig-name descname">stream</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.ModulemdDefaultsUnit.stream" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">stream</code><a class="headerlink" href="#pubtools.pulplib.ModulemdDefaultsUnit.stream" title="Permalink to this definition">¶</a></dt>
 <dd><p>The stream of this modulemd defaults unit</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.ModulemdDefaultsUnit.profiles">
-<code class="sig-name descname">profiles</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.ModulemdDefaultsUnit.profiles" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">profiles</code><a class="headerlink" href="#pubtools.pulplib.ModulemdDefaultsUnit.profiles" title="Permalink to this definition">¶</a></dt>
 <dd><p>The profiles of this modulemd defaults unit.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.ModulemdDefaultsUnit.repository_memberships">
-<code class="sig-name descname">repository_memberships</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.ModulemdDefaultsUnit.repository_memberships" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">repository_memberships</code><a class="headerlink" href="#pubtools.pulplib.ModulemdDefaultsUnit.repository_memberships" title="Permalink to this definition">¶</a></dt>
 <dd><p>IDs of repositories containing the unit, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if this information is unavailable.</p>
 <div class="versionadded">
 <p><span class="versionmodified added">New in version 2.6.0.</span></p>
@@ -1030,27 +1031,27 @@ is “aarch64.</p>
 <dd><p>Represents a Pulp task.</p>
 <dl class="py attribute">
 <dt id="pubtools.pulplib.Task.id">
-<code class="sig-name descname">id</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.Task.id" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">id</code><a class="headerlink" href="#pubtools.pulplib.Task.id" title="Permalink to this definition">¶</a></dt>
 <dd><p>ID of this task (str).</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.Task.completed">
-<code class="sig-name descname">completed</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.Task.completed" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">completed</code><a class="headerlink" href="#pubtools.pulplib.Task.completed" title="Permalink to this definition">¶</a></dt>
 <dd><p>True if this task has completed, successfully or otherwise.</p>
 <p>May be <cite>None</cite> if the state of this task is unknown.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.Task.succeeded">
-<code class="sig-name descname">succeeded</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.Task.succeeded" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">succeeded</code><a class="headerlink" href="#pubtools.pulplib.Task.succeeded" title="Permalink to this definition">¶</a></dt>
 <dd><p>True if this task has completed successfully.</p>
 <p>May be <cite>None</cite> if the state of this task is unknown.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.Task.error_summary">
-<code class="sig-name descname">error_summary</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.Task.error_summary" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">error_summary</code><a class="headerlink" href="#pubtools.pulplib.Task.error_summary" title="Permalink to this definition">¶</a></dt>
 <dd><p>A summary of the reason for this task’s failure (if any).</p>
 <p>This is a short string, generally a single line, suitable for display to users.
 The string includes the ID of the failed task.</p>
@@ -1058,7 +1059,7 @@ The string includes the ID of the failed task.</p>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.Task.error_details">
-<code class="sig-name descname">error_details</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.Task.error_details" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">error_details</code><a class="headerlink" href="#pubtools.pulplib.Task.error_details" title="Permalink to this definition">¶</a></dt>
 <dd><p>Detailed information for this task’s failure (if any).</p>
 <p>This may be a multi-line string and may include technical information such as
 a Python backtrace generated by Pulp.</p>
@@ -1068,7 +1069,7 @@ so it is not necessary to display both.</p>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.Task.tags">
-<code class="sig-name descname">tags</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.Task.tags" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">tags</code><a class="headerlink" href="#pubtools.pulplib.Task.tags" title="Permalink to this definition">¶</a></dt>
 <dd><p>The tags for this task.</p>
 <p>Typically includes info on the task’s associated action and
 repo, such as:</p>
@@ -1080,13 +1081,13 @@ repo, such as:</p>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.Task.repo_id">
-<code class="sig-name descname">repo_id</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.Task.repo_id" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">repo_id</code><a class="headerlink" href="#pubtools.pulplib.Task.repo_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>The ID of the repository associated with this task, otherwise None.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.Task.units">
-<code class="sig-name descname">units</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.Task.units" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">units</code><a class="headerlink" href="#pubtools.pulplib.Task.units" title="Permalink to this definition">¶</a></dt>
 <dd><p>Info on the units which were processed as part of this task
 (e.g. associated or unassociated).</p>
 <p>This is an iterable. Each element is an instance of
@@ -1099,7 +1100,7 @@ unit.</p>
 
 <dl class="py attribute">
 <dt id="pubtools.pulplib.Task.units_data">
-<code class="sig-name descname">units_data</code><em class="property"> = None</em><a class="headerlink" href="#pubtools.pulplib.Task.units_data" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">units_data</code><a class="headerlink" href="#pubtools.pulplib.Task.units_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Info on the units which were processed as part of this task
 (e.g. associated or unassociated).</p>
 <p>This is a list. The list elements are the raw dicts as returned
@@ -1213,7 +1214,7 @@ and the object is not attached to any client, this exception is raised.</p>
       &copy;2019, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
