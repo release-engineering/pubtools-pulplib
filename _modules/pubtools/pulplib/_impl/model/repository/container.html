@@ -81,7 +81,9 @@
 
         <span class="k">for</span> <span class="n">dist</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;distributors&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]:</span>
             <span class="k">if</span> <span class="n">dist</span><span class="p">[</span><span class="s2">&quot;distributor_type_id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;docker_distributor_web&quot;</span><span class="p">:</span>
-                <span class="n">out</span><span class="p">[</span><span class="s2">&quot;registry_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dist</span><span class="p">[</span><span class="s2">&quot;config&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;repo-registry-id&quot;</span><span class="p">)</span>
+                <span class="n">registry_id</span> <span class="o">=</span> <span class="n">dist</span><span class="p">[</span><span class="s2">&quot;config&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;repo-registry-id&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">registry_id</span><span class="p">:</span>
+                    <span class="n">out</span><span class="p">[</span><span class="s2">&quot;registry_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">registry_id</span>
                 <span class="k">break</span>
 
         <span class="k">return</span> <span class="n">out</span></div>
