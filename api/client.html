@@ -42,7 +42,7 @@
 <p>This class provides high-level methods for querying a Pulp server and performing
 actions in Pulp.</p>
 <p><strong>Usage of futures:</strong></p>
-<p>Most values are returned as <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a> objects.
+<p>Most values are returned as <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a> objects.
 Returned futures are resolved when:</p>
 <ul class="simple">
 <li><p>a request to Pulp succeeded, if operation is synchronous (e.g. get, search)</p></li>
@@ -55,7 +55,7 @@ will attempt to cancel those tasks.</p>
 <div class="versionadded">
 <p><span class="versionmodified added">New in version 2.1.0.</span></p>
 </div>
-<p>All <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a> objects produced by this client are
+<p>All <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a> objects produced by this client are
 <em>proxy futures</em>, meaning that attribute and method lookups on the objects are
 proxied to the future’s result, blocking as needed.</p>
 <p>This allows the client to be used within blocking code without having to
@@ -86,8 +86,8 @@ task queue.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – URL of a Pulp server, e.g. <a class="reference external" href="https://pulp.example.com/">https://pulp.example.com/</a>.</p></li>
-<li><p><strong>auth</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><em>object</em></a>) – <p>Any of these arguments, if provided, are used to initialize
+<li><p><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – URL of a Pulp server, e.g. <a class="reference external" href="https://pulp.example.com/">https://pulp.example.com/</a>.</p></li>
+<li><p><strong>auth</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><em>object</em></a>) – <p>Any of these arguments, if provided, are used to initialize
 <a class="reference external" href="https://2.python-requests.org/en/master/api/#requests.Session" title="(in Requests v2.24.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">requests.Session</span></code></a> objects used by the client.</p>
 <p>These may be used, for example, to configure the credentials
 for the Pulp server or to use an alternative CA bundle.</p>
@@ -131,7 +131,7 @@ for the Pulp server or to use an alternative CA bundle.</p>
 <dd><p>Get a repository by ID.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>repository_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The ID of the repository to be fetched.</p>
+<dd class="field-odd"><p><strong>repository_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The ID of the repository to be fetched.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><dl class="simple">
