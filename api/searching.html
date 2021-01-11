@@ -12,7 +12,6 @@
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Maintenance Mode" href="maintenance.html" />
@@ -292,7 +291,7 @@ value.</p>
 
 <dl class="py class">
 <dt id="pubtools.pulplib.Page">
-<em class="property">class </em><code class="sig-prename descclassname">pubtools.pulplib.</code><code class="sig-name descname">Page</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">data</span><span class="o">=</span><span class="default_value">NOTHING</span></em>, <em class="sig-param"><span class="n">next</span><span class="p">:</span> <span class="n">concurrent.futures._base.Future</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/page.html#Page"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.Page" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">pubtools.pulplib.</code><code class="sig-name descname">Page</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">data</span><span class="o">=</span><span class="default_value">NOTHING</span></em>, <em class="sig-param"><span class="n">next</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>concurrent.futures._base.Future<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/page.html#Page"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.Page" title="Permalink to this definition">¶</a></dt>
 <dd><p>A page of Pulp search results.</p>
 <p>All Pulp searches issued by this library are paginated.
 Instances of this class may be used to iterate through the returned
@@ -435,7 +434,7 @@ occur to await more pages from Pulp.</p>
       &copy;2019, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.3.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
