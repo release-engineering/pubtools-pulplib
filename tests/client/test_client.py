@@ -32,7 +32,7 @@ def test_can_construct_with_throttle_arg(requests_mocker):
     """
     throttle_count = 42
     client = Client("https://pulp.example.com/", task_throttle=throttle_count)
-    assert client._task_executor._throttle == throttle_count
+    assert client._task_executor._delegate._throttle() == throttle_count
 
 
 def test_can_construct_with_session_args(requests_mocker):
