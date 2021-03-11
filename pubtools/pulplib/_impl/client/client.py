@@ -109,6 +109,9 @@ class Client(object):
 
                 These may be used, for example, to configure the credentials
                 for the Pulp server or to use an alternative CA bundle.
+
+            task_throttle
+                If passed in kwargs, it'll be used as param to _task_executor.
         """
         self._url = url
 
@@ -127,6 +130,8 @@ class Client(object):
         ):
             if arg in kwargs:
                 self._session_kwargs[arg] = kwargs.pop(arg)
+
+        _task_throttle = kwargs.pop("task_throttle", self._TASK_THROTTLE)
 
         if kwargs:
             raise TypeError(
@@ -158,7 +163,7 @@ class Client(object):
             .with_map(self._unpack_response)
             .with_map(self._log_spawned_tasks)
             .with_poll(poller, cancel_fn=poller.cancel)
-            .with_throttle(self._TASK_THROTTLE)
+            .with_throttle(_task_throttle)
             .with_retry(retry_policy=self._RETRY_POLICY)
         )
 
