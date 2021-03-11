@@ -20,8 +20,7 @@ class DetachedException(Exception):
 
 
 class InvalidDataException(Exception):
-    """Raised if raw Pulp data appears to be invalid (i.e. not matching expected schema).
-    """
+    """Raised if raw Pulp data appears to be invalid (i.e. not matching expected schema)."""
 
 
 class PulpObject(object):

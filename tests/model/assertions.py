@@ -46,9 +46,13 @@ def assert_model_fields(model_object):
         if value is not None:
             # These tests only valid on non-None value.
 
-            assert isinstance(value, field.type), (
-                "%s.%s should be a %s but is not: %s"
-                % (klass.__name__, field.name, field.type.__name__, model_object)
+            assert isinstance(
+                value, field.type
+            ), "%s.%s should be a %s but is not: %s" % (
+                klass.__name__,
+                field.name,
+                field.type.__name__,
+                model_object,
             )
 
             if field.type is list:
