@@ -36,7 +36,7 @@
 <h1>Client<a class="headerlink" href="#client" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="pubtools.pulplib.Client">
-<em class="property">class </em><code class="sig-prename descclassname">pubtools.pulplib.</code><code class="sig-name descname">Client</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">url</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/client.html#Client"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.Client" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">pubtools.pulplib.</span></code><code class="sig-name descname"><span class="pre">Client</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/client.html#Client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Client" title="Permalink to this definition">¶</a></dt>
 <dd><p>A client for the Pulp 2.x API.</p>
 <p>This class provides high-level methods for querying a Pulp server and performing
 actions in Pulp.</p>
@@ -126,7 +126,7 @@ for the Pulp server or to use an alternative CA bundle.</p>
 </dl>
 <dl class="py method">
 <dt id="pubtools.pulplib.Client.get_repository">
-<code class="sig-name descname">get_repository</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">repository_id</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/client.html#Client.get_repository"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.Client.get_repository" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_repository</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">repository_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/client.html#Client.get_repository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Client.get_repository" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a repository by ID.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -144,7 +144,7 @@ for the Pulp server or to use an alternative CA bundle.</p>
 
 <dl class="py method">
 <dt id="pubtools.pulplib.Client.search_repository">
-<code class="sig-name descname">search_repository</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">criteria</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/client.html#Client.search_repository"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.Client.search_repository" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">search_repository</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">criteria</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/client.html#Client.search_repository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Client.search_repository" title="Permalink to this definition">¶</a></dt>
 <dd><p>Search for repositories matching the given criteria.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -165,7 +165,7 @@ If None, search for all repositories.</p>
 
 <dl class="py method">
 <dt id="pubtools.pulplib.Client.search_content">
-<code class="sig-name descname">search_content</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">criteria</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/client.html#Client.search_content"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.Client.search_content" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">search_content</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">criteria</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/client.html#Client.search_content"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Client.search_content" title="Permalink to this definition">¶</a></dt>
 <dd><p>Search for units across all repositories.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -189,7 +189,7 @@ If None, search for all units.</p>
 
 <dl class="py method">
 <dt id="pubtools.pulplib.Client.search_distributor">
-<code class="sig-name descname">search_distributor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">criteria</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/client.html#Client.search_distributor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.Client.search_distributor" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">search_distributor</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">criteria</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/client.html#Client.search_distributor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Client.search_distributor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Search the distributors matching the given criteria.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -213,7 +213,7 @@ If None, search for all distributors.</p>
 
 <dl class="py method">
 <dt id="pubtools.pulplib.Client.get_maintenance_report">
-<code class="sig-name descname">get_maintenance_report</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/client.html#Client.get_maintenance_report"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.Client.get_maintenance_report" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_maintenance_report</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/client.html#Client.get_maintenance_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Client.get_maintenance_report" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the current maintenance mode status for this Pulp server.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -231,7 +231,7 @@ If None, search for all distributors.</p>
 
 <dl class="py method">
 <dt id="pubtools.pulplib.Client.set_maintenance">
-<code class="sig-name descname">set_maintenance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">report</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/client.html#Client.set_maintenance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.Client.set_maintenance" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">set_maintenance</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">report</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/client.html#Client.set_maintenance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Client.set_maintenance" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set maintenance mode for this Pulp server.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -255,7 +255,7 @@ maintenance repository operation.</p>
 
 <dl class="py method">
 <dt id="pubtools.pulplib.Client.get_content_type_ids">
-<code class="sig-name descname">get_content_type_ids</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/client.html#Client.get_content_type_ids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.Client.get_content_type_ids" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_content_type_ids</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/client.html#Client.get_content_type_ids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Client.get_content_type_ids" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the content types supported by this Pulp server.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -281,18 +281,18 @@ of common return values.</p>
 <h2>Errors<a class="headerlink" href="#errors" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="pubtools.pulplib.PulpException">
-<em class="property">class </em><code class="sig-prename descclassname">pubtools.pulplib.</code><code class="sig-name descname">PulpException</code><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/errors.html#PulpException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.PulpException" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">pubtools.pulplib.</span></code><code class="sig-name descname"><span class="pre">PulpException</span></code><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/errors.html#PulpException"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.PulpException" title="Permalink to this definition">¶</a></dt>
 <dd><p>Raised when the Pulp server has responded with an unrecoverable error
 (generally a failed HTTP response which persisted over several retries).</p>
 </dd></dl>
 
 <dl class="py class">
 <dt id="pubtools.pulplib.TaskFailedException">
-<em class="property">class </em><code class="sig-prename descclassname">pubtools.pulplib.</code><code class="sig-name descname">TaskFailedException</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/errors.html#TaskFailedException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pubtools.pulplib.TaskFailedException" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">pubtools.pulplib.</span></code><code class="sig-name descname"><span class="pre">TaskFailedException</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/errors.html#TaskFailedException"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.TaskFailedException" title="Permalink to this definition">¶</a></dt>
 <dd><p>Raised when a Pulp task has completed with errors.</p>
 <dl class="py attribute">
 <dt id="pubtools.pulplib.TaskFailedException.task">
-<code class="sig-name descname">task</code><a class="headerlink" href="#pubtools.pulplib.TaskFailedException.task" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">task</span></code><a class="headerlink" href="#pubtools.pulplib.TaskFailedException.task" title="Permalink to this definition">¶</a></dt>
 <dd><p>The <a class="reference internal" href="model.html#pubtools.pulplib.Task" title="pubtools.pulplib.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a> which has failed.
 Error details may be accessed from the task.</p>
 </dd></dl>
@@ -385,7 +385,7 @@ Error details may be accessed from the task.</p>
       &copy;2019, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
