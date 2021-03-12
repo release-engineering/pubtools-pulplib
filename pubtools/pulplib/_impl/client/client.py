@@ -110,8 +110,10 @@ class Client(object):
                 These may be used, for example, to configure the credentials
                 for the Pulp server or to use an alternative CA bundle.
 
-            task_throttle
-                If passed in kwargs, it'll be used as param to _task_executor.
+            int task_throttle
+                Maximum number of queued or running tasks permitted for this client.
+                If more than this number of tasks are running, the client will wait before triggering more.
+                This can be used to ensure no single client overwhelms the Pulp server.
         """
         self._url = url
 
