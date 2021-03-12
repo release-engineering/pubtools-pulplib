@@ -103,17 +103,17 @@ class Client(object):
             str url
                 URL of a Pulp server, e.g. https://pulp.example.com/.
 
+            int task_throttle
+                Maximum number of queued or running tasks permitted for this client.
+                If more than this number of tasks are running, the client will wait before triggering more.
+                This can be used to ensure no single client overwhelms the Pulp server.
+
             object auth, cert, headers, max_redirects, params, proxies, verify
                 Any of these arguments, if provided, are used to initialize
                 :class:`requests.Session` objects used by the client.
 
                 These may be used, for example, to configure the credentials
                 for the Pulp server or to use an alternative CA bundle.
-
-            int task_throttle
-                Maximum number of queued or running tasks permitted for this client.
-                If more than this number of tasks are running, the client will wait before triggering more.
-                This can be used to ensure no single client overwhelms the Pulp server.
         """
         self._url = url
 
