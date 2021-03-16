@@ -136,6 +136,11 @@
 <span class="sd">            str url</span>
 <span class="sd">                URL of a Pulp server, e.g. https://pulp.example.com/.</span>
 
+<span class="sd">            int task_throttle</span>
+<span class="sd">                Maximum number of queued or running tasks permitted for this client.</span>
+<span class="sd">                If more than this number of tasks are running, the client will wait before triggering more.</span>
+<span class="sd">                This can be used to ensure no single client overwhelms the Pulp server.</span>
+
 <span class="sd">            object auth, cert, headers, max_redirects, params, proxies, verify</span>
 <span class="sd">                Any of these arguments, if provided, are used to initialize</span>
 <span class="sd">                :class:`requests.Session` objects used by the client.</span>
@@ -160,6 +165,8 @@
         <span class="p">):</span>
             <span class="k">if</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_session_kwargs</span><span class="p">[</span><span class="n">arg</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+
+        <span class="n">_task_throttle</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;task_throttle&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_TASK_THROTTLE</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
@@ -191,7 +198,7 @@
             <span class="o">.</span><span class="n">with_map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_unpack_response</span><span class="p">)</span>
             <span class="o">.</span><span class="n">with_map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_log_spawned_tasks</span><span class="p">)</span>
             <span class="o">.</span><span class="n">with_poll</span><span class="p">(</span><span class="n">poller</span><span class="p">,</span> <span class="n">cancel_fn</span><span class="o">=</span><span class="n">poller</span><span class="o">.</span><span class="n">cancel</span><span class="p">)</span>
-            <span class="o">.</span><span class="n">with_throttle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_TASK_THROTTLE</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">with_throttle</span><span class="p">(</span><span class="n">_task_throttle</span><span class="p">)</span>
             <span class="o">.</span><span class="n">with_retry</span><span class="p">(</span><span class="n">retry_policy</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_RETRY_POLICY</span><span class="p">)</span>
         <span class="p">)</span>
 
