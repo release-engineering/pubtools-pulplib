@@ -96,4 +96,7 @@ disable=print-statement,
         # we use black code style and don't need additional checks
         bad-continuation,
         line-too-long,
+        # skip linting Python 3 features
+        super-with-arguments,
+        raise-missing-from,
 

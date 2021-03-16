@@ -2,7 +2,7 @@ import sys
 
 import attr
 
-ATTR_VERSION = tuple([int(x) for x in attr.__version__.split(".")[0:2]])
+ATTR_VERSION = tuple(int(x) for x in attr.__version__.split(".")[0:2])
 
 # pylint: disable=invalid-name
 
