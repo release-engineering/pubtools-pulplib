@@ -103,6 +103,11 @@ class Client(object):
             str url
                 URL of a Pulp server, e.g. https://pulp.example.com/.
 
+            int task_throttle
+                Maximum number of queued or running tasks permitted for this client.
+                If more than this number of tasks are running, the client will wait before triggering more.
+                This can be used to ensure no single client overwhelms the Pulp server.
+
             object auth, cert, headers, max_redirects, params, proxies, verify
                 Any of these arguments, if provided, are used to initialize
                 :class:`requests.Session` objects used by the client.
@@ -127,6 +132,8 @@ class Client(object):
         ):
             if arg in kwargs:
                 self._session_kwargs[arg] = kwargs.pop(arg)
+
+        _task_throttle = kwargs.pop("task_throttle", self._TASK_THROTTLE)
 
         if kwargs:
             raise TypeError(
@@ -158,7 +165,7 @@ class Client(object):
             .with_map(self._unpack_response)
             .with_map(self._log_spawned_tasks)
             .with_poll(poller, cancel_fn=poller.cancel)
-            .with_throttle(self._TASK_THROTTLE)
+            .with_throttle(_task_throttle)
             .with_retry(retry_policy=self._RETRY_POLICY)
         )
 

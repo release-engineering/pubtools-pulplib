@@ -25,6 +25,16 @@ def test_can_construct(requests_mocker):
     client = Client("https://pulp.example.com/")
 
 
+def test_can_construct_with_throttle_arg(requests_mocker):
+    """
+    A client instance can be constructed with task_throttle arg that is passed
+    to Client._task_executor
+    """
+    throttle_count = 42
+    client = Client("https://pulp.example.com/", task_throttle=throttle_count)
+    assert client._task_executor._delegate._throttle() == throttle_count
+
+
 def test_can_construct_with_session_args(requests_mocker):
     """A client instance can be constructed with requests.Session kwargs."""
     client = Client("https://pulp.example.com/", auth=("x", "y"), verify=False)
