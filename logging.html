@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
     <title>Logging &#8212; pubtools-pulplib  documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
@@ -32,13 +33,13 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="logging">
+  <section id="logging">
 <h1>Logging<a class="headerlink" href="#logging" title="Permalink to this headline">¶</a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">pubtools-pulplib</span></code> produces various log messages which may be of interest to
 clients.</p>
 <p>These log messages are sent to the <code class="docutils literal notranslate"><span class="pre">pubtools.pulplib</span></code> <a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Logger</span></code></a>. For a
 general-purpose command, it’s recommended to enable this logger at <code class="docutils literal notranslate"><span class="pre">INFO</span></code> level.</p>
-<div class="section" id="waiting-on-pulp">
+<section id="waiting-on-pulp">
 <h2>Waiting on Pulp<a class="headerlink" href="#waiting-on-pulp" title="Permalink to this headline">¶</a></h2>
 <p>If the library is awaiting the completion of Pulp tasks and no progress is being
 made, it will produce an <code class="docutils literal notranslate"><span class="pre">INFO</span></code> log message every few minutes with a count of the
@@ -56,8 +57,8 @@ running and waiting tasks in Pulp, such as:</p>
   <span class="nt">waiting-tasks</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;count&gt;</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="task-state-changes">
+</section>
+<section id="task-state-changes">
 <h2>Task state changes<a class="headerlink" href="#task-state-changes" title="Permalink to this headline">¶</a></h2>
 <p>A log message will be produced when a Pulp task is created, cancelled,
 succeeds or fails. Failed Pulp tasks produce a <code class="docutils literal notranslate"><span class="pre">WARNING</span></code>; other state
@@ -66,8 +67,8 @@ changes produce an <code class="docutils literal notranslate"><span class="pre">
 <span class="p">[</span><span class="n">INFO</span><span class="p">]</span> <span class="n">Pulp</span> <span class="n">task</span> <span class="n">completed</span><span class="p">:</span> <span class="mi">54</span><span class="n">ba8e8c</span><span class="o">-</span><span class="mi">10</span><span class="n">aa</span><span class="o">-</span><span class="mi">40</span><span class="n">f9</span><span class="o">-</span><span class="n">a9a9</span><span class="o">-</span><span class="mi">36</span><span class="n">be54431bde</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="retrying">
+</section>
+<section id="retrying">
 <h2>Retrying<a class="headerlink" href="#retrying" title="Permalink to this headline">¶</a></h2>
 <p>Many methods in this library will implicitly retry failing operations a few times.
 When this occurs, a <code class="docutils literal notranslate"><span class="pre">WARNING</span></code> message is logged before the retry occurs, as
@@ -83,8 +84,8 @@ number of attempts before the error will be considered fatal.</p>
   <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">pulp-retry</span>
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
           </div>
@@ -107,7 +108,7 @@ number of attempts before the error will be considered fatal.</p>
 
 
 <h3>Navigation</h3>
-<p class="caption"><span class="caption-text">Contents:</span></p>
+<p><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="api-reference.html">API Reference</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Logging</a><ul>
@@ -165,7 +166,7 @@ number of attempts before the error will be considered fatal.</p>
       &copy;2019, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
