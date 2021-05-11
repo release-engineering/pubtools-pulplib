@@ -4,12 +4,12 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>Testing &#8212; pubtools-pulplib  documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
@@ -36,8 +36,8 @@
   <section id="testing">
 <h1>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
-<dt id="pubtools.pulplib.FakeController">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">pubtools.pulplib.</span></code><code class="sig-name descname"><span class="pre">FakeController</span></code><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/fake/controller.html#FakeController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.FakeController" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pubtools.pulplib.FakeController">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">pubtools.pulplib.</span></span><span class="sig-name descname"><span class="pre">FakeController</span></span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/fake/controller.html#FakeController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.FakeController" title="Permalink to this definition">¶</a></dt>
 <dd><p>A controller for a fake <a class="reference internal" href="client.html#pubtools.pulplib.Client" title="pubtools.pulplib.Client"><code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code></a>, to be used
 within automated tests.</p>
 <p>This class provides a client which has the same public interface as
@@ -79,20 +79,20 @@ which exist within Pulp’s database, the fake client only supports searching
 on fields known to the <a class="reference internal" href="../schema.html#schemas"><span class="std std-ref">Schemas</span></a> used by this library.</p>
 </div></blockquote>
 <dl class="py attribute">
-<dt id="pubtools.pulplib.FakeController.client">
-<code class="sig-name descname"><span class="pre">client</span></code><a class="headerlink" href="#pubtools.pulplib.FakeController.client" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pubtools.pulplib.FakeController.client">
+<span class="sig-name descname"><span class="pre">client</span></span><a class="headerlink" href="#pubtools.pulplib.FakeController.client" title="Permalink to this definition">¶</a></dt>
 <dd><p>The client instance attached to this controller.</p>
 </dd></dl>
 
-<dl class="py method">
-<dt id="pubtools.pulplib.FakeController.repositories">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">repositories</span></code><a class="headerlink" href="#pubtools.pulplib.FakeController.repositories" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="pubtools.pulplib.FakeController.repositories">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">repositories</span></span><a class="headerlink" href="#pubtools.pulplib.FakeController.repositories" title="Permalink to this definition">¶</a></dt>
 <dd><p>The list of existing repositories in the fake client.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="pubtools.pulplib.FakeController.insert_repository">
-<code class="sig-name descname"><span class="pre">insert_repository</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">repository</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/fake/controller.html#FakeController.insert_repository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.FakeController.insert_repository" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pubtools.pulplib.FakeController.insert_repository">
+<span class="sig-name descname"><span class="pre">insert_repository</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">repository</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/fake/controller.html#FakeController.insert_repository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.FakeController.insert_repository" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a repository to the set of existing repositories in the fake client.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -102,8 +102,8 @@ on fields known to the <a class="reference internal" href="../schema.html#schema
 </dd></dl>
 
 <dl class="py method">
-<dt id="pubtools.pulplib.FakeController.insert_units">
-<code class="sig-name descname"><span class="pre">insert_units</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">repository</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/fake/controller.html#FakeController.insert_units"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.FakeController.insert_units" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pubtools.pulplib.FakeController.insert_units">
+<span class="sig-name descname"><span class="pre">insert_units</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">repository</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/fake/controller.html#FakeController.insert_units"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.FakeController.insert_units" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add units to the set of existing content for a repository.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -118,9 +118,9 @@ on fields known to the <a class="reference internal" href="../schema.html#schema
 </div>
 </dd></dl>
 
-<dl class="py method">
-<dt id="pubtools.pulplib.FakeController.content_type_ids">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">content_type_ids</span></code><a class="headerlink" href="#pubtools.pulplib.FakeController.content_type_ids" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="pubtools.pulplib.FakeController.content_type_ids">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">content_type_ids</span></span><a class="headerlink" href="#pubtools.pulplib.FakeController.content_type_ids" title="Permalink to this definition">¶</a></dt>
 <dd><p>The list of content type IDs the fake client will claim to support.</p>
 <div class="versionadded">
 <p><span class="versionmodified added">New in version 1.4.0.</span></p>
@@ -128,8 +128,8 @@ on fields known to the <a class="reference internal" href="../schema.html#schema
 </dd></dl>
 
 <dl class="py method">
-<dt id="pubtools.pulplib.FakeController.set_content_type_ids">
-<code class="sig-name descname"><span class="pre">set_content_type_ids</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type_ids</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/fake/controller.html#FakeController.set_content_type_ids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.FakeController.set_content_type_ids" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pubtools.pulplib.FakeController.set_content_type_ids">
+<span class="sig-name descname"><span class="pre">set_content_type_ids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type_ids</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/fake/controller.html#FakeController.set_content_type_ids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.FakeController.set_content_type_ids" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the list of content type IDs the fake client will claim to support.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -141,9 +141,9 @@ on fields known to the <a class="reference internal" href="../schema.html#schema
 </div>
 </dd></dl>
 
-<dl class="py method">
-<dt id="pubtools.pulplib.FakeController.publish_history">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">publish_history</span></code><a class="headerlink" href="#pubtools.pulplib.FakeController.publish_history" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="pubtools.pulplib.FakeController.publish_history">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">publish_history</span></span><a class="headerlink" href="#pubtools.pulplib.FakeController.publish_history" title="Permalink to this definition">¶</a></dt>
 <dd><p>A list of repository publishes triggered via this client.</p>
 <p>Each element of this list is a named tuple with the following attributes,
 in order:</p>
@@ -158,9 +158,9 @@ of this publish</p>
 </div></blockquote>
 </dd></dl>
 
-<dl class="py method">
-<dt id="pubtools.pulplib.FakeController.sync_history">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">sync_history</span></code><a class="headerlink" href="#pubtools.pulplib.FakeController.sync_history" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="pubtools.pulplib.FakeController.sync_history">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">sync_history</span></span><a class="headerlink" href="#pubtools.pulplib.FakeController.sync_history" title="Permalink to this definition">¶</a></dt>
 <dd><p>A list of repository syncs triggered via this client.</p>
 <p>Each element of this list is a named tuple with the following attributes,
 in order:</p>
@@ -180,9 +180,9 @@ of this sync</p>
 </div>
 </dd></dl>
 
-<dl class="py method">
-<dt id="pubtools.pulplib.FakeController.upload_history">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">upload_history</span></code><a class="headerlink" href="#pubtools.pulplib.FakeController.upload_history" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="pubtools.pulplib.FakeController.upload_history">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">upload_history</span></span><a class="headerlink" href="#pubtools.pulplib.FakeController.upload_history" title="Permalink to this definition">¶</a></dt>
 <dd><p>A list of upload tasks triggered via this client.</p>
 <p>Each element of this list is a named tuple with the following attributes,
 in order:</p>
@@ -226,7 +226,7 @@ of this upload</p>
 
 
 <h3>Navigation</h3>
-<p><span class="caption-text">Contents:</span></p>
+<p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../api-reference.html">API Reference</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="client.html">Client</a></li>
@@ -288,7 +288,7 @@ of this upload</p>
       &copy;2019, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
