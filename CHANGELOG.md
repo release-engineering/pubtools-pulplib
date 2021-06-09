@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- n/a
+### Added
+- Support for various repo notes for Repository model
+- Support for various fields of ModuleMd unit
 
 ## [2.8.0] - 2021-03-17
 

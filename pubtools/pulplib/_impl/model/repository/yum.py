@@ -90,3 +90,22 @@ class YumRepository(Repository):
         type=list,
         converter=FrozenList,
     )
+
+    arch = pulp_attrib(default=None, type=str, pulp_field="notes.arch")
+    """Repository note describing architecture of the repository"""
+
+    platform_full_version = pulp_attrib(
+        default=None, type=str, pulp_field="notes.platform_full_version"
+    )
+    """Repository note describing full version of the repository"""
+
+    platform_major_version = pulp_attrib(
+        default=None, type=str, pulp_field="notes.platform_major_version"
+    )
+    """Repository note describing major version of the repository"""
+
+    ubi_config_version = pulp_attrib(
+        default=None, type=str, pulp_field="notes.ubi_config_version"
+    )
+    """Repository note describing whatt version (branch) of ubi config should be
+    used for population this repository"""

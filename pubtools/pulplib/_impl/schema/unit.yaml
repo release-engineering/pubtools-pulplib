@@ -130,6 +130,14 @@ definitions:
         items:
           type: string
 
+      artifacts:
+        type: array
+        items:
+          type: string
+      
+      profiles:
+        type: object
+
     required:
     - _content_type_id
     - name

@@ -94,6 +94,27 @@ properties:
         items:
           type: string
 
+      # Repository note describing associated content set of the repository
+      content_set:
+        type: string
+
+      # Repository note describing architecture of the repository
+      arch:
+        type: string
+
+      # Repository note describing full version of the repository
+      platform_full_version:
+        type: string
+
+      # Repository note describing major version of the repository
+      platform_major_version:
+        type: string
+
+      # Repository note describing whatt version (branch) of ubi config should be
+      # used for population this repository"
+      ubi_config_version:
+        type: string
+
   # List of repository distributors.
   # Note that order matters in this list.
   distributors:
