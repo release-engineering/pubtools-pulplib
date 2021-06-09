@@ -81,7 +81,7 @@ class ModulemdUnit(Unit):
     def get_artifacts_filenames(self, exclude_srpms=False):
         """
         Artifacts are typically stored as a list of rpms of nevra format without '.rpm' extension,
-        this method removes the epoch and returns list of actual rpm filenames.
+        this method removes the epoch and returns set of actual rpm filenames.
         """
         regex = r"\d+:"
         reg = re.compile(regex)
