@@ -1,7 +1,13 @@
+import re
+
+from more_executors.futures import f_map, f_proxy
 from .base import Repository, SyncOptions, repo_type
 from ..frozenlist import FrozenList
 from ..attr import pulp_attrib
+from ..common import DetachedException
 from ... import compat_attr as attr
+from ...client.errors import PulpException
+from ...criteria import Criteria
 
 
 @attr.s(kw_only=True, frozen=True)
@@ -95,3 +101,50 @@ class YumRepository(Repository):
         default=None, type=str, pulp_field="notes.ubi_config_version"
     )
     """Version of ubi config that should be used for population of this repository"""
+    @property
+    def related_binary_repository(self):
+        """Returns related binary repository to this repository based on relative url,
+        raises PulpException is repository is not found"""
+        return self._get_related_repository(repo_t="binary")
+
+    @property
+    def related_debug_repository(self):
+        """Returns related debug repository to this repository based on relative url
+        raises PulpException is repository is not found"""
+        return self._get_related_repository(repo_t="debug")
+
+    @property
+    def related_source_repository(self):
+        """Returns related source repository to this repository based on relative url
+        raises PulpException is repository is not found"""
+        return self._get_related_repository(repo_t="source")
+
+    def _get_related_repository(self, repo_t):
+        if not self._client:
+            raise DetachedException()
+
+        suffixes_mapping = {
+            "binary": "/os",
+            "debug": "/debug",
+            "source": "/source/SRPMS",
+        }
+
+        regex = r"(/os|/source/SRPMS|/debug)$"
+
+        def unpack_page(page):
+            if len(page.data) != 1:
+                raise PulpException(
+                    "Repository relative_url=%s was not found" % relative_url
+                )
+            return page.data[0]
+
+        suffix = suffixes_mapping[repo_t]
+        if str(self.relative_url).endswith(suffix):
+            return self
+
+        base_url = re.sub(regex, "", self.relative_url)
+        relative_url = base_url + suffix
+        criteria = Criteria.with_field("notes.relative_url", relative_url)
+        page_f = self._client.search_repository(criteria)
+        repo_f = f_map(page_f, unpack_page)
+        return f_proxy(repo_f)

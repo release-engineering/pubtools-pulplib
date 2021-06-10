@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Support for various repo notes for Repository model
 - Support for various fields of ModuleMd unit
+- Introduced YumRepository.related_*_repository properties that can retrive
+  related binary, debug and source repository
 
 ## [2.8.0] - 2021-03-17
 
