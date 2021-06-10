@@ -73,12 +73,18 @@ class ModulemdUnit(Unit):
     """List of artifacts related to the given module, usually it's a list
     rpms in nevra format without '.rpm' extension and consist of binary, debug and source
     rpms as well.
+
+    Example:
+    ["perl-version-7:0.99.24-441.module+el8.3.0+6718+7f269185.src",
+     "perl-version-7:0.99.24-441.module+el8.3.0+6718+7f269185.x86_64",
+    ]
     """
 
     profiles = pulp_attrib(type=dict, pulp_field="profiles", default=None)
     """The profiles of this modulemd unit."""
 
-    def get_artifacts_filenames(self, exclude_srpms=False):
+    @property
+    def artifacts_filenames(self):
         """
         Artifacts are typically stored as a list of rpms of nevra format without '.rpm' extension,
         this method removes the epoch and returns set of actual rpm filenames.
@@ -88,8 +94,5 @@ class ModulemdUnit(Unit):
 
         out = set()
         for rpm_nevra in self.artifacts or []:
-            if exclude_srpms and rpm_nevra.endswith(".src"):
-                continue
-
             out.add(reg.sub("", rpm_nevra, count=1) + ".rpm")
         return out

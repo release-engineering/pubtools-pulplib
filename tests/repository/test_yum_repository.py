@@ -65,11 +65,8 @@ def test_populate_attrs():
             "notes": {
                 "_repo-type": "rpm-repo",
                 "content_set": "fake_content_set",
-                "arch": "fake_arch",
                 "population_sources": ["populate_repo1", "populate_repo2"],
                 "ubi_population": True,
-                "platform_full_version": "fake_full_version",
-                "platform_major_version": "fake_major_version",
                 "ubi_config_version": "fake_ubi_config_version",
             },
             "distributors": [],
@@ -78,7 +75,4 @@ def test_populate_attrs():
     assert repo.population_sources == ["populate_repo1", "populate_repo2"]
     assert repo.ubi_population
     assert repo.content_set == "fake_content_set"
-    assert repo.arch == "fake_arch"
-    assert repo.platform_full_version == "fake_full_version"
-    assert repo.platform_major_version == "fake_major_version"
     assert repo.ubi_config_version == "fake_ubi_config_version"
