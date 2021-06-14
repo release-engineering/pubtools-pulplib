@@ -102,18 +102,18 @@ class YumRepository(Repository):
     """Version of ubi config that should be used for population of this repository"""
 
     def get_binary_repository(self):
-        """Returns related binary repository to this repository based on relative url,
-        or Future[None] if repository is not found"""
+        """Returns related binary repository to this repository based on relative url
+        or Future[None], if repository is not found"""
         return self._get_related_repository(repo_t="binary")
 
     def get_debug_repository(self):
         """Returns related debug repository to this repository based on relative url
-        or Future[None] if repository is not found"""
+        or Future[None], if repository is not found"""
         return self._get_related_repository(repo_t="debug")
 
     def get_source_repository(self):
         """Returns related source repository to this repository based on relative url
-        or Future[None] if repository is not found"""
+        or Future[None], if repository is not found"""
         return self._get_related_repository(repo_t="source")
 
     def _get_related_repository(self, repo_t):
