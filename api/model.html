@@ -182,6 +182,12 @@ or less.</p>
 this repository will not publish repository metadata to remote hosts.</p>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.Repository.content_set">
+<span class="sig-name descname"><span class="pre">content_set</span></span><a class="headerlink" href="#pubtools.pulplib.Repository.content_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of content set that is associated with this repository</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="pubtools.pulplib.Repository.distributor">
 <span class="sig-name descname"><span class="pre">distributor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">distributor_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository/base.html#Repository.distributor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Repository.distributor" title="Permalink to this definition">¶</a></dt>
@@ -416,6 +422,12 @@ during the removal.</p>
 <dt class="sig sig-object py" id="pubtools.pulplib.YumRepository.ubi_population">
 <span class="sig-name descname"><span class="pre">ubi_population</span></span><a class="headerlink" href="#pubtools.pulplib.YumRepository.ubi_population" title="Permalink to this definition">¶</a></dt>
 <dd><p>Flag indicating whether repo should be populated from population_sources for the purposes of UBI</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.YumRepository.ubi_config_version">
+<span class="sig-name descname"><span class="pre">ubi_config_version</span></span><a class="headerlink" href="#pubtools.pulplib.YumRepository.ubi_config_version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Version of ubi config that should be used for population of this repository</p>
 </dd></dl>
 
 </dd></dl>
@@ -990,6 +1002,33 @@ is “aarch64.</p>
 <div class="versionadded">
 <p><span class="versionmodified added">New in version 2.6.0.</span></p>
 </div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.ModulemdUnit.artifacts">
+<span class="sig-name descname"><span class="pre">artifacts</span></span><a class="headerlink" href="#pubtools.pulplib.ModulemdUnit.artifacts" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of artifacts related to the given module, usually it’s a list
+rpms in nevra format without ‘.rpm’ extension and consist of binary, debug and source
+rpms as well.</p>
+<p>Example:
+[“perl-version-7:0.99.24-441.module+el8.3.0+6718+7f269185.src”,</p>
+<blockquote>
+<div><p>“perl-version-7:0.99.24-441.module+el8.3.0+6718+7f269185.x86_64”,</p>
+</div></blockquote>
+<p>]</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.ModulemdUnit.profiles">
+<span class="sig-name descname"><span class="pre">profiles</span></span><a class="headerlink" href="#pubtools.pulplib.ModulemdUnit.profiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>The profiles of this modulemd unit.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pubtools.pulplib.ModulemdUnit.artifacts_filenames">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">artifacts_filenames</span></span><a class="headerlink" href="#pubtools.pulplib.ModulemdUnit.artifacts_filenames" title="Permalink to this definition">¶</a></dt>
+<dd><p>Artifacts are typically stored as a list of rpms of nevra format without ‘.rpm’ extension,
+this method removes the epoch and returns set of actual rpm filenames.</p>
 </dd></dl>
 
 </dd></dl>
