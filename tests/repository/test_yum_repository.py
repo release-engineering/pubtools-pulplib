@@ -1,6 +1,6 @@
 import pytest
 
-from pubtools.pulplib import Repository, YumRepository, PulpException
+from pubtools.pulplib import Repository, YumRepository, DetachedException
 
 
 def test_from_data_gives_yum_repository():
@@ -81,7 +81,7 @@ def test_populate_attrs():
 
 
 def test_related_repositories(client, requests_mocker):
-    """test Repository.relate_*_repository returns expected objects"""
+    """test Repository.get_*_repository returns expected objects"""
 
     repo_binary_test = YumRepository(id="binary-repo", relative_url="some/repo/os")
     repo_binary_test.__dict__["_client"] = client
@@ -92,14 +92,14 @@ def test_related_repositories(client, requests_mocker):
     )
 
     # Request for binary repo should return identical object
-    assert repo_binary_test is repo_binary_test.related_binary_repository
+    assert repo_binary_test is repo_binary_test.get_binary_repository()
     # Requests for debug and source repositories return correct repositories
-    assert repo_binary_test.related_debug_repository.id == "repo_debug"
-    assert repo_binary_test.related_source_repository.id == "repo_source"
+    assert repo_binary_test.get_debug_repository().id == "repo_debug"
+    assert repo_binary_test.get_source_repository().id == "repo_source"
 
 
 def test_related_repositories_not_found(client, requests_mocker):
-    """test Repository.relate_*_repository raises when repository is not found"""
+    """test Repository.get_*_repository returns Future[None] if repository is not found"""
 
     repo_binary_test = YumRepository(id="binary-repo", relative_url="some/repo/os")
     repo_binary_test.__dict__["_client"] = client
@@ -108,9 +108,13 @@ def test_related_repositories_not_found(client, requests_mocker):
         "https://pulp.example.com/pulp/api/v2/repositories/search/", json=[]
     )
 
-    # It should raise
-    with pytest.raises(PulpException) as error:
-        repo_binary_test.related_debug_repository.result()
+    repo = repo_binary_test.get_source_repository()
+    assert repo.result() is None
 
-    # It should explain the problem
-    assert "Repository relative_url=some/repo/debug was not found" in str(error.value)
+
+def test_related_repositories_detached_client():
+    repo_binary_test = YumRepository(id="binary-repo", relative_url="some/repo/os")
+    repo_binary_test.__dict__["_client"] = None
+
+    with pytest.raises(DetachedException):
+        repo_binary_test.get_binary_repository()

@@ -6,7 +6,6 @@ from ..frozenlist import FrozenList
 from ..attr import pulp_attrib
 from ..common import DetachedException
 from ... import compat_attr as attr
-from ...client.errors import PulpException
 from ...criteria import Criteria
 
 
@@ -101,22 +100,20 @@ class YumRepository(Repository):
         default=None, type=str, pulp_field="notes.ubi_config_version"
     )
     """Version of ubi config that should be used for population of this repository"""
-    @property
-    def related_binary_repository(self):
+
+    def get_binary_repository(self):
         """Returns related binary repository to this repository based on relative url,
-        raises PulpException is repository is not found"""
+        or Future[None] if repository is not found"""
         return self._get_related_repository(repo_t="binary")
 
-    @property
-    def related_debug_repository(self):
+    def get_debug_repository(self):
         """Returns related debug repository to this repository based on relative url
-        raises PulpException is repository is not found"""
+        or Future[None] if repository is not found"""
         return self._get_related_repository(repo_t="debug")
 
-    @property
-    def related_source_repository(self):
+    def get_source_repository(self):
         """Returns related source repository to this repository based on relative url
-        raises PulpException is repository is not found"""
+        or Future[None] if repository is not found"""
         return self._get_related_repository(repo_t="source")
 
     def _get_related_repository(self, repo_t):
@@ -133,9 +130,8 @@ class YumRepository(Repository):
 
         def unpack_page(page):
             if len(page.data) != 1:
-                raise PulpException(
-                    "Repository relative_url=%s was not found" % relative_url
-                )
+                return None
+
             return page.data[0]
 
         suffix = suffixes_mapping[repo_t]
