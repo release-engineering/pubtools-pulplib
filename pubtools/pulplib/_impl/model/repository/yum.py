@@ -90,3 +90,8 @@ class YumRepository(Repository):
         type=list,
         converter=FrozenList,
     )
+
+    ubi_config_version = pulp_attrib(
+        default=None, type=str, pulp_field="notes.ubi_config_version"
+    )
+    """Version of ubi config that should be used for population of this repository"""

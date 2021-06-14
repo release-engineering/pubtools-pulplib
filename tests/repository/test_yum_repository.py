@@ -64,11 +64,15 @@ def test_populate_attrs():
             "id": "my-repo",
             "notes": {
                 "_repo-type": "rpm-repo",
+                "content_set": "fake_content_set",
                 "population_sources": ["populate_repo1", "populate_repo2"],
                 "ubi_population": True,
+                "ubi_config_version": "fake_ubi_config_version",
             },
             "distributors": [],
         }
     )
     assert repo.population_sources == ["populate_repo1", "populate_repo2"]
     assert repo.ubi_population
+    assert repo.content_set == "fake_content_set"
+    assert repo.ubi_config_version == "fake_ubi_config_version"

@@ -211,6 +211,9 @@ class Repository(PulpObject, Deletable):
     this repository will not publish repository metadata to remote hosts.
     """
 
+    content_set = pulp_attrib(default=None, type=str, pulp_field="notes.content_set")
+    """Name of content set that is associated with this repository"""
+
     @distributors.validator
     def _check_repo_id(self, _, value):
         # checks if distributor's repository id is same as the repository it

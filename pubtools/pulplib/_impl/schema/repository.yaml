@@ -94,6 +94,14 @@ properties:
         items:
           type: string
 
+      # Name of content set that is associated with this repository
+      content_set:
+        type: string
+
+      # Version of ubi config that should be used for population of this repository
+      ubi_config_version:
+        type: string
+
   # List of repository distributors.
   # Note that order matters in this list.
   distributors:
