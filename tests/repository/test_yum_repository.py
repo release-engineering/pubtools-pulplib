@@ -1,4 +1,6 @@
-from pubtools.pulplib import Repository, YumRepository
+import pytest
+
+from pubtools.pulplib import Repository, YumRepository, DetachedException
 
 
 def test_from_data_gives_yum_repository():
@@ -76,3 +78,44 @@ def test_populate_attrs():
     assert repo.ubi_population
     assert repo.content_set == "fake_content_set"
     assert repo.ubi_config_version == "fake_ubi_config_version"
+
+
+def test_related_repositories(client, requests_mocker):
+    """test Repository.get_*_repository returns expected objects"""
+
+    repo_binary_test = YumRepository(id="repo_binary", relative_url="some/repo/os")
+    repo_binary_test.__dict__["_client"] = client
+
+    requests_mocker.post(
+        "https://pulp.example.com/pulp/api/v2/repositories/search/",
+        [{"json": [{"id": "repo_debug"}]}, {"json": [{"id": "repo_source"}]}],
+    )
+
+    # Request for binary repo should return identical object
+    assert repo_binary_test is repo_binary_test.get_binary_repository().result()
+    assert repo_binary_test.get_binary_repository().id == "repo_binary"
+    # Requests for debug and source repositories return correct repositories
+    assert repo_binary_test.get_debug_repository().id == "repo_debug"
+    assert repo_binary_test.get_source_repository().id == "repo_source"
+
+
+def test_related_repositories_not_found(client, requests_mocker):
+    """test Repository.get_*_repository returns Future[None] if repository is not found"""
+
+    repo_binary_test = YumRepository(id="repo_binary", relative_url="some/repo/os")
+    repo_binary_test.__dict__["_client"] = client
+
+    requests_mocker.post(
+        "https://pulp.example.com/pulp/api/v2/repositories/search/", json=[]
+    )
+
+    repo = repo_binary_test.get_source_repository()
+    assert repo.result() is None
+
+
+def test_related_repositories_detached_client():
+    repo_binary_test = YumRepository(id="repo_binary", relative_url="some/repo/os")
+    repo_binary_test.__dict__["_client"] = None
+
+    with pytest.raises(DetachedException):
+        repo_binary_test.get_binary_repository()
