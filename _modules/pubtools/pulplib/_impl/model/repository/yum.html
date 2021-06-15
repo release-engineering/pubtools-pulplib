@@ -31,10 +31,15 @@
           <div class="body" role="main">
             
   <h1>Source code for pubtools.pulplib._impl.model.repository.yum</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">Repository</span><span class="p">,</span> <span class="n">SyncOptions</span><span class="p">,</span> <span class="n">repo_type</span>
+<span></span><span class="kn">import</span> <span class="nn">re</span>
+
+<span class="kn">from</span> <span class="nn">more_executors.futures</span> <span class="kn">import</span> <span class="n">f_map</span><span class="p">,</span> <span class="n">f_proxy</span><span class="p">,</span> <span class="n">f_return</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">Repository</span><span class="p">,</span> <span class="n">SyncOptions</span><span class="p">,</span> <span class="n">repo_type</span>
 <span class="kn">from</span> <span class="nn">..frozenlist</span> <span class="kn">import</span> <span class="n">FrozenList</span>
 <span class="kn">from</span> <span class="nn">..attr</span> <span class="kn">import</span> <span class="n">pulp_attrib</span>
+<span class="kn">from</span> <span class="nn">..common</span> <span class="kn">import</span> <span class="n">DetachedException</span>
 <span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">compat_attr</span> <span class="k">as</span> <span class="n">attr</span>
+<span class="kn">from</span> <span class="nn">...criteria</span> <span class="kn">import</span> <span class="n">Criteria</span>
 
 
 <div class="viewcode-block" id="YumSyncOptions"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.YumSyncOptions">[docs]</a><span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -127,7 +132,51 @@
     <span class="n">ubi_config_version</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;notes.ubi_config_version&quot;</span>
     <span class="p">)</span>
-    <span class="sd">&quot;&quot;&quot;Version of ubi config that should be used for population of this repository&quot;&quot;&quot;</span></div>
+    <span class="sd">&quot;&quot;&quot;Version of ubi config that should be used for population of this repository&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="YumRepository.get_binary_repository"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.YumRepository.get_binary_repository">[docs]</a>    <span class="k">def</span> <span class="nf">get_binary_repository</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns related binary repository to this repository based on relative url</span>
+<span class="sd">        or Future[None], if repository is not found&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_related_repository</span><span class="p">(</span><span class="n">repo_t</span><span class="o">=</span><span class="s2">&quot;binary&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="YumRepository.get_debug_repository"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.YumRepository.get_debug_repository">[docs]</a>    <span class="k">def</span> <span class="nf">get_debug_repository</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns related debug repository to this repository based on relative url</span>
+<span class="sd">        or Future[None], if repository is not found&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_related_repository</span><span class="p">(</span><span class="n">repo_t</span><span class="o">=</span><span class="s2">&quot;debug&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="YumRepository.get_source_repository"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.YumRepository.get_source_repository">[docs]</a>    <span class="k">def</span> <span class="nf">get_source_repository</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns related source repository to this repository based on relative url</span>
+<span class="sd">        or Future[None], if repository is not found&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_related_repository</span><span class="p">(</span><span class="n">repo_t</span><span class="o">=</span><span class="s2">&quot;source&quot;</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_related_repository</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repo_t</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DetachedException</span><span class="p">()</span>
+
+        <span class="n">suffixes_mapping</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;binary&quot;</span><span class="p">:</span> <span class="s2">&quot;/os&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;debug&quot;</span><span class="p">:</span> <span class="s2">&quot;/debug&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;/source/SRPMS&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="n">regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;(/os|/source/SRPMS|/debug)$&quot;</span>
+
+        <span class="k">def</span> <span class="nf">unpack_page</span><span class="p">(</span><span class="n">page</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">page</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+            <span class="k">return</span> <span class="n">page</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">suffix</span> <span class="o">=</span> <span class="n">suffixes_mapping</span><span class="p">[</span><span class="n">repo_t</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">relative_url</span><span class="p">)</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">suffix</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">f_proxy</span><span class="p">(</span><span class="n">f_return</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+
+        <span class="n">base_url</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">regex</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">relative_url</span><span class="p">)</span>
+        <span class="n">relative_url</span> <span class="o">=</span> <span class="n">base_url</span> <span class="o">+</span> <span class="n">suffix</span>
+        <span class="n">criteria</span> <span class="o">=</span> <span class="n">Criteria</span><span class="o">.</span><span class="n">with_field</span><span class="p">(</span><span class="s2">&quot;notes.relative_url&quot;</span><span class="p">,</span> <span class="n">relative_url</span><span class="p">)</span>
+        <span class="n">page_f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">search_repository</span><span class="p">(</span><span class="n">criteria</span><span class="p">)</span>
+        <span class="n">repo_f</span> <span class="o">=</span> <span class="n">f_map</span><span class="p">(</span><span class="n">page_f</span><span class="p">,</span> <span class="n">unpack_page</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">f_proxy</span><span class="p">(</span><span class="n">repo_f</span><span class="p">)</span></div>
 </pre></div>
 
           </div>
