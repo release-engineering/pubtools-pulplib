@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### n/a
+
+## [2.9.0] - 2021-06-15
 ### Added
 - Support for various repo notes for Repository model
 - Support for various fields of ModuleMd unit
@@ -205,7 +208,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release to PyPI
 
-[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.8.0...HEAD
+[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.9.0...HEAD
+[2.9.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.9.0...HEAD
 [2.8.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.7.0...v2.8.0
 [2.7.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.6.0...v2.7.0
 [2.6.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.5.0...v2.6.0
