@@ -1,6 +1,6 @@
 import re
 
-from more_executors.futures import f_map, f_proxy
+from more_executors.futures import f_map, f_proxy, f_return
 from .base import Repository, SyncOptions, repo_type
 from ..frozenlist import FrozenList
 from ..attr import pulp_attrib
@@ -136,7 +136,7 @@ class YumRepository(Repository):
 
         suffix = suffixes_mapping[repo_t]
         if str(self.relative_url).endswith(suffix):
-            return self
+            return f_proxy(f_return(self))
 
         base_url = re.sub(regex, "", self.relative_url)
         relative_url = base_url + suffix

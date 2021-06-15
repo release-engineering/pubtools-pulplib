@@ -83,7 +83,7 @@ def test_populate_attrs():
 def test_related_repositories(client, requests_mocker):
     """test Repository.get_*_repository returns expected objects"""
 
-    repo_binary_test = YumRepository(id="binary-repo", relative_url="some/repo/os")
+    repo_binary_test = YumRepository(id="repo_binary", relative_url="some/repo/os")
     repo_binary_test.__dict__["_client"] = client
 
     requests_mocker.post(
@@ -92,7 +92,8 @@ def test_related_repositories(client, requests_mocker):
     )
 
     # Request for binary repo should return identical object
-    assert repo_binary_test is repo_binary_test.get_binary_repository()
+    assert repo_binary_test is repo_binary_test.get_binary_repository().result()
+    assert repo_binary_test.get_binary_repository().id == "repo_binary"
     # Requests for debug and source repositories return correct repositories
     assert repo_binary_test.get_debug_repository().id == "repo_debug"
     assert repo_binary_test.get_source_repository().id == "repo_source"
@@ -101,7 +102,7 @@ def test_related_repositories(client, requests_mocker):
 def test_related_repositories_not_found(client, requests_mocker):
     """test Repository.get_*_repository returns Future[None] if repository is not found"""
 
-    repo_binary_test = YumRepository(id="binary-repo", relative_url="some/repo/os")
+    repo_binary_test = YumRepository(id="repo_binary", relative_url="some/repo/os")
     repo_binary_test.__dict__["_client"] = client
 
     requests_mocker.post(
@@ -113,7 +114,7 @@ def test_related_repositories_not_found(client, requests_mocker):
 
 
 def test_related_repositories_detached_client():
-    repo_binary_test = YumRepository(id="binary-repo", relative_url="some/repo/os")
+    repo_binary_test = YumRepository(id="repo_binary", relative_url="some/repo/os")
     repo_binary_test.__dict__["_client"] = None
 
     with pytest.raises(DetachedException):
