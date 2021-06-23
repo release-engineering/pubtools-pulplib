@@ -50,9 +50,10 @@ jobs:
       - name: Install Tox
         run: pip install tox
       - name: Run Tox
-        run: tox -e pidiff
-        if: job.status == 'success'
-        run: test pidiff = docs && scripts/push-docs
+        run: |
+          tox -e pidiff
+          if: job.status == 'success'
+          test pidiff = docs && scripts/push-docs
   py36:
     runs-on: ubuntu-latest
     steps:
@@ -66,9 +67,10 @@ jobs:
       - name: Install Tox
         run: pip install tox
       - name: Run Tox
-        run: tox -e cov DEPLOY=1
-        if: job.status == 'success'
-        run: test cov = docs && scripts/push-docs
+        run: |
+          tox -e cov DEPLOY=1
+          if: job.status == 'success'
+          test cov = docs && scripts/push-docs
   py36:
     runs-on: ubuntu-latest
     steps:
@@ -82,9 +84,10 @@ jobs:
       - name: Install Tox
         run: pip install tox
       - name: Run Tox
-        run: tox -e docs
-        if: job.status == 'success'
-        run: test docs = docs && scripts/push-docs
+        run: |
+          tox -e docs
+          if: job.status == 'success'
+          test docs = docs && scripts/push-docs
   py36:
     runs-on: ubuntu-latest
     steps:
@@ -98,6 +101,7 @@ jobs:
       - name: Install Tox
         run: pip install tox
       - name: Run Tox
-        run: tox -e revdep-pubtools-pulp
-        if: job.status == 'success'
-        run: test revdep-pubtools-pulp = docs && scripts/push-docs
+        run: |
+          tox -e revdep-pubtools-pulp
+          if: job.status == 'success'
+          test revdep-pubtools-pulp = docs && scripts/push-docs
