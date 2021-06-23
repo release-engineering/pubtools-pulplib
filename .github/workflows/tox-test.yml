@@ -16,9 +16,10 @@ jobs:
       - name: Install Tox
         run: pip install tox
       - name: Run Tox
-        run: tox -e py27
-        if: job.status == 'success'
-        run: test 2.7 = docs && scripts/push-docs
+        run: |
+          tox -e py27
+          if: job.status == 'success'
+          test 2.7 = docs && scripts/push-docs
   py36:
     runs-on: ubuntu-latest
     steps:
@@ -32,9 +33,10 @@ jobs:
       - name: Install Tox
         run: pip install tox
       - name: Run Tox
-        run: tox -e static
-        if: job.status == 'success'
-        run: test static = docs && scripts/push-docs
+        run: |
+          tox -e static
+          if: job.status == 'success'
+          test static = docs && scripts/push-docs
   py36:
     runs-on: ubuntu-latest
     steps:
