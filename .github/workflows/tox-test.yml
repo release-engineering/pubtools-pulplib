@@ -99,12 +99,3 @@ jobs:
         run: tox -e revdep-pubtools-pulp
         if: job.status == 'success'
         run: test revdep-pubtools-pulp = docs && scripts/push-docs
-  deploy:
-    env:
-      provider: pypi
-      user: __token__
-      password: ${{ secrets.PYPI_PASSWORD }}
-    on:
-      tags: true
-      condition: $DEPLOY = 1
-    skip_existing: true
