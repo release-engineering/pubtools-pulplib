@@ -37,7 +37,7 @@ jobs:
           tox -e static
           if: job.status == 'success'
           test static = docs && scripts/push-docs
-  py36:
+  py36-pidiff:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -54,7 +54,7 @@ jobs:
           tox -e pidiff
           if: job.status == 'success'
           test pidiff = docs && scripts/push-docs
-  py36:
+  py36-coverage:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -71,7 +71,7 @@ jobs:
           tox -e cov DEPLOY=1
           if: job.status == 'success'
           test cov = docs && scripts/push-docs
-  py36:
+  py36-docs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -88,7 +88,7 @@ jobs:
           tox -e docs
           if: job.status == 'success'
           test docs = docs && scripts/push-docs
-  py36:
+  py36-revdep:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
