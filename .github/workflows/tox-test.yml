@@ -58,7 +58,7 @@ jobs:
       - name: Install Tox
         run: pip install tox
       - name: Run Tox
-        run: tox -e 3.6
+        run: tox -e cov
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1.5.0
         with:
