@@ -18,7 +18,7 @@ jobs:
       - name: Run Tox
         run: |
           tox -e py27
-          if: job.status == 'success'
+        if: job.status == 'success'
           test 2.7 = docs && scripts/push-docs
   static:
     runs-on: ubuntu-latest
@@ -35,7 +35,7 @@ jobs:
       - name: Run Tox
         run: |
           tox -e static
-          if: job.status == 'success'
+        if: job.status == 'success'
           test static = docs && scripts/push-docs
   py36-pidiff:
     runs-on: ubuntu-latest
@@ -52,7 +52,7 @@ jobs:
       - name: Run Tox
         run: |
           tox -e pidiff
-          if: job.status == 'success'
+        if: job.status == 'success'
           test pidiff = docs && scripts/push-docs
   coverage:
     runs-on: ubuntu-latest
@@ -63,13 +63,13 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.6 DEPLOY=1
+          python-version: 3.6
       - name: Install Tox
         run: pip install tox
       - name: Run Tox
         run: |
           tox -e cov DEPLOY=1
-          if: job.status == 'success'
+        if: job.status == 'success'
           test cov = docs && scripts/push-docs
   docs:
     runs-on: ubuntu-latest
@@ -86,7 +86,7 @@ jobs:
       - name: Run Tox
         run: |
           tox -e docs
-          if: job.status == 'success'
+        if: job.status == 'success'
           test docs = docs && scripts/push-docs
   py36-revdep:
     runs-on: ubuntu-latest
@@ -103,5 +103,5 @@ jobs:
       - name: Run Tox
         run: |
           tox -e revdep-pubtools-pulp
-          if: job.status == 'success'
+        if: job.status == 'success'
           test revdep-pubtools-pulp = docs && scripts/push-docs
