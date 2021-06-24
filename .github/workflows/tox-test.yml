@@ -20,7 +20,7 @@ jobs:
           tox -e py27
           if: job.status == 'success'
           test 2.7 = docs && scripts/push-docs
-  py36:
+  static:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -29,7 +29,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
-          python-version: static
+          python-version: 3.6
       - name: Install Tox
         run: pip install tox
       - name: Run Tox
@@ -46,7 +46,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
-          python-version: pidiff
+          python-version: 3.6
       - name: Install Tox
         run: pip install tox
       - name: Run Tox
@@ -54,7 +54,7 @@ jobs:
           tox -e pidiff
           if: job.status == 'success'
           test pidiff = docs && scripts/push-docs
-  py36-coverage:
+  coverage:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -71,7 +71,7 @@ jobs:
           tox -e cov DEPLOY=1
           if: job.status == 'success'
           test cov = docs && scripts/push-docs
-  py36-docs:
+  docs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -80,7 +80,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
-          python-version: docs
+          python-version: 3.6
       - name: Install Tox
         run: pip install tox
       - name: Run Tox
@@ -97,7 +97,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
-          python-version: revdep-pubtools-pulp
+          python-version: 3.6
       - name: Install Tox
         run: pip install tox
       - name: Run Tox
