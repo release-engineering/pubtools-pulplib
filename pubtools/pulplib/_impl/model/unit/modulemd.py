@@ -70,14 +70,18 @@ class ModulemdUnit(Unit):
         converter=frozenlist_or_none_converter,
         pulp_field="artifacts",
     )
-    """List of artifacts related to the given module, usually it's a list
-    rpms in nevra format without '.rpm' extension and consist of binary, debug and source
-    rpms as well.
+    """List of artifacts included in the module.
+
+    Typically a list of RPM NEVRAs (no '.rpm' extension) including binary, debug
+    and source RPMs.
 
     Example:
-    ["perl-version-7:0.99.24-441.module+el8.3.0+6718+7f269185.src",
-     "perl-version-7:0.99.24-441.module+el8.3.0+6718+7f269185.x86_64",
-    ]
+
+    .. code-block:: python
+
+        ["perl-version-7:0.99.24-441.module+el8.3.0+6718+7f269185.src",
+         "perl-version-7:0.99.24-441.module+el8.3.0+6718+7f269185.x86_64"]
+
     """
 
     profiles = pulp_attrib(type=dict, pulp_field="profiles", default=None)
@@ -86,8 +90,12 @@ class ModulemdUnit(Unit):
     @property
     def artifacts_filenames(self):
         """
-        Artifacts are typically stored as a list of rpms of nevra format without '.rpm' extension,
-        this method removes the epoch and returns set of actual rpm filenames.
+        RPM filenames for artifacts in this module (as opposed to the RPM
+        NEVRAs returned by :meth:`artifacts`).
+
+        Returns:
+            List[str]
+                Artifact RPM filenames.
         """
         regex = r"\d+:"
         reg = re.compile(regex)

@@ -212,7 +212,7 @@ class Repository(PulpObject, Deletable):
     """
 
     content_set = pulp_attrib(default=None, type=str, pulp_field="notes.content_set")
-    """Name of content set that is associated with this repository"""
+    """Name of content set that is associated with this repository."""
 
     @distributors.validator
     def _check_repo_id(self, _, value):
