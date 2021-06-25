@@ -62,9 +62,9 @@ jobs:
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1.5.0
         with:
+          token: ${{ secrets.CODECOVE_TOKEN }}
           fail_ci_if_error: true
           verbose: true
-          token: ${{ secrets.CODECOVE_TOKEN }}
   docs:
     runs-on: ubuntu-latest
     steps:
