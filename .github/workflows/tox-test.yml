@@ -64,6 +64,7 @@ jobs:
         with:
           fail_ci_if_error: true
           verbose: true
+          token: ${{ secrets.CODECOVE_TOKEN }}
   docs:
     runs-on: ubuntu-latest
     steps:
