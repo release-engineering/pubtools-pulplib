@@ -96,3 +96,14 @@ class ModulemdUnit(Unit):
         for rpm_nevra in self.artifacts or []:
             out.add(reg.sub("", rpm_nevra, count=1) + ".rpm")
         return out
+
+    @property
+    def nsvca(self):
+        """
+        Returns nsvca string of this module.
+
+        Example: "virt:av:8040020210622174547:522a0ee4:arch"
+        """
+        return ":".join(
+            (self.name, self.stream, str(self.version), self.context, self.arch)
+        )

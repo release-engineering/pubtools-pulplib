@@ -64,6 +64,12 @@ definitions:
       arch:
         type: string
 
+      # Filename of the rpm
+      filename:
+        anyOf:
+        - type: string
+        - type: "null"
+      
       # source rpm filename
       sourcerpm:
         anyOf:

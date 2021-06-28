@@ -23,3 +23,17 @@ def test_modulemd_artifacts_filenames():
         "perl-version-0.99.24-441.module+el8.3.0+6718+7f269185.x86_64.rpm",
     ]
     assert sorted(filenames) == sorted(expected_filenames)
+
+
+def test_modulemd_nsvca():
+    unit = ModulemdUnit(
+        name="fake_name",
+        stream="fake_stream",
+        version=1234,
+        context="fake_context",
+        arch="fake_arch",
+    )
+
+    expected_nsvca = "fake_name:fake_stream:1234:fake_context:fake_arch"
+
+    assert unit.nsvca == expected_nsvca

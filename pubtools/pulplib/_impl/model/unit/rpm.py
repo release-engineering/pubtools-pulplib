@@ -54,6 +54,12 @@ class RpmUnit(Unit):
         :meth:`~pubtools.pulplib.Repository.signing_keys`
     """
 
+    filename = pulp_attrib(default=None, type=str, pulp_field="filename")
+    """Filename of this RPM.
+    
+    Example: mod_security_crs-3.3.0-2.el8.noarch.rpm
+    """
+
     sourcerpm = pulp_attrib(default=None, type=str, pulp_field="sourcerpm")
     """Source rpm filename if package is not source package.
 
