@@ -933,6 +933,13 @@ in the common case, this is only a basename.</p>
 </dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.RpmUnit.filename">
+<span class="sig-name descname"><span class="pre">filename</span></span><a class="headerlink" href="#pubtools.pulplib.RpmUnit.filename" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filename of this RPM.</p>
+<p>Example: mod_security_crs-3.3.0-2.el8.noarch.rpm</p>
+</dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="pubtools.pulplib.RpmUnit.sourcerpm">
 <span class="sig-name descname"><span class="pre">sourcerpm</span></span><a class="headerlink" href="#pubtools.pulplib.RpmUnit.sourcerpm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Source rpm filename if package is not source package.</p>
@@ -1050,6 +1057,13 @@ rpms as well.</p>
 <em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">artifacts_filenames</span></span><a class="headerlink" href="#pubtools.pulplib.ModulemdUnit.artifacts_filenames" title="Permalink to this definition">¶</a></dt>
 <dd><p>Artifacts are typically stored as a list of rpms of nevra format without ‘.rpm’ extension,
 this method removes the epoch and returns set of actual rpm filenames.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pubtools.pulplib.ModulemdUnit.nsvca">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">nsvca</span></span><a class="headerlink" href="#pubtools.pulplib.ModulemdUnit.nsvca" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns nsvca string of this module.</p>
+<p>Example: “virt:av:8040020210622174547:522a0ee4:arch”</p>
 </dd></dl>
 
 </dd></dl>

@@ -331,6 +331,12 @@ definitions:
       arch:
         type: string
 
+      # Filename of the rpm
+      filename:
+        anyOf:
+        - type: string
+        - type: &quot;null&quot;
+
       # source rpm filename
       sourcerpm:
         anyOf:
