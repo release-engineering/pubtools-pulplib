@@ -95,6 +95,8 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.6
+      - name: Upgrade pip
+        run: ip install --upgrade pip
       - name: Install Tox
         run: pip install tox
       - name: Run Tox
