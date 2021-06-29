@@ -185,7 +185,7 @@ this repository will not publish repository metadata to remote hosts.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pubtools.pulplib.Repository.content_set">
 <span class="sig-name descname"><span class="pre">content_set</span></span><a class="headerlink" href="#pubtools.pulplib.Repository.content_set" title="Permalink to this definition">¶</a></dt>
-<dd><p>Name of content set that is associated with this repository</p>
+<dd><p>Name of content set that is associated with this repository.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -427,28 +427,79 @@ during the removal.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pubtools.pulplib.YumRepository.ubi_config_version">
 <span class="sig-name descname"><span class="pre">ubi_config_version</span></span><a class="headerlink" href="#pubtools.pulplib.YumRepository.ubi_config_version" title="Permalink to this definition">¶</a></dt>
-<dd><p>Version of ubi config that should be used for population of this repository</p>
+<dd><p>Version of UBI config that should be used for population of this repository.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pubtools.pulplib.YumRepository.get_binary_repository">
 <span class="sig-name descname"><span class="pre">get_binary_repository</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository/yum.html#YumRepository.get_binary_repository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.YumRepository.get_binary_repository" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns related binary repository to this repository based on relative url
-or Future[None], if repository is not found</p>
+<dd><p>Find and return the binary repository relating to this repository.</p>
+<p>Yum repositories usually come in triplets of
+(binary RPMs, debuginfo RPMs, source RPMs). For example:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 75%" />
+<col style="width: 25%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">rhel-7-server-rpms__7Server__x86_64</span></code></p></td>
+<td><p>binary</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">rhel-7-server-debug-rpms__7Server__x86_64</span></code></p></td>
+<td><p>debug</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">rhel-7-server-source-rpms__7Server__x86_64</span></code></p></td>
+<td><p>source</p></td>
+</tr>
+</tbody>
+</table>
+<p>This method along with <a class="reference internal" href="#pubtools.pulplib.YumRepository.get_debug_repository" title="pubtools.pulplib.YumRepository.get_debug_repository"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_debug_repository()</span></code></a> and <a class="reference internal" href="#pubtools.pulplib.YumRepository.get_source_repository" title="pubtools.pulplib.YumRepository.get_source_repository"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_source_repository()</span></code></a> allow locating other repositories
+from within this group.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">Future[YumRepository]</span></code></dt><dd><p>Binary repository relating to this repository.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">Future[None]</span></code></dt><dd><p>If there is no related repository.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pubtools.pulplib.YumRepository.get_debug_repository">
 <span class="sig-name descname"><span class="pre">get_debug_repository</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository/yum.html#YumRepository.get_debug_repository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.YumRepository.get_debug_repository" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns related debug repository to this repository based on relative url
-or Future[None], if repository is not found</p>
+<dd><p>Find and return the debug repository relating to this repository.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">Future[YumRepository]</span></code></dt><dd><p>Debug repository relating to this repository.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">Future[None]</span></code></dt><dd><p>If there is no related repository.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pubtools.pulplib.YumRepository.get_source_repository">
 <span class="sig-name descname"><span class="pre">get_source_repository</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository/yum.html#YumRepository.get_source_repository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.YumRepository.get_source_repository" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns related source repository to this repository based on relative url
-or Future[None], if repository is not found</p>
+<dd><p>Find and return the source repository relating to this repository.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">Future[YumRepository]</span></code></dt><dd><p>Source repository relating to this repository.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">Future[None]</span></code></dt><dd><p>If there is no related repository.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -500,7 +551,7 @@ or Future[None], if repository is not found</p>
 <dt class="sig sig-object py" id="pubtools.pulplib.YumSyncOptions.num_retries">
 <span class="sig-name descname"><span class="pre">num_retries</span></span><a class="headerlink" href="#pubtools.pulplib.YumSyncOptions.num_retries" title="Permalink to this definition">¶</a></dt>
 <dd><p>Number of times to retry before declaring an error during repository synchronization</p>
-<p>Default is to 2.</p>
+<p>Default is 2.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -1035,15 +1086,14 @@ is “aarch64.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pubtools.pulplib.ModulemdUnit.artifacts">
 <span class="sig-name descname"><span class="pre">artifacts</span></span><a class="headerlink" href="#pubtools.pulplib.ModulemdUnit.artifacts" title="Permalink to this definition">¶</a></dt>
-<dd><p>List of artifacts related to the given module, usually it’s a list
-rpms in nevra format without ‘.rpm’ extension and consist of binary, debug and source
-rpms as well.</p>
-<p>Example:
-[“perl-version-7:0.99.24-441.module+el8.3.0+6718+7f269185.src”,</p>
-<blockquote>
-<div><p>“perl-version-7:0.99.24-441.module+el8.3.0+6718+7f269185.x86_64”,</p>
-</div></blockquote>
-<p>]</p>
+<dd><p>List of artifacts included in the module.</p>
+<p>Typically a list of RPM NEVRAs (no ‘.rpm’ extension) including binary, debug
+and source RPMs.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="s2">&quot;perl-version-7:0.99.24-441.module+el8.3.0+6718+7f269185.src&quot;</span><span class="p">,</span>
+ <span class="s2">&quot;perl-version-7:0.99.24-441.module+el8.3.0+6718+7f269185.x86_64&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py attribute">
@@ -1055,8 +1105,17 @@ rpms as well.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="pubtools.pulplib.ModulemdUnit.artifacts_filenames">
 <em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">artifacts_filenames</span></span><a class="headerlink" href="#pubtools.pulplib.ModulemdUnit.artifacts_filenames" title="Permalink to this definition">¶</a></dt>
-<dd><p>Artifacts are typically stored as a list of rpms of nevra format without ‘.rpm’ extension,
-this method removes the epoch and returns set of actual rpm filenames.</p>
+<dd><p>RPM filenames for artifacts in this module (as opposed to the RPM
+NEVRAs returned by <a class="reference internal" href="#pubtools.pulplib.ModulemdUnit.artifacts" title="pubtools.pulplib.ModulemdUnit.artifacts"><code class="xref py py-meth docutils literal notranslate"><span class="pre">artifacts()</span></code></a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt>List[str]</dt><dd><p>Artifact RPM filenames.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">

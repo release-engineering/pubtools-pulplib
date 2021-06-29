@@ -77,7 +77,7 @@
     <span class="n">num_retries</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
     <span class="sd">&quot;&quot;&quot;Number of times to retry before declaring an error during repository synchronization</span>
 
-<span class="sd">    Default is to 2.</span>
+<span class="sd">    Default is 2.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">download_policy</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
@@ -132,21 +132,55 @@
     <span class="n">ubi_config_version</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;notes.ubi_config_version&quot;</span>
     <span class="p">)</span>
-    <span class="sd">&quot;&quot;&quot;Version of ubi config that should be used for population of this repository&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Version of UBI config that should be used for population of this repository.&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="YumRepository.get_binary_repository"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.YumRepository.get_binary_repository">[docs]</a>    <span class="k">def</span> <span class="nf">get_binary_repository</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns related binary repository to this repository based on relative url</span>
-<span class="sd">        or Future[None], if repository is not found&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Find and return the binary repository relating to this repository.</span>
+
+<span class="sd">        Yum repositories usually come in triplets of</span>
+<span class="sd">        (binary RPMs, debuginfo RPMs, source RPMs). For example:</span>
+
+<span class="sd">        .. list-table::</span>
+<span class="sd">            :widths: 75 25</span>
+
+<span class="sd">            * - ``rhel-7-server-rpms__7Server__x86_64``</span>
+<span class="sd">              - binary</span>
+<span class="sd">            * - ``rhel-7-server-debug-rpms__7Server__x86_64``</span>
+<span class="sd">              - debug</span>
+<span class="sd">            * - ``rhel-7-server-source-rpms__7Server__x86_64``</span>
+<span class="sd">              - source</span>
+
+<span class="sd">        This method along with :meth:`get_debug_repository` and :meth:`get_source_repository` allow locating other repositories</span>
+<span class="sd">        from within this group.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ``Future[YumRepository]``</span>
+<span class="sd">                Binary repository relating to this repository.</span>
+<span class="sd">            ``Future[None]``</span>
+<span class="sd">                If there is no related repository.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_related_repository</span><span class="p">(</span><span class="n">repo_t</span><span class="o">=</span><span class="s2">&quot;binary&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="YumRepository.get_debug_repository"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.YumRepository.get_debug_repository">[docs]</a>    <span class="k">def</span> <span class="nf">get_debug_repository</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns related debug repository to this repository based on relative url</span>
-<span class="sd">        or Future[None], if repository is not found&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Find and return the debug repository relating to this repository.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ``Future[YumRepository]``</span>
+<span class="sd">                Debug repository relating to this repository.</span>
+<span class="sd">            ``Future[None]``</span>
+<span class="sd">                If there is no related repository.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_related_repository</span><span class="p">(</span><span class="n">repo_t</span><span class="o">=</span><span class="s2">&quot;debug&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="YumRepository.get_source_repository"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.YumRepository.get_source_repository">[docs]</a>    <span class="k">def</span> <span class="nf">get_source_repository</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns related source repository to this repository based on relative url</span>
-<span class="sd">        or Future[None], if repository is not found&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Find and return the source repository relating to this repository.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ``Future[YumRepository]``</span>
+<span class="sd">                Source repository relating to this repository.</span>
+<span class="sd">            ``Future[None]``</span>
+<span class="sd">                If there is no related repository.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_related_repository</span><span class="p">(</span><span class="n">repo_t</span><span class="o">=</span><span class="s2">&quot;source&quot;</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_get_related_repository</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repo_t</span><span class="p">):</span>

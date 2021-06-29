@@ -103,14 +103,18 @@
         <span class="n">converter</span><span class="o">=</span><span class="n">frozenlist_or_none_converter</span><span class="p">,</span>
         <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;artifacts&quot;</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="sd">&quot;&quot;&quot;List of artifacts related to the given module, usually it&#39;s a list</span>
-<span class="sd">    rpms in nevra format without &#39;.rpm&#39; extension and consist of binary, debug and source</span>
-<span class="sd">    rpms as well.</span>
+    <span class="sd">&quot;&quot;&quot;List of artifacts included in the module.</span>
+
+<span class="sd">    Typically a list of RPM NEVRAs (no &#39;.rpm&#39; extension) including binary, debug</span>
+<span class="sd">    and source RPMs.</span>
 
 <span class="sd">    Example:</span>
-<span class="sd">    [&quot;perl-version-7:0.99.24-441.module+el8.3.0+6718+7f269185.src&quot;,</span>
-<span class="sd">     &quot;perl-version-7:0.99.24-441.module+el8.3.0+6718+7f269185.x86_64&quot;,</span>
-<span class="sd">    ]</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        [&quot;perl-version-7:0.99.24-441.module+el8.3.0+6718+7f269185.src&quot;,</span>
+<span class="sd">         &quot;perl-version-7:0.99.24-441.module+el8.3.0+6718+7f269185.x86_64&quot;]</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">profiles</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;profiles&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
@@ -119,8 +123,12 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">artifacts_filenames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Artifacts are typically stored as a list of rpms of nevra format without &#39;.rpm&#39; extension,</span>
-<span class="sd">        this method removes the epoch and returns set of actual rpm filenames.</span>
+<span class="sd">        RPM filenames for artifacts in this module (as opposed to the RPM</span>
+<span class="sd">        NEVRAs returned by :meth:`artifacts`).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List[str]</span>
+<span class="sd">                Artifact RPM filenames.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\d+:&quot;</span>
         <span class="n">reg</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">regex</span><span class="p">)</span>
