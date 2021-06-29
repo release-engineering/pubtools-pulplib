@@ -44,7 +44,7 @@ class YumSyncOptions(SyncOptions):
     num_retries = pulp_attrib(default=None, type=int)
     """Number of times to retry before declaring an error during repository synchronization
 
-    Default is to 2.
+    Default is 2.
     """
 
     download_policy = pulp_attrib(default=None, type=str)
@@ -99,21 +99,55 @@ class YumRepository(Repository):
     ubi_config_version = pulp_attrib(
         default=None, type=str, pulp_field="notes.ubi_config_version"
     )
-    """Version of ubi config that should be used for population of this repository"""
+    """Version of UBI config that should be used for population of this repository."""
 
     def get_binary_repository(self):
-        """Returns related binary repository to this repository based on relative url
-        or Future[None], if repository is not found"""
+        """Find and return the binary repository relating to this repository.
+
+        Yum repositories usually come in triplets of
+        (binary RPMs, debuginfo RPMs, source RPMs). For example:
+
+        .. list-table::
+            :widths: 75 25
+
+            * - ``rhel-7-server-rpms__7Server__x86_64``
+              - binary
+            * - ``rhel-7-server-debug-rpms__7Server__x86_64``
+              - debug
+            * - ``rhel-7-server-source-rpms__7Server__x86_64``
+              - source
+
+        This method along with :meth:`get_debug_repository` and :meth:`get_source_repository` allow locating other repositories
+        from within this group.
+
+        Returns:
+            ``Future[YumRepository]``
+                Binary repository relating to this repository.
+            ``Future[None]``
+                If there is no related repository.
+        """
         return self._get_related_repository(repo_t="binary")
 
     def get_debug_repository(self):
-        """Returns related debug repository to this repository based on relative url
-        or Future[None], if repository is not found"""
+        """Find and return the debug repository relating to this repository.
+
+        Returns:
+            ``Future[YumRepository]``
+                Debug repository relating to this repository.
+            ``Future[None]``
+                If there is no related repository.
+        """
         return self._get_related_repository(repo_t="debug")
 
     def get_source_repository(self):
-        """Returns related source repository to this repository based on relative url
-        or Future[None], if repository is not found"""
+        """Find and return the source repository relating to this repository.
+
+        Returns:
+            ``Future[YumRepository]``
+                Source repository relating to this repository.
+            ``Future[None]``
+                If there is no related repository.
+        """
         return self._get_related_repository(repo_t="source")
 
     def _get_related_repository(self, repo_t):
