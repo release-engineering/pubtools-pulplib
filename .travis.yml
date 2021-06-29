@@ -26,9 +26,6 @@ after_success:
 deploy:
   # Adding a new tag automatically releases to PyPI.
   provider: pypi
-  user: __token__
-  password:
-    secure: RvI5sYOGErkff6g62F71SrrW/h8lQqzXGyUx4e1Vhh4UIvydmWMM4FEf0G8o1+3Pzzx9Sq5s4And3Hm85GZFi4S+bnw8ux8sBtG7Nps3UHvS059OzX8/wOoP/ukV2lV1x8q/PaFiuq6awLjbibPID2FyRHTd95b0xVJiVm4PUVseTOiTMIF9mhS/lZe7ROzm2Zpf16eOAJUVo4V+RnnIKb/req1m0CCcDZpZzG8w2ltXY3nNmmyo73hr5+1KAClR+xMH6sm6fyVrWs8Erz0KqN9sT4mKSt0SrQzSnZaBmhKxT+VkS5Q7J6OVOkXbvlMhOxJB2YPXvCebuQzOHwIh+aPmazGsdmKD15YOwDIdIq31lSGpOB8rv7XEBRn6Jsjd1eq0imCTiEhPPfCCI9d2APCKCahaUlzFEyrU+KuF9boxBe34Ui2nSZhx6y+QW7L0k3tkYSRcSFM3RsaF4xayLaDwSyKzyJ+z7VATKBNNbEe3JpBoDfIx9FVhQ6DyksotR4g8XQ8z/aq1MH+oznV3H5r2dLjadp7YBYthBg19329vo3ztwBQvAupbLgE4t/biGpiMojdCx9GDvE1MXEmMXhMrIXnhaDBu06P/vIGoIe37XsQxYQUmyhUSmuPFCySSy3XRiW42C+GDmI3xKMo7osqnBpZwE1K7OVLn56yldbk=
   on:
     tags: true
     # Only one of the environments in the matrix should have
