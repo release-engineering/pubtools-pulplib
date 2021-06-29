@@ -100,3 +100,7 @@ disable=print-statement,
         super-with-arguments,
         raise-missing-from,
 
+[TYPECHECK]
+ignored-classes=
+    # dynamic pluggy stuff
+    _HookRelay,

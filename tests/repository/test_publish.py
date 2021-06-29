@@ -11,6 +11,23 @@ from pubtools.pulplib import (
     TaskFailedException,
 )
 
+from pubtools.pluggy import pm, hookimpl
+
+
+@pytest.fixture
+def hookspy():
+    hooks = []
+
+    def record_hook(hook_name, _hook_impls, kwargs):
+        hooks.append((hook_name, kwargs))
+
+    def do_nothing(*args, **kwargs):
+        pass
+
+    undo = pm.add_hookcall_monitoring(before=record_hook, after=do_nothing)
+    yield hooks
+    undo()
+
 
 def test_detached():
     """publish raises if called on a detached repo"""
@@ -26,7 +43,7 @@ def test_publish_no_distributors(client):
     assert repo.publish().result() == []
 
 
-def test_publish_distributors(fast_poller, requests_mocker, client):
+def test_publish_distributors(fast_poller, requests_mocker, client, hookspy):
     """publish succeeds and returns tasks from each applicable distributor"""
     repo = YumRepository(
         id="some-repo",
@@ -93,6 +110,13 @@ def test_publish_distributors(fast_poller, requests_mocker, client):
 
     # And there should have been no more requests
     assert len(req) == 4
+
+    # It should have invoked hooks
+    assert len(hookspy) == 1
+    (hook_name, hook_kwargs) = hookspy[0]
+    assert hook_name == "pulp_repository_published"
+    assert hook_kwargs["repository"] is repo
+    assert hook_kwargs["options"] == PublishOptions()
 
 
 def test_publish_with_options(requests_mocker, client):

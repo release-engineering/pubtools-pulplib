@@ -2,7 +2,7 @@ import datetime
 import logging
 
 from attr import validators, asdict
-from more_executors.futures import f_proxy
+from more_executors.futures import f_proxy, f_map
 
 from ..common import PulpObject, Deletable, DetachedException
 from ..attr import pulp_attrib
@@ -11,6 +11,7 @@ from ..frozenlist import FrozenList
 from ...criteria import Criteria
 from ...schema import load_schema
 from ... import compat_attr as attr
+from ...hooks import pm
 
 
 LOG = logging.getLogger("pubtools.pulplib")
@@ -394,7 +395,16 @@ class Repository(PulpObject, Deletable):
             config = self._config_for_distributor(distributor, options)
             to_publish.append((distributor, config))
 
-        return f_proxy(self._client._publish_repository(self, to_publish))
+        out = self._client._publish_repository(self, to_publish)
+
+        def do_published_hook(tasks):
+            # Whenever we've published successfully, we'll activate this hook
+            # before returning.
+            pm.hook.pulp_repository_published(repository=self, options=options)
+            return tasks
+
+        out = f_map(out, do_published_hook)
+        return f_proxy(out)
 
     def sync(self, options=None):
         """Sync repository with feed.
