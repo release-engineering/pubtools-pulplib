@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Intsall RPm
+      - name: Intsall RPM
         run: sudo apt-get install -y rpm
       - name: Setup Python
         uses: actions/setup-python@v2
@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Intsall RPm
+      - name: Intsall RPM
         run: sudo apt-get install -y rpm
       - name: Setup Python
         uses: actions/setup-python@v2
@@ -35,7 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Intsall RPm
+      - name: Intsall RPM
         run: sudo apt-get install -y rpm
       - name: Setup Python
         uses: actions/setup-python@v2
@@ -49,7 +49,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Intsall RPm
+      - name: Intsall RPM
         run: sudo apt-get install -y rpm
       - name: Setup Python
         uses: actions/setup-python@v2
@@ -71,7 +71,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Intsall RPm
+      - name: Intsall RPM
         run: sudo apt-get install -y rpm
       - name: Setup Python
         uses: actions/setup-python@v2
@@ -87,7 +87,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Intsall RPm
+      - name: Intsall RPM
         run: |
           sudo apt-get install -y rpm
           sudo apt-get install -y libkrb5-dev
