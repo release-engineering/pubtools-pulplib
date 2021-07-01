@@ -1,0 +1,36 @@
+dist: bionic
+sudo: false
+language: python
+before_install:
+  # for rpm-py-installer
+  - sudo apt-get install -y rpm
+install: pip install tox
+matrix:
+  include:
+  - python: "2.7"
+    env: TOX_ENV=py27
+  - python: "3.6"
+    env: TOX_ENV=static
+  - python: "3.6"
+    env: TOX_ENV=pidiff
+  - python: "3.6"
+    env: TOX_ENV=cov-travis DEPLOY=1
+  - python: "3.6"
+    env: TOX_ENV=docs
+  - python: "3.6"
+    env: TOX_ENV=revdep-pubtools-pulp
+script: tox -e $TOX_ENV
+after_success:
+- test $TOX_ENV = docs && scripts/push-docs
+
+deploy:
+  # Adding a new tag automatically releases to PyPI.
+  provider: pypi
+  on:
+    tags: true
+    # Only one of the environments in the matrix should have
+    # deployments enabled. It's mostly arbitrary which one,
+    # but best to select some Python 3.x so up-to-date tools
+    # are used during release.
+    condition: $DEPLOY = 1
+  skip_existing: true
