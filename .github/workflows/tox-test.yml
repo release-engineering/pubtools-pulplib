@@ -60,9 +60,9 @@ jobs:
           #- name: Install pytest cov
           #run: pip install pytest-cov
       - name: Run Tox
-        run: tox -e cov
+        run: tox -e py38
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2.1.11
+        uses: codecov/codecov-action@v1.0.15
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
