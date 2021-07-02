@@ -62,7 +62,7 @@ jobs:
       - name: Install pytest cov
         run: pip install pytest-cov
       - name: Run Tox
-        run: tox -e py38
+        run: tox -e cov
       - name: Validate codecov yaml
         run: cat codecov.yml | curl --data-binary @- https://codecov.io/validate
       - name: Upload coverage to Codecov
