@@ -69,8 +69,24 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
         self._lock = threading.RLock()
         self._uuidgen = random.Random()
         self._uuidgen.seed(0)
+        self._shutdown = False
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *_args, **_kwargs):
+        self._shutdown = True
+
+    def _ensure_alive(self):
+        if self._shutdown:
+            # We are technically capable of working just fine after shutdown,
+            # but the point of this class is to be an accurate stand-in for
+            # a real client, so raise the same kind of exception here
+            raise RuntimeError("cannot schedule new futures after shutdown")
 
     def search_repository(self, criteria=None):
+        self._ensure_alive()
+
         criteria = criteria or Criteria.true()
         repos = []
 
@@ -94,6 +110,8 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
         return self._prepare_pages(repos)
 
     def search_content(self, criteria=None):
+        self._ensure_alive()
+
         criteria = criteria or Criteria.true()
         out = []
 
@@ -129,6 +147,8 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
         return self._prepare_pages(out)
 
     def search_distributor(self, criteria=None):
+        self._ensure_alive()
+
         criteria = criteria or Criteria.true()
         distributors = []
 
@@ -205,6 +225,8 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
         return f_proxy(f_return(data[0]))
 
     def get_maintenance_report(self):
+        self._ensure_alive()
+
         if self._maintenance_report:
             report = MaintenanceReport._from_data(json.loads(self._maintenance_report))
         else:
@@ -212,6 +234,8 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
         return f_proxy(f_return(report))
 
     def set_maintenance(self, report):
+        self._ensure_alive()
+
         report_json = json.dumps(report._export_dict(), indent=4, sort_keys=True)
         report_fileobj = StringIO(report_json)
 
@@ -226,6 +250,8 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
         return f_proxy(publish_ft)
 
     def get_content_type_ids(self):
+        self._ensure_alive()
+
         return f_proxy(f_return(self._type_ids))
 
     def _do_upload_file(self, upload_id, file_obj, name):

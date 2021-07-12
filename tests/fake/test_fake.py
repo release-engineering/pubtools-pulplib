@@ -1,3 +1,5 @@
+from functools import partial
+
 import pytest
 
 from pubtools.pulplib import FakeController, Repository, PulpException
@@ -43,3 +45,27 @@ def test_get_wrong_type_raises():
     client = controller.client
     with pytest.raises(TypeError):
         client.get_repository(["oops", "should have been a string"])
+
+
+def test_client_lifecycle():
+    """FakeClient can be used in a with statement, and not afterwards."""
+    controller = FakeController()
+
+    with controller.client as client:
+        # This should work OK
+        assert client.search_repository().result()
+
+    # But after end of 'with' statement, most public methods will no longer work
+    for fn in [
+        client.search_repository,
+        client.search_content,
+        client.search_distributor,
+        partial(client.get_repository, "somerepo"),
+        client.get_maintenance_report,
+        partial(client.set_maintenance, {"what": "ever"}),
+        client.get_content_type_ids,
+    ]:
+        with pytest.raises(RuntimeError) as excinfo:
+            fn()
+
+        assert "cannot schedule new futures after shutdown" in str(excinfo.value)

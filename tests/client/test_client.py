@@ -68,6 +68,26 @@ def test_can_search(client, requests_mocker):
     assert requests_mocker.call_count == 1
 
 
+def test_client_lifecycle(client, requests_mocker):
+    """Client is usable in with statement"""
+
+    requests_mocker.post(
+        "https://pulp.example.com/pulp/api/v2/repositories/search/",
+        json=[{"id": "repo1"}],
+    )
+
+    client = Client("https://pulp.example.com")
+    with client:
+        # This should work OK
+        assert client.search_repository().result()
+
+    # But after end of 'with' statement, it should be shut down
+    with pytest.raises(RuntimeError) as excinfo:
+        client.search_repository()
+
+    assert "cannot schedule new futures after shutdown" in str(excinfo.value)
+
+
 def test_can_search_distributor(client, requests_mocker):
     """search_distributor issues distributors/search POST request as expected."""
     requests_mocker.post(

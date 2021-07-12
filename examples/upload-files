@@ -73,8 +73,8 @@ def main():
         logging.getLogger("pubtools.pulplib").setLevel(logging.DEBUG)
         log.setLevel(logging.DEBUG)
 
-    client = make_client(p)
-    return upload(client, p.path, p.repo_id)
+    with make_client(p) as client:
+        return upload(client, p.path, p.repo_id)
 
 
 if __name__ == "__main__":

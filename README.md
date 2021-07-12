@@ -29,15 +29,15 @@ Usage Example
 from pubtools.pulplib import Client
 
 # Make a client pointing at this Pulp server
-client = Client(url='https://pulp.example.com/', auth=('admin', 'some-password'))
+with Client(url='https://pulp.example.com/', auth=('admin', 'some-password')) as client:
 
-# Get a particular repo by ID.
-# All methods return Future instances; .result() blocks
-repo = client.get_repository('zoo').result()
+  # Get a particular repo by ID.
+  # All methods return Future instances; .result() blocks
+  repo = client.get_repository('zoo').result()
 
-# Pulp objects have relevant methods, e.g. publish().
-# Returned future may encapsulate one or more Pulp tasks.
-publish = repo.publish().result()
+  # Pulp objects have relevant methods, e.g. publish().
+  # Returned future may encapsulate one or more Pulp tasks.
+  publish = repo.publish().result()
 ```
 
 Development
