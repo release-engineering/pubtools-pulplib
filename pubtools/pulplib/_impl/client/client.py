@@ -147,7 +147,9 @@ class Client(object):
         # - checks HTTP response and raises if it's not JSON or
         #   it's not successful
         self._request_executor = (
-            Executors.thread_pool(max_workers=self._REQUEST_THREADS)
+            Executors.thread_pool(
+                name="pubtools-pulplib-requests", max_workers=self._REQUEST_THREADS
+            )
             .with_map(self._unpack_response)
             .with_retry(retry_policy=self._RETRY_POLICY)
         )
@@ -161,7 +163,9 @@ class Client(object):
         # - throttles number of tasks pending
         poller = TaskPoller(self._new_session(), self._url)
         self._task_executor = (
-            Executors.thread_pool(max_workers=self._REQUEST_THREADS)
+            Executors.thread_pool(
+                name="pubtools-pulplib-tasks", max_workers=self._REQUEST_THREADS
+            )
             .with_map(self._unpack_response)
             .with_map(self._log_spawned_tasks)
             .with_poll(poller, cancel_fn=poller.cancel)
