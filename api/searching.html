@@ -304,7 +304,7 @@ blocking on more data from Pulp as needed.</p>
 <p><strong>Non-blocking iteration</strong></p>
 <p>This example sets up non-blocking processing of all results from
 a search query. Futures are chained and composed using
-<a class="reference external" href="https://rohanpm.github.io/more-executors/reference/futures-map.html#more_executors.futures.f_flat_map" title="(in more-executors v2.6.0, revision 6e45a18)"><code class="xref py py-func docutils literal notranslate"><span class="pre">f_flat_map()</span></code></a> and friends.</p>
+<a class="reference external" href="https://rohanpm.github.io/more-executors/reference/futures-map.html#more_executors.futures.f_flat_map" title="(in more-executors v2.7.0, revision 5cb850f)"><code class="xref py py-func docutils literal notranslate"><span class="pre">f_flat_map()</span></code></a> and friends.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">handle_results</span><span class="p">(</span><span class="n">page</span><span class="p">):</span>
     <span class="c1"># Returns a future for handling of a single page</span>
     <span class="k">for</span> <span class="n">repo</span> <span class="ow">in</span> <span class="n">page</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
@@ -373,7 +373,7 @@ occur to await more pages from Pulp.</p>
 
 
 <h3>Navigation</h3>
-<p class="caption"><span class="caption-text">Contents:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../api-reference.html">API Reference</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="client.html">Client</a></li>
@@ -413,7 +413,7 @@ occur to await more pages from Pulp.</p>
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -435,7 +435,7 @@ occur to await more pages from Pulp.</p>
       &copy;2019, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.1.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
