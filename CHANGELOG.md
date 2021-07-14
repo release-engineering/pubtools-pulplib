@@ -7,7 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### n/a
+### Added
+
+- Introduced `pulp_repository_published` hook. This may be used to subscribe to all
+  repository publish events triggered by this library.
 
 ## [2.10.0] - 2021-06-28
 

@@ -4,3 +4,4 @@ six
 PyYAML
 jsonschema
 attrs
+pubtools>=0.3.0
