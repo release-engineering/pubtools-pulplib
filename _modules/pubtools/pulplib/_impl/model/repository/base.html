@@ -35,7 +35,7 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 
 <span class="kn">from</span> <span class="nn">attr</span> <span class="kn">import</span> <span class="n">validators</span><span class="p">,</span> <span class="n">asdict</span>
-<span class="kn">from</span> <span class="nn">more_executors.futures</span> <span class="kn">import</span> <span class="n">f_proxy</span>
+<span class="kn">from</span> <span class="nn">more_executors.futures</span> <span class="kn">import</span> <span class="n">f_proxy</span><span class="p">,</span> <span class="n">f_map</span>
 
 <span class="kn">from</span> <span class="nn">..common</span> <span class="kn">import</span> <span class="n">PulpObject</span><span class="p">,</span> <span class="n">Deletable</span><span class="p">,</span> <span class="n">DetachedException</span>
 <span class="kn">from</span> <span class="nn">..attr</span> <span class="kn">import</span> <span class="n">pulp_attrib</span>
@@ -44,6 +44,7 @@
 <span class="kn">from</span> <span class="nn">...criteria</span> <span class="kn">import</span> <span class="n">Criteria</span>
 <span class="kn">from</span> <span class="nn">...schema</span> <span class="kn">import</span> <span class="n">load_schema</span>
 <span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">compat_attr</span> <span class="k">as</span> <span class="n">attr</span>
+<span class="kn">from</span> <span class="nn">...hooks</span> <span class="kn">import</span> <span class="n">pm</span>
 
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;pubtools.pulplib&quot;</span><span class="p">)</span>
@@ -427,7 +428,16 @@
             <span class="n">config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config_for_distributor</span><span class="p">(</span><span class="n">distributor</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
             <span class="n">to_publish</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">distributor</span><span class="p">,</span> <span class="n">config</span><span class="p">))</span>
 
-        <span class="k">return</span> <span class="n">f_proxy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_publish_repository</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to_publish</span><span class="p">))</span></div>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_publish_repository</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to_publish</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">do_published_hook</span><span class="p">(</span><span class="n">tasks</span><span class="p">):</span>
+            <span class="c1"># Whenever we&#39;ve published successfully, we&#39;ll activate this hook</span>
+            <span class="c1"># before returning.</span>
+            <span class="n">pm</span><span class="o">.</span><span class="n">hook</span><span class="o">.</span><span class="n">pulp_repository_published</span><span class="p">(</span><span class="n">repository</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">tasks</span>
+
+        <span class="n">out</span> <span class="o">=</span> <span class="n">f_map</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">do_published_hook</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">f_proxy</span><span class="p">(</span><span class="n">out</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Repository.sync"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.Repository.sync">[docs]</a>    <span class="k">def</span> <span class="nf">sync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Sync repository with feed.</span>
@@ -619,7 +629,7 @@
       &copy;2019, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.1.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.1.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
