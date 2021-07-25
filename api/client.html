@@ -51,6 +51,18 @@ is asynchronous (e.g. publish)</p></li>
 </ul>
 <p>If a future is currently awaiting one or more Pulp tasks, cancelling the future
 will attempt to cancel those tasks.</p>
+<p><strong>Client lifecycle:</strong></p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.12.0.</span></p>
+</div>
+<p>Client instances support the context manager protocol and can be used
+via a <code class="docutils literal notranslate"><span class="pre">with</span></code> statement, as in example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">Client</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://pulp.example.com/&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+    <span class="n">do_something_with</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>While not mandatory, it is encouraged to ensure that any threads associated with
+the client are promptly shut down.</p>
 <p><strong>Proxy futures:</strong></p>
 <div class="versionadded">
 <p><span class="versionmodified added">New in version 2.1.0.</span></p>
