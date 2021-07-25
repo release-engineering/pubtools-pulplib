@@ -7,7 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- n/a
+### Added
+
+- `Client` instances can now be used in a `with` statement to manage the lifecycle
+  of the underlying threads.
 
 ## [2.11.0] - 2021-07-15
 

@@ -41,6 +41,21 @@ class Client(object):
     If a future is currently awaiting one or more Pulp tasks, cancelling the future
     will attempt to cancel those tasks.
 
+    **Client lifecycle:**
+
+    .. versionadded:: 2.12.0
+
+    Client instances support the context manager protocol and can be used
+    via a ``with`` statement, as in example:
+
+    .. code-block:: python
+
+        with Client(url="https://pulp.example.com/") as client:
+            do_something_with(client)
+
+    While not mandatory, it is encouraged to ensure that any threads associated with
+    the client are promptly shut down.
+
     **Proxy futures:**
 
     .. versionadded:: 2.1.0
@@ -172,6 +187,13 @@ class Client(object):
             .with_throttle(_task_throttle)
             .with_retry(retry_policy=self._RETRY_POLICY)
         )
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args, **kwargs):
+        self._request_executor.__exit__(*args, **kwargs)
+        self._task_executor.__exit__(*args, **kwargs)
 
     def get_repository(self, repository_id):
         """Get a repository by ID.
