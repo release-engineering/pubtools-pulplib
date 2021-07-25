@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- n/a
+
+## [2.12.0] - 2021-07-26
+
 ### Added
 
 - `Client` instances can now be used in a `with` statement to manage the lifecycle
@@ -228,7 +232,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release to PyPI
 
-[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.11.0...HEAD
+[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.12.0...HEAD
+[2.12.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.11.0...v2.12.0
 [2.11.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.10.0...v2.11.0
 [2.10.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.9.0...v2.10.0
 [2.9.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.8.0...v2.9.0
