@@ -481,7 +481,7 @@ class Repository(PulpObject, Deletable):
         # (more generically named) functions or a class to avoid duplicating code.
         # for reference see search_content, _impl.client.Client._search_repo_units,
         # _impl.client.Client._search, and _impl.client.search.search_for_criteria
-        criteria = kwargs.get("criteria", None)
+        criteria = kwargs.get("criteria")
 
         # prefer criteria keyword argument
         # if absent, check for original type_ids keyword arg
