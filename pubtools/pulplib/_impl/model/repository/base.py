@@ -8,7 +8,7 @@ from ..common import PulpObject, Deletable, DetachedException
 from ..attr import pulp_attrib
 from ..distributor import Distributor
 from ..frozenlist import FrozenList
-from ...criteria import Criteria
+from ...criteria import Criteria, Matcher
 from ...schema import load_schema
 from ... import compat_attr as attr
 from ...hooks import pm
@@ -471,8 +471,34 @@ class Repository(PulpObject, Deletable):
         # version of this method will support some "criteria".  Let's not fix the
         # argument order at least until then.
 
-        type_ids = kwargs.get("type_ids")
-        return f_proxy(self._client._do_unassociate(self.id, type_ids))
+        # start down the path of using Criteria per this issue:
+        # https://github.com/release-engineering/pubtools-pulplib/issues/62
+        # there seems to be pretty complex handling of Criteria
+        # for serialization in the search API, and it is unclear which parts
+        # might also be necessary to use for content removal.
+        # If any or all of the same handling is needed, it would be beneficial
+        # to encapsulate the preparation of a criteria JSON object in some
+        # (more generically named) functions or a class to avoid duplicating code.
+        # for reference see search_content, _impl.client.Client._search_repo_units,
+        # _impl.client.Client._search, and _impl.client.search.search_for_criteria
+        criteria = kwargs.get("criteria", None)
+
+        # prefer criteria keyword argument
+        # if absent, check for original type_ids keyword arg
+        if criteria is None:
+            type_ids = kwargs.get("type_ids")
+            # use _content_type_id field name to coerce
+            # search_for_criteria to fill out the PulpSearch#type_ids field
+            # passing a criteria with an empty type_ids list rather than
+            # None results in failing tests due to the implementation of
+            # FakeClient#_do_unassociate
+            if type_ids is not None:
+                criteria = Criteria.with_field(
+                    "_content_type_id",
+                    Matcher.in_(type_ids)  # Criteria.with_field_in is deprecated
+                )
+
+        return f_proxy(self._client._do_unassociate(self.id, criteria=criteria))
 
     @classmethod
     def from_data(cls, data):

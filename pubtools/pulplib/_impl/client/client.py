@@ -1,15 +1,15 @@
-import os
-import logging
-import threading
 import hashlib
 import json
+import logging
+import os
+import threading
 from functools import partial
-import six
-from six.moves import StringIO
 
 import requests
+import six
 from more_executors import Executors
 from more_executors.futures import f_map, f_flat_map, f_return, f_proxy, f_sequence
+from six.moves import StringIO
 
 from ..page import Page
 from ..criteria import Criteria
@@ -17,6 +17,10 @@ from ..model import Repository, MaintenanceReport, Distributor, Unit
 from .search import search_for_criteria
 from .errors import PulpException
 from .poller import TaskPoller
+from .search import search_for_criteria
+from ..criteria import Criteria
+from ..model import Repository, MaintenanceReport, Distributor, Unit
+from ..page import Page
 from . import retry
 
 
@@ -470,14 +474,21 @@ class Client(object):
             self._do_request, method="POST", url=url, json=body
         )
 
-    def _do_unassociate(self, repo_id, type_ids):
+    def _do_unassociate(self, repo_id, criteria=None):
         url = os.path.join(
             self._url, "pulp/api/v2/repositories/%s/actions/unassociate/" % repo_id
         )
 
-        body = {}
-        if type_ids is not None:
-            body["type_ids"] = type_ids
+        # use type hint=Unit so that if type_ids are the goal here
+        # then we will get back a properly prepared PulpSearch with
+        # a populated type_ids field
+        pulp_search = search_for_criteria(criteria, type_hint=Unit, type_ids_accum=None)
+
+        body = {
+            "criteria": {
+                "type_ids": pulp_search.type_ids,
+            }
+        }
 
         LOG.debug("Submitting %s unassociate: %s", url, body)
 
