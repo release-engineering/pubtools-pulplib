@@ -17,10 +17,6 @@ from ..model import Repository, MaintenanceReport, Distributor, Unit
 from .search import search_for_criteria
 from .errors import PulpException
 from .poller import TaskPoller
-from .search import search_for_criteria
-from ..criteria import Criteria
-from ..model import Repository, MaintenanceReport, Distributor, Unit
-from ..page import Page
 from . import retry
 
 
@@ -484,11 +480,7 @@ class Client(object):
         # a populated type_ids field
         pulp_search = search_for_criteria(criteria, type_hint=Unit, type_ids_accum=None)
 
-        body = {
-            "criteria": {
-                "type_ids": pulp_search.type_ids,
-            }
-        }
+        body = {"criteria": {"type_ids": pulp_search.type_ids}}
 
         LOG.debug("Submitting %s unassociate: %s", url, body)
 
