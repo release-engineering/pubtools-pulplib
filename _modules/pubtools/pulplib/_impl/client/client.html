@@ -74,6 +74,21 @@
 <span class="sd">    If a future is currently awaiting one or more Pulp tasks, cancelling the future</span>
 <span class="sd">    will attempt to cancel those tasks.</span>
 
+<span class="sd">    **Client lifecycle:**</span>
+
+<span class="sd">    .. versionadded:: 2.12.0</span>
+
+<span class="sd">    Client instances support the context manager protocol and can be used</span>
+<span class="sd">    via a ``with`` statement, as in example:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        with Client(url=&quot;https://pulp.example.com/&quot;) as client:</span>
+<span class="sd">            do_something_with(client)</span>
+
+<span class="sd">    While not mandatory, it is encouraged to ensure that any threads associated with</span>
+<span class="sd">    the client are promptly shut down.</span>
+
 <span class="sd">    **Proxy futures:**</span>
 
 <span class="sd">    .. versionadded:: 2.1.0</span>
@@ -205,6 +220,13 @@
             <span class="o">.</span><span class="n">with_throttle</span><span class="p">(</span><span class="n">_task_throttle</span><span class="p">)</span>
             <span class="o">.</span><span class="n">with_retry</span><span class="p">(</span><span class="n">retry_policy</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_RETRY_POLICY</span><span class="p">)</span>
         <span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_request_executor</span><span class="o">.</span><span class="fm">__exit__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_task_executor</span><span class="o">.</span><span class="fm">__exit__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Client.get_repository"><a class="viewcode-back" href="../../../../../api/client.html#pubtools.pulplib.Client.get_repository">[docs]</a>    <span class="k">def</span> <span class="nf">get_repository</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repository_id</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get a repository by ID.</span>
