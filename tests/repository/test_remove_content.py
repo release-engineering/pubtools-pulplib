@@ -77,7 +77,7 @@ def test_remove_with_type_ids(fast_poller, requests_mocker, client):
         req[0].url
         == "https://pulp.example.com/pulp/api/v2/repositories/some-repo/actions/unassociate/"
     )
-    assert req[0].json() == {"type_ids": ["type1", "type2"]}
+    assert req[0].json() == {"criteria": {"type_ids": ["type1", "type2"]}}
 
 
 def test_remove_loads_units(fast_poller, requests_mocker, client):

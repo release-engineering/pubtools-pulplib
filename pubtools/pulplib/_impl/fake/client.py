@@ -277,7 +277,7 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
 
         return out
 
-    def _do_unassociate(self, repo_id, type_ids):
+    def _do_unassociate(self, repo_id, criteria=None):
         repo_f = self.get_repository(repo_id)
         if repo_f.exception():
             return repo_f
@@ -286,8 +286,16 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
         removed = set()
         kept = set()
 
+        # use type hint=Unit so that if type_ids are the goal here
+        # then we will get back a properly prepared PulpSearch with
+        # a populated type_ids field
+        pulp_search = search_for_criteria(criteria, type_hint=Unit, type_ids_accum=None)
+
         for unit in current:
-            if type_ids is None or unit.content_type_id in type_ids:
+            if (
+                pulp_search.type_ids is None
+                or unit.content_type_id in pulp_search.type_ids
+            ):
                 removed.add(unit)
             else:
                 kept.add(unit)
