@@ -41,7 +41,7 @@
 <span class="kn">from</span> <span class="nn">..attr</span> <span class="kn">import</span> <span class="n">pulp_attrib</span>
 <span class="kn">from</span> <span class="nn">..distributor</span> <span class="kn">import</span> <span class="n">Distributor</span>
 <span class="kn">from</span> <span class="nn">..frozenlist</span> <span class="kn">import</span> <span class="n">FrozenList</span>
-<span class="kn">from</span> <span class="nn">...criteria</span> <span class="kn">import</span> <span class="n">Criteria</span>
+<span class="kn">from</span> <span class="nn">...criteria</span> <span class="kn">import</span> <span class="n">Criteria</span><span class="p">,</span> <span class="n">Matcher</span>
 <span class="kn">from</span> <span class="nn">...schema</span> <span class="kn">import</span> <span class="n">load_schema</span>
 <span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">compat_attr</span> <span class="k">as</span> <span class="n">attr</span>
 <span class="kn">from</span> <span class="nn">...hooks</span> <span class="kn">import</span> <span class="n">pm</span>
@@ -504,8 +504,31 @@
         <span class="c1"># version of this method will support some &quot;criteria&quot;.  Let&#39;s not fix the</span>
         <span class="c1"># argument order at least until then.</span>
 
+        <span class="c1"># start down the path of using Criteria per this issue:</span>
+        <span class="c1"># https://github.com/release-engineering/pubtools-pulplib/issues/62</span>
+        <span class="c1"># by using Criteria internally.</span>
+        <span class="c1"># there seems to be pretty complex handling of Criteria</span>
+        <span class="c1"># for serialization in the search API, and it is unclear which parts</span>
+        <span class="c1"># might also be necessary to use for content removal.</span>
+        <span class="c1"># If any or all of the same handling is needed, it would be beneficial</span>
+        <span class="c1"># to encapsulate the preparation of a criteria JSON object in some</span>
+        <span class="c1"># (more generically named) functions or a class to avoid duplicating code.</span>
+        <span class="c1"># for reference see search_content, _impl.client.Client._search_repo_units,</span>
+        <span class="c1"># _impl.client.Client._search, and _impl.client.search.search_for_criteria</span>
+        <span class="n">criteria</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">type_ids</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;type_ids&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">f_proxy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_do_unassociate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">type_ids</span><span class="p">))</span></div>
+        <span class="c1"># use _content_type_id field name to coerce</span>
+        <span class="c1"># search_for_criteria to fill out the PulpSearch#type_ids field.</span>
+        <span class="c1"># passing a criteria with an empty type_ids list rather than</span>
+        <span class="c1"># None results in failing tests due to the implementation of</span>
+        <span class="c1"># FakeClient#_do_unassociate</span>
+        <span class="k">if</span> <span class="n">type_ids</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">criteria</span> <span class="o">=</span> <span class="n">Criteria</span><span class="o">.</span><span class="n">with_field</span><span class="p">(</span>
+                <span class="s2">&quot;_content_type_id&quot;</span><span class="p">,</span>
+                <span class="n">Matcher</span><span class="o">.</span><span class="n">in_</span><span class="p">(</span><span class="n">type_ids</span><span class="p">),</span>  <span class="c1"># Criteria.with_field_in is deprecated</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">f_proxy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_do_unassociate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">criteria</span><span class="o">=</span><span class="n">criteria</span><span class="p">))</span></div>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
