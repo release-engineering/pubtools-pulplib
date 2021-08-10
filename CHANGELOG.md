@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - n/a
 
+## [2.12.1] - 2021-08-11
+
+- Fixed handling of `type_ids` in calls to `remove_content`. Previously, the argument
+  did not result in filtering by type as expected.
+
 ## [2.12.0] - 2021-07-26
 
 ### Added
@@ -232,7 +237,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release to PyPI
 
-[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.12.0...HEAD
+[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.12.1...HEAD
+[2.12.1]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.12.0...v2.12.1
 [2.12.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.11.0...v2.12.0
 [2.11.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.10.0...v2.11.0
 [2.10.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.9.0...v2.10.0
