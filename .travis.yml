@@ -7,7 +7,7 @@ before_install:
 install: pip install tox
 matrix:
   include:
-  - python: "2.7"
+  - python: "2.7.15"
     env: TOX_ENV=py27
   - python: "3.6"
     env: TOX_ENV=static

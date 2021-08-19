@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- n/a
+### Added
+- vercmp sort for RpmUnit
 
 ## [2.12.1] - 2021-08-11
 

@@ -4,6 +4,7 @@ from ..attr import pulp_attrib
 from ... import compat_attr as attr
 from ..frozenlist import frozenlist_or_none_converter
 
+from rpm import labelCompare as label_compare  # pylint: disable=no-name-in-module
 
 # Note: Pulp2 models RPM and SRPM as separate unit types,
 # but there's actually no difference between their fields at all.
@@ -119,3 +120,25 @@ class RpmUnit(Unit):
     @sha256sum.validator
     def _check_sha256(self, _, value):
         self._check_sum(value, "SHA256", 64)
+
+    @property
+    def _evr_tuple(self):
+        return (self.epoch, self.version, self.release)
+
+    def __lt__(self, other):
+        return label_compare(self._evr_tuple, other._evr_tuple) < 0
+
+    def __gt__(self, other):
+        return label_compare(self._evr_tuple, other._evr_tuple) > 0
+
+    def __eq__(self, other):
+        return label_compare(self._evr_tuple, other._evr_tuple) == 0
+
+    def __le__(self, other):
+        return label_compare(self._evr_tuple, other._evr_tuple) <= 0
+
+    def __ge__(self, other):
+        return label_compare(self._evr_tuple, other._evr_tuple) >= 0
+
+    def __ne__(self, other):
+        return label_compare(self._evr_tuple, other._evr_tuple) != 0
