@@ -88,7 +88,11 @@ class RpmUnit(Unit):
     sha256sum = pulp_attrib(
         default=None,
         type=str,
-        pulp_field="checksums.sha256",
+        # Use 'checksum' field because it's indexed and therefore much faster than
+        # searching for checksums.sha256.
+        # It's safe since this is always stored as a copy of the sha256 checksum, see:
+        # https://github.com/pulp/pulp_rpm/blob/69759d0fb9a16c0a47b1f49c78f6712e650912e1/plugins/pulp_rpm/plugins/importers/yum/upload.py#L436
+        pulp_field="checksum",
         converter=lambda s: s.lower() if s else s,
     )
     """SHA256 checksum of this RPM, as a hex string."""

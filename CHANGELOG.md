@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- n/a
+- Searching for RPMs by sha256sum will now use the indexed `checksum` field on Pulp,
+  rather than the non-indexed `checksums.sha256` field. This can significantly improve
+  the performance of these searches on large systems.
 
 ## [2.12.1] - 2021-08-11
 
