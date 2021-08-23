@@ -266,7 +266,10 @@ class Client(object):
             )
 
         return self._search(
-            Unit, ["content/units/%s" % x for x in type_ids], criteria=criteria
+            Unit,
+            ["content/units/%s" % x for x in type_ids],
+            criteria=criteria,
+            search_options={"include_repos": True},
         )
 
     def search_distributor(self, criteria=None):
