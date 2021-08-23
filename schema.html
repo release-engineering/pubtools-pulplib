@@ -364,6 +364,16 @@ definitions:
             type: string
             pattern: &quot;^[a-f0-9]{64}$&quot;
 
+      # SHA256 checksum.
+      # This duplicates checksums.sha256 above; the difference is that this field
+      # is a part of the unit key, so it&#39;s both mandatory &amp; indexed.
+      # Also, though the original intent was probably to support multiple checksum
+      # types in this field, it is nowadays forced to sha256, see:
+      # https://github.com/pulp/pulp_rpm/blob/69759d0fb9a16c0a47b1f49c78f6712e650912e1/plugins/pulp_rpm/plugins/importers/yum/upload.py#L436
+      checksum:
+        type: string
+        pattern: &quot;^[a-f0-9]{64}$&quot;
+
       repository_memberships:
         type: array
         items:

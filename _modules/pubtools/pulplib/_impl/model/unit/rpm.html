@@ -35,7 +35,7 @@
 
 <span class="kn">from</span> <span class="nn">..attr</span> <span class="kn">import</span> <span class="n">pulp_attrib</span>
 <span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">compat_attr</span> <span class="k">as</span> <span class="n">attr</span>
-<span class="kn">from</span> <span class="nn">..frozenlist</span> <span class="kn">import</span> <span class="n">frozenlist_or_none_converter</span>
+<span class="kn">from</span> <span class="nn">..frozenlist</span> <span class="kn">import</span> <span class="n">frozenlist_or_none_sorted_converter</span>
 
 
 <span class="c1"># Note: Pulp2 models RPM and SRPM as separate unit types,</span>
@@ -121,7 +121,11 @@
     <span class="n">sha256sum</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;checksums.sha256&quot;</span><span class="p">,</span>
+        <span class="c1"># Use &#39;checksum&#39; field because it&#39;s indexed and therefore much faster than</span>
+        <span class="c1"># searching for checksums.sha256.</span>
+        <span class="c1"># It&#39;s safe since this is always stored as a copy of the sha256 checksum, see:</span>
+        <span class="c1"># https://github.com/pulp/pulp_rpm/blob/69759d0fb9a16c0a47b1f49c78f6712e650912e1/plugins/pulp_rpm/plugins/importers/yum/upload.py#L436</span>
+        <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;checksum&quot;</span><span class="p">,</span>
         <span class="n">converter</span><span class="o">=</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="n">s</span> <span class="k">else</span> <span class="n">s</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="sd">&quot;&quot;&quot;SHA256 checksum of this RPM, as a hex string.&quot;&quot;&quot;</span>
@@ -133,7 +137,7 @@
     <span class="n">repository_memberships</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span>
-        <span class="n">converter</span><span class="o">=</span><span class="n">frozenlist_or_none_converter</span><span class="p">,</span>
+        <span class="n">converter</span><span class="o">=</span><span class="n">frozenlist_or_none_sorted_converter</span><span class="p">,</span>
         <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;repository_memberships&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="sd">&quot;&quot;&quot;IDs of repositories containing the unit, or ``None`` if this information is unavailable.</span>
