@@ -15,6 +15,24 @@ def test_invariants(model_object):
     assert_model_invariants(model_object)
 
 
+@pytest.mark.parametrize("field_name", ["repository_memberships"])
+def test_stable_order(model_object, field_name):
+    """Test that certain fields on the given object have a stable ordering applied."""
+
+    if not hasattr(model_object, field_name):
+        pytest.skip("This object does not have %s" % field_name)
+
+    updates1 = {field_name: ["c", "a", "b"]}
+    updates2 = {field_name: ["a", "c", "b"]}
+
+    # Request two different updates on the object.
+    obj1 = attr.evolve(model_object, **updates1)
+    obj2 = attr.evolve(model_object, **updates2)
+
+    # The result should be exactly the same in both cases.
+    assert getattr(obj1, field_name) == getattr(obj2, field_name)
+
+
 def public_model_objects():
     """Returns a default-constructed instance of every public model class
     found in pubtools.pulplib.
