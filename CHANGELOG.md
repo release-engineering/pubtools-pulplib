@@ -7,9 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- n/a
+
+## [2.13.0] - 2021-08-24
+
 - Searching for RPMs by sha256sum will now use the indexed `checksum` field on Pulp,
   rather than the non-indexed `checksums.sha256` field. This can significantly improve
   the performance of these searches on large systems.
+- The `repository_memberships` field will now be populated in units returned from
+  `search_content`.
+- The `repository_memberships` field will now always be sorted to ensure stable behavior.
 
 ## [2.12.1] - 2021-08-11
 
@@ -239,7 +246,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release to PyPI
 
-[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.12.1...HEAD
+[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.13.0...HEAD
+[2.13.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.12.1...v2.13.0
 [2.12.1]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.12.0...v2.12.1
 [2.12.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.11.0...v2.12.0
 [2.11.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.10.0...v2.11.0
