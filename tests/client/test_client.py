@@ -501,6 +501,13 @@ def test_can_search_content(client, requests_mocker):
     # 3 requests, 1 for server type_ids, 1 for rpm, 1 for srpm
     assert requests_mocker.call_count == 3
 
+    # Request body should look like this: limit is always applied,
+    # repos are always requested
+    assert requests_mocker.request_history[-1].json() == {
+        "criteria": {"skip": 0, "limit": 2000, "filters": {}},
+        "include_repos": True,
+    }
+
 
 def test_can_search_content_invalid_criteria(client, requests_mocker):
     """search_content issues /search/ POST requests as expected."""
