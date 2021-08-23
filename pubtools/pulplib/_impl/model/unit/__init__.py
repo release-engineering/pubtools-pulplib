@@ -1,4 +1,4 @@
-from .base import Unit
+from .base import Unit, type_ids_for_class
 from .file import FileUnit
 from .rpm import RpmUnit
 from .modulemd import ModulemdUnit
