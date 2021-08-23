@@ -4,7 +4,10 @@ from .base import Unit, unit_type
 
 from ..attr import pulp_attrib
 from ... import compat_attr as attr
-from ..frozenlist import frozenlist_or_none_converter
+from ..frozenlist import (
+    frozenlist_or_none_converter,
+    frozenlist_or_none_sorted_converter,
+)
 
 
 @unit_type("modulemd")
@@ -57,7 +60,7 @@ class ModulemdUnit(Unit):
     repository_memberships = pulp_attrib(
         default=None,
         type=list,
-        converter=frozenlist_or_none_converter,
+        converter=frozenlist_or_none_sorted_converter,
         pulp_field="repository_memberships",
     )
     """IDs of repositories containing the unit, or ``None`` if this information is unavailable.

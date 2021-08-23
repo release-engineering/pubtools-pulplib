@@ -1,3 +1,6 @@
+import functools
+
+
 class FrozenList(list):
     # An immutable list subclass, intended for use on model fields.
 
@@ -35,7 +38,12 @@ class FrozenList(list):
         return hash(tuple(self))
 
 
-def frozenlist_or_none_converter(obj):
+def frozenlist_or_none_converter(obj, map_fn=(lambda x: x)):
     if obj is not None:
-        return FrozenList(obj)
+        return FrozenList(map_fn(obj))
     return None
+
+
+frozenlist_or_none_sorted_converter = functools.partial(
+    frozenlist_or_none_converter, map_fn=sorted
+)
