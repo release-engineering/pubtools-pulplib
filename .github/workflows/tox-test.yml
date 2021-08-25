@@ -31,7 +31,7 @@ jobs:
         run: pip install tox
       - name: Run Tox
         run: tox -e static
-  py36-pidiff:
+  pidiff:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -57,10 +57,14 @@ jobs:
           python-version: 3.8
       - name: Install Tox
         run: pip install tox
-      - name: Install pytest cov
-        run: pip install pytest-cov
       - name: Run Tox
         run: tox -e cov
+
+      # Codcov Action required installing pytest-cov as it needs coverage.
+      # The coverage library installed within tox is in virt-env and not 
+      # accessible to Codecov.
+      - name: Install pytest cov
+        run: pip install pytest-cov
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1.0.15
         with:
@@ -83,7 +87,7 @@ jobs:
         run: |
           tox -e docs
           scripts/push-docs
-  py36-revdep:
+  revdep:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
