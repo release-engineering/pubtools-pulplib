@@ -190,6 +190,9 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_tls</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">local</span><span class="p">()</span>
 
+        <span class="c1"># Cache supported types, used during searches.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_server_type_ids</span> <span class="o">=</span> <span class="kc">None</span>
+
         <span class="c1"># executor only for issuing HTTP requests to Pulp:</span>
         <span class="c1"># - does not cover watching Pulp tasks</span>
         <span class="c1"># - checks HTTP response and raises if it&#39;s not JSON or</span>
@@ -286,8 +289,26 @@
 
 <span class="sd">        .. versionadded:: 2.6.0</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Criteria will be serialized into a Pulp search at the time we</span>
+        <span class="c1"># actually do the query, but validate eagerly as well so we raise</span>
+        <span class="c1"># ASAP on invalid input.</span>
+        <span class="n">search_for_criteria</span><span class="p">(</span><span class="n">criteria</span><span class="p">,</span> <span class="n">Unit</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
-        <span class="n">server_type_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_content_type_ids</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_server_type_ids</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># We&#39;ll be using this in a moment either to set default IDs or to</span>
+            <span class="c1"># reject searches for invalid types.</span>
+            <span class="c1"># Note: no locking, so if we&#39;re called from multiple threads we in</span>
+            <span class="c1"># theory might waste some time querying the types more than once.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_server_type_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_content_type_ids</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">f_proxy</span><span class="p">(</span>
+            <span class="n">f_flat_map</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_server_type_ids</span><span class="p">,</span>
+                <span class="k">lambda</span> <span class="n">ids</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_search_content_with_server_type_ids</span><span class="p">(</span><span class="n">criteria</span><span class="p">,</span> <span class="n">ids</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_search_content_with_server_type_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">criteria</span><span class="p">,</span> <span class="n">server_type_ids</span><span class="p">):</span>
         <span class="n">prepared_search</span> <span class="o">=</span> <span class="n">search_for_criteria</span><span class="p">(</span><span class="n">criteria</span><span class="p">,</span> <span class="n">Unit</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">type_ids</span> <span class="o">=</span> <span class="n">prepared_search</span><span class="o">.</span><span class="n">type_ids</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">type_ids</span><span class="p">:</span>
@@ -303,7 +324,7 @@
             <span class="p">[</span><span class="s2">&quot;content/units/</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">type_ids</span><span class="p">],</span>
             <span class="n">criteria</span><span class="o">=</span><span class="n">criteria</span><span class="p">,</span>
             <span class="n">search_options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;include_repos&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
-        <span class="p">)</span></div>
+        <span class="p">)</span>
 
 <div class="viewcode-block" id="Client.search_distributor"><a class="viewcode-back" href="../../../../../api/client.html#pubtools.pulplib.Client.search_distributor">[docs]</a>    <span class="k">def</span> <span class="nf">search_distributor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">criteria</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Search the distributors matching the given criteria.</span>
