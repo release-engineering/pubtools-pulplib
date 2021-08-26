@@ -509,6 +509,37 @@ def test_can_search_content(client, requests_mocker):
     }
 
 
+def test_repeated_search(client, requests_mocker):
+    """subsequent calls to search_content won't repeatedly query types"""
+    requests_mocker.get(
+        "https://pulp.example.com/pulp/api/v2/plugins/types/",
+        json=[{"id": "rpm"}, {"id": "srpm"}, {"id": "iso"}],
+    )
+    requests_mocker.post(
+        "https://pulp.example.com/pulp/api/v2/content/units/iso/search/", json=[]
+    )
+    requests_mocker.post(
+        "https://pulp.example.com/pulp/api/v2/content/units/rpm/search/",
+        json=RPM_TEST_UNITS,
+    )
+
+    iso_units = client.search_content(Criteria.with_field("content_type_id", "iso"))
+    rpm_units = client.search_content(Criteria.with_field("content_type_id", "rpm"))
+
+    assert list(iso_units) == []
+    assert len(list(rpm_units)) == len(RPM_TEST_UNITS)
+
+    urls = sorted([h.url for h in requests_mocker.request_history])
+
+    assert sorted(urls) == [
+        # It should have hit exactly these URLs;
+        # the main point here is that 'types' was only hit once.
+        "https://pulp.example.com/pulp/api/v2/content/units/iso/search/",
+        "https://pulp.example.com/pulp/api/v2/content/units/rpm/search/",
+        "https://pulp.example.com/pulp/api/v2/plugins/types/",
+    ]
+
+
 def test_can_search_content_invalid_criteria(client, requests_mocker):
     """search_content issues /search/ POST requests as expected."""
     requests_mocker.get(
@@ -520,9 +551,8 @@ def test_can_search_content_invalid_criteria(client, requests_mocker):
         json=RPM_TEST_UNITS,
     )
 
-    with pytest.raises(ValueError) as e:
-        _ = client.search_content(Criteria.with_field("_content_type_id", "foobar"))
-    assert str(e.value) == "Content type: foobar is not supported by server"
+    search = client.search_content(Criteria.with_field("_content_type_id", "foobar"))
+    assert str(search.exception()) == "Content type: foobar is not supported by server"
 
     assert requests_mocker.call_count == 1
 

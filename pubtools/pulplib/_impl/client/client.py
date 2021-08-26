@@ -157,6 +157,9 @@ class Client(object):
 
         self._tls = threading.local()
 
+        # Cache supported types, used during searches.
+        self._server_type_ids = None
+
         # executor only for issuing HTTP requests to Pulp:
         # - does not cover watching Pulp tasks
         # - checks HTTP response and raises if it's not JSON or
@@ -253,8 +256,26 @@ class Client(object):
 
         .. versionadded:: 2.6.0
         """
+        # Criteria will be serialized into a Pulp search at the time we
+        # actually do the query, but validate eagerly as well so we raise
+        # ASAP on invalid input.
+        search_for_criteria(criteria, Unit, None)
 
-        server_type_ids = self.get_content_type_ids()
+        if self._server_type_ids is None:
+            # We'll be using this in a moment either to set default IDs or to
+            # reject searches for invalid types.
+            # Note: no locking, so if we're called from multiple threads we in
+            # theory might waste some time querying the types more than once.
+            self._server_type_ids = self.get_content_type_ids()
+
+        return f_proxy(
+            f_flat_map(
+                self._server_type_ids,
+                lambda ids: self._search_content_with_server_type_ids(criteria, ids),
+            )
+        )
+
+    def _search_content_with_server_type_ids(self, criteria, server_type_ids):
         prepared_search = search_for_criteria(criteria, Unit, None)
         type_ids = prepared_search.type_ids
         if not type_ids:
