@@ -20,6 +20,7 @@ from pubtools.pulplib import (
     Repository,
     Distributor,
     Unit,
+    FileUnit,
     MaintenanceReport,
 )
 from pubtools.pulplib._impl.client.search import search_for_criteria
@@ -328,6 +329,23 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
             return repo_f
 
         repo = repo_f.result()
+
+        # This code was originally written for generic file upload ("iso" units).
+        # It's certain that it will require refactoring for other types of units
+        # because we don't have enough metadata to create proper Unit instances
+        # for anything else. We can't get here for any other unit_type_id right now
+        # anyway, but as soon as we do make sure we fail in a controlled manner.
+        assert unit_type_id == "iso"
+
+        repo_units = self._repo_units.setdefault(repo_id, set())
+        repo_units.add(
+            FileUnit(
+                path=unit_key["name"],
+                size=unit_key["size"],
+                sha256sum=unit_key["checksum"],
+                repository_memberships=[repo_id],
+            )
+        )
 
         task = Task(id=self._next_task_id(), completed=True, succeeded=True)
 
