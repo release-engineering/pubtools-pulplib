@@ -16,6 +16,8 @@ except AttributeError:  # pragma: no cover
 
 from pubtools.pulplib._impl import compat_attr as attr
 
+from .model.unit import type_ids_for_class
+
 
 class Criteria(object):
     """Represents a Pulp search criteria.
@@ -24,7 +26,7 @@ class Criteria(object):
     or used directly. Instances of this class should be obtained and
     composed by calls to the documented class methods.
 
-    Example:
+    Example - searching a repository:
         .. code-block:: python
 
             # With Pulp 2.x / mongo, this is roughly equivalent
@@ -40,6 +42,18 @@ class Criteria(object):
 
             # criteria may now be used with client to execute a search
             repos = client.search_repository(crit)
+
+    Example - searching across all repos for a specific content type:
+        .. code-block:: python
+
+            crit = Criteria.and_(
+                Criteria.with_unit_type(RpmUnit),
+                Criteria.with_field("sha256sum", Matcher.in_([
+                    "49ae93732fcf8d63fe1cce759664982dbd5b23161f007dba8561862adc96d063",
+                    "6b30e91df993d96df0bef0f9d232d1068fa2f7055f13650208d77b43cd7c99f6"])))
+
+            # Will find RpmUnit instances with above sums
+            units = client.search_content(crit)
     """
 
     exists = object()
@@ -86,6 +100,27 @@ class Criteria(object):
                 matches ``field_value``.
         """
         return FieldMatchCriteria(field_name, field_value)
+
+    @classmethod
+    def with_unit_type(cls, unit_type):
+        """Args:
+            unit_type (class)
+                A subclass of :class:`~pubtools.pulplib.Unit`.
+
+        Returns:
+            Criteria
+                criteria for finding units of type ``unit_type``.
+
+        .. versionadded:: 2.14.0
+        """
+
+        # This is just a thin wrapper for searching on content_type_id which allows
+        # the caller to avoid having to handle the (unit class <=> type id) mapping.
+        type_ids = type_ids_for_class(unit_type)
+        if not type_ids:
+            raise TypeError("Expected a Unit type, got: %s" % repr(unit_type))
+
+        return FieldMatchCriteria("content_type_id", Matcher.in_(type_ids))
 
     @classmethod
     def with_field_in(cls, field_name, field_value):

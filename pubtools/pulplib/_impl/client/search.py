@@ -92,7 +92,7 @@ class TypeIdAccumulator(object):
             raise ValueError(
                 (
                     "Can't serialize criteria for Pulp query; too complicated. "
-                    "Try simplifying the query with respect to content_type_id."
+                    "Try simplifying the query with respect to unit_type/content_type_id."
                 )
             )
 

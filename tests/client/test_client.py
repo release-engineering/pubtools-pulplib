@@ -620,3 +620,60 @@ def test_can_search_content_pagination(client, requests_mocker):
     assert [h.url for h in requests_mocker.request_history].count(
         "https://pulp.example.com/pulp/api/v2/content/units/srpm/search/"
     ) == 2
+
+
+def test_can_search_content_by_type(client, requests_mocker):
+    """search_content can search for a specified unit type."""
+    requests_mocker.get(
+        "https://pulp.example.com/pulp/api/v2/plugins/types/",
+        json=[{"id": "rpm"}, {"id": "srpm"}, {"id": "iso"}],
+    )
+    # Note although "iso" is supported, we don't mock the search URL for
+    # that content type, thus proving that we don't query it if we search
+    # for a specific unit_type
+    requests_mocker.post(
+        "https://pulp.example.com/pulp/api/v2/content/units/rpm/search/",
+        json=RPM_TEST_UNITS,
+    )
+    requests_mocker.post(
+        "https://pulp.example.com/pulp/api/v2/content/units/srpm/search/",
+        json=SRPM_TEST_UNITS,
+    )
+
+    units = client.search_content(Criteria.with_unit_type(RpmUnit))
+
+    # It should have returned the expected units
+    assert sorted(units) == [
+        RpmUnit(
+            content_type_id="srpm",
+            sha256sum="4f5a3a0da6f404f6d9988987cd75f13982bd655a0a4f692406611afbbc597679",
+            arch="src",
+            epoch="0",
+            name="glibc",
+            release="2.57.el4.1",
+            repository_memberships=["fake-repository-id-3"],
+            sourcerpm=None,
+            version="2.3.4",
+        ),
+        RpmUnit(
+            sha256sum="4f5a3a0da6f404f6d9988987cd75f13982bd655a0a4f692406611afbbc597679",
+            arch="ia64",
+            epoch="0",
+            name="glibc-headers",
+            release="2.57.el4.1",
+            repository_memberships=["fake-repository-id-3"],
+            sourcerpm="glibc-2.3.4-2.57.el4.1.src.rpm",
+            version="2.3.4",
+        ),
+        RpmUnit(
+            sha1sum="ca995eb1a635c97393466f67aaec8e9e753b8ed5",
+            sha256sum="1c4baac658fd56e6ec9cca37f440a4bd8c9c0b02a21f41b30b8ea17b402a1907",
+            arch="i386",
+            epoch="0",
+            name="gnu-efi-debuginfo",
+            release="1.1",
+            repository_memberships=["fake-repository-id-1", "fake-repository-id-2"],
+            sourcerpm="gnu-efi-3.0c-1.1.src.rpm",
+            version="3.0c",
+        ),
+    ]

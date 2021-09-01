@@ -19,6 +19,18 @@ def unit_type(pulp_type):
     return decorate
 
 
+def type_ids_for_class(unit_class):
+    # Given a concrete Unit subclass, returns those Pulp type id(s)
+    # which may be used to find/load an object of that class.
+    out = []
+
+    for pulp_type, klass in UNIT_CLASSES.items():
+        if klass is unit_class:
+            out.append(pulp_type)
+
+    return sorted(out)
+
+
 @attr.s(kw_only=True, frozen=True)
 class Unit(PulpObject):
     """Represents a Pulp unit (a single piece of content).

@@ -120,6 +120,21 @@ def test_search_content_by_unit_field(populated_repo):
     ]
 
 
+def test_search_content_by_unit_type(populated_repo):
+    """search_content on unit_type returns only units of that type"""
+
+    crit = Criteria.with_unit_type(ModulemdUnit)
+    units = list(populated_repo.search_content(crit))
+    assert sorted(units) == [
+        ModulemdUnit(
+            name="module1", stream="s1", version=1234, context="a1b2", arch="x86_64"
+        ),
+        ModulemdUnit(
+            name="module2", stream="s2", version=1234, context="a1b2", arch="x86_64"
+        ),
+    ]
+
+
 def test_search_content_mixed_fields(populated_repo):
     """search_content crossing multiple fields and types returns matching units"""
 
