@@ -1,3 +1,5 @@
+import warnings
+
 from .client import FakeClient
 
 
@@ -133,19 +135,26 @@ class FakeController(object):
 
     @property
     def upload_history(self):
-        """A list of upload tasks triggered via this client.
+        # A list of upload tasks triggered via this client.
+        #
+        # Each element of this list is a named tuple with the following attributes,
+        # in order:
+        #
+        #     ``repository``:
+        #         :class:`~pubtools.pulplib.Repository` for which upload was triggered
+        #     ``tasks``:
+        #         list of :class:`~pubtools.pulplib.Task` generated as a result
+        #         of this upload
+        #     ``name`` (str):
+        #         the remote path used
+        #     ``sha256`` (str):
+        #         checksum of the file uploaded
+        #
+        # Deprecated: structure was unintentionally specific to ISO units and is also
+        # unnecessary as uploading will make unit(s) available in the relevant repo.
+        #
+        warnings.warn(
+            "upload_history is deprecated, check repo units instead", DeprecationWarning
+        )
 
-        Each element of this list is a named tuple with the following attributes,
-        in order:
-
-            ``repository``:
-                :class:`~pubtools.pulplib.Repository` for which upload was triggered
-            ``tasks``:
-                list of :class:`~pubtools.pulplib.Task` generated as a result
-                of this upload
-            ``name`` (str):
-                the remote path used
-            ``sha256`` (str):
-                checksum of the file uploaded
-        """
         return self.client._upload_history[:]

@@ -2,11 +2,63 @@ import sys
 
 import pytest
 
-from pubtools.pulplib import FakeController, FileRepository, PulpException
+from pubtools.pulplib import FakeController, FileUnit, FileRepository, PulpException
 
 
-def test_can_upload(tmpdir):
-    """repo.upload_file() succeeds with fake client and populates upload_history."""
+def test_can_upload_units(tmpdir):
+    """repo.upload_file() succeeds with fake client and populates units."""
+    controller = FakeController()
+
+    controller.insert_repository(FileRepository(id="repo1"))
+
+    client = controller.client
+    repo1 = client.get_repository("repo1").result()
+
+    somefile = tmpdir.join("some-file.txt")
+    somefile.write(b"there is some binary data:\x00\x01\x02")
+
+    otherfile = tmpdir.join("another.txt")
+    otherfile.write("ahoy there")
+
+    upload1_f = repo1.upload_file(str(somefile))
+    upload2_f = repo1.upload_file(str(otherfile), relative_url="another/path.txt")
+
+    for f in [upload1_f, upload2_f]:
+        # The future should resolve successfully
+        tasks = f.result()
+
+        # The task should be successful.
+        assert tasks[0].succeeded
+
+    # If I now search for content in that repo, or content across all repos...
+    units_in_repo = sorted(repo1.search_content().result(), key=lambda u: u.sha256sum)
+    units_all = sorted(client.search_content().result(), key=lambda u: u.sha256sum)
+
+    # They should be equal
+    assert units_all == units_in_repo
+
+    # And they should be this
+    assert units_in_repo == [
+        FileUnit(
+            path="another/path.txt",
+            size=10,
+            sha256sum="94c0c9d847ecaa45df01999676db772e5cb69cc54e1ff9db31d02385c56a86e1",
+            repository_memberships=["repo1"],
+        ),
+        FileUnit(
+            path="some-file.txt",
+            size=29,
+            sha256sum="fad3fc1e6d583b2003ec0a5273702ed8fcc2504271c87c40d9176467ebe218cb",
+            repository_memberships=["repo1"],
+        ),
+    ]
+
+
+def test_can_upload_history(tmpdir):
+    """repo.upload_file() succeeds with fake client and populates upload_history.
+
+    Note that upload_history is deprecated, but remains working for now.
+    """
     controller = FakeController()
 
     controller.insert_repository(FileRepository(id="repo1"))
