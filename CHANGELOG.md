@@ -9,6 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - n/a
 
+## [2.14.0] - 2021-09-02
+
+### Added
+
+- Introduced `Criteria.with_unit_type`, to search for content of a specific type.
+
+### Fixed
+
+- Fixed `search_content` repeatedly querying Pulp for content type IDs.
+- Fixed `upload_file` on test client not updating repository content.
+
+### Deprecated
+
+- Deprecated `FakeController.upload_history`. Repository content should be checked instead.
+
 ## [2.13.0] - 2021-08-24
 
 - Searching for RPMs by sha256sum will now use the indexed `checksum` field on Pulp,
@@ -246,7 +261,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release to PyPI
 
-[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.13.0...HEAD
+[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.14.0...HEAD
+[2.14.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.13.0...v2.14.0
 [2.13.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.12.1...v2.13.0
 [2.12.1]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.12.0...v2.12.1
 [2.12.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.11.0...v2.12.0
