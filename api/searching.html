@@ -65,8 +65,8 @@ model field will raise an exception.</p>
 <p>This is an opaque class which is not intended to be created
 or used directly. Instances of this class should be obtained and
 composed by calls to the documented class methods.</p>
-<p class="rubric">Example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># With Pulp 2.x / mongo, this is roughly equivalent</span>
+<dl>
+<dt>Example - searching a repository:</dt><dd><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># With Pulp 2.x / mongo, this is roughly equivalent</span>
 <span class="c1"># to search fragment:</span>
 <span class="c1">#</span>
 <span class="c1">#  {&quot;notes.my-field&quot;: {&quot;$exists&quot;: True},</span>
@@ -81,6 +81,19 @@ composed by calls to the documented class methods.</p>
 <span class="n">repos</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">search_repository</span><span class="p">(</span><span class="n">crit</span><span class="p">)</span>
 </pre></div>
 </div>
+</dd>
+<dt>Example - searching across all repos for a specific content type:</dt><dd><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">crit</span> <span class="o">=</span> <span class="n">Criteria</span><span class="o">.</span><span class="n">and_</span><span class="p">(</span>
+    <span class="n">Criteria</span><span class="o">.</span><span class="n">with_unit_type</span><span class="p">(</span><span class="n">RpmUnit</span><span class="p">),</span>
+    <span class="n">Criteria</span><span class="o">.</span><span class="n">with_field</span><span class="p">(</span><span class="s2">&quot;sha256sum&quot;</span><span class="p">,</span> <span class="n">Matcher</span><span class="o">.</span><span class="n">in_</span><span class="p">([</span>
+        <span class="s2">&quot;49ae93732fcf8d63fe1cce759664982dbd5b23161f007dba8561862adc96d063&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;6b30e91df993d96df0bef0f9d232d1068fa2f7055f13650208d77b43cd7c99f6&quot;</span><span class="p">])))</span>
+
+<span class="c1"># Will find RpmUnit instances with above sums</span>
+<span class="n">units</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">search_content</span><span class="p">(</span><span class="n">crit</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="pubtools.pulplib.Criteria.with_id">
 <em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">with_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ids</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/criteria.html#Criteria.with_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Criteria.with_id" title="Permalink to this definition">¶</a></dt>
@@ -130,6 +143,26 @@ matches <code class="docutils literal notranslate"><span class="pre">field_value
 </p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pubtools.pulplib.Criteria.with_unit_type">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">with_unit_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/criteria.html#Criteria.with_unit_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Criteria.with_unit_type" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>unit_type</strong> (<em>class</em>) – A subclass of <a class="reference internal" href="model.html#pubtools.pulplib.Unit" title="pubtools.pulplib.Unit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unit</span></code></a>.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Criteria</dt><dd><p>criteria for finding units of type <code class="docutils literal notranslate"><span class="pre">unit_type</span></code>.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.14.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
