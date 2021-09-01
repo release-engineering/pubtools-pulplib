@@ -31,7 +31,9 @@
           <div class="body" role="main">
             
   <h1>Source code for pubtools.pulplib._impl.fake.controller</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">.client</span> <span class="kn">import</span> <span class="n">FakeClient</span>
+<span></span><span class="kn">import</span> <span class="nn">warnings</span>
+
+<span class="kn">from</span> <span class="nn">.client</span> <span class="kn">import</span> <span class="n">FakeClient</span>
 
 
 <div class="viewcode-block" id="FakeController"><a class="viewcode-back" href="../../../../../api/testing.html#pubtools.pulplib.FakeController">[docs]</a><span class="k">class</span> <span class="nc">FakeController</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -166,21 +168,28 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">upload_history</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;A list of upload tasks triggered via this client.</span>
+        <span class="c1"># A list of upload tasks triggered via this client.</span>
+        <span class="c1">#</span>
+        <span class="c1"># Each element of this list is a named tuple with the following attributes,</span>
+        <span class="c1"># in order:</span>
+        <span class="c1">#</span>
+        <span class="c1">#     ``repository``:</span>
+        <span class="c1">#         :class:`~pubtools.pulplib.Repository` for which upload was triggered</span>
+        <span class="c1">#     ``tasks``:</span>
+        <span class="c1">#         list of :class:`~pubtools.pulplib.Task` generated as a result</span>
+        <span class="c1">#         of this upload</span>
+        <span class="c1">#     ``name`` (str):</span>
+        <span class="c1">#         the remote path used</span>
+        <span class="c1">#     ``sha256`` (str):</span>
+        <span class="c1">#         checksum of the file uploaded</span>
+        <span class="c1">#</span>
+        <span class="c1"># Deprecated: structure was unintentionally specific to ISO units and is also</span>
+        <span class="c1"># unnecessary as uploading will make unit(s) available in the relevant repo.</span>
+        <span class="c1">#</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;upload_history is deprecated, check repo units instead&quot;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span>
+        <span class="p">)</span>
 
-<span class="sd">        Each element of this list is a named tuple with the following attributes,</span>
-<span class="sd">        in order:</span>
-
-<span class="sd">            ``repository``:</span>
-<span class="sd">                :class:`~pubtools.pulplib.Repository` for which upload was triggered</span>
-<span class="sd">            ``tasks``:</span>
-<span class="sd">                list of :class:`~pubtools.pulplib.Task` generated as a result</span>
-<span class="sd">                of this upload</span>
-<span class="sd">            ``name`` (str):</span>
-<span class="sd">                the remote path used</span>
-<span class="sd">            ``sha256`` (str):</span>
-<span class="sd">                checksum of the file uploaded</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">_upload_history</span><span class="p">[:]</span></div>
 </pre></div>
 
