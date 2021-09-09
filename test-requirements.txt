@@ -1,3 +1,6 @@
 pytest
 requests-mock
 mock
+kobo
+koji
+rpm-py-installer

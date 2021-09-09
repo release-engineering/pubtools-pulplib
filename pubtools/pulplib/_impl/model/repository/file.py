@@ -2,12 +2,10 @@ import os
 import logging
 
 from attr import validators
-from more_executors.futures import f_flat_map, f_map, f_proxy
 
 from .base import Repository, SyncOptions, repo_type
 from ..frozenlist import FrozenList
 from ..attr import pulp_attrib
-from ..common import DetachedException
 from ... import compat_attr as attr
 
 
@@ -86,43 +84,15 @@ class FileRepository(Repository):
 
         .. versionadded:: 1.2.0
         """
-        if not self._client:
-            raise DetachedException()
-
         relative_url = self._get_relative_url(file_obj, relative_url)
 
-        upload_id_f = f_map(
-            self._client._request_upload(), lambda upload: upload["upload_id"]
-        )
+        unit_key_fn = lambda upload: {
+            "name": relative_url,
+            "checksum": upload[0],
+            "size": upload[1],
+        }
 
-        f_map(
-            upload_id_f,
-            lambda upload_id: LOG.info(
-                "Uploading %s to %s [%s]", relative_url, self.id, upload_id
-            ),
-        )
-
-        upload_complete_f = f_flat_map(
-            upload_id_f,
-            lambda upload_id: self._client._do_upload_file(upload_id, file_obj),
-        )
-
-        import_complete_f = f_flat_map(
-            upload_complete_f,
-            lambda upload: self._client._do_import(
-                self.id,
-                upload_id_f.result(),
-                "iso",
-                {"name": relative_url, "checksum": upload[0], "size": upload[1]},
-            ),
-        )
-
-        f_map(
-            import_complete_f,
-            lambda _: self._client._delete_upload_request(upload_id_f.result()),
-        )
-
-        return f_proxy(import_complete_f)
+        return self._upload_then_import(file_obj, relative_url, "iso", unit_key_fn)
 
     def _get_relative_url(self, file_obj, relative_url):
         is_file_object = "close" in dir(file_obj)

@@ -2,7 +2,7 @@ import datetime
 import logging
 
 from attr import validators, asdict
-from more_executors.futures import f_proxy, f_map
+from more_executors.futures import f_proxy, f_map, f_flat_map
 
 from ..common import PulpObject, Deletable, DetachedException
 from ..attr import pulp_attrib
@@ -544,3 +544,62 @@ class Repository(PulpObject, Deletable):
         # distributors use the same client as owning repository
         for distributor in self.distributors or []:
             distributor._set_client(client)
+
+    def _upload_then_import(self, file_obj, name, type_id, unit_key_fn=None):
+        """Private helper to upload and import a piece of content into this repo.
+
+        To be called by the type-specific subclasses (e.g. YumRepository,
+        FileRepository...)
+
+        Args:
+            file_obj (str, file-like object):
+                file object or path (as documented in public methods)
+
+            name (str):
+                a brief user-meaningful name for the content being uploaded
+                (appears in logs)
+
+            type_id (str):
+                pulp unit type ID
+
+            unit_key_fn (callable):
+                a callable which will be invoked with the return value of
+                _do_upload_file. It should return the unit key for this piece of
+                content. If omitted, an empty unit key is used, which means Pulp
+                is wholly responsible for calculating the unit key.
+        """
+
+        if not self._client:
+            raise DetachedException()
+
+        unit_key_fn = unit_key_fn or (lambda _: {})
+
+        upload_id_f = f_map(
+            self._client._request_upload(), lambda upload: upload["upload_id"]
+        )
+
+        f_map(
+            upload_id_f,
+            lambda upload_id: LOG.info(
+                "Uploading %s to %s [%s]", name, self.id, upload_id
+            ),
+        )
+
+        upload_complete_f = f_flat_map(
+            upload_id_f,
+            lambda upload_id: self._client._do_upload_file(upload_id, file_obj),
+        )
+
+        import_complete_f = f_flat_map(
+            upload_complete_f,
+            lambda upload: self._client._do_import(
+                self.id, upload_id_f.result(), type_id, unit_key_fn(upload)
+            ),
+        )
+
+        f_map(
+            import_complete_f,
+            lambda _: self._client._delete_upload_request(upload_id_f.result()),
+        )
+
+        return f_proxy(import_complete_f)
