@@ -53,10 +53,13 @@ class FileRepository(Repository):
 
         Args:
             file_obj (str, file object)
-                If it's a string, then it's the path of file to upload.
-                Else, it ought to be a
-                `file-like object <https://docs.python.org/3/glossary.html#term-file-object>`_.
+                If it's a string, then it's the path of a file to upload.
 
+                Otherwise, it should be a
+                `file-like object <https://docs.python.org/3/glossary.html#term-file-object>`_
+                pointing at the bytes to upload. The client takes ownership
+                of this file object; it should not be modified elsewhere,
+                and will be closed when upload completes.
 
             relative_url (str)
                 Path that should be used in remote repository, can either
@@ -74,10 +77,8 @@ class FileRepository(Repository):
 
         Returns:
             Future[list of :class:`~pubtools.pulplib.Task`]
-                A future which is resolved when import succeeds.
-
-                The future contains the task to import uploaded content
-                to repository.
+                A future which is resolved after content has been imported
+                to this repo.
 
         Raises:
             DetachedException
@@ -89,25 +90,36 @@ class FileRepository(Repository):
             raise DetachedException()
 
         relative_url = self._get_relative_url(file_obj, relative_url)
-        name = os.path.basename(relative_url)
 
-        # request upload id and wait for it
-        upload_id = self._client._request_upload().result()["upload_id"]
+        upload_id_f = f_map(
+            self._client._request_upload(), lambda upload: upload["upload_id"]
+        )
 
-        upload_complete_f = self._client._do_upload_file(upload_id, file_obj, name)
+        f_map(
+            upload_id_f,
+            lambda upload_id: LOG.info(
+                "Uploading %s to %s [%s]", relative_url, self.id, upload_id
+            ),
+        )
+
+        upload_complete_f = f_flat_map(
+            upload_id_f,
+            lambda upload_id: self._client._do_upload_file(upload_id, file_obj),
+        )
 
         import_complete_f = f_flat_map(
             upload_complete_f,
             lambda upload: self._client._do_import(
                 self.id,
-                upload_id,
+                upload_id_f.result(),
                 "iso",
                 {"name": relative_url, "checksum": upload[0], "size": upload[1]},
             ),
         )
 
         f_map(
-            import_complete_f, lambda _: self._client._delete_upload_request(upload_id)
+            import_complete_f,
+            lambda _: self._client._delete_upload_request(upload_id_f.result()),
         )
 
         return f_proxy(import_complete_f)

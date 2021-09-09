@@ -101,6 +101,13 @@ def test_upload_file(client, requests_mocker, tmpdir, caplog):
     assert import_request["unit_key"] == import_unit_key
 
     messages = caplog.messages
+
+    # It should tell us about the upload
+    assert (
+        "Uploading some-file.txt to repo1 [cfb1fed0-752b-439e-aa68-fba68eababa3]"
+        in messages
+    )
+
     # task's spawned and completed
     assert "Created Pulp task: task1" in messages
     assert "Pulp task completed: task1" in messages
@@ -147,7 +154,7 @@ def test_upload_file_contains_unicode(client, requests_mocker):
     repo = FileRepository(id=repo_id)
     repo.__dict__["_client"] = client
 
-    upload_f = client._do_upload_file(upload_id, file_obj, "file.txt")
+    upload_f = client._do_upload_file(upload_id, file_obj)
 
     assert upload_f.result() == (
         "478f4808df7898528c7f13dc840aa321c4109f5c9f33bad7afcffc0253d4ff8f",
