@@ -25,6 +25,10 @@ class ModulemdDefaultsUnit(Unit):
     profiles = pulp_attrib(type=dict, pulp_field="profiles", default=None)
     """The profiles of this modulemd defaults unit."""
 
+    content_type_id = pulp_attrib(
+        default="modulemd_defaults", type=str, pulp_field="_content_type_id"
+    )
+
     repository_memberships = pulp_attrib(
         default=None,
         type=list,
