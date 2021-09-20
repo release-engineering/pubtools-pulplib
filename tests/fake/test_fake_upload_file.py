@@ -104,7 +104,7 @@ def test_upload_nonexistent_file_raises():
     else:
         exception = FileNotFoundError
     with pytest.raises(exception):
-        upload_f = repo1.upload_file("nonexistent_file")
+        upload_f = repo1.upload_file("nonexistent_file").result()
 
 
 def test_upload_repo_absent_raises(tmpdir):

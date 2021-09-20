@@ -439,7 +439,7 @@ class Client(object):
         # We only support returning the ID at this time.
         return f_proxy(f_map(out, lambda types: sorted([t["id"] for t in types])))
 
-    def _do_upload_file(self, upload_id, file_obj, name):
+    def _do_upload_file(self, upload_id, file_obj):
         def do_next_upload(checksum, size):
             data = file_obj.read(self._CHUNK_SIZE)
             if data:
@@ -458,11 +458,10 @@ class Client(object):
         if not is_file_object:
             file_obj = open(file_obj, "rb")
 
-        LOG.info("Uploading %s to Pulp", name)
         upload_f = f_flat_map(f_return(), lambda _: do_next_upload(hashlib.sha256(), 0))
 
-        if not is_file_object:
-            upload_f.add_done_callback(lambda _: file_obj.close())
+        upload_f.add_done_callback(lambda _: file_obj.close())
+
         return upload_f
 
     def _publish_repository(self, repo, distributors_with_config):

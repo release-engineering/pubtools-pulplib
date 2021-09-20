@@ -255,7 +255,7 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
 
         return f_proxy(f_return(self._type_ids))
 
-    def _do_upload_file(self, upload_id, file_obj, name):
+    def _do_upload_file(self, upload_id, file_obj):
         # pylint: disable=unused-argument
         is_file_obj = "close" in dir(file_obj)
         if not is_file_obj:
@@ -273,8 +273,7 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
 
         out = f_flat_map(f_return(), lambda _: do_next_upload(hashlib.sha256(), 0))
 
-        if not is_file_obj:
-            out.add_done_callback(lambda _: file_obj.close())
+        out.add_done_callback(lambda _: file_obj.close())
 
         return out
 
