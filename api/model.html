@@ -593,9 +593,13 @@ from within this group.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>file_obj</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>file object</em>) – If it’s a string, then it’s the path of file to upload.
-Else, it ought to be a
-<a class="reference external" href="https://docs.python.org/3/glossary.html#term-file-object">file-like object</a>.</p></li>
+<li><p><strong>file_obj</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>file object</em>) – <p>If it’s a string, then it’s the path of a file to upload.</p>
+<p>Otherwise, it should be a
+<a class="reference external" href="https://docs.python.org/3/glossary.html#term-file-object">file-like object</a>
+pointing at the bytes to upload. The client takes ownership
+of this file object; it should not be modified elsewhere,
+and will be closed when upload completes.</p>
+</p></li>
 <li><p><strong>relative_url</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – <p>Path that should be used in remote repository, can either
 be a path to a directory or a path to a file, e.g:</p>
 <ul>
@@ -611,10 +615,9 @@ passing <cite>relative_url</cite> is mandatory.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><dl>
-<dt>Future[list of <a class="reference internal" href="#pubtools.pulplib.Task" title="pubtools.pulplib.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a>]</dt><dd><p>A future which is resolved when import succeeds.</p>
-<p>The future contains the task to import uploaded content
-to repository.</p>
+<dd class="field-even"><p><dl class="simple">
+<dt>Future[list of <a class="reference internal" href="#pubtools.pulplib.Task" title="pubtools.pulplib.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a>]</dt><dd><p>A future which is resolved after content has been imported
+to this repo.</p>
 </dd>
 </dl>
 </p>
