@@ -33,6 +33,8 @@
   <h1>Source code for pubtools.pulplib._impl.model.repository.yum</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">re</span>
 
+<span class="kn">import</span> <span class="nn">six</span>
+
 <span class="kn">from</span> <span class="nn">more_executors.futures</span> <span class="kn">import</span> <span class="n">f_map</span><span class="p">,</span> <span class="n">f_proxy</span><span class="p">,</span> <span class="n">f_return</span>
 <span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">Repository</span><span class="p">,</span> <span class="n">SyncOptions</span><span class="p">,</span> <span class="n">repo_type</span>
 <span class="kn">from</span> <span class="nn">..frozenlist</span> <span class="kn">import</span> <span class="n">FrozenList</span>
@@ -210,7 +212,44 @@
         <span class="n">criteria</span> <span class="o">=</span> <span class="n">Criteria</span><span class="o">.</span><span class="n">with_field</span><span class="p">(</span><span class="s2">&quot;notes.relative_url&quot;</span><span class="p">,</span> <span class="n">relative_url</span><span class="p">)</span>
         <span class="n">page_f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">search_repository</span><span class="p">(</span><span class="n">criteria</span><span class="p">)</span>
         <span class="n">repo_f</span> <span class="o">=</span> <span class="n">f_map</span><span class="p">(</span><span class="n">page_f</span><span class="p">,</span> <span class="n">unpack_page</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">f_proxy</span><span class="p">(</span><span class="n">repo_f</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">f_proxy</span><span class="p">(</span><span class="n">repo_f</span><span class="p">)</span>
+
+<div class="viewcode-block" id="YumRepository.upload_rpm"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.YumRepository.upload_rpm">[docs]</a>    <span class="k">def</span> <span class="nf">upload_rpm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_obj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Upload an RPM to this repository.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            file_obj (str, file object)</span>
+<span class="sd">                If it&#39;s a string, then it&#39;s the path of an RPM to upload.</span>
+
+<span class="sd">                Otherwise, it should be a</span>
+<span class="sd">                `file-like object &lt;https://docs.python.org/3/glossary.html#term-file-object&gt;`_</span>
+<span class="sd">                pointing at the bytes to upload.</span>
+<span class="sd">                The client takes ownership of this file object; it should</span>
+<span class="sd">                not be modified elsewhere, and will be closed when upload</span>
+<span class="sd">                completes.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Future[list of :class:`~pubtools.pulplib.Task`]</span>
+<span class="sd">                A future which is resolved after content has been imported</span>
+<span class="sd">                to this repo.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            DetachedException</span>
+<span class="sd">                If this instance is not attached to a Pulp client.</span>
+
+<span class="sd">        .. versionadded:: 2.16.0</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># We want some name of what we&#39;re uploading for logging purposes, but the</span>
+        <span class="c1"># input could be a plain string, or a file object with &#39;name&#39; attribute, or</span>
+        <span class="c1"># a file object without &#39;name&#39; ... make sure we do something reasonable in</span>
+        <span class="c1"># all cases.</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">string_types</span><span class="p">):</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">file_obj</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># If we don&#39;t know what we&#39;re uploading we just say it&#39;s &quot;an RPM&quot;...</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;an RPM&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_upload_then_import</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="s2">&quot;rpm&quot;</span><span class="p">)</span></div></div>
 </pre></div>
 
           </div>

@@ -37,15 +37,15 @@
 <h1>Pulp objects<a class="headerlink" href="#pulp-objects" title="Permalink to this headline">¶</a></h1>
 <div class="contents local topic" id="contents">
 <ul class="simple">
-<li><p><a class="reference internal" href="#common-functionality" id="id1">Common functionality</a></p></li>
-<li><p><a class="reference internal" href="#repository" id="id2">Repository</a></p></li>
-<li><p><a class="reference internal" href="#units" id="id3">Units</a></p></li>
-<li><p><a class="reference internal" href="#task" id="id4">Task</a></p></li>
-<li><p><a class="reference internal" href="#errors" id="id5">Errors</a></p></li>
+<li><p><a class="reference internal" href="#common-functionality" id="id2">Common functionality</a></p></li>
+<li><p><a class="reference internal" href="#repository" id="id3">Repository</a></p></li>
+<li><p><a class="reference internal" href="#units" id="id4">Units</a></p></li>
+<li><p><a class="reference internal" href="#task" id="id5">Task</a></p></li>
+<li><p><a class="reference internal" href="#errors" id="id6">Errors</a></p></li>
 </ul>
 </div>
 <section id="common-functionality">
-<h2><a class="toc-backref" href="#id1">Common functionality</a><a class="headerlink" href="#common-functionality" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id2">Common functionality</a><a class="headerlink" href="#common-functionality" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="pubtools.pulplib.PulpObject">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">pubtools.pulplib.</span></span><span class="sig-name descname"><span class="pre">PulpObject</span></span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/common.html#PulpObject"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.PulpObject" title="Permalink to this definition">¶</a></dt>
@@ -96,7 +96,7 @@ by Pulp’s API.</p>
 
 </section>
 <section id="repository">
-<h2><a class="toc-backref" href="#id2">Repository</a><a class="headerlink" href="#repository" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id3">Repository</a><a class="headerlink" href="#repository" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="pubtools.pulplib.Repository">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">pubtools.pulplib.</span></span><span class="sig-name descname"><span class="pre">Repository</span></span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository/base.html#Repository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Repository" title="Permalink to this definition">¶</a></dt>
@@ -502,6 +502,38 @@ from within this group.</p>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="pubtools.pulplib.YumRepository.upload_rpm">
+<span class="sig-name descname"><span class="pre">upload_rpm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository/yum.html#YumRepository.upload_rpm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.YumRepository.upload_rpm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Upload an RPM to this repository.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>file_obj</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>file object</em>) – <p>If it’s a string, then it’s the path of an RPM to upload.</p>
+<p>Otherwise, it should be a
+<a class="reference external" href="https://docs.python.org/3/glossary.html#term-file-object">file-like object</a>
+pointing at the bytes to upload.
+The client takes ownership of this file object; it should
+not be modified elsewhere, and will be closed when upload
+completes.</p>
+</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Future[list of <a class="reference internal" href="#pubtools.pulplib.Task" title="pubtools.pulplib.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a>]</dt><dd><p>A future which is resolved after content has been imported
+to this repo.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#pubtools.pulplib.DetachedException" title="pubtools.pulplib.DetachedException"><strong>DetachedException</strong></a> – If this instance is not attached to a Pulp client.</p>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.16.0.</span></p>
+</div>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -875,7 +907,7 @@ types: <a class="reference internal" href="#pubtools.pulplib.FileSyncOptions" ti
 
 </section>
 <section id="units">
-<h2><a class="toc-backref" href="#id3">Units</a><a class="headerlink" href="#units" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id4">Units</a><a class="headerlink" href="#units" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="pubtools.pulplib.Unit">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">pubtools.pulplib.</span></span><span class="sig-name descname"><span class="pre">Unit</span></span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/unit/base.html#Unit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Unit" title="Permalink to this definition">¶</a></dt>
@@ -1175,7 +1207,7 @@ NEVRAs returned by <a class="reference internal" href="#pubtools.pulplib.Modulem
 
 </section>
 <section id="task">
-<h2><a class="toc-backref" href="#id4">Task</a><a class="headerlink" href="#task" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id5">Task</a><a class="headerlink" href="#task" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="pubtools.pulplib.Task">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">pubtools.pulplib.</span></span><span class="sig-name descname"><span class="pre">Task</span></span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/task.html#Task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Task" title="Permalink to this definition">¶</a></dt>
@@ -1266,7 +1298,7 @@ by Pulp. These should at least contain a ‘type_id’ and a ‘unit_key’.</p>
 
 </section>
 <section id="errors">
-<h2><a class="toc-backref" href="#id5">Errors</a><a class="headerlink" href="#errors" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id6">Errors</a><a class="headerlink" href="#errors" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="pubtools.pulplib.DetachedException">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">pubtools.pulplib.</span></span><span class="sig-name descname"><span class="pre">DetachedException</span></span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/common.html#DetachedException"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.DetachedException" title="Permalink to this definition">¶</a></dt>
