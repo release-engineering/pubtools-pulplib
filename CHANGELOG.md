@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - n/a
 
+## [2.16.0] - 2021-09-30
+
+- Added `YumRepository.upload_rpm`.
+- Internal refactoring and changes to logging of uploads.
+
 ## [2.15.0] - 2021-09-13
 
 ### Added
@@ -267,7 +272,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release to PyPI
 
-[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.15.0...HEAD
+[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.16.0...HEAD
+[2.16.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.15.0...v2.16.0
 [2.15.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.14.0...v2.15.0
 [2.14.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.13.0...v2.14.0
 [2.13.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.12.1...v2.13.0
