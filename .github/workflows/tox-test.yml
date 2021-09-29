@@ -8,7 +8,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install RPM
-        run: sudo apt-get install -y rpm
+        run: sudo apt-get install -y rpm libkrb5-dev
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
@@ -22,7 +22,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install RPM
-        run: sudo apt-get install -y rpm
+        run: sudo apt-get install -y rpm libkrb5-dev
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
@@ -36,7 +36,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install RPM
-        run: sudo apt-get install -y rpm
+        run: sudo apt-get install -y rpm libkrb5-dev
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
@@ -50,7 +50,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install RPM
-        run: sudo apt-get install -y rpm
+        run: sudo apt-get install -y rpm libkrb5-dev
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
@@ -76,7 +76,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install RPM
-        run: sudo apt-get install -y rpm
+        run: sudo apt-get install -y rpm libkrb5-dev
       - name: Setup Python
         uses: actions/setup-python@v2
         with:

@@ -1,5 +1,7 @@
 import re
 
+import six
+
 from more_executors.futures import f_map, f_proxy, f_return
 from .base import Repository, SyncOptions, repo_type
 from ..frozenlist import FrozenList
@@ -178,3 +180,40 @@ class YumRepository(Repository):
         page_f = self._client.search_repository(criteria)
         repo_f = f_map(page_f, unpack_page)
         return f_proxy(repo_f)
+
+    def upload_rpm(self, file_obj):
+        """Upload an RPM to this repository.
+
+        Args:
+            file_obj (str, file object)
+                If it's a string, then it's the path of an RPM to upload.
+
+                Otherwise, it should be a
+                `file-like object <https://docs.python.org/3/glossary.html#term-file-object>`_
+                pointing at the bytes to upload.
+                The client takes ownership of this file object; it should
+                not be modified elsewhere, and will be closed when upload
+                completes.
+
+        Returns:
+            Future[list of :class:`~pubtools.pulplib.Task`]
+                A future which is resolved after content has been imported
+                to this repo.
+
+        Raises:
+            DetachedException
+                If this instance is not attached to a Pulp client.
+
+        .. versionadded:: 2.16.0
+        """
+        # We want some name of what we're uploading for logging purposes, but the
+        # input could be a plain string, or a file object with 'name' attribute, or
+        # a file object without 'name' ... make sure we do something reasonable in
+        # all cases.
+        if isinstance(file_obj, six.string_types):
+            name = file_obj
+        else:
+            # If we don't know what we're uploading we just say it's "an RPM"...
+            name = getattr(file_obj, "name", "an RPM")
+
+        return self._upload_then_import(file_obj, name, "rpm")

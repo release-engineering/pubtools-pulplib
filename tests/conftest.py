@@ -1,3 +1,5 @@
+import os
+
 import pytest
 import requests_mock
 
@@ -46,6 +48,13 @@ def fast_poller():
 
     TaskPoller.MAX_ATTEMPTS = old_max_attempts
     TaskPoller.DELAY = old_delay
+
+
+@pytest.fixture
+def data_path():
+    """Returns path to the tests/data dir used to store extra files for testing."""
+
+    return os.path.join(os.path.dirname(__file__), "data")
 
 
 class FastRetryPolicy(PulpRetryPolicy):

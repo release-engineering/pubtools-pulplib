@@ -3,24 +3,30 @@ import os
 import logging
 from argparse import ArgumentParser
 
-from pubtools.pulplib import Client
+from pubtools.pulplib import Client, YumRepository, FileRepository
 
 log = logging.getLogger("upload")
 
 
+def upload_to_repo(repo, path):
+    if isinstance(repo, YumRepository) and path.endswith(".rpm"):
+        return repo.upload_rpm(path)
+    if isinstance(repo, FileRepository):
+        return repo.upload_file(path)
+    raise RuntimeError("Don't know how to upload %s into %s!" % (path, repo))
+
+
 def upload(client, path, repo_id):
-    repo = client.get_repository(repo_id)
+    repo = client.get_repository(repo_id).result()
 
     uploads = []
     if os.path.isdir(path):
         for file in os.listdir(path):
             file = os.path.join(path, file)
             if os.path.isfile(file):
-                log.debug("Uploading %s to repo %s in threads", file, repo_id)
-                uploads.append(repo.upload_file(file))
+                uploads.append(upload_to_repo(repo, file))
     elif os.path.isfile(path):
-        log.debug("Uploading %s to repo %s", path, repo_id)
-        uploads.append(repo.upload_file(path))
+        uploads.append(upload_to_repo(repo, path))
 
     for up in uploads:
         result = up.result()

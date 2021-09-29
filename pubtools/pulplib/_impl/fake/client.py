@@ -20,13 +20,13 @@ from pubtools.pulplib import (
     Repository,
     Distributor,
     Unit,
-    FileUnit,
     MaintenanceReport,
 )
 from pubtools.pulplib._impl.client.search import search_for_criteria
 from .. import compat_attr as attr
 
 from .match import match_object
+from .units import make_unit
 
 Publish = namedtuple("Publish", ["repository", "tasks"])
 Upload = namedtuple("Upload", ["repository", "tasks", "name", "sha256"])
@@ -64,6 +64,7 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
         self._repo_units = {}
         self._publish_history = []
         self._upload_history = []
+        self._uploads_pending = {}
         self._sync_history = []
         self._maintenance_report = None
         self._type_ids = self._DEFAULT_TYPE_IDS[:]
@@ -256,7 +257,10 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
         return f_proxy(f_return(self._type_ids))
 
     def _do_upload_file(self, upload_id, file_obj):
-        # pylint: disable=unused-argument
+        # We keep track of uploaded content as we may need it at import time.
+        buffer = six.BytesIO()
+        self._uploads_pending[upload_id] = buffer
+
         is_file_obj = "close" in dir(file_obj)
         if not is_file_obj:
             file_obj = open(file_obj, "rb")
@@ -266,6 +270,7 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
             if data:
                 if isinstance(data, six.text_type):
                     data = data.encode("utf-8")
+                buffer.write(data)
                 checksum.update(data)
                 size += len(data)
                 return do_next_upload(checksum, size)
@@ -321,7 +326,6 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
         return f_return(upload_request)
 
     def _do_import(self, repo_id, upload_id, unit_type_id, unit_key):
-        # pylint: disable=unused-argument
         repo_f = self.get_repository(repo_id)
         if repo_f.exception():
             # Repo can't be found, let that exception propagate
@@ -329,28 +333,22 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
 
         repo = repo_f.result()
 
-        # This code was originally written for generic file upload ("iso" units).
-        # It's certain that it will require refactoring for other types of units
-        # because we don't have enough metadata to create proper Unit instances
-        # for anything else. We can't get here for any other unit_type_id right now
-        # anyway, but as soon as we do make sure we fail in a controlled manner.
-        assert unit_type_id == "iso"
+        upload_content = self._uploads_pending.pop(upload_id)
+        upload_content.seek(0)
+
+        unit = make_unit(unit_type_id, unit_key, upload_content)
+        unit = attr.evolve(unit, repository_memberships=[repo.id])
 
         repo_units = self._repo_units.setdefault(repo_id, set())
-        repo_units.add(
-            FileUnit(
-                path=unit_key["name"],
-                size=unit_key["size"],
-                sha256sum=unit_key["checksum"],
-                repository_memberships=[repo_id],
-            )
-        )
+        repo_units.add(unit)
 
         task = Task(id=self._next_task_id(), completed=True, succeeded=True)
 
-        self._upload_history.append(
-            Upload(repo, [task], unit_key["name"], unit_key["checksum"])
-        )
+        # upload_history is a deprecated field, data is maintained for iso only.
+        if unit_type_id == "iso":
+            self._upload_history.append(
+                Upload(repo, [task], unit_key["name"], unit_key["checksum"])
+            )
 
         return f_return([task])
 
