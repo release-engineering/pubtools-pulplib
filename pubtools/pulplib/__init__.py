@@ -14,6 +14,7 @@ from ._impl.model import (
     RpmUnit,
     ModulemdUnit,
     ModulemdDefaultsUnit,
+    YumRepoMetadataFileUnit,
     Distributor,
     PublishOptions,
     FileSyncOptions,

@@ -1,16 +1,25 @@
 import hashlib
 import tempfile
 
-from pubtools.pulplib import FileUnit, RpmUnit
+from pubtools.pulplib import (
+    FileUnit,
+    RpmUnit,
+    YumRepoMetadataFileUnit,
+    ModulemdUnit,
+    ModulemdDefaultsUnit,
+)
 
 from .rpmlib import get_rpm_header, get_header_fields, get_keys_from_header
 
 
-def make_unit(type_id, unit_key, content):
+def make_unit(type_id, unit_key, unit_metadata, content):
     # Obtain a valid unit representing uploaded 'content'.
 
     if type_id == "iso":
         return make_iso_unit(unit_key)
+
+    if type_id == "yum_repo_metadata_file":
+        return make_yum_repo_metadata_unit(unit_key, unit_metadata)
 
     if type_id == "rpm":
         return make_rpm_unit(content)
@@ -28,6 +37,14 @@ def make_iso_unit(unit_key):
     # All needed info is always provided up-front in the unit key.
     return FileUnit(
         path=unit_key["name"], size=unit_key["size"], sha256sum=unit_key["checksum"]
+    )
+
+
+def make_yum_repo_metadata_unit(unit_key, unit_metadata):
+    # For expected fields in unit_key vs metadata, refer to:
+    # https://github.com/pulp/pulp_rpm/blob/5c5a7dcc058b29d89b3a913d29cfcab41db96686/plugins/pulp_rpm/plugins/importers/yum/upload.py#L246
+    return YumRepoMetadataFileUnit(
+        data_type=unit_key["data_type"], sha256sum=unit_metadata["checksum"]
     )
 
 
@@ -81,3 +98,51 @@ def make_rpm_unit(content):
     rpmattrs.update(sumattrs)
 
     return RpmUnit(**rpmattrs)
+
+
+def make_unit_key(unit):
+    # Given a unit, returns a unit key tuple used internally by the fake client.
+    #
+    # The unit keys returned here do not have to be precisely identical to those
+    # used by a real Pulp server. However, they should be conceptually equivalent.
+    # The fake client will keep all references to units via these keys, so the
+    # fields used within a key controls whether an upload operation would add a new
+    # unit or overwrite an existing one.
+    #
+    # Example: in Pulp it is not possible to store multiple ISO units with the same
+    # (path, checksum, size). The fake client needs to use a unit key incorporating
+    # those same fields, otherwise the fake could create situations which are
+    # impossible on a real Pulp server.
+
+    if isinstance(unit, FileUnit):
+        return (unit.path, unit.sha256sum, unit.size)
+
+    if isinstance(unit, YumRepoMetadataFileUnit):
+        # This should not be possible because the unit_key embeds a repo_id.
+        # If this somehow occurs, we can't continue.
+        assert (
+            len(unit.repository_memberships) == 1
+        ), "BUG: a YumRepoMetadataFileUnit has been created without any repository!"
+        return (unit.data_type, unit.repository_memberships[0])
+
+    if isinstance(unit, RpmUnit):
+        return (
+            unit.name,
+            unit.epoch,
+            unit.version,
+            unit.release,
+            unit.arch,
+            unit.sha256sum,
+        )
+
+    if isinstance(unit, ModulemdUnit):
+        return (unit.nsvca,)
+
+    if isinstance(unit, ModulemdDefaultsUnit):
+        return (unit.name, unit.repo_id)
+
+    # Can't get here normally.
+    # If you get here, you're probably partway through implementing a new type of unit.
+    raise NotImplementedError(
+        "fake client does not support '%s'" % unit
+    )  # pragma: no cover
