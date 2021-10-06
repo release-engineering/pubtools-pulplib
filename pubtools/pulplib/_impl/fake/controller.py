@@ -78,7 +78,7 @@ class FakeController(object):
 
         .. versionadded:: 1.5.0
         """
-        self.client._repo_units.setdefault(repository.id, set()).update(set(units))
+        self.client._insert_repo_units(repository.id, units)
 
     @property
     def content_type_ids(self):

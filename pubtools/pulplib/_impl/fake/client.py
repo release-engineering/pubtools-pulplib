@@ -26,7 +26,7 @@ from pubtools.pulplib._impl.client.search import search_for_criteria
 from .. import compat_attr as attr
 
 from .match import match_object
-from .units import make_unit
+from . import units
 
 Publish = namedtuple("Publish", ["repository", "tasks"])
 Upload = namedtuple("Upload", ["repository", "tasks", "name", "sha256"])
@@ -61,7 +61,19 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
 
     def __init__(self):
         self._repositories = []
-        self._repo_units = {}
+
+        # Similar to a real Pulp server, units are stored through a "unit key"
+        # layer of indirection:
+        # - repos contain unit keys
+        # - a unit key refers to one (and only one) unit
+        #
+        # By storing data in this way, we ensure we have similar behavior and
+        # constraints as a real Pulp server, e.g. cannot store two different units
+        # which would have the same key; updating a unit referenced from multiple repos
+        # effectively updates it in all repos at once; etc.
+        self._repo_unit_keys = {}
+        self._units_by_key = {}
+
         self._publish_history = []
         self._upload_history = []
         self._uploads_pending = {}
@@ -78,6 +90,35 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
 
     def __exit__(self, *_args, **_kwargs):
         self._shutdown = True
+
+    @property
+    def _all_units(self):
+        # Get all units in all repos.
+        #
+        # Cannot be used to modify units.
+        return list(self._units_by_key.values())
+
+    def _repo_units(self, repo_id):
+        # Get all units in a particular repo.
+        #
+        # Cannot be used to modify units.
+        out = []
+        for key in self._repo_unit_keys.get(repo_id) or []:
+            out.append(self._units_by_key[key])
+        return out
+
+    def _insert_repo_units(self, repo_id, units_to_add):
+        # Insert an iterable of units into a specific repo.
+        #
+        # If a unit with the same key exists in multiple repos, this will update
+        # matching units across *all* of those repos - same as a real pulp server.
+
+        repo_unit_keys = self._repo_unit_keys.setdefault(repo_id, set())
+
+        for unit in units_to_add:
+            unit_key = units.make_unit_key(unit)
+            self._units_by_key[unit_key] = unit
+            repo_unit_keys.add(unit_key)
 
     def _ensure_alive(self):
         if self._shutdown:
@@ -134,7 +175,7 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
                 )
             )
 
-        for unit in sum([list(x) for x in self._repo_units.values()], []):
+        for unit in self._all_units:
             if (
                 prepared_search.type_ids
                 and unit.content_type_id not in prepared_search.type_ids
@@ -179,11 +220,11 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
         if repo_f.exception():
             return repo_f
 
-        units = self._repo_units.get(repo_id, set())
+        repo_units = self._repo_units(repo_id)
         out = []
 
         try:
-            for unit in units:
+            for unit in repo_units:
                 if match_object(criteria, unit):
                     out.append(unit)
         except Exception as ex:  # pylint: disable=broad-except
@@ -287,32 +328,36 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
         if repo_f.exception():
             return repo_f
 
-        current = self._repo_units.get(repo_id, set())
-        removed = set()
-        kept = set()
+        current = self._repo_unit_keys.get(repo_id, set())
+        units_with_key = [
+            {"key": key, "unit": self._units_by_key[key]} for key in current
+        ]
+        removed_units = set()
+        kept_keys = set()
 
         # use type hint=Unit so that if type_ids are the goal here
         # then we will get back a properly prepared PulpSearch with
         # a populated type_ids field
         pulp_search = search_for_criteria(criteria, type_hint=Unit, type_ids_accum=None)
 
-        for unit in current:
+        for unit_with_key in units_with_key:
+            unit = unit_with_key["unit"]
             if (
                 pulp_search.type_ids is None
                 or unit.content_type_id in pulp_search.type_ids
             ):
-                removed.add(unit)
+                removed_units.add(unit)
             else:
-                kept.add(unit)
+                kept_keys.add(unit_with_key["key"])
 
-        self._repo_units[repo_id] = kept
+        self._repo_unit_keys[repo_id] = kept_keys
 
         task = Task(
             id=self._next_task_id(),
             repo_id=repo_id,
             completed=True,
             succeeded=True,
-            units=removed,
+            units=removed_units,
         )
 
         return f_return([task])
@@ -325,7 +370,9 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
 
         return f_return(upload_request)
 
-    def _do_import(self, repo_id, upload_id, unit_type_id, unit_key):
+    def _do_import(
+        self, repo_id, upload_id, unit_type_id, unit_key, unit_metadata=None
+    ):
         repo_f = self.get_repository(repo_id)
         if repo_f.exception():
             # Repo can't be found, let that exception propagate
@@ -336,11 +383,10 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
         upload_content = self._uploads_pending.pop(upload_id)
         upload_content.seek(0)
 
-        unit = make_unit(unit_type_id, unit_key, upload_content)
+        unit = units.make_unit(unit_type_id, unit_key, unit_metadata, upload_content)
         unit = attr.evolve(unit, repository_memberships=[repo.id])
 
-        repo_units = self._repo_units.setdefault(repo_id, set())
-        repo_units.add(unit)
+        self._insert_repo_units(repo_id, [unit])
 
         task = Task(id=self._next_task_id(), completed=True, succeeded=True)
 
@@ -378,7 +424,7 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
                 return f_return([])
 
             self._repositories.pop(idx)  # pylint: disable=undefined-loop-variable
-            self._repo_units.pop(repo_id, None)
+            self._repo_unit_keys.pop(repo_id, None)
             return f_return(
                 [Task(id=self._next_task_id(), completed=True, succeeded=True)]
             )

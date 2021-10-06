@@ -545,7 +545,9 @@ class Repository(PulpObject, Deletable):
         for distributor in self.distributors or []:
             distributor._set_client(client)
 
-    def _upload_then_import(self, file_obj, name, type_id, unit_key_fn=None):
+    def _upload_then_import(
+        self, file_obj, name, type_id, unit_key_fn=None, unit_metadata_fn=None
+    ):
         """Private helper to upload and import a piece of content into this repo.
 
         To be called by the type-specific subclasses (e.g. YumRepository,
@@ -567,12 +569,19 @@ class Repository(PulpObject, Deletable):
                 _do_upload_file. It should return the unit key for this piece of
                 content. If omitted, an empty unit key is used, which means Pulp
                 is wholly responsible for calculating the unit key.
+
+            unit_metadata_fn (callable):
+                a callable which will be invoked with the return value of
+                _do_upload_file. It should return the unit metadata for this piece of
+                content. If omitted, metadata is not included in the import call to
+                Pulp.
         """
 
         if not self._client:
             raise DetachedException()
 
         unit_key_fn = unit_key_fn or (lambda _: {})
+        unit_metadata_fn = unit_metadata_fn or (lambda _: None)
 
         upload_id_f = f_map(
             self._client._request_upload(), lambda upload: upload["upload_id"]
@@ -593,7 +602,11 @@ class Repository(PulpObject, Deletable):
         import_complete_f = f_flat_map(
             upload_complete_f,
             lambda upload: self._client._do_import(
-                self.id, upload_id_f.result(), type_id, unit_key_fn(upload)
+                self.id,
+                upload_id_f.result(),
+                type_id,
+                unit_key_fn(upload),
+                unit_metadata_fn(upload),
             ),
         )
 

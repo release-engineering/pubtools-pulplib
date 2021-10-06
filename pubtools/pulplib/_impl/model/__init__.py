@@ -1,8 +1,4 @@
-from .common import (
-    PulpObject,
-    DetachedException,
-    InvalidDataException,
-)
+from .common import PulpObject, DetachedException, InvalidDataException
 from .repository import (
     Repository,
     YumRepository,
@@ -14,7 +10,14 @@ from .repository import (
     ContainerSyncOptions,
     YumSyncOptions,
 )
-from .unit import Unit, FileUnit, RpmUnit, ModulemdUnit, ModulemdDefaultsUnit
+from .unit import (
+    Unit,
+    FileUnit,
+    RpmUnit,
+    ModulemdUnit,
+    ModulemdDefaultsUnit,
+    YumRepoMetadataFileUnit,
+)
 from .task import Task
 from .distributor import Distributor
 from .maintenance import MaintenanceReport, MaintenanceEntry

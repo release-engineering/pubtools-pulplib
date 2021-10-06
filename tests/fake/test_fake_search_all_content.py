@@ -5,6 +5,7 @@ from pubtools.pulplib import (
     Criteria,
     RpmUnit,
     ModulemdUnit,
+    ModulemdDefaultsUnit,
     YumRepository,
     PulpException,
 )
@@ -56,6 +57,9 @@ def populated_units(controller):
             arch="x86_64",
             repository_memberships=["repo1"],
         ),
+        ModulemdDefaultsUnit(
+            name="module1", repo_id="repo1", repository_memberships=["repo1"]
+        ),
     ]
     units2 = [
         RpmUnit(
@@ -101,8 +105,8 @@ def test_search_content_all(populated_units, controller):
     assert len([u for u in units1 if u.content_type_id == "rpm"]) == 3
     assert len(units2) == 2
     assert len([u for u in units2 if u.content_type_id == "srpm"]) == 2
-    # + two modulemd
-    assert len(units3) == 7
+    # + two modulemd, one modulemd_defaults
+    assert len(units3) == 8
 
     assert set(sum([u.repository_memberships for u in units1], [])) == set(
         ["repo1", "repo2"]
@@ -150,8 +154,8 @@ def test_search_content_all_pagination(populated_units, controller):
     assert len([u for u in units1 if u.content_type_id == "rpm"]) == 3
     assert len(units2) == 2
     assert len([u for u in units2 if u.content_type_id == "srpm"]) == 2
-    # + two modulemd
-    assert len(units3) == 7
+    # + two modulemd, one modulemd_defaults
+    assert len(units3) == 8
 
     assert set(sum([u.repository_memberships for u in units1], [])) == set(
         ["repo1", "repo2"]

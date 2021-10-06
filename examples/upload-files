@@ -7,10 +7,24 @@ from pubtools.pulplib import Client, YumRepository, FileRepository
 
 log = logging.getLogger("upload")
 
+METADATA_TYPES = ["productid"]
+
 
 def upload_to_repo(repo, path):
-    if isinstance(repo, YumRepository) and path.endswith(".rpm"):
-        return repo.upload_rpm(path)
+    # Apply some heuristics to decide what kind of content we're uploading.
+    # Note: real tools should do something more robust, e.g. require the caller
+    # to lay out files into directories according to their type or otherwise
+    # specify the type up-front.
+    if isinstance(repo, YumRepository):
+        if path.endswith(".rpm"):
+            return repo.upload_rpm(path)
+
+        # We can upload metadata file if the filename exactly matches a known
+        # metadata type (e.g. "productid")
+        basename = os.path.basename(path)
+        if basename in METADATA_TYPES:
+            return repo.upload_metadata(path, basename)
+
     if isinstance(repo, FileRepository):
         return repo.upload_file(path)
     raise RuntimeError("Don't know how to upload %s into %s!" % (path, repo))

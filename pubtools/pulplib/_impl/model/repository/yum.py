@@ -217,3 +217,63 @@ class YumRepository(Repository):
             name = getattr(file_obj, "name", "an RPM")
 
         return self._upload_then_import(file_obj, name, "rpm")
+
+    def upload_metadata(self, file_obj, metadata_type):
+        """Upload a metadata file to this repository.
+
+        A metadata file is any additional file which will be published alongside,
+        and referenced from, the repodata ``.xml`` and ``.sqlite`` files when this
+        repo is published.
+
+        Args:
+            file_obj (str, file object)
+                If it's a string, then it's the path of a file to upload.
+
+                Otherwise, it should be a
+                `file-like object <https://docs.python.org/3/glossary.html#term-file-object>`_
+                pointing at the bytes to upload.
+                The client takes ownership of this file object; it should
+                not be modified elsewhere, and will be closed when upload
+                completes.
+
+            metadata_type (str)
+                Identifies the type of metadata being uploaded.
+
+                This is an arbitrary string which will be reproduced in the yum
+                repo metadata on publish. The appropriate value depends on the
+                type of data being uploaded. For example, ``"productid"`` should
+                be used when uploading an RHSM-style product certificate.
+
+                A repository may only contain a single metadata file of each type.
+                If a file of this type is already present in the repo, it will be
+                overwritten by the upload.
+
+        Returns:
+            Future[list of :class:`~pubtools.pulplib.Task`]
+                A future which is resolved after content has been imported
+                to this repo.
+
+        Raises:
+            DetachedException
+                If this instance is not attached to a Pulp client.
+
+        .. versionadded:: 2.17.0
+        """
+        if isinstance(file_obj, six.string_types):
+            name = "%s (%s)" % (file_obj, metadata_type)
+        else:
+            # If we don't know what we're uploading we just say "<type> metadata"...
+            name = getattr(file_obj, "name", "%s metadata" % metadata_type)
+
+        return self._upload_then_import(
+            file_obj,
+            name,
+            "yum_repo_metadata_file",
+            # Requirements around unit key and metadata can be found at:
+            # https://github.com/pulp/pulp_rpm/blob/5c5a7dcc058b29d89b3a913d29cfcab41db96686/plugins/pulp_rpm/plugins/importers/yum/upload.py#L246
+            unit_key_fn=lambda _: {"data_type": metadata_type, "repo_id": self.id},
+            unit_metadata_fn=lambda upload: {
+                "checksum": upload[0],
+                "checksum_type": "sha256",
+            },
+        )

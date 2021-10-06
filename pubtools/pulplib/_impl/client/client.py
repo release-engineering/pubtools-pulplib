@@ -640,15 +640,20 @@ class Client(object):
             self._do_request, method="PUT", url=url, data=data
         )
 
-    def _do_import(self, repo_id, upload_id, unit_type_id, unit_key):
+    def _do_import(
+        self, repo_id, upload_id, unit_type_id, unit_key, unit_metadata=None
+    ):
         url = os.path.join(
             self._url, "pulp/api/v2/repositories/%s/actions/import_upload/" % repo_id
         )
+
+        unit_metadata = unit_metadata or {}
 
         body = {
             "unit_type_id": unit_type_id,
             "upload_id": upload_id,
             "unit_key": unit_key,
+            "unit_metadata": unit_metadata,
         }
 
         LOG.debug("Importing contents to repo %s with upload id %s", repo_id, upload_id)
