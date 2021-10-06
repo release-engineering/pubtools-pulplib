@@ -184,6 +184,16 @@ class YumRepository(Repository):
     def upload_rpm(self, file_obj):
         """Upload an RPM to this repository.
 
+        .. warning::
+
+            For RPMs belonging to a module, it's strongly advised to upload
+            the module metadata first (using :meth:`upload_modules`) and only
+            proceed with uploading RPMs once module upload has completed.
+
+            This reduces the risk of accidentally publishing a repository with
+            modular RPMs without the corresponding metadata (which has a much
+            worse impact than publishing metadata without the corresponding RPMs).
+
         Args:
             file_obj (str, file object)
                 If it's a string, then it's the path of an RPM to upload.
@@ -277,3 +287,44 @@ class YumRepository(Repository):
                 "checksum_type": "sha256",
             },
         )
+
+    def upload_modules(self, file_obj):
+        """Upload a modulemd stream to this repository.
+
+        All supported documents in the given stream will be imported to this
+        repository. On current versions of Pulp 2.x, this means only:
+
+        * `modulemd v2 <https://github.com/fedora-modularity/libmodulemd/blob/main/yaml_specs/modulemd_stream_v2.yaml>`_
+        * `modulemd-defaults v1 <https://github.com/fedora-modularity/libmodulemd/blob/main/yaml_specs/modulemd_defaults_v1.yaml>`_
+
+        Attempting to use other document types may result in an error.
+
+        Args:
+            file_obj (str, file object)
+                If it's a string, then it's the path of a modulemd YAML
+                file to upload.
+
+                Otherwise, it should be a
+                `file-like object <https://docs.python.org/3/glossary.html#term-file-object>`_
+                pointing at the text to upload.
+                The client takes ownership of this file object; it should
+                not be modified elsewhere, and will be closed when upload
+                completes.
+
+        Returns:
+            Future[list of :class:`~pubtools.pulplib.Task`]
+                A future which is resolved after content has been imported
+                to this repo.
+
+        Raises:
+            DetachedException
+                If this instance is not attached to a Pulp client.
+
+        .. versionadded:: 2.17.0
+        """
+        if isinstance(file_obj, six.string_types):
+            name = file_obj
+        else:
+            name = getattr(file_obj, "name", "modulemds")
+
+        return self._upload_then_import(file_obj, name, "modulemd")
