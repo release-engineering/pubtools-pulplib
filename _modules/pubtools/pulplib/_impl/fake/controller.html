@@ -111,7 +111,7 @@
 
 <span class="sd">        .. versionadded:: 1.5.0</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">_repo_units</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">repository</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">units</span><span class="p">))</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">_insert_repo_units</span><span class="p">(</span><span class="n">repository</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">units</span><span class="p">)</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">content_type_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

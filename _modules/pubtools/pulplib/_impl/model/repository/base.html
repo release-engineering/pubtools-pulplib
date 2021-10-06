@@ -578,7 +578,9 @@
         <span class="k">for</span> <span class="n">distributor</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">distributors</span> <span class="ow">or</span> <span class="p">[]:</span>
             <span class="n">distributor</span><span class="o">.</span><span class="n">_set_client</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_upload_then_import</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_obj</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">type_id</span><span class="p">,</span> <span class="n">unit_key_fn</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_upload_then_import</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">file_obj</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">type_id</span><span class="p">,</span> <span class="n">unit_key_fn</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">unit_metadata_fn</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Private helper to upload and import a piece of content into this repo.</span>
 
 <span class="sd">        To be called by the type-specific subclasses (e.g. YumRepository,</span>
@@ -600,12 +602,19 @@
 <span class="sd">                _do_upload_file. It should return the unit key for this piece of</span>
 <span class="sd">                content. If omitted, an empty unit key is used, which means Pulp</span>
 <span class="sd">                is wholly responsible for calculating the unit key.</span>
+
+<span class="sd">            unit_metadata_fn (callable):</span>
+<span class="sd">                a callable which will be invoked with the return value of</span>
+<span class="sd">                _do_upload_file. It should return the unit metadata for this piece of</span>
+<span class="sd">                content. If omitted, metadata is not included in the import call to</span>
+<span class="sd">                Pulp.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">DetachedException</span><span class="p">()</span>
 
         <span class="n">unit_key_fn</span> <span class="o">=</span> <span class="n">unit_key_fn</span> <span class="ow">or</span> <span class="p">(</span><span class="k">lambda</span> <span class="n">_</span><span class="p">:</span> <span class="p">{})</span>
+        <span class="n">unit_metadata_fn</span> <span class="o">=</span> <span class="n">unit_metadata_fn</span> <span class="ow">or</span> <span class="p">(</span><span class="k">lambda</span> <span class="n">_</span><span class="p">:</span> <span class="kc">None</span><span class="p">)</span>
 
         <span class="n">upload_id_f</span> <span class="o">=</span> <span class="n">f_map</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_request_upload</span><span class="p">(),</span> <span class="k">lambda</span> <span class="n">upload</span><span class="p">:</span> <span class="n">upload</span><span class="p">[</span><span class="s2">&quot;upload_id&quot;</span><span class="p">]</span>
@@ -626,7 +635,11 @@
         <span class="n">import_complete_f</span> <span class="o">=</span> <span class="n">f_flat_map</span><span class="p">(</span>
             <span class="n">upload_complete_f</span><span class="p">,</span>
             <span class="k">lambda</span> <span class="n">upload</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_do_import</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">upload_id_f</span><span class="o">.</span><span class="n">result</span><span class="p">(),</span> <span class="n">type_id</span><span class="p">,</span> <span class="n">unit_key_fn</span><span class="p">(</span><span class="n">upload</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                <span class="n">upload_id_f</span><span class="o">.</span><span class="n">result</span><span class="p">(),</span>
+                <span class="n">type_id</span><span class="p">,</span>
+                <span class="n">unit_key_fn</span><span class="p">(</span><span class="n">upload</span><span class="p">),</span>
+                <span class="n">unit_metadata_fn</span><span class="p">(</span><span class="n">upload</span><span class="p">),</span>
             <span class="p">),</span>
         <span class="p">)</span>
 

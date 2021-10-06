@@ -249,7 +249,67 @@
             <span class="c1"># If we don&#39;t know what we&#39;re uploading we just say it&#39;s &quot;an RPM&quot;...</span>
             <span class="n">name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;an RPM&quot;</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_upload_then_import</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="s2">&quot;rpm&quot;</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_upload_then_import</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="s2">&quot;rpm&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="YumRepository.upload_metadata"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.YumRepository.upload_metadata">[docs]</a>    <span class="k">def</span> <span class="nf">upload_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_obj</span><span class="p">,</span> <span class="n">metadata_type</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Upload a metadata file to this repository.</span>
+
+<span class="sd">        A metadata file is any additional file which will be published alongside,</span>
+<span class="sd">        and referenced from, the repodata ``.xml`` and ``.sqlite`` files when this</span>
+<span class="sd">        repo is published.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            file_obj (str, file object)</span>
+<span class="sd">                If it&#39;s a string, then it&#39;s the path of a file to upload.</span>
+
+<span class="sd">                Otherwise, it should be a</span>
+<span class="sd">                `file-like object &lt;https://docs.python.org/3/glossary.html#term-file-object&gt;`_</span>
+<span class="sd">                pointing at the bytes to upload.</span>
+<span class="sd">                The client takes ownership of this file object; it should</span>
+<span class="sd">                not be modified elsewhere, and will be closed when upload</span>
+<span class="sd">                completes.</span>
+
+<span class="sd">            metadata_type (str)</span>
+<span class="sd">                Identifies the type of metadata being uploaded.</span>
+
+<span class="sd">                This is an arbitrary string which will be reproduced in the yum</span>
+<span class="sd">                repo metadata on publish. The appropriate value depends on the</span>
+<span class="sd">                type of data being uploaded. For example, ``&quot;productid&quot;`` should</span>
+<span class="sd">                be used when uploading an RHSM-style product certificate.</span>
+
+<span class="sd">                A repository may only contain a single metadata file of each type.</span>
+<span class="sd">                If a file of this type is already present in the repo, it will be</span>
+<span class="sd">                overwritten by the upload.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Future[list of :class:`~pubtools.pulplib.Task`]</span>
+<span class="sd">                A future which is resolved after content has been imported</span>
+<span class="sd">                to this repo.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            DetachedException</span>
+<span class="sd">                If this instance is not attached to a Pulp client.</span>
+
+<span class="sd">        .. versionadded:: 2.17.0</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">string_types</span><span class="p">):</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="n">metadata_type</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># If we don&#39;t know what we&#39;re uploading we just say &quot;&lt;type&gt; metadata&quot;...</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> metadata&quot;</span> <span class="o">%</span> <span class="n">metadata_type</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_upload_then_import</span><span class="p">(</span>
+            <span class="n">file_obj</span><span class="p">,</span>
+            <span class="n">name</span><span class="p">,</span>
+            <span class="s2">&quot;yum_repo_metadata_file&quot;</span><span class="p">,</span>
+            <span class="c1"># Requirements around unit key and metadata can be found at:</span>
+            <span class="c1"># https://github.com/pulp/pulp_rpm/blob/5c5a7dcc058b29d89b3a913d29cfcab41db96686/plugins/pulp_rpm/plugins/importers/yum/upload.py#L246</span>
+            <span class="n">unit_key_fn</span><span class="o">=</span><span class="k">lambda</span> <span class="n">_</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;data_type&quot;</span><span class="p">:</span> <span class="n">metadata_type</span><span class="p">,</span> <span class="s2">&quot;repo_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">},</span>
+            <span class="n">unit_metadata_fn</span><span class="o">=</span><span class="k">lambda</span> <span class="n">upload</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;checksum&quot;</span><span class="p">:</span> <span class="n">upload</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="s2">&quot;checksum_type&quot;</span><span class="p">:</span> <span class="s2">&quot;sha256&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span></div></div>
 </pre></div>
 
           </div>
