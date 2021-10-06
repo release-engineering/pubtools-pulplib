@@ -1,6 +1,7 @@
 import os
 import logging
 import datetime
+import threading
 
 from pubtools.pulplib._impl.model import Task
 from .errors import MissingTaskException, TaskFailedException
@@ -38,11 +39,22 @@ class TaskPoller(object):
     ACTIVITY_DELAY = datetime.timedelta(minutes=5)
 
     def __init__(self, session, url, timer=datetime.datetime.utcnow):
-        self.session = session
+        self._session = session
+        # Lock protects 'session', as cancel() may be called from one thread
+        # while another is in the middle of poll, both using the session
+        self.lock = threading.Lock()
         self.url = url
         self.attempt = 1
         self.timer = timer
         self.last_activity = self.timer()
+
+    @property
+    def session(self):
+        # A helper to ensure all access to session is protected by lock.
+        # If you try to use the requests.Session without the lock held,
+        # it's a bug.
+        assert self.lock.locked(), "INTERNAL ERROR: unsynchronized access to session"
+        return self._session
 
     def __call__(self, descriptors):
         try:
@@ -52,7 +64,8 @@ class TaskPoller(object):
             )
 
             # Get status of all of those tasks from Pulp
-            tasks = self.search_tasks(all_task_ids)
+            with self.lock:
+                tasks = self.search_tasks(all_task_ids)
 
             # Now check all descriptors and decide which have completed
             resolved_count = self.resolve_descriptors(tasks, descriptor_task_ids)
@@ -66,7 +79,8 @@ class TaskPoller(object):
                 self.last_activity = self.timer()
 
             # If nothing's going on for a while, log about it
-            self.log_if_inactive()
+            with self.lock:
+                self.log_if_inactive()
         except Exception:
             if self.attempt >= self.MAX_ATTEMPTS:
                 LOG.exception("Pulp task polling repeatedly failed")
@@ -176,12 +190,13 @@ class TaskPoller(object):
         # Invoked when a request is made to cancel a future.
         task_ids = [t["task_id"] for t in task_data["spawned_tasks"]]
 
-        for task_id in task_ids:
-            url = os.path.join(self.url, "pulp/api/v2/tasks/%s/" % task_id)
-            response = self.session.delete(url)
-            response.raise_for_status()
+        with self.lock:
+            for task_id in task_ids:
+                url = os.path.join(self.url, "pulp/api/v2/tasks/%s/" % task_id)
+                response = self.session.delete(url)
+                response.raise_for_status()
 
-            LOG.info("Cancelled Pulp task: %s", task_id)
+                LOG.info("Cancelled Pulp task: %s", task_id)
 
         return True
 
