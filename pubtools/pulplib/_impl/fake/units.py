@@ -14,6 +14,7 @@ from pubtools.pulplib import (
 )
 
 from .rpmlib import get_rpm_header, get_header_fields, get_keys_from_header
+from ..model.attr import PULP2_UNIT_KEY
 
 LOG = logging.getLogger("pubtools.pulplib")
 
@@ -208,3 +209,20 @@ def make_unit_key(unit):
     raise NotImplementedError(
         "fake client does not support '%s'" % unit
     )  # pragma: no cover
+
+
+def with_key_only(units):
+    # Given some units, returns copies of those units with only unit_key
+    # fields present; mimics the behavior of pulp when filling units_successful
+    # field on tasks.
+    out = []
+    for unit in units:
+        klass = type(unit)
+        kwargs = {}
+        for field in attr.fields(klass):
+            if field.metadata.get(PULP2_UNIT_KEY):
+                kwargs[field.name] = getattr(unit, field.name)
+
+        out.append(klass(**kwargs))
+
+    return out

@@ -1,0 +1,145 @@
+#!/usr/bin/env python
+import os
+import logging
+import sys
+from argparse import ArgumentParser
+
+from pubtools.pulplib import Client, Criteria, FakeController, Repository
+import pubtools.pulplib
+
+log = logging.getLogger("copy-units")
+
+
+def make_client(args):
+    auth = None
+
+    if args.url == "fake":
+        ctrl = FakeController()
+        ctrl.insert_repository(Repository(id=args.src))
+        ctrl.insert_repository(Repository(id=args.dest))
+        return ctrl.client
+
+    if args.username:
+        password = args.password
+        if password is None:
+            password = os.environ.get("PULP_PASSWORD")
+        if not password:
+            log.warning("No password provided for %s", args.username)
+        auth = (args.username, args.password)
+
+    return Client(args.url, auth=auth, verify=not args.insecure)
+
+
+def parsed_criteria(crit_args):
+    if not crit_args:
+        # No arguments => no criteria => everything is matched.
+        return [None]
+
+    # If there are args, each one should have a format like this:
+    #
+    #   "SomeUnit.some_field=some_val"
+    #
+    # We do not support any more complex criteria than exact field matches,
+    # nor any non-string types.
+    crit_per_unit_type = {}
+    for arg in crit_args:
+        try:
+            (key, val) = arg.split("=", 1)
+            (unit_type, field) = key.split(".", 1)
+
+            # A sanity check to prevent usage of unexpected classes
+            if not unit_type.endswith("Unit"):
+                raise ValueError("%s is not a valid unit type" % unit_type)
+
+            field_crit = Criteria.with_field(field, val)
+            if unit_type in crit_per_unit_type:
+                crit_per_unit_type[unit_type] = Criteria.and_(
+                    crit_per_unit_type[unit_type], field_crit
+                )
+            else:
+                crit_per_unit_type[unit_type] = field_crit
+        except:
+            log.exception("Error parsing criteria arg %s", arg)
+            log.error("Invalid criteria provided, cannot continue!")
+            sys.exit(3)
+
+    # Now resolve the unit_type strings into actual classes.
+    crit_resolved = []
+    for (unit_type_str, crit) in crit_per_unit_type.items():
+        unit_type = getattr(pubtools.pulplib, unit_type_str)
+        crit_resolved.append(Criteria.and_(crit, Criteria.with_unit_type(unit_type)))
+
+    return crit_resolved
+
+
+def do_copy(args, client):
+    # Convert user's criteria arguments into pulplib objects.
+    criteria_per_type = parsed_criteria(args.criteria)
+
+    # Look up the src and dest repo.
+    src_repo = client.get_repository(args.src)
+    dest_repo = client.get_repository(args.dest)
+
+    # Resolve the futures now so we crash ASAP if either repo is missing.
+    (src_repo, dest_repo) = (src_repo.result(), dest_repo.result())
+
+    # Copy everything.
+    # It's not currently permitted to mix different unit types in a single copy,
+    # so we have a list of criteria and we need to start a different copy for each.
+    copies = []
+    for crit in criteria_per_type:
+        copies.append(client.copy_content(src_repo, dest_repo, crit))
+
+    # Collect all the tasks spawned by copy.
+    tasks = []
+    for copy in copies:
+        tasks.extend(copy.result())
+
+    # Log copied units
+    units = sum([t.units for t in tasks], [])
+    units = sorted(units, key=repr)
+
+    log.info("Copied %s unit(s) from %s to %s:", len(units), args.src, args.dest)
+    for u in units:
+        log.info("   %s", u)
+
+
+def main():
+    log.setLevel(logging.INFO)
+    logging.basicConfig(format="%(message)s", level=logging.INFO)
+
+    parser = ArgumentParser(description="Copy units from one repository to another.")
+    parser.add_argument(
+        "--url", help="Pulp server URL, or 'fake' to use fake client", required=True
+    )
+    parser.add_argument("--username", help="Pulp username")
+    parser.add_argument(
+        "--password", help="Pulp password (or set PULP_PASSWORD in env)"
+    )
+    parser.add_argument("--src", action="store", required=True, help="Source repo ID")
+    parser.add_argument(
+        "--dest", action="store", required=True, help="Destination repo ID"
+    )
+    parser.add_argument("--debug", action="store_true")
+    parser.add_argument("--insecure", default=False, action="store_true")
+    parser.add_argument(
+        "criteria",
+        nargs="*",
+        help=(
+            "Criteria to filter copied content, of the form 'UnitType.field=value'; "
+            "e.g. 'RpmUnit.name=bash'."
+        ),
+    )
+
+    p = parser.parse_args()
+
+    if p.debug:
+        logging.getLogger("pubtools.pulplib").setLevel(logging.DEBUG)
+        log.setLevel(logging.DEBUG)
+
+    client = make_client(p)
+    do_copy(p, client)
+
+
+if __name__ == "__main__":
+    main()

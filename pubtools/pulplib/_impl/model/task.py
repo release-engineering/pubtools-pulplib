@@ -63,6 +63,9 @@ class Task(PulpObject):
          "pulp:action:publish"]
     """
 
+    # TODO: is it a bug that this only allows a single repo ID??
+    # Some tasks, like copy, involve multiple repos. We'll only include
+    # the first repo ID from tags here... seems arbitrary.
     repo_id = pulp_attrib(type=str)
     """The ID of the repository associated with this task, otherwise None."""
 
