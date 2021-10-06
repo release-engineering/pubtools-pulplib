@@ -17,9 +17,12 @@ class YumRepoMetadataFileUnit(Unit):
     """The type of this metadata file, e.g. "productid"."""
 
     sha256sum = pulp_attrib(
-        type=str, pulp_field="checksum", converter=lambda s: s.lower() if s else s
+        type=str,
+        pulp_field="checksum",
+        converter=lambda s: s.lower() if s else s,
+        default=None,
     )
-    """SHA256 checksum of this metadata file, as a hex string."""
+    """SHA256 checksum of this metadata file, if known, as a hex string."""
 
     content_type_id = pulp_attrib(
         default="yum_repo_metadata_file", type=str, pulp_field="_content_type_id"

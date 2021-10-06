@@ -12,6 +12,7 @@ from pubtools.pulplib import (
     RpmUnit,
     FileUnit,
     ModulemdUnit,
+    YumRepoMetadataFileUnit,
     Unit,
 )
 
@@ -116,6 +117,10 @@ def test_remove_loads_units(fast_poller, requests_mocker, client):
                 "arch": "s390x",
             },
         },
+        {
+            "type_id": "yum_repo_metadata_file",
+            "unit_key": {"data_type": "productid", "repo_id": "some-repo"},
+        },
         {"type_id": "bizarre_type", "unit_key": {"whatever": "data"}},
     ]
 
@@ -159,6 +164,9 @@ def test_remove_loads_units(fast_poller, requests_mocker, client):
             ),
             ModulemdUnit(
                 name="module", stream="s1", version=1234, context="a1b2c3", arch="s390x"
+            ),
+            YumRepoMetadataFileUnit(
+                data_type="productid", content_type_id="yum_repo_metadata_file"
             ),
             Unit(content_type_id="bizarre_type"),
         ]
