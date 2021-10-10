@@ -32,7 +32,7 @@ class ModulemdUnit(Unit):
     is "201801".
     """
 
-    version = pulp_attrib(type=int, pulp_field="version")
+    version = pulp_attrib(type=int, pulp_field="version", converter=int)
     """The version of this module.
 
     Example: the version of javapackages-tools:201801:20180813043155:dca7b4a4:aarch64

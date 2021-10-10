@@ -383,10 +383,14 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
         upload_content = self._uploads_pending.pop(upload_id)
         upload_content.seek(0)
 
-        unit = units.make_unit(unit_type_id, unit_key, unit_metadata, upload_content)
-        unit = attr.evolve(unit, repository_memberships=[repo.id])
+        new_units = units.make_units(
+            unit_type_id, unit_key, unit_metadata, upload_content, repo_id
+        )
+        new_units = [
+            attr.evolve(u, repository_memberships=[repo.id]) for u in new_units
+        ]
 
-        self._insert_repo_units(repo_id, [unit])
+        self._insert_repo_units(repo_id, new_units)
 
         task = Task(id=self._next_task_id(), completed=True, succeeded=True)
 

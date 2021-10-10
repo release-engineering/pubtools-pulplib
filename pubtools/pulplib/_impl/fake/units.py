@@ -1,5 +1,9 @@
 import hashlib
 import tempfile
+import logging
+
+import yaml
+import attr
 
 from pubtools.pulplib import (
     FileUnit,
@@ -11,18 +15,23 @@ from pubtools.pulplib import (
 
 from .rpmlib import get_rpm_header, get_header_fields, get_keys_from_header
 
+LOG = logging.getLogger("pubtools.pulplib")
 
-def make_unit(type_id, unit_key, unit_metadata, content):
-    # Obtain a valid unit representing uploaded 'content'.
+
+def make_units(type_id, unit_key, unit_metadata, content, repo_id):
+    # Obtain valid unit(s) representing uploaded 'content'.
 
     if type_id == "iso":
-        return make_iso_unit(unit_key)
+        return [make_iso_unit(unit_key)]
 
     if type_id == "yum_repo_metadata_file":
-        return make_yum_repo_metadata_unit(unit_key, unit_metadata)
+        return [make_yum_repo_metadata_unit(unit_key, unit_metadata)]
 
     if type_id == "rpm":
-        return make_rpm_unit(content)
+        return [make_rpm_unit(content)]
+
+    if type_id == "modulemd":
+        return make_module_units(content, repo_id)
 
     # It should not be possible to get here via public API.
     #
@@ -98,6 +107,59 @@ def make_rpm_unit(content):
     rpmattrs.update(sumattrs)
 
     return RpmUnit(**rpmattrs)
+
+
+def make_module_units(content, repo_id):
+    # Note: consider using libmodulemd here once there is no need for this
+    # code to support legacy (pre-RHEL8) environments.
+    docs = list(yaml.load_all(content, Loader=yaml.BaseLoader))
+
+    out = []
+    for doc in docs:
+        attrs = {}
+
+        doc_type = doc.get("document")
+        data = doc.get("data") or {}
+
+        if doc_type == "modulemd":
+            klass = ModulemdUnit
+
+            # Pulp does not store entire 'artifacts' but only the 'rpms'
+            # subkey
+            artifacts = data.pop("artifacts", None)
+            if artifacts and "rpms" in artifacts:
+                attrs["artifacts"] = artifacts["rpms"]
+
+        elif doc_type == "modulemd-defaults":
+            klass = ModulemdDefaultsUnit
+
+            # This is always initialized using the repo for which we're uploading.
+            attrs["repo_id"] = repo_id
+
+            # For whatever reason, pulp renames this field, so it won't
+            # be picked up by the generic attrs<=>unit mapping below.
+            if "module" in data:
+                attrs["name"] = data["module"]
+
+        else:
+            # Pulp silently ignores any unknown document types, so we do the same.
+            LOG.debug(
+                "FakeClient ignoring modulemd document of unknown type '%s'", doc_type
+            )
+            continue
+
+        # attr names match the names used in modulemd data, so they can
+        # simply be copied across.
+        fields = [f.name for f in attr.fields(klass)]
+        for field in fields:
+            if field in data:
+                attrs[field] = data[field]
+
+        # Note: if any mandatory fields are missing, or conversions can't
+        # happen, this is where we crash.
+        out.append(klass(**attrs))
+
+    return out
 
 
 def make_unit_key(unit):
