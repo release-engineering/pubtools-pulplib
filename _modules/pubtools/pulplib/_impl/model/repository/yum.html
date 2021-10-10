@@ -217,6 +217,16 @@
 <div class="viewcode-block" id="YumRepository.upload_rpm"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.YumRepository.upload_rpm">[docs]</a>    <span class="k">def</span> <span class="nf">upload_rpm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Upload an RPM to this repository.</span>
 
+<span class="sd">        .. warning::</span>
+
+<span class="sd">            For RPMs belonging to a module, it&#39;s strongly advised to upload</span>
+<span class="sd">            the module metadata first (using :meth:`upload_modules`) and only</span>
+<span class="sd">            proceed with uploading RPMs once module upload has completed.</span>
+
+<span class="sd">            This reduces the risk of accidentally publishing a repository with</span>
+<span class="sd">            modular RPMs without the corresponding metadata (which has a much</span>
+<span class="sd">            worse impact than publishing metadata without the corresponding RPMs).</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            file_obj (str, file object)</span>
 <span class="sd">                If it&#39;s a string, then it&#39;s the path of an RPM to upload.</span>
@@ -309,7 +319,48 @@
                 <span class="s2">&quot;checksum&quot;</span><span class="p">:</span> <span class="n">upload</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
                 <span class="s2">&quot;checksum_type&quot;</span><span class="p">:</span> <span class="s2">&quot;sha256&quot;</span><span class="p">,</span>
             <span class="p">},</span>
-        <span class="p">)</span></div></div>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="YumRepository.upload_modules"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.YumRepository.upload_modules">[docs]</a>    <span class="k">def</span> <span class="nf">upload_modules</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_obj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Upload a modulemd stream to this repository.</span>
+
+<span class="sd">        All supported documents in the given stream will be imported to this</span>
+<span class="sd">        repository. On current versions of Pulp 2.x, this means only:</span>
+
+<span class="sd">        * `modulemd v2 &lt;https://github.com/fedora-modularity/libmodulemd/blob/main/yaml_specs/modulemd_stream_v2.yaml&gt;`_</span>
+<span class="sd">        * `modulemd-defaults v1 &lt;https://github.com/fedora-modularity/libmodulemd/blob/main/yaml_specs/modulemd_defaults_v1.yaml&gt;`_</span>
+
+<span class="sd">        Attempting to use other document types may result in an error.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            file_obj (str, file object)</span>
+<span class="sd">                If it&#39;s a string, then it&#39;s the path of a modulemd YAML</span>
+<span class="sd">                file to upload.</span>
+
+<span class="sd">                Otherwise, it should be a</span>
+<span class="sd">                `file-like object &lt;https://docs.python.org/3/glossary.html#term-file-object&gt;`_</span>
+<span class="sd">                pointing at the text to upload.</span>
+<span class="sd">                The client takes ownership of this file object; it should</span>
+<span class="sd">                not be modified elsewhere, and will be closed when upload</span>
+<span class="sd">                completes.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Future[list of :class:`~pubtools.pulplib.Task`]</span>
+<span class="sd">                A future which is resolved after content has been imported</span>
+<span class="sd">                to this repo.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            DetachedException</span>
+<span class="sd">                If this instance is not attached to a Pulp client.</span>
+
+<span class="sd">        .. versionadded:: 2.17.0</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">string_types</span><span class="p">):</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">file_obj</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;modulemds&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_upload_then_import</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="s2">&quot;modulemd&quot;</span><span class="p">)</span></div></div>
 </pre></div>
 
           </div>
