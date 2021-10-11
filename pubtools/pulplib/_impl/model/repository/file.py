@@ -2,9 +2,9 @@ import os
 import logging
 
 from attr import validators
+from frozenlist2 import frozenlist
 
 from .base import Repository, SyncOptions, repo_type
-from ..frozenlist import FrozenList
 from ..attr import pulp_attrib
 from ... import compat_attr as attr
 
@@ -41,9 +41,9 @@ class FileRepository(Repository):
     )
 
     mutable_urls = attr.ib(
-        default=attr.Factory(lambda: FrozenList(["PULP_MANIFEST"])),
+        default=attr.Factory(lambda: frozenlist(["PULP_MANIFEST"])),
         type=list,
-        converter=FrozenList,
+        converter=frozenlist,
     )
 
     def upload_file(self, file_obj, relative_url=None):

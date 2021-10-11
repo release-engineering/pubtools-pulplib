@@ -3,8 +3,10 @@ import weakref
 import warnings
 from concurrent.futures import Future
 
+from frozenlist2 import frozenlist
+
+
 from . import compat_attr as attr
-from .model.frozenlist import FrozenList
 from .model.attr import pulp_attrib
 
 LOG = logging.getLogger("pubtools.pulplib")
@@ -69,7 +71,7 @@ class Page(object):
     """
 
     data = pulp_attrib(
-        default=attr.Factory(FrozenList), type=list, converter=FrozenList
+        default=attr.Factory(frozenlist), type=list, converter=frozenlist
     )
     """List of Pulp objects in this page.
 

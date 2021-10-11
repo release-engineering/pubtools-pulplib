@@ -3,12 +3,13 @@ import datetime
 import os
 
 import jsonschema
+from frozenlist2 import frozenlist
+
 
 from pubtools.pulplib._impl import compat_attr as attr
 from .attr import pulp_attrib
 from .convert import read_timestamp, write_timestamp
 from ..schema import load_schema
-from .frozenlist import FrozenList
 from .common import InvalidDataException
 
 
@@ -64,7 +65,7 @@ class MaintenanceReport(object):
     """Person/party who updated the report last time."""
 
     entries = pulp_attrib(
-        default=attr.Factory(FrozenList), type=list, converter=FrozenList
+        default=attr.Factory(frozenlist), type=list, converter=frozenlist
     )
     """A list of :class:`MaintenanceEntry` objects, indicating
     which repositories are in maintenance mode and details.

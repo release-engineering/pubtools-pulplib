@@ -1,7 +1,8 @@
+from frozenlist2 import frozenlist
+
 from pubtools.pulplib._impl import compat_attr as attr
 
 from ..schema import load_schema
-from .frozenlist import FrozenList
 from .unit import Unit
 from .common import PulpObject
 from .attr import pulp_attrib
@@ -46,9 +47,9 @@ class Task(PulpObject):
     """
 
     tags = pulp_attrib(
-        default=attr.Factory(FrozenList),
+        default=attr.Factory(frozenlist),
         type=list,
-        converter=FrozenList,
+        converter=frozenlist,
         pulp_field="tags",
     )
     """The tags for this task.
@@ -66,11 +67,11 @@ class Task(PulpObject):
     """The ID of the repository associated with this task, otherwise None."""
 
     units = pulp_attrib(
-        default=attr.Factory(FrozenList),
-        type=FrozenList,
+        default=attr.Factory(frozenlist),
+        type=list,
         pulp_field="result.units_successful",
-        converter=FrozenList,
-        pulp_py_converter=lambda raw: FrozenList(
+        converter=frozenlist,
+        pulp_py_converter=lambda raw: frozenlist(
             [Unit._from_task_data(x) for x in raw]
         ),
     )
@@ -85,9 +86,9 @@ class Task(PulpObject):
     """
 
     units_data = pulp_attrib(
-        default=attr.Factory(FrozenList),
+        default=attr.Factory(frozenlist),
         type=list,
-        converter=FrozenList,
+        converter=frozenlist,
         pulp_field="result.units_successful",
     )
     """Info on the units which were processed as part of this task

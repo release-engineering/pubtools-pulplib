@@ -1,10 +1,10 @@
 import re
 
 import six
+from frozenlist2 import frozenlist
 
 from more_executors.futures import f_map, f_proxy, f_return
 from .base import Repository, SyncOptions, repo_type
-from ..frozenlist import FrozenList
 from ..attr import pulp_attrib
 from ..common import DetachedException
 from ... import compat_attr as attr
@@ -78,9 +78,9 @@ class YumRepository(Repository):
     type = pulp_attrib(default="rpm-repo", type=str, pulp_field="notes._repo-type")
 
     population_sources = pulp_attrib(
-        default=attr.Factory(FrozenList),
+        default=attr.Factory(frozenlist),
         type=list,
-        converter=FrozenList,
+        converter=frozenlist,
         pulp_field="notes.population_sources",
     )
     """List of repository IDs used to populate this repository
@@ -93,9 +93,9 @@ class YumRepository(Repository):
     """
 
     mutable_urls = attr.ib(
-        default=attr.Factory(lambda: FrozenList(["repodata/repomd.xml"])),
+        default=attr.Factory(lambda: frozenlist(["repodata/repomd.xml"])),
         type=list,
-        converter=FrozenList,
+        converter=frozenlist,
     )
 
     ubi_config_version = pulp_attrib(
