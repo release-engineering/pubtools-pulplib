@@ -2,7 +2,7 @@ from .base import Unit, unit_type
 
 from ..attr import pulp_attrib
 from ... import compat_attr as attr
-from ..frozenlist import frozenlist_or_none_sorted_converter
+from ..convert import frozenlist_or_none_sorted_converter
 
 
 # Note: Pulp2 models RPM and SRPM as separate unit types,

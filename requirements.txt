@@ -4,4 +4,5 @@ six
 PyYAML
 jsonschema
 attrs
+frozenlist2
 pubtools>=0.3.0

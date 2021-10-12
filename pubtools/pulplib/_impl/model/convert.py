@@ -1,6 +1,8 @@
 import datetime
+import functools
 
 import six
+from frozenlist2 import frozenlist
 
 from .attr import PULP2_PY_CONVERTER
 
@@ -36,3 +38,14 @@ def write_timestamp(value):
     if value is None:
         value = datetime.datetime.utcnow()
     return value.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def frozenlist_or_none_converter(obj, map_fn=(lambda x: x)):
+    if obj is not None:
+        return frozenlist(map_fn(obj))
+    return None
+
+
+frozenlist_or_none_sorted_converter = functools.partial(
+    frozenlist_or_none_converter, map_fn=sorted
+)
