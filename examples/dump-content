@@ -1,0 +1,100 @@
+#!/usr/bin/env python3
+import os
+import logging
+from typing import List, Type
+from argparse import ArgumentParser, Namespace
+
+from more_itertools import roundrobin
+
+import pubtools.pulplib
+from pubtools.pulplib import Client, Criteria
+
+log = logging.getLogger("dump-content")
+
+
+def all_unit_types() -> List[Type]:
+    # Returns all concrete Unit classes in the library.
+    out = []
+    for symbol in dir(pubtools.pulplib):
+        if symbol.endswith("Unit") and symbol != "Unit":
+            out.append(getattr(pubtools.pulplib, symbol))
+    return out
+
+
+def get_unit_types(args: Namespace) -> List[Type]:
+    # Returns the Unit classes which should be used according to
+    # arguments passed on the command-line.
+    out = all_unit_types()
+
+    if args.unit_type:
+        permitted = set(args.unit_type)
+        out = [klass for klass in out if klass.__name__ in permitted]
+
+    return out
+
+
+def make_client(args: Namespace) -> Client:
+    auth = None
+
+    if args.username:
+        password = args.password
+        if password is None:
+            password = os.environ.get("PULP_PASSWORD")
+        if not password:
+            log.warning("No password provided for %s", args.username)
+        auth = (args.username, args.password)
+
+    return Client(args.url, auth=auth, verify=not args.insecure)
+
+
+def dump_units(client: Client, unit_types: List[Type]):
+    # Outputs an INFO log for every unit of requested types.
+    searches = []
+
+    # We can start searching for all unit types concurrently
+    for type in unit_types:
+        search = client.search_content(Criteria.with_unit_type(type))
+        searches.append(search)
+
+    # Ideally we'd log all units as we get them, but it's a little complicated
+    # to set that up. roundrobin as a compromise.
+    count = 0
+    all_units = roundrobin(*searches)
+    for unit in all_units:
+        count = count + 1
+        log.info("%s   # %s", unit, count)
+
+
+def main():
+    log.setLevel(logging.INFO)
+    logging.basicConfig(format="%(message)s", level=logging.INFO)
+
+    parser = ArgumentParser(
+        description="Find and dump all units (of supported types) from a Pulp server."
+    )
+    parser.add_argument("--url", help="Pulp server URL", required=True)
+    parser.add_argument("--username", help="Pulp username")
+    parser.add_argument(
+        "--password", help="Pulp password (or set PULP_PASSWORD in env)"
+    )
+    parser.add_argument("--debug", action="store_true")
+    parser.add_argument("--insecure", default=False, action="store_true")
+    parser.add_argument(
+        "unit_type", nargs="*", help='Only process these type(s) (e.g. "RpmUnit")'
+    )
+
+    p = parser.parse_args()
+
+    if p.debug:
+        logging.getLogger("pubtools.pulplib").setLevel(logging.DEBUG)
+        log.setLevel(logging.DEBUG)
+
+    client = make_client(p)
+
+    unit_types = get_unit_types(p)
+
+    dump_units(client, unit_types)
+
+
+if __name__ == "__main__":
+    main()
