@@ -26,7 +26,10 @@ definitions:
 
       # Size in bytes
       size:
-        type: integer
+        # Ideally would be 'integer', but some old units have been stored
+        # as non-integers, e.g.
+        # RHEL4-U5-ia64-source-disc2.iso => 512251904.0
+        type: number
 
       repository_memberships:
         type: array

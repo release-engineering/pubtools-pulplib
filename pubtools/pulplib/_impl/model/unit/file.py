@@ -20,7 +20,7 @@ class FileUnit(Unit):
     in the common case, this is only a basename.
     """
 
-    size = pulp_attrib(type=int, pulp_field="size")
+    size = pulp_attrib(type=int, converter=int, pulp_field="size")
     """Size of this file, in bytes."""
 
     sha256sum = pulp_attrib(
