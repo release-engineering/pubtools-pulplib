@@ -1,6 +1,7 @@
 import logging
 
 import jsonschema
+import six
 
 from more_executors.futures import f_map, f_proxy
 
@@ -83,12 +84,23 @@ class PulpObject(object):
 
         try:
             jsonschema.validate(instance=data, schema=cls._SCHEMA)
-        except jsonschema.exceptions.ValidationError as error:
-            LOG.exception("%s.from_data invoked with invalid Pulp data", cls.__name__)
-            raise InvalidDataException(str(error))
 
-        kwargs = cls._data_to_init_args(data)
-        return cls(**kwargs)
+            kwargs = cls._data_to_init_args(data)
+            return cls(**kwargs)
+
+        except Exception as error:  # pylint:disable=broad-except
+            LOG.exception(
+                (
+                    "An error occurred while loading Pulp data!\n"
+                    "  Model class: %s\n"
+                    "  Raw data:    %s"
+                ),
+                cls,
+                repr(data),
+            )
+
+            msg = "%s.from_data invoked with invalid Pulp data", cls.__name__
+            six.raise_from(InvalidDataException(msg), error)
 
     @classmethod
     def _data_to_init_args(cls, data):

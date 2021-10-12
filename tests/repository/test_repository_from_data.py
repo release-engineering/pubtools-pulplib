@@ -28,10 +28,15 @@ def test_default_created():
     assert repo.created is None
 
 
-def test_bad_created():
-    """from_data raises if input data has created of wrong type"""
+def test_bad_created(caplog):
+    """from_data logs and raises if input data has created of wrong type"""
     with pytest.raises(InvalidDataException):
         Repository.from_data({"id": "some-repo", "notes": {"created": "whoops"}})
+
+    # It should have logged about the bad data. We don't verify details
+    # of the failure message since it relies too heavily on implementation
+    # details (e.g. stringification of class)
+    assert "An error occurred while loading Pulp data!" in caplog.text
 
 
 def test_is_temporary():
