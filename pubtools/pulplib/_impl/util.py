@@ -13,7 +13,7 @@ def lookup(value, key, default=ABSENT):
 
     while value and value is not ABSENT and keys:
         next_key = keys.pop(0)
-        value = value.get(next_key) or ABSENT
+        value = value.get(next_key, ABSENT)
 
     if (value is ABSENT) or keys:
         # it's not present
