@@ -308,6 +308,34 @@
             <span class="p">)</span>
         <span class="p">)</span></div>
 
+<div class="viewcode-block" id="Client.copy_content"><a class="viewcode-back" href="../../../../../api/client.html#pubtools.pulplib.Client.copy_content">[docs]</a>    <span class="k">def</span> <span class="nf">copy_content</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_repository</span><span class="p">,</span> <span class="n">to_repository</span><span class="p">,</span> <span class="n">criteria</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Copy content from one repository to another.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            from_repository (:class:`~pubtools.pulplib.Repository`)</span>
+<span class="sd">                A repository used as the source of content.</span>
+
+<span class="sd">            to_repository (:class:`~pubtools.pulplib.Repository`)</span>
+<span class="sd">                A repository to receive copied content.</span>
+
+<span class="sd">            criteria (:class:`~pubtools.pulplib.Criteria`)</span>
+<span class="sd">                A criteria object used to find units for copy.</span>
+<span class="sd">                If None, all units in the source repo will be copied.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Future[list[:class:`~pubtools.pulplib.Task`]]</span>
+<span class="sd">                A future which is resolved when the copy completes.</span>
+
+<span class="sd">                The :meth:`~pubtools.pulplib.Task.units` attribute may be inspected</span>
+<span class="sd">                to determine which unit(s) were copied. Note that the returned units</span>
+<span class="sd">                typically will have only a subset of available fields.</span>
+
+<span class="sd">        .. versionadded:: 2.17.0</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">f_proxy</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_do_associate</span><span class="p">(</span><span class="n">from_repository</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">to_repository</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">criteria</span><span class="p">)</span>
+        <span class="p">)</span></div>
+
     <span class="k">def</span> <span class="nf">_search_content_with_server_type_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">criteria</span><span class="p">,</span> <span class="n">server_type_ids</span><span class="p">):</span>
         <span class="n">prepared_search</span> <span class="o">=</span> <span class="n">search_for_criteria</span><span class="p">(</span><span class="n">criteria</span><span class="p">,</span> <span class="n">Unit</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">type_ids</span> <span class="o">=</span> <span class="n">prepared_search</span><span class="o">.</span><span class="n">type_ids</span>
@@ -522,6 +550,25 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_url</span><span class="p">,</span> <span class="s2">&quot;pulp/api/v2/repositories/</span><span class="si">%s</span><span class="s2">/actions/publish/&quot;</span> <span class="o">%</span> <span class="n">repo_id</span>
         <span class="p">)</span>
         <span class="n">body</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">distributor_id</span><span class="p">,</span> <span class="s2">&quot;override_config&quot;</span><span class="p">:</span> <span class="n">override_config</span><span class="p">}</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task_executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_do_request</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">body</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_do_associate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src_repo_id</span><span class="p">,</span> <span class="n">dest_repo_id</span><span class="p">,</span> <span class="n">criteria</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_url</span><span class="p">,</span> <span class="s2">&quot;pulp/api/v2/repositories/</span><span class="si">%s</span><span class="s2">/actions/associate/&quot;</span> <span class="o">%</span> <span class="n">dest_repo_id</span>
+        <span class="p">)</span>
+
+        <span class="n">pulp_search</span> <span class="o">=</span> <span class="n">search_for_criteria</span><span class="p">(</span><span class="n">criteria</span><span class="p">,</span> <span class="n">type_hint</span><span class="o">=</span><span class="n">Unit</span><span class="p">,</span> <span class="n">type_ids_accum</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+        <span class="n">body</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;source_repo_id&quot;</span><span class="p">:</span> <span class="n">src_repo_id</span><span class="p">,</span> <span class="s2">&quot;criteria&quot;</span><span class="p">:</span> <span class="p">{}}</span>
+        <span class="k">if</span> <span class="n">pulp_search</span><span class="o">.</span><span class="n">type_ids</span><span class="p">:</span>
+            <span class="n">body</span><span class="p">[</span><span class="s2">&quot;criteria&quot;</span><span class="p">][</span><span class="s2">&quot;type_ids&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pulp_search</span><span class="o">.</span><span class="n">type_ids</span>
+        <span class="k">if</span> <span class="n">pulp_search</span><span class="o">.</span><span class="n">filters</span><span class="p">:</span>
+            <span class="n">body</span><span class="p">[</span><span class="s2">&quot;criteria&quot;</span><span class="p">][</span><span class="s2">&quot;filters&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="n">pulp_search</span><span class="o">.</span><span class="n">filters</span><span class="p">}</span>
+
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Submitting </span><span class="si">%s</span><span class="s2"> associate: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">body</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task_executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_do_request</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">body</span>
         <span class="p">)</span>

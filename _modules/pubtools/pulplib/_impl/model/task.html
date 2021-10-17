@@ -96,6 +96,9 @@
 <span class="sd">         &quot;pulp:action:publish&quot;]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="c1"># TODO: is it a bug that this only allows a single repo ID??</span>
+    <span class="c1"># Some tasks, like copy, involve multiple repos. We&#39;ll only include</span>
+    <span class="c1"># the first repo ID from tags here... seems arbitrary.</span>
     <span class="n">repo_id</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
     <span class="sd">&quot;&quot;&quot;The ID of the repository associated with this task, otherwise None.&quot;&quot;&quot;</span>
 
