@@ -13,10 +13,10 @@ class ModulemdDefaultsUnit(Unit):
     .. versionadded:: 2.4.0
     """
 
-    name = pulp_attrib(type=str, pulp_field="name")
+    name = pulp_attrib(type=str, pulp_field="name", unit_key=True)
     """The name of this modulemd defaults unit"""
 
-    repo_id = pulp_attrib(type=str, pulp_field="repo_id")
+    repo_id = pulp_attrib(type=str, pulp_field="repo_id", unit_key=True)
     """The repository ID bound to this modulemd defaults unit"""
 
     stream = pulp_attrib(type=str, pulp_field="stream", default=None)

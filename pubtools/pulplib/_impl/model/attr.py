@@ -7,6 +7,9 @@ from pubtools.pulplib._impl import compat_attr as attr
 # field in Pulp (if it exists)
 PULP2_FIELD = "_pubtools.pulplib.pulp2_field"
 
+# attr metadata private key indicating whether a field is part of the unit_key.
+PULP2_UNIT_KEY = "_pubtools.pulplib.pulp2_unit_key"
+
 # attr metadata private key for converting from a pulp2 representation and a Python
 # object.
 # Why not using attr.ib built-in 'converter'?  Because that makes it public API,
@@ -20,7 +23,11 @@ PY_PULP2_CONVERTER = "_pubtools.pulplib.py_to_pulp2_converter"
 
 
 def pulp_attrib(
-    pulp_field=None, pulp_py_converter=None, py_pulp_converter=None, **kwargs
+    pulp_field=None,
+    pulp_py_converter=None,
+    py_pulp_converter=None,
+    unit_key=None,
+    **kwargs
 ):
     """Drop-in replacement for attr.ib with added features:
 
@@ -37,6 +44,9 @@ def pulp_attrib(
 
     if py_pulp_converter:
         metadata[PY_PULP2_CONVERTER] = py_pulp_converter
+
+    if unit_key is not None:
+        metadata[PULP2_UNIT_KEY] = unit_key
 
     if "type" in kwargs:
         # As a convenience, you may define string types as type=str

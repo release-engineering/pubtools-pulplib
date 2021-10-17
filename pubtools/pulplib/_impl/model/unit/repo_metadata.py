@@ -13,7 +13,7 @@ class YumRepoMetadataFileUnit(Unit):
     .. versionadded:: 2.17.0
     """
 
-    data_type = pulp_attrib(type=str, pulp_field="data_type")
+    data_type = pulp_attrib(type=str, pulp_field="data_type", unit_key=True)
     """The type of this metadata file, e.g. "productid"."""
 
     sha256sum = pulp_attrib(

@@ -15,35 +15,35 @@ class ModulemdUnit(Unit):
     .. versionadded:: 1.5.0
     """
 
-    name = pulp_attrib(type=str, pulp_field="name")
+    name = pulp_attrib(type=str, pulp_field="name", unit_key=True)
     """The name of this module.
 
     Example: the name of javapackages-tools:201801:20180813043155:dca7b4a4:aarch64
     is "javapackages-tools".
     """
 
-    stream = pulp_attrib(type=str, pulp_field="stream")
+    stream = pulp_attrib(type=str, pulp_field="stream", unit_key=True)
     """The stream of this module.
 
     Example: the stream of javapackages-tools:201801:20180813043155:dca7b4a4:aarch64
     is "201801".
     """
 
-    version = pulp_attrib(type=int, pulp_field="version", converter=int)
+    version = pulp_attrib(type=int, pulp_field="version", converter=int, unit_key=True)
     """The version of this module.
 
     Example: the version of javapackages-tools:201801:20180813043155:dca7b4a4:aarch64
     is 20180813043155.
     """
 
-    context = pulp_attrib(type=str, pulp_field="context")
+    context = pulp_attrib(type=str, pulp_field="context", unit_key=True)
     """The context of this module.
 
     Example: the context of javapackages-tools:201801:20180813043155:dca7b4a4:aarch64
     is "dca7b4a4".
     """
 
-    arch = pulp_attrib(type=str, pulp_field="arch")
+    arch = pulp_attrib(type=str, pulp_field="arch", unit_key=True)
     """The architecture of this module.
 
     Example: the arch of javapackages-tools:201801:20180813043155:dca7b4a4:aarch64

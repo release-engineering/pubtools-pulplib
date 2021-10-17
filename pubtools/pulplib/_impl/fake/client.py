@@ -189,6 +189,46 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
         random.shuffle(out)
         return self._prepare_pages(out)
 
+    def copy_content(self, from_repository, to_repository, criteria=None):
+        self._ensure_alive()
+
+        from_id = from_repository.id
+        to_id = to_repository.id
+
+        found = list(from_repository.search_content(criteria).result())
+        self._insert_repo_units(to_id, found)
+
+        # Arbitrarily limit the number of units included per task. The point is
+        # to enforce that the caller doesn't expect any specific number of tasks.
+        tasks = []
+        while found:
+            next_batch = found[:5]
+            found = found[5:]
+            tasks.append(
+                Task(
+                    id=self._next_task_id(),
+                    repo_id=from_id,
+                    completed=True,
+                    succeeded=True,
+                    units=units.with_key_only(next_batch),
+                )
+            )
+
+        if not tasks:
+            # This indicates that nothing was found at all.
+            # That's fine, just return a task with empty units.
+            tasks.append(
+                Task(
+                    id=self._next_task_id(),
+                    repo_id=from_id,
+                    completed=True,
+                    succeeded=True,
+                    units=[],
+                )
+            )
+
+        return f_proxy(f_return(tasks))
+
     def search_distributor(self, criteria=None):
         self._ensure_alive()
 
@@ -357,7 +397,7 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
             repo_id=repo_id,
             completed=True,
             succeeded=True,
-            units=removed_units,
+            units=units.with_key_only(removed_units),
         )
 
         return f_return([task])

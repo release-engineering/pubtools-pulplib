@@ -17,31 +17,31 @@ class RpmUnit(Unit):
     .. versionadded:: 1.5.0
     """
 
-    name = pulp_attrib(type=str, pulp_field="name")
+    name = pulp_attrib(type=str, pulp_field="name", unit_key=True)
     """The name of this RPM.
 
     Example: the name of bash-5.0.7-1.fc30.x86_64.rpm is "bash".
     """
 
-    version = pulp_attrib(type=str, pulp_field="version")
+    version = pulp_attrib(type=str, pulp_field="version", unit_key=True)
     """The version of this RPM.
 
     Example: the version of bash-5.0.7-1.fc30.x86_64.rpm is "5.0.7".
     """
 
-    release = pulp_attrib(type=str, pulp_field="release")
+    release = pulp_attrib(type=str, pulp_field="release", unit_key=True)
     """The release of this RPM.
 
     Example: the release of bash-5.0.7-1.fc30.x86_64.rpm is "1.fc30".
     """
 
-    arch = pulp_attrib(type=str, pulp_field="arch")
+    arch = pulp_attrib(type=str, pulp_field="arch", unit_key=True)
     """The architecture of this RPM.
 
     Example: the arch of bash-5.0.7-1.fc30.x86_64.rpm is "x86_64".
     """
 
-    epoch = pulp_attrib(default="0", type=str, pulp_field="epoch")
+    epoch = pulp_attrib(default="0", type=str, pulp_field="epoch", unit_key=True)
     """The epoch of this RPM (most commonly "0").
 
     Example: the epoch of 3:bash-5.0.7-1.fc30.x86_64.rpm is "3".
@@ -94,6 +94,7 @@ class RpmUnit(Unit):
         # https://github.com/pulp/pulp_rpm/blob/69759d0fb9a16c0a47b1f49c78f6712e650912e1/plugins/pulp_rpm/plugins/importers/yum/upload.py#L436
         pulp_field="checksum",
         converter=lambda s: s.lower() if s else s,
+        unit_key=True,
     )
     """SHA256 checksum of this RPM, as a hex string."""
 
