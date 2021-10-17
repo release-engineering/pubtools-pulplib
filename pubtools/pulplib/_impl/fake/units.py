@@ -8,6 +8,7 @@ import attr
 from pubtools.pulplib import (
     FileUnit,
     RpmUnit,
+    ErratumUnit,
     YumRepoMetadataFileUnit,
     ModulemdUnit,
     ModulemdDefaultsUnit,
@@ -197,6 +198,9 @@ def make_unit_key(unit):
             unit.arch,
             unit.sha256sum,
         )
+
+    if isinstance(unit, ErratumUnit):
+        return (unit.id,)
 
     if isinstance(unit, ModulemdUnit):
         return (unit.nsvca,)

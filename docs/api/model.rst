@@ -59,6 +59,21 @@ Units
 .. autoclass:: pubtools.pulplib.RpmUnit()
    :members:
 
+.. autoclass:: pubtools.pulplib.ErratumPackage()
+   :members:
+
+.. autoclass:: pubtools.pulplib.ErratumModule()
+   :members:
+
+.. autoclass:: pubtools.pulplib.ErratumPackageCollection()
+   :members:
+
+.. autoclass:: pubtools.pulplib.ErratumReference()
+   :members:
+
+.. autoclass:: pubtools.pulplib.ErratumUnit()
+   :members:
+
 .. autoclass:: pubtools.pulplib.ModulemdUnit()
    :members:
 
