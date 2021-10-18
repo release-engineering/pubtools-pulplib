@@ -182,7 +182,7 @@ def test_can_load_erratum(data_path):
                     src="container-selinux-2.94-1.git1e99f1d.module+el8.0.0+2958+4e823551.src.rpm",
                     reboot_suggested=None,
                     md5sum="c863064c1edd9f5d78208e873692c9dd",
-                    sha1sum=None,
+                    sha1sum="f3d9ae4aeea6946a8668445395ba10b7399523a0",
                     sha256sum="be2d49e797db6395e819335ea8debe2639d562a621c730604b38139961d9d05b",
                 ),
                 ErratumPackage(

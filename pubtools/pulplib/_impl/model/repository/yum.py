@@ -328,3 +328,73 @@ class YumRepository(Repository):
             name = getattr(file_obj, "name", "modulemds")
 
         return self._upload_then_import(file_obj, name, "modulemd")
+
+    def upload_erratum(self, erratum):
+        """Upload an erratum/advisory object to this repository.
+
+        .. warning::
+
+            There are many quirks with respect to advisory upload. Please be aware
+            of the following before using this API:
+
+            * Only one advisory with a given ``id`` may exist in the system.
+
+            * When uploading an advisory with an ``id`` equal to one already in the
+              system, the upload will generally be ignored (i.e. complete successfully
+              but have no effect), unless either the ``version`` or ``updated`` fields
+              have a value larger than the existing advisory.
+
+              This implies that, if you want to ensure an existing advisory is updated,
+              you must first search for the existing object and mutate one of these
+              fields before uploading a modified object. *The library will not take
+              care of this for you.*
+
+            * When overwriting an existing advisory, all fields will be overwritten.
+              The sole exception is the ``pkglist`` field which will be merged with
+              existing data when applicable.
+
+            * If an advisory with the same ``id`` is present in multiple published yum
+              repositories with inconsistent fields, yum/dnf client errors or warnings
+              may occur. It's therefore recommended that, whenever an existing
+              advisory is modified, every repository containing that advisory should
+              be republished. *The library will not take care of this for you.*
+
+            * The ``repository_memberships`` field on the provided object has no effect
+              (it cannot be used to upload an advisory to multiple repos at once).
+
+        Args:
+            erratum (:class:`~pubtools.pulplib.ErratumUnit`)
+                An erratum object.
+
+                Unlike most other uploaded content, errata are not backed by any
+                file; any arbitrarily constructed ErratumUnit may be uploaded.
+
+        Returns:
+            Future[list of :class:`~pubtools.pulplib.Task`]
+                A future which is resolved after content has been imported
+                to this repo.
+
+        Raises:
+            DetachedException
+                If this instance is not attached to a Pulp client.
+
+        .. versionadded:: 2.17.0
+        """
+        # Convert from ErratumUnit to a raw Pulp-style dict, recursively.
+        erratum_dict = erratum._to_data()
+
+        # Drop this one field because the _content_type_id, though embedded
+        # in unit dicts on read, is passed as a separate parameter on write.
+        type_id = erratum_dict.pop("_content_type_id")
+
+        # And drop this one because repository_memberships is synthesized when
+        # Pulp renders units, and can't be set during import.
+        del erratum_dict["repository_memberships"]
+
+        return self._upload_then_import(
+            file_obj=None,
+            name=erratum_dict["id"],
+            type_id=type_id,
+            unit_key_fn=lambda _: {"id": erratum_dict["id"]},
+            unit_metadata_fn=lambda _: erratum_dict,
+        )

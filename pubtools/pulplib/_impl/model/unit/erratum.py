@@ -1,6 +1,6 @@
 import six
 
-from .base import Unit, unit_type
+from .base import Unit, PulpObject, unit_type
 
 from ..attr import pulp_attrib
 from ... import compat_attr as attr
@@ -21,21 +21,27 @@ def schemaless_init(cls, data):
 
 
 @attr.s(kw_only=True, frozen=True)
-class ErratumReference(object):
+class ErratumReference(PulpObject):
     """A reference within a :meth:`~ErratumUnit.references` list."""
 
-    href = attr.ib(type=str, default=None, validator=optional_str)
+    href = pulp_attrib(
+        type=str, pulp_field="href", default=None, validator=optional_str
+    )
     """A URL."""
 
-    id = attr.ib(type=str, default=None, validator=optional_str)
+    id = pulp_attrib(type=str, pulp_field="id", default=None, validator=optional_str)
     """A short ID for the reference, unique within this erratum."""
 
-    title = attr.ib(type=str, default=None, validator=optional_str)
+    title = pulp_attrib(
+        type=str, pulp_field="title", default=None, validator=optional_str
+    )
     """A title for the reference; analogous to the 'title' attribute
     in HTML.
     """
 
-    type = attr.ib(type=str, default=None, validator=optional_str)
+    type = pulp_attrib(
+        type=str, pulp_field="type", default=None, validator=optional_str
+    )
     """Type of reference. This defines the expected target of the URL
     and includes at least:
 
@@ -46,6 +52,9 @@ class ErratumReference(object):
 
     @classmethod
     def _from_data(cls, data):
+        if data is None:
+            return None
+
         # Convert from raw list/dict in Pulp response
         if isinstance(data, list):
             return [cls._from_data(elem) for elem in data]
@@ -54,22 +63,32 @@ class ErratumReference(object):
 
 
 @attr.s(kw_only=True, frozen=True)
-class ErratumModule(object):
+class ErratumModule(PulpObject):
     """A module entry within a :meth:`~ErratumUnit.pkglist`."""
 
-    name = attr.ib(type=str, default=None, validator=optional_str)
+    name = pulp_attrib(
+        type=str, pulp_field="name", default=None, validator=optional_str
+    )
     """Module name."""
 
-    stream = attr.ib(type=str, default=None, validator=optional_str)
+    stream = pulp_attrib(
+        type=str, pulp_field="stream", default=None, validator=optional_str
+    )
     """Module stream."""
 
-    version = attr.ib(type=str, default=None, validator=optional_str)
+    version = pulp_attrib(
+        type=str, pulp_field="version", default=None, validator=optional_str
+    )
     """Module version."""
 
-    context = attr.ib(type=str, default=None, validator=optional_str)
+    context = pulp_attrib(
+        type=str, pulp_field="context", default=None, validator=optional_str
+    )
     """Module context."""
 
-    arch = attr.ib(type=str, default=None, validator=optional_str)
+    arch = pulp_attrib(
+        type=str, pulp_field="arch", default=None, validator=optional_str
+    )
     """Module architecture."""
 
     @classmethod
@@ -78,33 +97,47 @@ class ErratumModule(object):
 
 
 @attr.s(kw_only=True, frozen=True)
-class ErratumPackage(object):
+class ErratumPackage(PulpObject):
     """A package (RPM) entry within a :meth:`~ErratumUnit.pkglist`."""
 
-    arch = attr.ib(type=str, default=None, validator=optional_str)
+    arch = pulp_attrib(
+        type=str, pulp_field="arch", default=None, validator=optional_str
+    )
     """RPM architecture."""
 
-    filename = attr.ib(type=str, default=None, validator=optional_str)
+    filename = pulp_attrib(
+        type=str, pulp_field="filename", default=None, validator=optional_str
+    )
     """RPM filename (basename)."""
 
-    epoch = attr.ib(type=str, default=None, validator=optional_str)
+    epoch = pulp_attrib(
+        type=str, pulp_field="epoch", default=None, validator=optional_str
+    )
     """RPM epoch."""
 
-    name = attr.ib(type=str, default=None, validator=optional_str)
+    name = pulp_attrib(
+        type=str, pulp_field="name", default=None, validator=optional_str
+    )
     """RPM name (e.g. "bash-4.0.1-1.el7.x86_64.rpm" name is "bash")"""
 
-    version = attr.ib(type=str, default=None, validator=optional_str)
+    version = pulp_attrib(
+        type=str, pulp_field="version", default=None, validator=optional_str
+    )
     """RPM version (e.g. "bash-4.0.1-1.el7.x86_64.rpm" version is "4.0.1")"""
 
-    release = attr.ib(type=str, default=None, validator=optional_str)
+    release = pulp_attrib(
+        type=str, pulp_field="release", default=None, validator=optional_str
+    )
     """RPM release (e.g. "bash-4.0.1-1.el7.x86_64.rpm" version is "1.el7")"""
 
-    src = attr.ib(type=str, default=None, validator=optional_str)
+    src = pulp_attrib(type=str, pulp_field="src", default=None, validator=optional_str)
     """Filename of the source RPM from which this RPM was built; equal to
     :meth:`filename` for the source RPM itself.
     """
 
-    reboot_suggested = attr.ib(type=bool, default=None, validator=optional_bool)
+    reboot_suggested = pulp_attrib(
+        type=bool, pulp_field="reboot_suggested", default=None, validator=optional_bool
+    )
     """True if rebooting host machine is recommended after installing this package."""
 
     md5sum = attr.ib(type=str, default=None, validator=optional_str)
@@ -134,22 +167,48 @@ class ErratumPackage(object):
 
         return schemaless_init(cls, data_updated)
 
+    def _to_data(self):
+        # Handle model-to-pulp special cases for a couple of fields.
+        out = super(ErratumPackage, self)._to_data()
+
+        # If reboot_suggested has no value, it's critical that we
+        # omit it entirely. At least some versions of yum treat the presence
+        # of this field as if the value is True, without actually looking at
+        # the value, and this logic has been carried over to Pulp also.
+        if "reboot_suggested" in out and out["reboot_suggested"] is None:
+            del out["reboot_suggested"]
+
+        # 'sum' is assembled from multiple fields
+        sumlist = []
+        if self.md5sum:
+            sumlist.extend(["md5", self.md5sum])
+        if self.sha1sum:
+            sumlist.extend(["sha1", self.sha1sum])
+        if self.sha256sum:
+            sumlist.extend(["sha256", self.sha256sum])
+        out["sum"] = sumlist
+
+        return out
+
 
 @attr.s(kw_only=True, frozen=True)
-class ErratumPackageCollection(object):
+class ErratumPackageCollection(PulpObject):
     """A collection of packages found within an :meth:`~ErratumUnit.pkglist`.
 
     A non-modular advisory typically contains only a single collection, while modular
     advisories typically contain one collection per module.
     """
 
-    name = attr.ib(type=str, default=None, validator=optional_str)
+    name = pulp_attrib(
+        type=str, pulp_field="name", default=None, validator=optional_str
+    )
     """A name for this collection. The collection name has no specific meaning,
     but must be unique within an advisory.
     """
 
-    packages = attr.ib(
+    packages = pulp_attrib(
         type=list,
+        pulp_field="packages",
         default=None,
         converter=frozenlist_or_none_converter,
         validator=optional_list_of(ErratumPackage),
@@ -159,13 +218,16 @@ class ErratumPackageCollection(object):
     :type: list[ErratumPackage]
     """
 
-    short = attr.ib(type=str, default=None, validator=optional_str)
+    short = pulp_attrib(
+        type=str, pulp_field="short", default=None, validator=optional_str
+    )
     """An alternative name for this collection. In practice, this field
     is typically blank.
     """
 
-    module = attr.ib(
+    module = pulp_attrib(
         type=ErratumModule,
+        pulp_field="module",
         default=None,
         validator=instance_of((ErratumModule, type(None))),
     )
@@ -175,15 +237,18 @@ class ErratumPackageCollection(object):
 
     @classmethod
     def _from_data(cls, data):
+        if data is None:
+            return None
+
         # Convert from raw list/dict as provided in Pulp responses into model.
         if isinstance(data, list):
             return [cls._from_data(elem) for elem in data]
 
         data_updated = data.copy()
 
-        if "packages" in data:
+        if data.get("packages") is not None:
             data_updated["packages"] = ErratumPackage._from_data(data["packages"])
-        if "module" in data:
+        if data.get("module") is not None:
             data_updated["module"] = ErratumModule._from_data(data["module"])
 
         return schemaless_init(cls, data_updated)

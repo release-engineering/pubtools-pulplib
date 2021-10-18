@@ -117,7 +117,8 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
 
         for unit in units_to_add:
             unit_key = units.make_unit_key(unit)
-            self._units_by_key[unit_key] = unit
+            old_unit = self._units_by_key.get(unit_key)
+            self._units_by_key[unit_key] = units.merge_units(old_unit, unit)
             repo_unit_keys.add(unit_key)
 
     def _ensure_alive(self):
@@ -420,7 +421,10 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
 
         repo = repo_f.result()
 
-        upload_content = self._uploads_pending.pop(upload_id)
+        # Get the uploaded content we're about to import; though it's not
+        # guaranteed to be present (e.g. erratum has no file).
+        # If not present, we just use an empty BytesIO.
+        upload_content = self._uploads_pending.pop(upload_id, six.BytesIO())
         upload_content.seek(0)
 
         new_units = units.make_units(
