@@ -6,7 +6,7 @@ import six
 from more_executors.futures import f_map, f_proxy
 
 from pubtools.pulplib._impl import compat_attr as attr
-from pubtools.pulplib._impl.util import lookup
+from pubtools.pulplib._impl.util import lookup, dict_put
 
 from .attr import PULP2_FIELD
 from .convert import get_converter
@@ -101,6 +101,61 @@ class PulpObject(object):
 
             msg = "%s.from_data invoked with invalid Pulp data", cls.__name__
             six.raise_from(InvalidDataException(msg), error)
+
+    def _to_data(self):
+        """Inverse of from_data: serialize a model object back to native Pulp form.
+
+        This method is currently intended for internal use only.
+
+        Returns:
+            This object, in the native format used by pulp2 (i.e. some
+            JSON-encodable type).
+        """
+        fields = attr.fields(type(self))
+
+        out = {}
+        for field in fields:
+            pulp_field = field.metadata.get(PULP2_FIELD)
+
+            if not pulp_field:
+                # This field does not map to pulp
+                continue
+
+            python_value = getattr(self, field.name)
+
+            # Note: in theory we should also get and use PY_PULP2_CONVERTER
+            # here if that was set on the metadata. It's not currently
+            # implemented because ErratumUnit is the only type for which
+            # this code can be reached from public API, and it has no fields
+            # which need a custom converter, so it would be dead code.
+            # Implement it when you need it!
+            #
+            # For now, conversions supported by PulpObject are sufficient.
+            pulp_value = PulpObject._any_to_data(python_value)
+
+            # Put converted value into the output dict:
+            # This may create nested dicts if needed, e.g. if
+            # pulp_field is "notes.foobar", this will create a "notes"
+            # dict in out if it does not already exist.
+            dict_put(out, pulp_field, pulp_value)
+
+        return out
+
+    @classmethod
+    def _any_to_data(cls, value):
+        """Like the instance method _to_data, but also handles non-PulpObject values."""
+
+        if isinstance(value, list):
+            # Lists of objects are converted recursively.
+            return [cls._any_to_data(elem) for elem in value]
+
+        if isinstance(value, PulpObject):
+            # It's a model object, then delegate to the instance method.
+            return value._to_data()
+
+        # For anything else, we assume it can be used as-is.
+        # strs and ints for example fall into this path.
+        return value
 
     @classmethod
     def _data_to_init_args(cls, data):
