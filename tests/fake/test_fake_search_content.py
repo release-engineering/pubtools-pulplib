@@ -5,6 +5,7 @@ from pubtools.pulplib import (
     Criteria,
     Matcher,
     RpmUnit,
+    ErratumUnit,
     ModulemdUnit,
     YumRepository,
 )
@@ -35,6 +36,7 @@ def populated_repo(controller):
         ModulemdUnit(
             name="module2", stream="s2", version=1234, context="a1b2", arch="x86_64"
         ),
+        ErratumUnit(id="RHBA-1234:56", summary="The best advisory"),
     ]
 
     repo = YumRepository(id="repo1")
@@ -87,7 +89,7 @@ def test_search_content_default_crit(populated_repo):
     """search_content with default criteria on populated repo finds all units"""
 
     units = list(populated_repo.search_content())
-    assert len(units) == 5
+    assert len(units) == 6
 
 
 def test_search_content_by_type(populated_repo):
@@ -105,6 +107,14 @@ def test_search_content_by_type(populated_repo):
             sourcerpm="glibc-5.0-1.el5_11.1.src.rpm",
         ),
     ]
+
+
+def test_search_erratum_by_type(populated_repo):
+    """search_content for erratum returns matching content"""
+
+    crit = Criteria.with_field("content_type_id", "erratum")
+    units = list(populated_repo.search_content(crit))
+    assert units == [ErratumUnit(id="RHBA-1234:56", summary="The best advisory")]
 
 
 def test_search_content_by_unit_field(populated_repo):

@@ -5,6 +5,7 @@ from pubtools.pulplib import (
     Criteria,
     Matcher,
     RpmUnit,
+    ErratumUnit,
     ModulemdUnit,
     YumRepository,
 )
@@ -55,6 +56,7 @@ def test_copy_content_all(controller):
     # The units in 'other' are there to ensure that copying only
     # happens from the given source repo and not other repos unexpectedly.
     src_units = [
+        ErratumUnit(id="RHSA-1111:22", summary="Fixes bad things"),
         ModulemdUnit(
             name="module1", stream="s1", version=1234, context="a1b2", arch="x86_64"
         ),
@@ -97,7 +99,10 @@ def test_copy_content_all(controller):
     units = sum([t.units for t in copy_tasks], [])
 
     # It should copy just the units we expect, from src.
+    # Note that these are incomplete views of the units, as (just like real pulp)
+    # the fake will only return fields present in the unit_key after a copy.
     assert sorted(units, key=repr) == [
+        ErratumUnit(id="RHSA-1111:22"),
         ModulemdUnit(
             name="module1", stream="s1", version=1234, context="a1b2", arch="x86_64"
         ),

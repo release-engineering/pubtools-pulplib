@@ -13,6 +13,11 @@ from .repository import (
 from .unit import (
     Unit,
     FileUnit,
+    ErratumUnit,
+    ErratumReference,
+    ErratumPackageCollection,
+    ErratumPackage,
+    ErratumModule,
     RpmUnit,
     ModulemdUnit,
     ModulemdDefaultsUnit,
