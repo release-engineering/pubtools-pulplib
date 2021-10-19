@@ -27,7 +27,8 @@ def client():
     - client has a retry policy configured so that all sleeps are very fast
       (avoids delays due to retry in autotests)
     """
-    return FastRetryClient("https://pulp.example.com/")
+    with FastRetryClient("https://pulp.example.com/") as client:
+        yield client
 
 
 @pytest.fixture
