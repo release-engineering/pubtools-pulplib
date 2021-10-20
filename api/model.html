@@ -629,6 +629,61 @@ to this repo.</p>
 </div>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="pubtools.pulplib.YumRepository.upload_erratum">
+<span class="sig-name descname"><span class="pre">upload_erratum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">erratum</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository/yum.html#YumRepository.upload_erratum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.YumRepository.upload_erratum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Upload an erratum/advisory object to this repository.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>There are many quirks with respect to advisory upload. Please be aware
+of the following before using this API:</p>
+<ul>
+<li><p>Only one advisory with a given <code class="docutils literal notranslate"><span class="pre">id</span></code> may exist in the system.</p></li>
+<li><p>When uploading an advisory with an <code class="docutils literal notranslate"><span class="pre">id</span></code> equal to one already in the
+system, the upload will generally be ignored (i.e. complete successfully
+but have no effect), unless either the <code class="docutils literal notranslate"><span class="pre">version</span></code> or <code class="docutils literal notranslate"><span class="pre">updated</span></code> fields
+have a value larger than the existing advisory.</p>
+<p>This implies that, if you want to ensure an existing advisory is updated,
+you must first search for the existing object and mutate one of these
+fields before uploading a modified object. <em>The library will not take
+care of this for you.</em></p>
+</li>
+<li><p>When overwriting an existing advisory, all fields will be overwritten.
+The sole exception is the <code class="docutils literal notranslate"><span class="pre">pkglist</span></code> field which will be merged with
+existing data when applicable.</p></li>
+<li><p>If an advisory with the same <code class="docutils literal notranslate"><span class="pre">id</span></code> is present in multiple published yum
+repositories with inconsistent fields, yum/dnf client errors or warnings
+may occur. It’s therefore recommended that, whenever an existing
+advisory is modified, every repository containing that advisory should
+be republished. <em>The library will not take care of this for you.</em></p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">repository_memberships</span></code> field on the provided object has no effect
+(it cannot be used to upload an advisory to multiple repos at once).</p></li>
+</ul>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>erratum</strong> (<a class="reference internal" href="#pubtools.pulplib.ErratumUnit" title="pubtools.pulplib.ErratumUnit"><code class="xref py py-class docutils literal notranslate"><span class="pre">ErratumUnit</span></code></a>) – <p>An erratum object.</p>
+<p>Unlike most other uploaded content, errata are not backed by any
+file; any arbitrarily constructed ErratumUnit may be uploaded.</p>
+</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Future[list of <a class="reference internal" href="#pubtools.pulplib.Task" title="pubtools.pulplib.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a>]</dt><dd><p>A future which is resolved after content has been imported
+to this repo.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#pubtools.pulplib.DetachedException" title="pubtools.pulplib.DetachedException"><strong>DetachedException</strong></a> – If this instance is not attached to a Pulp client.</p>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.17.0.</span></p>
+</div>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">

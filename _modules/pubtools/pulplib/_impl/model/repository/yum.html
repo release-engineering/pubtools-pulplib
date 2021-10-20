@@ -360,7 +360,77 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;modulemds&quot;</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_upload_then_import</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="s2">&quot;modulemd&quot;</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_upload_then_import</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="s2">&quot;modulemd&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="YumRepository.upload_erratum"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.YumRepository.upload_erratum">[docs]</a>    <span class="k">def</span> <span class="nf">upload_erratum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">erratum</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Upload an erratum/advisory object to this repository.</span>
+
+<span class="sd">        .. warning::</span>
+
+<span class="sd">            There are many quirks with respect to advisory upload. Please be aware</span>
+<span class="sd">            of the following before using this API:</span>
+
+<span class="sd">            * Only one advisory with a given ``id`` may exist in the system.</span>
+
+<span class="sd">            * When uploading an advisory with an ``id`` equal to one already in the</span>
+<span class="sd">              system, the upload will generally be ignored (i.e. complete successfully</span>
+<span class="sd">              but have no effect), unless either the ``version`` or ``updated`` fields</span>
+<span class="sd">              have a value larger than the existing advisory.</span>
+
+<span class="sd">              This implies that, if you want to ensure an existing advisory is updated,</span>
+<span class="sd">              you must first search for the existing object and mutate one of these</span>
+<span class="sd">              fields before uploading a modified object. *The library will not take</span>
+<span class="sd">              care of this for you.*</span>
+
+<span class="sd">            * When overwriting an existing advisory, all fields will be overwritten.</span>
+<span class="sd">              The sole exception is the ``pkglist`` field which will be merged with</span>
+<span class="sd">              existing data when applicable.</span>
+
+<span class="sd">            * If an advisory with the same ``id`` is present in multiple published yum</span>
+<span class="sd">              repositories with inconsistent fields, yum/dnf client errors or warnings</span>
+<span class="sd">              may occur. It&#39;s therefore recommended that, whenever an existing</span>
+<span class="sd">              advisory is modified, every repository containing that advisory should</span>
+<span class="sd">              be republished. *The library will not take care of this for you.*</span>
+
+<span class="sd">            * The ``repository_memberships`` field on the provided object has no effect</span>
+<span class="sd">              (it cannot be used to upload an advisory to multiple repos at once).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            erratum (:class:`~pubtools.pulplib.ErratumUnit`)</span>
+<span class="sd">                An erratum object.</span>
+
+<span class="sd">                Unlike most other uploaded content, errata are not backed by any</span>
+<span class="sd">                file; any arbitrarily constructed ErratumUnit may be uploaded.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Future[list of :class:`~pubtools.pulplib.Task`]</span>
+<span class="sd">                A future which is resolved after content has been imported</span>
+<span class="sd">                to this repo.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            DetachedException</span>
+<span class="sd">                If this instance is not attached to a Pulp client.</span>
+
+<span class="sd">        .. versionadded:: 2.17.0</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Convert from ErratumUnit to a raw Pulp-style dict, recursively.</span>
+        <span class="n">erratum_dict</span> <span class="o">=</span> <span class="n">erratum</span><span class="o">.</span><span class="n">_to_data</span><span class="p">()</span>
+
+        <span class="c1"># Drop this one field because the _content_type_id, though embedded</span>
+        <span class="c1"># in unit dicts on read, is passed as a separate parameter on write.</span>
+        <span class="n">type_id</span> <span class="o">=</span> <span class="n">erratum_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;_content_type_id&quot;</span><span class="p">)</span>
+
+        <span class="c1"># And drop this one because repository_memberships is synthesized when</span>
+        <span class="c1"># Pulp renders units, and can&#39;t be set during import.</span>
+        <span class="k">del</span> <span class="n">erratum_dict</span><span class="p">[</span><span class="s2">&quot;repository_memberships&quot;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_upload_then_import</span><span class="p">(</span>
+            <span class="n">file_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">erratum_dict</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">],</span>
+            <span class="n">type_id</span><span class="o">=</span><span class="n">type_id</span><span class="p">,</span>
+            <span class="n">unit_key_fn</span><span class="o">=</span><span class="k">lambda</span> <span class="n">_</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">erratum_dict</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]},</span>
+            <span class="n">unit_metadata_fn</span><span class="o">=</span><span class="k">lambda</span> <span class="n">_</span><span class="p">:</span> <span class="n">erratum_dict</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
 </pre></div>
 
           </div>

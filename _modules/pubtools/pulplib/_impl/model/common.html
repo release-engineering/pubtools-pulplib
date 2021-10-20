@@ -39,7 +39,7 @@
 <span class="kn">from</span> <span class="nn">more_executors.futures</span> <span class="kn">import</span> <span class="n">f_map</span><span class="p">,</span> <span class="n">f_proxy</span>
 
 <span class="kn">from</span> <span class="nn">pubtools.pulplib._impl</span> <span class="kn">import</span> <span class="n">compat_attr</span> <span class="k">as</span> <span class="n">attr</span>
-<span class="kn">from</span> <span class="nn">pubtools.pulplib._impl.util</span> <span class="kn">import</span> <span class="n">lookup</span>
+<span class="kn">from</span> <span class="nn">pubtools.pulplib._impl.util</span> <span class="kn">import</span> <span class="n">lookup</span><span class="p">,</span> <span class="n">dict_put</span>
 
 <span class="kn">from</span> <span class="nn">.attr</span> <span class="kn">import</span> <span class="n">PULP2_FIELD</span>
 <span class="kn">from</span> <span class="nn">.convert</span> <span class="kn">import</span> <span class="n">get_converter</span>
@@ -134,6 +134,61 @@
 
             <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.from_data invoked with invalid Pulp data&quot;</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span>
             <span class="n">six</span><span class="o">.</span><span class="n">raise_from</span><span class="p">(</span><span class="n">InvalidDataException</span><span class="p">(</span><span class="n">msg</span><span class="p">),</span> <span class="n">error</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_to_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Inverse of from_data: serialize a model object back to native Pulp form.</span>
+
+<span class="sd">        This method is currently intended for internal use only.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            This object, in the native format used by pulp2 (i.e. some</span>
+<span class="sd">            JSON-encodable type).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">fields</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+
+        <span class="n">out</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">:</span>
+            <span class="n">pulp_field</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">PULP2_FIELD</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">pulp_field</span><span class="p">:</span>
+                <span class="c1"># This field does not map to pulp</span>
+                <span class="k">continue</span>
+
+            <span class="n">python_value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+            <span class="c1"># Note: in theory we should also get and use PY_PULP2_CONVERTER</span>
+            <span class="c1"># here if that was set on the metadata. It&#39;s not currently</span>
+            <span class="c1"># implemented because ErratumUnit is the only type for which</span>
+            <span class="c1"># this code can be reached from public API, and it has no fields</span>
+            <span class="c1"># which need a custom converter, so it would be dead code.</span>
+            <span class="c1"># Implement it when you need it!</span>
+            <span class="c1">#</span>
+            <span class="c1"># For now, conversions supported by PulpObject are sufficient.</span>
+            <span class="n">pulp_value</span> <span class="o">=</span> <span class="n">PulpObject</span><span class="o">.</span><span class="n">_any_to_data</span><span class="p">(</span><span class="n">python_value</span><span class="p">)</span>
+
+            <span class="c1"># Put converted value into the output dict:</span>
+            <span class="c1"># This may create nested dicts if needed, e.g. if</span>
+            <span class="c1"># pulp_field is &quot;notes.foobar&quot;, this will create a &quot;notes&quot;</span>
+            <span class="c1"># dict in out if it does not already exist.</span>
+            <span class="n">dict_put</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">pulp_field</span><span class="p">,</span> <span class="n">pulp_value</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">out</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_any_to_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Like the instance method _to_data, but also handles non-PulpObject values.&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="c1"># Lists of objects are converted recursively.</span>
+            <span class="k">return</span> <span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">_any_to_data</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span> <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">value</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">PulpObject</span><span class="p">):</span>
+            <span class="c1"># It&#39;s a model object, then delegate to the instance method.</span>
+            <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">_to_data</span><span class="p">()</span>
+
+        <span class="c1"># For anything else, we assume it can be used as-is.</span>
+        <span class="c1"># strs and ints for example fall into this path.</span>
+        <span class="k">return</span> <span class="n">value</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_data_to_init_args</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>

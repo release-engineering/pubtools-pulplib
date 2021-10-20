@@ -587,8 +587,9 @@
 <span class="sd">        FileRepository...)</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            file_obj (str, file-like object):</span>
-<span class="sd">                file object or path (as documented in public methods)</span>
+<span class="sd">            file_obj (str, file-like object, None):</span>
+<span class="sd">                file object or path (as documented in public methods), or None</span>
+<span class="sd">                if this unit type has no associated file</span>
 
 <span class="sd">            name (str):</span>
 <span class="sd">                a brief user-meaningful name for the content being uploaded</span>
@@ -599,13 +600,15 @@
 
 <span class="sd">            unit_key_fn (callable):</span>
 <span class="sd">                a callable which will be invoked with the return value of</span>
-<span class="sd">                _do_upload_file. It should return the unit key for this piece of</span>
+<span class="sd">                _do_upload_file (or None if file_obj is None).</span>
+<span class="sd">                It should return the unit key for this piece of</span>
 <span class="sd">                content. If omitted, an empty unit key is used, which means Pulp</span>
 <span class="sd">                is wholly responsible for calculating the unit key.</span>
 
 <span class="sd">            unit_metadata_fn (callable):</span>
 <span class="sd">                a callable which will be invoked with the return value of</span>
-<span class="sd">                _do_upload_file. It should return the unit metadata for this piece of</span>
+<span class="sd">                _do_upload_file (or None if file_obj is None). It should return</span>
+<span class="sd">                the unit metadata for this piece of</span>
 <span class="sd">                content. If omitted, metadata is not included in the import call to</span>
 <span class="sd">                Pulp.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -627,10 +630,18 @@
             <span class="p">),</span>
         <span class="p">)</span>
 
-        <span class="n">upload_complete_f</span> <span class="o">=</span> <span class="n">f_flat_map</span><span class="p">(</span>
-            <span class="n">upload_id_f</span><span class="p">,</span>
-            <span class="k">lambda</span> <span class="n">upload_id</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_do_upload_file</span><span class="p">(</span><span class="n">upload_id</span><span class="p">,</span> <span class="n">file_obj</span><span class="p">),</span>
-        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">file_obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># If there is no file for this kind of unit (e.g. erratum),</span>
+            <span class="c1"># we still have to use the request_upload and import APIs; we just</span>
+            <span class="c1"># never upload any bytes. That means the upload is &#39;complete&#39; as</span>
+            <span class="c1"># soon as the upload ID is known. A real upload returns a (size, checksum)</span>
+            <span class="c1"># tuple; we force a no-content upload to return None.</span>
+            <span class="n">upload_complete_f</span> <span class="o">=</span> <span class="n">f_map</span><span class="p">(</span><span class="n">upload_id_f</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">_</span><span class="p">:</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">upload_complete_f</span> <span class="o">=</span> <span class="n">f_flat_map</span><span class="p">(</span>
+                <span class="n">upload_id_f</span><span class="p">,</span>
+                <span class="k">lambda</span> <span class="n">upload_id</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_do_upload_file</span><span class="p">(</span><span class="n">upload_id</span><span class="p">,</span> <span class="n">file_obj</span><span class="p">),</span>
+            <span class="p">)</span>
 
         <span class="n">import_complete_f</span> <span class="o">=</span> <span class="n">f_flat_map</span><span class="p">(</span>
             <span class="n">upload_complete_f</span><span class="p">,</span>

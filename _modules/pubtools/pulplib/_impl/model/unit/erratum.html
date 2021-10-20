@@ -33,7 +33,7 @@
   <h1>Source code for pubtools.pulplib._impl.model.unit.erratum</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">six</span>
 
-<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">Unit</span><span class="p">,</span> <span class="n">unit_type</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">Unit</span><span class="p">,</span> <span class="n">PulpObject</span><span class="p">,</span> <span class="n">unit_type</span>
 
 <span class="kn">from</span> <span class="nn">..attr</span> <span class="kn">import</span> <span class="n">pulp_attrib</span>
 <span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">compat_attr</span> <span class="k">as</span> <span class="n">attr</span>
@@ -54,21 +54,27 @@
 
 
 <div class="viewcode-block" id="ErratumReference"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.ErratumReference">[docs]</a><span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">ErratumReference</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">ErratumReference</span><span class="p">(</span><span class="n">PulpObject</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A reference within a :meth:`~ErratumUnit.references` list.&quot;&quot;&quot;</span>
 
-    <span class="n">href</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="n">optional_str</span><span class="p">)</span>
+    <span class="n">href</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;href&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="n">optional_str</span>
+    <span class="p">)</span>
     <span class="sd">&quot;&quot;&quot;A URL.&quot;&quot;&quot;</span>
 
-    <span class="nb">id</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="n">optional_str</span><span class="p">)</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="n">optional_str</span><span class="p">)</span>
     <span class="sd">&quot;&quot;&quot;A short ID for the reference, unique within this erratum.&quot;&quot;&quot;</span>
 
-    <span class="n">title</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="n">optional_str</span><span class="p">)</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="n">optional_str</span>
+    <span class="p">)</span>
     <span class="sd">&quot;&quot;&quot;A title for the reference; analogous to the &#39;title&#39; attribute</span>
 <span class="sd">    in HTML.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="nb">type</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="n">optional_str</span><span class="p">)</span>
+    <span class="nb">type</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="n">optional_str</span>
+    <span class="p">)</span>
     <span class="sd">&quot;&quot;&quot;Type of reference. This defines the expected target of the URL</span>
 <span class="sd">    and includes at least:</span>
 
@@ -79,6 +85,9 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_from_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
         <span class="c1"># Convert from raw list/dict in Pulp response</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="k">return</span> <span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">_from_data</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span> <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]</span>
@@ -87,22 +96,32 @@
 
 
 <div class="viewcode-block" id="ErratumModule"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.ErratumModule">[docs]</a><span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">ErratumModule</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">ErratumModule</span><span class="p">(</span><span class="n">PulpObject</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A module entry within a :meth:`~ErratumUnit.pkglist`.&quot;&quot;&quot;</span>
 
-    <span class="n">name</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="n">optional_str</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="n">optional_str</span>
+    <span class="p">)</span>
     <span class="sd">&quot;&quot;&quot;Module name.&quot;&quot;&quot;</span>
 
-    <span class="n">stream</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="n">optional_str</span><span class="p">)</span>
+    <span class="n">stream</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;stream&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="n">optional_str</span>
+    <span class="p">)</span>
     <span class="sd">&quot;&quot;&quot;Module stream.&quot;&quot;&quot;</span>
 
-    <span class="n">version</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="n">optional_str</span><span class="p">)</span>
+    <span class="n">version</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;version&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="n">optional_str</span>
+    <span class="p">)</span>
     <span class="sd">&quot;&quot;&quot;Module version.&quot;&quot;&quot;</span>
 
-    <span class="n">context</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="n">optional_str</span><span class="p">)</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;context&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="n">optional_str</span>
+    <span class="p">)</span>
     <span class="sd">&quot;&quot;&quot;Module context.&quot;&quot;&quot;</span>
 
-    <span class="n">arch</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="n">optional_str</span><span class="p">)</span>
+    <span class="n">arch</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;arch&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="n">optional_str</span>
+    <span class="p">)</span>
     <span class="sd">&quot;&quot;&quot;Module architecture.&quot;&quot;&quot;</span>
 
     <span class="nd">@classmethod</span>
@@ -111,33 +130,47 @@
 
 
 <div class="viewcode-block" id="ErratumPackage"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.ErratumPackage">[docs]</a><span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">ErratumPackage</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">ErratumPackage</span><span class="p">(</span><span class="n">PulpObject</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A package (RPM) entry within a :meth:`~ErratumUnit.pkglist`.&quot;&quot;&quot;</span>
 
-    <span class="n">arch</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="n">optional_str</span><span class="p">)</span>
+    <span class="n">arch</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;arch&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="n">optional_str</span>
+    <span class="p">)</span>
     <span class="sd">&quot;&quot;&quot;RPM architecture.&quot;&quot;&quot;</span>
 
-    <span class="n">filename</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="n">optional_str</span><span class="p">)</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;filename&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="n">optional_str</span>
+    <span class="p">)</span>
     <span class="sd">&quot;&quot;&quot;RPM filename (basename).&quot;&quot;&quot;</span>
 
-    <span class="n">epoch</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="n">optional_str</span><span class="p">)</span>
+    <span class="n">epoch</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;epoch&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="n">optional_str</span>
+    <span class="p">)</span>
     <span class="sd">&quot;&quot;&quot;RPM epoch.&quot;&quot;&quot;</span>
 
-    <span class="n">name</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="n">optional_str</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="n">optional_str</span>
+    <span class="p">)</span>
     <span class="sd">&quot;&quot;&quot;RPM name (e.g. &quot;bash-4.0.1-1.el7.x86_64.rpm&quot; name is &quot;bash&quot;)&quot;&quot;&quot;</span>
 
-    <span class="n">version</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="n">optional_str</span><span class="p">)</span>
+    <span class="n">version</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;version&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="n">optional_str</span>
+    <span class="p">)</span>
     <span class="sd">&quot;&quot;&quot;RPM version (e.g. &quot;bash-4.0.1-1.el7.x86_64.rpm&quot; version is &quot;4.0.1&quot;)&quot;&quot;&quot;</span>
 
-    <span class="n">release</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="n">optional_str</span><span class="p">)</span>
+    <span class="n">release</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;release&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="n">optional_str</span>
+    <span class="p">)</span>
     <span class="sd">&quot;&quot;&quot;RPM release (e.g. &quot;bash-4.0.1-1.el7.x86_64.rpm&quot; version is &quot;1.el7&quot;)&quot;&quot;&quot;</span>
 
-    <span class="n">src</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="n">optional_str</span><span class="p">)</span>
+    <span class="n">src</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;src&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="n">optional_str</span><span class="p">)</span>
     <span class="sd">&quot;&quot;&quot;Filename of the source RPM from which this RPM was built; equal to</span>
 <span class="sd">    :meth:`filename` for the source RPM itself.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">reboot_suggested</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">bool</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="n">optional_bool</span><span class="p">)</span>
+    <span class="n">reboot_suggested</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">bool</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;reboot_suggested&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="n">optional_bool</span>
+    <span class="p">)</span>
     <span class="sd">&quot;&quot;&quot;True if rebooting host machine is recommended after installing this package.&quot;&quot;&quot;</span>
 
     <span class="n">md5sum</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="n">optional_str</span><span class="p">)</span>
@@ -165,24 +198,50 @@
             <span class="n">raw_sum</span> <span class="o">=</span> <span class="n">raw_sum</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>
         <span class="n">data_updated</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">sums</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">schemaless_init</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data_updated</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">schemaless_init</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data_updated</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_to_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Handle model-to-pulp special cases for a couple of fields.</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">ErratumPackage</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_to_data</span><span class="p">()</span>
+
+        <span class="c1"># If reboot_suggested has no value, it&#39;s critical that we</span>
+        <span class="c1"># omit it entirely. At least some versions of yum treat the presence</span>
+        <span class="c1"># of this field as if the value is True, without actually looking at</span>
+        <span class="c1"># the value, and this logic has been carried over to Pulp also.</span>
+        <span class="k">if</span> <span class="s2">&quot;reboot_suggested&quot;</span> <span class="ow">in</span> <span class="n">out</span> <span class="ow">and</span> <span class="n">out</span><span class="p">[</span><span class="s2">&quot;reboot_suggested&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">del</span> <span class="n">out</span><span class="p">[</span><span class="s2">&quot;reboot_suggested&quot;</span><span class="p">]</span>
+
+        <span class="c1"># &#39;sum&#39; is assembled from multiple fields</span>
+        <span class="n">sumlist</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">md5sum</span><span class="p">:</span>
+            <span class="n">sumlist</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;md5&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">md5sum</span><span class="p">])</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sha1sum</span><span class="p">:</span>
+            <span class="n">sumlist</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;sha1&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sha1sum</span><span class="p">])</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sha256sum</span><span class="p">:</span>
+            <span class="n">sumlist</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;sha256&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sha256sum</span><span class="p">])</span>
+        <span class="n">out</span><span class="p">[</span><span class="s2">&quot;sum&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sumlist</span>
+
+        <span class="k">return</span> <span class="n">out</span></div>
 
 
 <div class="viewcode-block" id="ErratumPackageCollection"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.ErratumPackageCollection">[docs]</a><span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">ErratumPackageCollection</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">ErratumPackageCollection</span><span class="p">(</span><span class="n">PulpObject</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A collection of packages found within an :meth:`~ErratumUnit.pkglist`.</span>
 
 <span class="sd">    A non-modular advisory typically contains only a single collection, while modular</span>
 <span class="sd">    advisories typically contain one collection per module.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">name</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="n">optional_str</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="n">optional_str</span>
+    <span class="p">)</span>
     <span class="sd">&quot;&quot;&quot;A name for this collection. The collection name has no specific meaning,</span>
 <span class="sd">    but must be unique within an advisory.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">packages</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span>
+    <span class="n">packages</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span>
+        <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;packages&quot;</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">converter</span><span class="o">=</span><span class="n">frozenlist_or_none_converter</span><span class="p">,</span>
         <span class="n">validator</span><span class="o">=</span><span class="n">optional_list_of</span><span class="p">(</span><span class="n">ErratumPackage</span><span class="p">),</span>
@@ -192,13 +251,16 @@
 <span class="sd">    :type: list[ErratumPackage]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">short</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="n">optional_str</span><span class="p">)</span>
+    <span class="n">short</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;short&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="n">optional_str</span>
+    <span class="p">)</span>
     <span class="sd">&quot;&quot;&quot;An alternative name for this collection. In practice, this field</span>
 <span class="sd">    is typically blank.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">module</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span>
+    <span class="n">module</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
         <span class="nb">type</span><span class="o">=</span><span class="n">ErratumModule</span><span class="p">,</span>
+        <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;module&quot;</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">validator</span><span class="o">=</span><span class="n">instance_of</span><span class="p">((</span><span class="n">ErratumModule</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">))),</span>
     <span class="p">)</span>
@@ -208,15 +270,18 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_from_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
         <span class="c1"># Convert from raw list/dict as provided in Pulp responses into model.</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="k">return</span> <span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">_from_data</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span> <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]</span>
 
         <span class="n">data_updated</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
-        <span class="k">if</span> <span class="s2">&quot;packages&quot;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;packages&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">data_updated</span><span class="p">[</span><span class="s2">&quot;packages&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ErratumPackage</span><span class="o">.</span><span class="n">_from_data</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;packages&quot;</span><span class="p">])</span>
-        <span class="k">if</span> <span class="s2">&quot;module&quot;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;module&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">data_updated</span><span class="p">[</span><span class="s2">&quot;module&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ErratumModule</span><span class="o">.</span><span class="n">_from_data</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;module&quot;</span><span class="p">])</span>
 
         <span class="k">return</span> <span class="n">schemaless_init</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data_updated</span><span class="p">)</span></div>
