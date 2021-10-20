@@ -554,8 +554,9 @@ class Repository(PulpObject, Deletable):
         FileRepository...)
 
         Args:
-            file_obj (str, file-like object):
-                file object or path (as documented in public methods)
+            file_obj (str, file-like object, None):
+                file object or path (as documented in public methods), or None
+                if this unit type has no associated file
 
             name (str):
                 a brief user-meaningful name for the content being uploaded
@@ -566,13 +567,15 @@ class Repository(PulpObject, Deletable):
 
             unit_key_fn (callable):
                 a callable which will be invoked with the return value of
-                _do_upload_file. It should return the unit key for this piece of
+                _do_upload_file (or None if file_obj is None).
+                It should return the unit key for this piece of
                 content. If omitted, an empty unit key is used, which means Pulp
                 is wholly responsible for calculating the unit key.
 
             unit_metadata_fn (callable):
                 a callable which will be invoked with the return value of
-                _do_upload_file. It should return the unit metadata for this piece of
+                _do_upload_file (or None if file_obj is None). It should return
+                the unit metadata for this piece of
                 content. If omitted, metadata is not included in the import call to
                 Pulp.
         """
@@ -594,10 +597,18 @@ class Repository(PulpObject, Deletable):
             ),
         )
 
-        upload_complete_f = f_flat_map(
-            upload_id_f,
-            lambda upload_id: self._client._do_upload_file(upload_id, file_obj),
-        )
+        if file_obj is None:
+            # If there is no file for this kind of unit (e.g. erratum),
+            # we still have to use the request_upload and import APIs; we just
+            # never upload any bytes. That means the upload is 'complete' as
+            # soon as the upload ID is known. A real upload returns a (size, checksum)
+            # tuple; we force a no-content upload to return None.
+            upload_complete_f = f_map(upload_id_f, lambda _: None)
+        else:
+            upload_complete_f = f_flat_map(
+                upload_id_f,
+                lambda upload_id: self._client._do_upload_file(upload_id, file_obj),
+            )
 
         import_complete_f = f_flat_map(
             upload_complete_f,

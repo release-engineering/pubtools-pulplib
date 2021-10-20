@@ -32,6 +32,9 @@ def make_units(type_id, unit_key, unit_metadata, content, repo_id):
     if type_id == "rpm":
         return [make_rpm_unit(content)]
 
+    if type_id == "erratum":
+        return [make_erratum_unit(unit_metadata)]
+
     if type_id == "modulemd":
         return make_module_units(content, repo_id)
 
@@ -42,6 +45,79 @@ def make_units(type_id, unit_key, unit_metadata, content, repo_id):
     raise NotImplementedError(
         "fake client does not support upload of '%s'" % type_id
     )  # pragma: no cover
+
+
+def is_erratum_version_newer(old_erratum, new_erratum):
+    # A comparison of 'version' field between two erratum units which
+    # aims to be compatible with:
+    # https://github.com/pulp/pulp_rpm/blob/5c5a7dcc058b29d89b3a913d29cfcab41db96686/plugins/pulp_rpm/yum_plugin/util.py#L196
+
+    old_version = getattr(old_erratum, "version", "")
+    new_version = getattr(new_erratum, "version", "")
+
+    if not new_version:
+        return False
+
+    try:
+        new = float(new_version)
+
+        if not old_version:
+            old = 0
+        else:
+            old = float(old_version)
+    except ValueError:
+        # non-numeric field means we just treat new_version as newer.
+        return True
+
+    return new > old
+
+
+def merge_units(old_unit, new_unit):
+    # Given a unit which already exists in (fake) Pulp and a proposed new
+    # unit, returns the new unit which should be stored - potentially
+    # merging certain fields with the old unit.
+
+    if old_unit is None:
+        # No previous value in pulp
+        return new_unit
+
+    repos = None
+
+    # If there's an existing unit, and either old or new unit has some
+    # repo memberships, the repo memberships are merged.
+    if (
+        old_unit.repository_memberships is not None
+        or new_unit.repository_memberships is not None
+    ):
+        repos = set(
+            (old_unit.repository_memberships or [])
+            + (new_unit.repository_memberships or [])
+        )
+
+    # By default, the new unit is used completely and it overwrites any
+    # prior unit with the same key (excepting the repository_memberships).
+    #
+    # There is one special case for erratum units.
+    # The new unit is only used if certain fields differ,
+    # mainly 'version'. The actual logic is quite a bit more complicated
+    # (refer to https://github.com/pulp/pulp_rpm/blob/5c5a7dcc058b29d89b3a913d29cfcab41db96686/plugins/pulp_rpm/plugins/db/models.py#L1233)
+    # but our tools only use 'version' field for this, so the other complexity
+    # seems not worth reproducing in the fake.
+    if old_unit.content_type_id == "erratum" and not is_erratum_version_newer(
+        old_unit, new_unit
+    ):
+        LOG.debug(
+            "FakeClient ignoring erratum upload %s due to non-newer version",
+            new_unit.id,
+        )
+        # Upload request is effectively ignored, the old unit is reused,
+        # discarding any of the changed fields.
+        #
+        # Note: real Pulp also has quite complicated logic around 'pkglist'
+        # field, we do not currently attempt to reproduce this in the fake.
+        new_unit = old_unit
+
+    return attr.evolve(new_unit, repository_memberships=repos)
 
 
 def make_iso_unit(unit_key):
@@ -57,6 +133,12 @@ def make_yum_repo_metadata_unit(unit_key, unit_metadata):
     return YumRepoMetadataFileUnit(
         data_type=unit_key["data_type"], sha256sum=unit_metadata["checksum"]
     )
+
+
+def make_erratum_unit(metadata):
+    md = metadata.copy()
+    md["_content_type_id"] = "erratum"
+    return ErratumUnit.from_data(md)
 
 
 def make_rpm_unit(content):
