@@ -11,7 +11,7 @@ def lookup(value, key, default=ABSENT):
     # Otherwise, KeyError is raised, similar as for a regular dict lookup.
     keys = key.split(".")
 
-    while value and value is not ABSENT and keys:
+    while value and isinstance(value, dict) and keys:
         next_key = keys.pop(0)
         value = value.get(next_key, ABSENT)
 

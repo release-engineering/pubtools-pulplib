@@ -17,6 +17,18 @@ def test_successful_task():
     assert task == Task(id="some-task", completed=True, succeeded=True)
 
 
+def test_integer_result():
+    """from_data tolerates integer values in 'result' field.
+
+    This test exists because the 'result' field can contain different types
+    (e.g. None, integer, dict) based on the type of task which was executed.
+    In some cases, we want to parse the dict. The test protects against
+    unconditionally assuming we always have a dict.
+    """
+    task = Task.from_data({"task_id": "some-task", "state": "finished", "result": 123})
+    assert task == Task(id="some-task", completed=True, succeeded=True)
+
+
 def test_failed_task():
     """from_data sets attributes appropriately for a failed task"""
     task = Task.from_data({"task_id": "some-task", "state": "error"})

@@ -69,8 +69,12 @@ properties:
   # Task result. The content depends on the task type.
   result:
     anyOf:
-    - type: "null"
-    - type: array
+
+    # If it's not an object, we don't care what it is, just accept it.
+    - not:
+        type: object
+
+    # If it is an object, we will validate some inner fields.
     - type: object
       properties:
         # For tasks operating on units (e.g. assoc/unassoc), this element
