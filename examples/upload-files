@@ -22,6 +22,9 @@ def upload_to_repo(repo, path):
         if path.endswith("modules.yaml") or path.endswith("modules.yml"):
             return repo.upload_modules(path)
 
+        if path.endswith("comps.xml"):
+            return repo.upload_comps_xml(path)
+
         # We can upload metadata file if the filename exactly matches a known
         # metadata type (e.g. "productid")
         basename = os.path.basename(path)

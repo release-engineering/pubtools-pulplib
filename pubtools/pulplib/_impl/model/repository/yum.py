@@ -3,11 +3,11 @@ import re
 import six
 from frozenlist2 import frozenlist
 
-from more_executors.futures import f_map, f_proxy, f_return
+from more_executors.futures import f_map, f_proxy, f_return, f_zip, f_flat_map
 from .base import Repository, SyncOptions, repo_type
 from ..attr import pulp_attrib
 from ..common import DetachedException
-from ... import compat_attr as attr
+from ... import compat_attr as attr, comps
 from ...criteria import Criteria
 
 
@@ -328,6 +328,131 @@ class YumRepository(Repository):
             name = getattr(file_obj, "name", "modulemds")
 
         return self._upload_then_import(file_obj, name, "modulemd")
+
+    def upload_comps_xml(self, file_obj):
+        """Upload a comps.xml file to this repository.
+
+        .. warning::
+
+            Beware of the following quirks with respect to the upload of comps.xml:
+
+            * Pulp does not directly store the uploaded XML. Instead, this library
+              parses the XML and uses the content to store various units. The comps
+              XML rendered as a yum repository is published is therefore not
+              guaranteed to be bytewise-identical to the uploaded content.
+
+            * The uploaded XML must contain all comps data for the repo, as
+              any existing comps data will be removed from the repo.
+
+            * The XML parser is not secure against maliciously constructed data.
+
+            * The process of parsing the XML and storing units consists of multiple
+              steps which cannot be executed atomically. That means *if this
+              operation is interrupted, the repository may be left with incomplete
+              data*. It's recommended to avoid publishing a repository in this state.
+
+        Args:
+            file_obj (str, file object)
+                If it's a string, then it's the path of a comps XML
+                file to upload.
+
+                Otherwise, it should be a
+                `file-like object <https://docs.python.org/3/glossary.html#term-file-object>`_
+                pointing at the bytes of a valid comps.xml file.
+
+                The client takes ownership of this file object; it should
+                not be modified elsewhere, and will be closed when upload
+                completes.
+
+        Returns:
+            Future[list of :class:`~pubtools.pulplib.Task`]
+                A future which is resolved after content has been imported
+                to this repo.
+
+        Raises:
+            DetachedException
+                If this instance is not attached to a Pulp client.
+
+        .. versionadded:: 2.17.0
+        """
+        if isinstance(file_obj, six.string_types):
+            file_name = file_obj
+            file_obj = open(file_obj, "rb")
+        else:
+            file_name = getattr(file_obj, "name", "comps.xml")
+
+        # Parse the provided XML. We will crash here if the given XML is not
+        # valid.
+        with file_obj:
+            unit_dicts = comps.units_for_xml(file_obj)
+
+        # Every comps-related unit type has a repo_id which should reference the repo
+        # we're uploading to.
+        for unit in unit_dicts:
+            unit["repo_id"] = self.id
+
+        comps_type_ids = [
+            "package_group",
+            "package_category",
+            "package_environment",
+            "package_langpacks",
+        ]
+
+        # Remove former units of comps-related types so that the end result is only
+        # those units included in the current XML.
+        out = self.remove_content(type_ids=comps_type_ids)
+
+        # Once removal is done we can upload each unit.
+        upload_f = []
+        for unit_dict in unit_dicts:
+            type_id = unit_dict["_content_type_id"]
+
+            # For one comps.xml we are doing multiple upload operations, each of
+            # which would be logged independently. Come up with some reasonable name
+            # for each unit to put into the logs.
+            #
+            # Example: if uploading my-comps.xml and processing a package_group
+            # with id kde-desktop-environment, the name for logging purposes would
+            # be: "my-comps.xml [group.kde-desktop-environment]".
+            #
+            unit_name = type_id.replace("package_", "")
+            if unit_dict.get("id"):
+                unit_name = "%s.%s" % (unit_name, unit_dict["id"])
+            unit_name = "%s [%s]" % (file_name, unit_name)
+
+            upload_f.append(
+                f_flat_map(
+                    out, self._comps_unit_uploader(unit_name, type_id, unit_dict)
+                )
+            )
+
+        # If there were no units to upload then just return the removal.
+        if not upload_f:
+            return out
+
+        # There were uploads, then we'll wait for all of them to complete and
+        # return the tasks for all.
+        out = f_zip(*upload_f)
+        out = f_map(out, lambda uploads: sum(uploads, []))
+
+        return out
+
+    def _comps_unit_uploader(self, name, type_id, metadata):
+        # A helper used from upload_comps_xml.
+        #
+        # This helper only exists to eagerly bind arguments for a single
+        # unit upload, due to confusing behavior around variable scope
+        # when combining loops and lambdas.
+
+        def upload(_unused):
+            return self._upload_then_import(
+                file_obj=None,
+                name=name,
+                type_id=type_id,
+                unit_metadata_fn=lambda _: metadata,
+            )
+
+        return upload
 
     def upload_erratum(self, erratum):
         """Upload an erratum/advisory object to this repository.

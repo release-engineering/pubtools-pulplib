@@ -38,6 +38,16 @@ def make_units(type_id, unit_key, unit_metadata, content, repo_id):
     if type_id == "modulemd":
         return make_module_units(content, repo_id)
 
+    # Comps-related types are accepted, but we do not actually process
+    # them into units.
+    if type_id in (
+        "package_group",
+        "package_langpacks",
+        "package_category",
+        "package_environment",
+    ):
+        return []
+
     # It should not be possible to get here via public API.
     #
     # If you see this message, you're probably halfway through implementing

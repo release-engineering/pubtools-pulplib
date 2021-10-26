@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE comps
+  PUBLIC '-//Red Hat, Inc.//DTD Comps info//EN'
+  'comps.dtd'>
+
+<!--
+  A comps file for testing.
+
+  This was originally taken from Fedora, then tweaked by:
+  - trimming the size significantly so there are only a few of each kind of
+    element
+  - adding some edge cases which are rarely triggered with real data
+-->
+
+<comps>
+
+
+  <group>
+    <id>3d-printing</id>
+    <name>3D Printing</name>
+    <name xml:lang="af">3D-drukwerk</name>
+    <name xml:lang="bg">3D Печатане</name>
+    <description>3D printing software</description>
+    <description xml:lang="af">3D-druksagteware</description>
+    <description xml:lang="bg">Софтуер за 3D печатане</description>
+    <default>false</default>
+    <uservisible>true</uservisible>
+    <packagelist>
+      <packagereq type="default">admesh</packagereq>
+      <!-- tweaked: made the below conditional -->
+      <packagereq type="conditional" requires="something-required-by-blender">blender</packagereq>
+    </packagelist>
+  </group>
+  <group>
+    <id>admin-tools</id>
+    <name>Administration Tools</name>
+    <name xml:lang="af">Administrasienutsgoed</name>
+    <name xml:lang="am">የአስተዳደሩ መሣሪያዎች</name>
+    <description>This group is a collection of graphical administration tools for the system, such as for managing user accounts and configuring system hardware.</description>
+    <description xml:lang="sr">Ова група је скуп графичких системских административних алатки, нпр. за управљање корисничким налозима и подешавање хардвера у систему.</description>
+    <description xml:lang="sr@Latn">Ova grupa je skup grafičkih sistemskih administrativnih alatki, npr. za upravljanje korisničkim nalozima i podešavanje hardvera u sistemu.</description>
+    <default>false</default>
+    <uservisible>true</uservisible>
+    <packagelist>
+      <packagereq type="mandatory">abrt-desktop</packagereq>
+      <packagereq type="mandatory">gnome-disk-utility</packagereq>
+    </packagelist>
+  </group>
+
+
+  <category>
+    <id>kde-desktop-environment</id>
+    <name>KDE Desktop</name>
+    <name xml:lang="af">KDE-werkskerm</name>
+    <name xml:lang="as">KDE ডেস্কটপ</name>
+    <!-- tweaked: mixed some CDATA into the description -->
+    <description>The KDE SC includes the <![CDATA[KDE Plasma Desktop]]>, a highly-configurable graphical user interface which includes a panel, desktop, system icons and desktop widgets, and many powerful KDE applications.</description>
+    <description xml:lang="bn_IN">KDE SC-র মধ্যে রয়েছে KDE Plasma ডেস্কটপ। অতিমাত্রায় কনফিগার করার যোগ্য এই ইউজার ইন্টারফেসের মধ্যে রয়েছে একটি প্যানেল, ডেস্কটপ, সিস্টেমের বিভিন্ন আইকন ও ডেস্কটপ উইজেট ও বিভিন্ন উন্নত ক্ষমতাবিশিষ্ট KDE-র অন্যান্য অনেকগুলি অ্যাপ্লিকেশন।</description>
+    <description xml:lang="zh_TW">KDE SC 所包含的 KDE Plasma 桌面是個功能強大的圖形使用者介面，它含有面板、桌面、系統圖示與桌面元件，以及許多強大的 KDE 應用軟體。</description>
+    <display_order>10</display_order>
+    <grouplist>
+      <groupid>kde-office</groupid>
+      <groupid>kde-telepathy</groupid>
+    </grouplist>
+  </category>
+  <category>
+    <id>xfce-desktop-environment</id>
+    <name>Xfce Desktop</name>
+    <name xml:lang="uk">Графічне середовище Xfce</name>
+    <name xml:lang="zh_CN">Xfce 桌面环境</name>
+    <description>A lightweight desktop environment that works well on low end machines.</description>
+    <description xml:lang="as">এটা লঘুভাৰৰ ডেষ্কট'প পৰিবেশ যি নিম্ন বিন্যাসৰ যন্ত্ৰত ভালকৈ কাম কৰি ।</description>
+    <description xml:lang="ast">Un entornu d'escritoriu llixeru que furrula bien en máquines pequeñes.</description>
+    <display_order>15</display_order>
+    <grouplist>
+      <groupid>xfce-apps</groupid>
+      <groupid>xfce-desktop</groupid>
+    </grouplist>
+  </category>
+
+
+  <environment>
+    <id>basic-desktop-environment</id>
+    <name>Basic Desktop</name>
+    <name xml:lang="af">Basiese werkskerm</name>
+    <name xml:lang="bg">Основен работен плот</name>
+    <name xml:lang="ca">Escriptori bàsic</name>
+    <description>X Window System with a choice of window manager.</description>
+    <description xml:lang="af">X Window-stelsel met ’n keuse van vensterbestuurder.</description>
+    <description xml:lang="bg">X Window система с избор на мениджър на прозорци.</description>
+    <display_order><!-- tweaked: try empty display order --></display_order>
+    <grouplist>
+      <groupid>networkmanager-submodules</groupid>
+      <groupid>standard</groupid>
+    </grouplist>
+    <optionlist>
+      <!-- tweaked: added default -->
+      <groupid default="true">xmonad</groupid>
+      <groupid>xmonad-mate</groupid>
+    </optionlist>
+  </environment>
+  <environment>
+    <id>cinnamon-desktop-environment</id>
+    <name>Cinnamon Desktop</name>
+    <name xml:lang="en_GB">Cinnamon Desktop</name>
+    <name xml:lang="fr">Bureau Cinnamon</name>
+    <description xml:lang="ca">Cinnamon proporciona un escriptori amb un disseny tradicional, funcionalitats avançades, facilitat d'ús, potent i flexible.</description>
+    <description xml:lang="es">Cinnamon proporciona un entorno de escritorio tradicional, con características avanzadas, fácil de usar, potente y flexible.</description>
+    <display_order>22</display_order>
+    <grouplist>
+      <groupid>input-methods</groupid>
+      <groupid>multimedia</groupid>
+    </grouplist>
+    <optionlist>
+      <groupid>libreoffice</groupid>
+    </optionlist>
+  </environment>
+
+  <langpacks>
+    <match install="stardict-dic-%s" name="stardict"/>
+    <match install="tagainijisho-dic-%s" name="tagainijisho-common"/>
+    <match install="tesseract-langpack-%s" name="tesseract"/>
+    <match install="tkgate-%s" name="tkgate"/>
+  </langpacks>
+</comps>
