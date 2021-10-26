@@ -20,6 +20,7 @@ from pubtools.pulplib import (
     Repository,
     Distributor,
     Unit,
+    FileUnit,
     MaintenanceReport,
 )
 from pubtools.pulplib._impl.client.search import search_for_criteria
@@ -107,6 +108,32 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
             out.append(self._units_by_key[key])
         return out
 
+    def _remove_unit(self, repo_id, unit):
+        # Remove a single unit from a repository.
+        unit_key = units.make_unit_key(unit)
+
+        # Ensure unit is no longer referenced from the repo
+        self._repo_unit_keys[repo_id].remove(unit_key)
+
+        # Ensure repo ID is no longer in memberships
+        new_repos = [id for id in unit.repository_memberships if id != repo_id]
+        self._units_by_key[unit_key] = attr.evolve(
+            unit, repository_memberships=new_repos
+        )
+
+    def _remove_clashing_units(self, repo_id, unit):
+        # In preparation for adding 'unit' into a repo, remove any existing
+        # units from that repo which would clash, in a compatible manner as Pulp.
+        #
+        # Currently this is a special case only for File units: although their
+        # unit_key consists of more than just 'name' making it technically possible
+        # to have multiple files with the same name in a repo, Pulp has special logic
+        # to try to prevent this, so we do the same here.
+        if isinstance(unit, FileUnit):
+            for existing in self._repo_units(repo_id):
+                if isinstance(existing, FileUnit) and existing.path == unit.path:
+                    self._remove_unit(repo_id, existing)
+
     def _insert_repo_units(self, repo_id, units_to_add):
         # Insert an iterable of units into a specific repo.
         #
@@ -116,6 +143,7 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
         repo_unit_keys = self._repo_unit_keys.setdefault(repo_id, set())
 
         for unit in units_to_add:
+            self._remove_clashing_units(repo_id, unit)
             unit_key = units.make_unit_key(unit)
             old_unit = self._units_by_key.get(unit_key)
             self._units_by_key[unit_key] = units.merge_units(old_unit, unit)
