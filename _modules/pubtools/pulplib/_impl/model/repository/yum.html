@@ -36,11 +36,11 @@
 <span class="kn">import</span> <span class="nn">six</span>
 <span class="kn">from</span> <span class="nn">frozenlist2</span> <span class="kn">import</span> <span class="n">frozenlist</span>
 
-<span class="kn">from</span> <span class="nn">more_executors.futures</span> <span class="kn">import</span> <span class="n">f_map</span><span class="p">,</span> <span class="n">f_proxy</span><span class="p">,</span> <span class="n">f_return</span>
+<span class="kn">from</span> <span class="nn">more_executors.futures</span> <span class="kn">import</span> <span class="n">f_map</span><span class="p">,</span> <span class="n">f_proxy</span><span class="p">,</span> <span class="n">f_return</span><span class="p">,</span> <span class="n">f_zip</span><span class="p">,</span> <span class="n">f_flat_map</span>
 <span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">Repository</span><span class="p">,</span> <span class="n">SyncOptions</span><span class="p">,</span> <span class="n">repo_type</span>
 <span class="kn">from</span> <span class="nn">..attr</span> <span class="kn">import</span> <span class="n">pulp_attrib</span>
 <span class="kn">from</span> <span class="nn">..common</span> <span class="kn">import</span> <span class="n">DetachedException</span>
-<span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">compat_attr</span> <span class="k">as</span> <span class="n">attr</span>
+<span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">compat_attr</span> <span class="k">as</span> <span class="n">attr</span><span class="p">,</span> <span class="n">comps</span>
 <span class="kn">from</span> <span class="nn">...criteria</span> <span class="kn">import</span> <span class="n">Criteria</span>
 
 
@@ -361,6 +361,131 @@
             <span class="n">name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;modulemds&quot;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_upload_then_import</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="s2">&quot;modulemd&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="YumRepository.upload_comps_xml"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.YumRepository.upload_comps_xml">[docs]</a>    <span class="k">def</span> <span class="nf">upload_comps_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_obj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Upload a comps.xml file to this repository.</span>
+
+<span class="sd">        .. warning::</span>
+
+<span class="sd">            Beware of the following quirks with respect to the upload of comps.xml:</span>
+
+<span class="sd">            * Pulp does not directly store the uploaded XML. Instead, this library</span>
+<span class="sd">              parses the XML and uses the content to store various units. The comps</span>
+<span class="sd">              XML rendered as a yum repository is published is therefore not</span>
+<span class="sd">              guaranteed to be bytewise-identical to the uploaded content.</span>
+
+<span class="sd">            * The uploaded XML must contain all comps data for the repo, as</span>
+<span class="sd">              any existing comps data will be removed from the repo.</span>
+
+<span class="sd">            * The XML parser is not secure against maliciously constructed data.</span>
+
+<span class="sd">            * The process of parsing the XML and storing units consists of multiple</span>
+<span class="sd">              steps which cannot be executed atomically. That means *if this</span>
+<span class="sd">              operation is interrupted, the repository may be left with incomplete</span>
+<span class="sd">              data*. It&#39;s recommended to avoid publishing a repository in this state.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            file_obj (str, file object)</span>
+<span class="sd">                If it&#39;s a string, then it&#39;s the path of a comps XML</span>
+<span class="sd">                file to upload.</span>
+
+<span class="sd">                Otherwise, it should be a</span>
+<span class="sd">                `file-like object &lt;https://docs.python.org/3/glossary.html#term-file-object&gt;`_</span>
+<span class="sd">                pointing at the bytes of a valid comps.xml file.</span>
+
+<span class="sd">                The client takes ownership of this file object; it should</span>
+<span class="sd">                not be modified elsewhere, and will be closed when upload</span>
+<span class="sd">                completes.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Future[list of :class:`~pubtools.pulplib.Task`]</span>
+<span class="sd">                A future which is resolved after content has been imported</span>
+<span class="sd">                to this repo.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            DetachedException</span>
+<span class="sd">                If this instance is not attached to a Pulp client.</span>
+
+<span class="sd">        .. versionadded:: 2.17.0</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">string_types</span><span class="p">):</span>
+            <span class="n">file_name</span> <span class="o">=</span> <span class="n">file_obj</span>
+            <span class="n">file_obj</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">file_name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;comps.xml&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Parse the provided XML. We will crash here if the given XML is not</span>
+        <span class="c1"># valid.</span>
+        <span class="k">with</span> <span class="n">file_obj</span><span class="p">:</span>
+            <span class="n">unit_dicts</span> <span class="o">=</span> <span class="n">comps</span><span class="o">.</span><span class="n">units_for_xml</span><span class="p">(</span><span class="n">file_obj</span><span class="p">)</span>
+
+        <span class="c1"># Every comps-related unit type has a repo_id which should reference the repo</span>
+        <span class="c1"># we&#39;re uploading to.</span>
+        <span class="k">for</span> <span class="n">unit</span> <span class="ow">in</span> <span class="n">unit_dicts</span><span class="p">:</span>
+            <span class="n">unit</span><span class="p">[</span><span class="s2">&quot;repo_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span>
+
+        <span class="n">comps_type_ids</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;package_group&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;package_category&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;package_environment&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;package_langpacks&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="c1"># Remove former units of comps-related types so that the end result is only</span>
+        <span class="c1"># those units included in the current XML.</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">remove_content</span><span class="p">(</span><span class="n">type_ids</span><span class="o">=</span><span class="n">comps_type_ids</span><span class="p">)</span>
+
+        <span class="c1"># Once removal is done we can upload each unit.</span>
+        <span class="n">upload_f</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">unit_dict</span> <span class="ow">in</span> <span class="n">unit_dicts</span><span class="p">:</span>
+            <span class="n">type_id</span> <span class="o">=</span> <span class="n">unit_dict</span><span class="p">[</span><span class="s2">&quot;_content_type_id&quot;</span><span class="p">]</span>
+
+            <span class="c1"># For one comps.xml we are doing multiple upload operations, each of</span>
+            <span class="c1"># which would be logged independently. Come up with some reasonable name</span>
+            <span class="c1"># for each unit to put into the logs.</span>
+            <span class="c1">#</span>
+            <span class="c1"># Example: if uploading my-comps.xml and processing a package_group</span>
+            <span class="c1"># with id kde-desktop-environment, the name for logging purposes would</span>
+            <span class="c1"># be: &quot;my-comps.xml [group.kde-desktop-environment]&quot;.</span>
+            <span class="c1">#</span>
+            <span class="n">unit_name</span> <span class="o">=</span> <span class="n">type_id</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;package_&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">unit_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">):</span>
+                <span class="n">unit_name</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">unit_name</span><span class="p">,</span> <span class="n">unit_dict</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">])</span>
+            <span class="n">unit_name</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> [</span><span class="si">%s</span><span class="s2">]&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">unit_name</span><span class="p">)</span>
+
+            <span class="n">upload_f</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">f_flat_map</span><span class="p">(</span>
+                    <span class="n">out</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_comps_unit_uploader</span><span class="p">(</span><span class="n">unit_name</span><span class="p">,</span> <span class="n">type_id</span><span class="p">,</span> <span class="n">unit_dict</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="c1"># If there were no units to upload then just return the removal.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">upload_f</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">out</span>
+
+        <span class="c1"># There were uploads, then we&#39;ll wait for all of them to complete and</span>
+        <span class="c1"># return the tasks for all.</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">f_zip</span><span class="p">(</span><span class="o">*</span><span class="n">upload_f</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">f_map</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">uploads</span><span class="p">:</span> <span class="nb">sum</span><span class="p">(</span><span class="n">uploads</span><span class="p">,</span> <span class="p">[]))</span>
+
+        <span class="k">return</span> <span class="n">out</span></div>
+
+    <span class="k">def</span> <span class="nf">_comps_unit_uploader</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">type_id</span><span class="p">,</span> <span class="n">metadata</span><span class="p">):</span>
+        <span class="c1"># A helper used from upload_comps_xml.</span>
+        <span class="c1">#</span>
+        <span class="c1"># This helper only exists to eagerly bind arguments for a single</span>
+        <span class="c1"># unit upload, due to confusing behavior around variable scope</span>
+        <span class="c1"># when combining loops and lambdas.</span>
+
+        <span class="k">def</span> <span class="nf">upload</span><span class="p">(</span><span class="n">_unused</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_upload_then_import</span><span class="p">(</span>
+                <span class="n">file_obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">type_id</span><span class="o">=</span><span class="n">type_id</span><span class="p">,</span>
+                <span class="n">unit_metadata_fn</span><span class="o">=</span><span class="k">lambda</span> <span class="n">_</span><span class="p">:</span> <span class="n">metadata</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">upload</span>
 
 <div class="viewcode-block" id="YumRepository.upload_erratum"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.YumRepository.upload_erratum">[docs]</a>    <span class="k">def</span> <span class="nf">upload_erratum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">erratum</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Upload an erratum/advisory object to this repository.</span>
