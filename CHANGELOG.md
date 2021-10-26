@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - n/a
 
+## [2.17.0] - 2021-10-27
+
+- Added upload support for more content types to `YumRepository`: `upload_comps_xml`,
+  `upload_erratum`, `upload_metadata`, `upload_modules`.
+- Added unit models for more content types: `ErratumUnit`, `YumRepoMetadataFileUnit`.
+- Added `Client.copy_content` for copying content from one repository to another.
+- Changed `FileUnit` schema to accept non-integer values of `size` during load, for
+  compatibility with some legacy data.
+- Fixed `Task` schema too strict, formely being unable to load certain kinds of tasks
+  (such as removing orphans).
+- Added more verbose logging on errors during load of Pulp data.
+
 ## [2.16.0] - 2021-09-30
 
 - Added `YumRepository.upload_rpm`.
@@ -272,7 +284,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release to PyPI
 
-[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.16.0...HEAD
+[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.17.0...HEAD
+[2.17.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.16.0...v2.17.0
 [2.16.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.15.0...v2.16.0
 [2.15.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.14.0...v2.15.0
 [2.14.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.13.0...v2.14.0
