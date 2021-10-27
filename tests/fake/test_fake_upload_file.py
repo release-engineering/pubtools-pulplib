@@ -54,6 +54,52 @@ def test_can_upload_units(tmpdir):
     ]
 
 
+def test_replace_file(tmpdir):
+    """repo.upload_file() behaves as expected when replacing a file of the same name."""
+    controller = FakeController()
+
+    controller.insert_repository(FileRepository(id="repo1"))
+
+    client = controller.client
+    repo1 = client.get_repository("repo1").result()
+
+    somefile = tmpdir.join("some-file.txt")
+    somefile.write(b"there is some binary data:\x00\x01\x02")
+
+    otherfile = tmpdir.join("another.txt")
+    otherfile.write("ahoy there")
+
+    # Upload both files, using the same relative_url for each.
+    repo1.upload_file(str(somefile), relative_url="darmok-jalad.txt").result()
+    repo1.upload_file(str(otherfile), relative_url="darmok-jalad.txt").result()
+
+    # If I now search for content in that repo, or content across all repos...
+    units_in_repo = sorted(repo1.search_content().result(), key=lambda u: u.sha256sum)
+    units_all = sorted(client.search_content().result(), key=lambda u: u.sha256sum)
+
+    # I should find that only the second uploaded file is still present in the repo.
+    assert units_in_repo == [
+        FileUnit(
+            path="darmok-jalad.txt",
+            size=10,
+            sha256sum="94c0c9d847ecaa45df01999676db772e5cb69cc54e1ff9db31d02385c56a86e1",
+            repository_memberships=["repo1"],
+        )
+    ]
+
+    # However, both units should still exist in the system; the first uploaded unit
+    # has become an orphan.
+    assert units_all == units_in_repo + [
+        FileUnit(
+            path="darmok-jalad.txt",
+            size=29,
+            sha256sum="fad3fc1e6d583b2003ec0a5273702ed8fcc2504271c87c40d9176467ebe218cb",
+            content_type_id="iso",
+            repository_memberships=[],
+        )
+    ]
+
+
 def test_can_upload_history(tmpdir):
     """repo.upload_file() succeeds with fake client and populates upload_history.
 
