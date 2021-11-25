@@ -112,6 +112,14 @@ class SyncOptions(object):
     """A string representing the password that should be used to authenticate with the proxy server
     """
 
+    basic_auth_username = pulp_attrib(default=None, type=str)
+    """Username to authenticate with source which supports basic authentication.
+    """
+
+    basic_auth_password = pulp_attrib(default=None, type=str)
+    """Password to authenticate with source which supports basic authentication.
+    """
+
 
 @attr.s(kw_only=True, frozen=True)
 class Repository(PulpObject, Deletable):
