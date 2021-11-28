@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - n/a
 
+## [2.18.0] - 2021-11-29
+
+- Added `basic_auth_username`, `basic_auth_password` to `SyncOptions` to support
+  authenticated sync tasks.
+- Fake client now accurately reproduces Pulp server behavior around replacing an
+  existing file/iso unit.
+
 ## [2.17.0] - 2021-10-27
 
 - Added upload support for more content types to `YumRepository`: `upload_comps_xml`,
@@ -284,7 +291,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release to PyPI
 
-[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.17.0...HEAD
+[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.18.0...HEAD
+[2.18.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.17.0...v2.18.0
 [2.17.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.16.0...v2.17.0
 [2.16.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.15.0...v2.16.0
 [2.15.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.14.0...v2.15.0
