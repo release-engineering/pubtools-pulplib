@@ -303,6 +303,9 @@ class RegexMatcher(Matcher):
     # Note: regex matcher does not implement _map since regex is defined only
     # in terms of strings, there are no meaningful conversions.
 
+    def __str__(self):
+        return "=~/%s/" % self._pattern
+
 
 @attr.s
 class EqMatcher(Matcher):
@@ -310,6 +313,9 @@ class EqMatcher(Matcher):
 
     def _map(self, fn):
         return attr.evolve(self, value=fn(self._value))
+
+    def __str__(self):
+        return "==%s" % repr(self._value)
 
 
 @attr.s
@@ -325,10 +331,14 @@ class InMatcher(Matcher):
     def _map(self, fn):
         return attr.evolve(self, values=[fn(x) for x in self._values])
 
+    def __str__(self):
+        return " IN %s" % repr(self._values)
+
 
 @attr.s
 class ExistsMatcher(Matcher):
-    pass
+    def __str__(self):
+        return " EXISTS"
 
 
 @attr.s
@@ -337,6 +347,9 @@ class LessThanMatcher(Matcher):
 
     def _map(self, fn):
         return attr.evolve(self, value=fn(self._value))
+
+    def __str__(self):
+        return "<%s" % repr(self._value)
 
 
 def coerce_to_matcher(value):
@@ -359,16 +372,43 @@ class FieldMatchCriteria(Criteria):
     _field = attr.ib()
     _matcher = attr.ib(converter=coerce_to_matcher)
 
+    def __str__(self):
+        matcher = str(self._matcher)
+        out = "%s%s" % (self._field, matcher)
+
+        if " " in matcher:
+            out = "(%s)" % out
+        return out
+
 
 @attr.s
 class AndCriteria(Criteria):
     _operands = attr.ib()
+
+    def __str__(self):
+        if not self._operands:
+            return "<empty AND>"
+
+        if len(self._operands) == 1:
+            return str(self._operands[0])
+
+        return "(" + " AND ".join([str(o) for o in self._operands]) + ")"
 
 
 @attr.s
 class OrCriteria(Criteria):
     _operands = attr.ib()
 
+    def __str__(self):
+        if not self._operands:
+            return "<empty OR>"
+
+        if len(self._operands) == 1:
+            return str(self._operands[0])
+
+        return "(" + " OR ".join([str(o) for o in self._operands]) + ")"
+
 
 class TrueCriteria(Criteria):
-    pass
+    def __str__(self):
+        return "TRUE"
