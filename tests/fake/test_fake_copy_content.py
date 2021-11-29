@@ -58,7 +58,12 @@ def test_copy_content_all(controller):
     src_units = [
         ErratumUnit(id="RHSA-1111:22", summary="Fixes bad things"),
         ModulemdUnit(
-            name="module1", stream="s1", version=1234, context="a1b2", arch="x86_64"
+            name="module1",
+            stream="s1",
+            version=1234,
+            context="a1b2",
+            arch="x86_64",
+            repository_memberships=["repoA", "repoB"],
         ),
         RpmUnit(
             name="bash",
@@ -111,7 +116,37 @@ def test_copy_content_all(controller):
 
     # The copy should also impact subsequent content searches.
     dest_units = list(dest.search_content())
-    assert src_units == sorted(dest_units, key=repr)
+
+    # The units we get from the search are not *precisely* the same as src_units,
+    # because repository_memberships has been updated.
+    assert sorted(dest_units, key=repr) == [
+        ErratumUnit(
+            id="RHSA-1111:22",
+            summary="Fixes bad things",
+            content_type_id="erratum",
+            repository_memberships=["dest-repo"],
+        ),
+        ModulemdUnit(
+            name="module1",
+            stream="s1",
+            version=1234,
+            context="a1b2",
+            arch="x86_64",
+            content_type_id="modulemd",
+            repository_memberships=["dest-repo", "repoA", "repoB"],
+        ),
+        RpmUnit(
+            name="bash",
+            version="4.0",
+            release="1",
+            arch="x86_64",
+            epoch="0",
+            signing_key="a1b2c3",
+            filename="bash-4.0-1.x86_64.rpm",
+            content_type_id="rpm",
+            repository_memberships=["dest-repo"],
+        ),
+    ]
 
 
 def test_copy_content_with_criteria(controller):
@@ -155,6 +190,20 @@ def test_copy_content_with_criteria(controller):
     # The copy should also impact subsequent content searches.
     dest_units = list(dest.search_content())
     assert sorted(dest_units, key=repr) == [
-        RpmUnit(name="bash", version="4.0", release="1", arch="x86_64", epoch="0"),
-        RpmUnit(name="bash", version="4.1", release="3", arch="x86_64", epoch="0"),
+        RpmUnit(
+            name="bash",
+            version="4.0",
+            release="1",
+            arch="x86_64",
+            epoch="0",
+            repository_memberships=["dest-repo"],
+        ),
+        RpmUnit(
+            name="bash",
+            version="4.1",
+            release="3",
+            arch="x86_64",
+            epoch="0",
+            repository_memberships=["dest-repo"],
+        ),
     ]
