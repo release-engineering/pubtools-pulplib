@@ -1,7 +1,12 @@
 import six
 
 try:
-    from kobo.rpmlib import get_rpm_header, get_header_fields, get_keys_from_header
+    from kobo.rpmlib import (
+        get_rpm_header,
+        get_header_fields,
+        get_keys_from_header,
+        parse_evr,
+    )
 except Exception as ex:  # pragma: no cover, pylint: disable=broad-except
     # Avoid a hard dependency on RPM bindings at import time - delay the crash
     # until we're actually used (if ever).
@@ -24,6 +29,7 @@ except Exception as ex:  # pragma: no cover, pylint: disable=broad-except
     get_rpm_header = broken
     get_header_fields = broken
     get_keys_from_header = broken
+    parse_evr = broken
 
 __all__ = [
     "get_rpm_header",
@@ -62,14 +68,14 @@ def _get_rpm_deps(header, header_flags_map):
 
     deps = []
 
-    for name, vr, flag in zip(names, versions, flags):
-        version, release = vr.split("-")
+    for name, evr, flag in zip(names, versions, flags):
+        evr = parse_evr(evr)
 
         deps_item = {
             "name": name,
-            "version": version,
-            "release": release,
-            "epoch": None,  # unsure how to get this value from rpm headers
+            "version": evr["version"],
+            "release": evr["release"],
+            "epoch": "0" if evr["epoch"] == "" else evr["epoch"],
             "flags": _parse_dep_relation(flag),
         }
 

@@ -12,7 +12,7 @@ from ._impl.model import (
     Unit,
     FileUnit,
     RpmUnit,
-    Dependency,
+    RpmDependency,
     ErratumUnit,
     ErratumReference,
     ErratumPackageCollection,

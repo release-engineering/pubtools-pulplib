@@ -3,7 +3,7 @@ import os
 
 import pytest
 
-from pubtools.pulplib import FakeController, RpmUnit, YumRepository, Dependency
+from pubtools.pulplib import FakeController, RpmUnit, YumRepository, RpmDependency
 
 
 @pytest.mark.parametrize("use_file_object", [False, True])
@@ -58,22 +58,24 @@ def test_can_upload_units(data_path, use_file_object):
             content_type_id="rpm",
             repository_memberships=["repo1"],
             requires=[
-                Dependency(
+                RpmDependency(
                     name="rpmlib(CompressedFileNames)",
                     version="3.0.4",
                     release="1",
                     flags="LE",
+                    epoch="0",
                 ),
-                Dependency(
+                RpmDependency(
                     name="rpmlib(PayloadFilesHavePrefix)",
                     version="4.0",
                     release="1",
                     flags="LE",
+                    epoch="0",
                 ),
             ],
             provides=[
-                Dependency(
-                    name="walrus", version="5.21", release="1", epoch=None, flags="EQ"
+                RpmDependency(
+                    name="walrus", version="5.21", release="1", flags="EQ", epoch="0"
                 )
             ],
         )

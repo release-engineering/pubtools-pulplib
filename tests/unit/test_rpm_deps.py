@@ -2,7 +2,7 @@ from pubtools.pulplib import Unit
 
 
 def test_rpm_requires_provides():
-    """Checksum values come from expected fields on pulp unit."""
+    """Requires and provides values come from expected fields on pulp unit."""
 
     unit = Unit.from_data(
         {

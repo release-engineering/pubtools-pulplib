@@ -8,7 +8,7 @@ import attr
 from pubtools.pulplib import (
     FileUnit,
     RpmUnit,
-    Dependency,
+    RpmDependency,
     ErratumUnit,
     YumRepoMetadataFileUnit,
     ModulemdUnit,
@@ -206,10 +206,10 @@ def make_rpm_unit(content):
     rpmattrs["filename"] = "{name}-{version}-{release}.{arch}.rpm".format(**rpmattrs)
 
     rpmattrs["requires"] = [
-        Dependency._from_data(item) for item in get_rpm_requires(header)
+        RpmDependency._from_data(item) for item in get_rpm_requires(header)
     ]
     rpmattrs["provides"] = [
-        Dependency._from_data(item) for item in get_rpm_provides(header)
+        RpmDependency._from_data(item) for item in get_rpm_provides(header)
     ]
 
     rpmattrs.update(sumattrs)

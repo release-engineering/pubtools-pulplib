@@ -5,20 +5,40 @@ from ..attr import pulp_attrib
 from ... import compat_attr as attr
 from ..convert import frozenlist_or_none_converter, frozenlist_or_none_sorted_converter
 
-from pubtools.pulplib._impl.model.unit.erratum import schemaless_init
-
 
 @attr.s(kw_only=True, frozen=True)
-class Dependency(object):
+class RpmDependency(object):
     """
-    A dependency entry within :meth:`~RpmUnit.requires` and :meth:`~RpmUnit.provides`.
+    An RPM dependency entry within :meth:`~RpmUnit.requires` and :meth:`~RpmUnit.provides`.
     """
 
     name = pulp_attrib(default=None, type=str, pulp_field="name")
+    """
+    A name of dependency - it can be name of rpm package, shared library, scriplet or 
+    another name of dependency.
+    """
+
     version = pulp_attrib(default=None, type=str, pulp_field="version")
+    """
+    Version of this RPM dependency.
+    """
+
     release = pulp_attrib(default=None, type=str, pulp_field="release")
+    """
+    Release of this RPM dependency.
+    """
+
     epoch = pulp_attrib(default=None, type=str, pulp_field="epoch")
+    """
+    Epoch of this RPM dependency.
+    """
+
     flags = pulp_attrib(default=None, type=str, pulp_field="flags")
+    """
+    Flags representing relation to version of this RPM dependency.
+    Can be one of GT (greater than), EQ (equal), LT (less than), GE (greater than or equal) and
+    LE (less than or equal).
+    """
 
     @classmethod
     def _from_data(cls, data):
@@ -142,11 +162,11 @@ class RpmUnit(Unit):
         type=list,
         converter=frozenlist_or_none_converter,
         pulp_field="requires",
-        validator=optional_list_of(Dependency),
-        pulp_py_converter=Dependency._from_data,
+        validator=optional_list_of(RpmDependency),
+        pulp_py_converter=RpmDependency._from_data,
     )
     """
-    List of capabilities that this RPM provides or ``None`` if this information is unavailable. 
+    List of dependecies that this RPM requires or ``None`` if this information is unavailable.
     """
 
     provides = pulp_attrib(
@@ -154,11 +174,11 @@ class RpmUnit(Unit):
         type=list,
         converter=frozenlist_or_none_converter,
         pulp_field="provides",
-        validator=optional_list_of(Dependency),
-        pulp_py_converter=Dependency._from_data,
+        validator=optional_list_of(RpmDependency),
+        pulp_py_converter=RpmDependency._from_data,
     )
     """
-    List of dependecies that this RPM requires or ``None`` if this information is unavailable. 
+    List of capabilities that this RPM provides or ``None`` if this information is unavailable.
     """
 
     @md5sum.validator
