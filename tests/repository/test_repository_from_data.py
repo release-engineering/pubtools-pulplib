@@ -28,7 +28,6 @@ def test_default_created():
     assert repo.created is None
 
 
-<<<<<<< HEAD
 def test_bad_created(caplog):
     """from_data logs and raises if input data has created of wrong type"""
     with pytest.raises(InvalidDataException):
@@ -39,13 +38,6 @@ def test_bad_created(caplog):
     # details (e.g. stringification of class)
     assert "An error occurred while loading Pulp data!" in caplog.text
 
-=======
-def test_bad_created():
-    """from_data raises if input data has created of wrong type"""
-    with pytest.raises(InvalidDataException):
-        Repository.from_data({"id": "some-repo", "notes": {"created": "whoops"}})
-
->>>>>>> 1af1eb4 (Removed travis.yml and restored tests and github actions)
 
 def test_is_temporary():
     """from_data is_temporary is True if expected note is present"""
