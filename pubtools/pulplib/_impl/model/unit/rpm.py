@@ -166,7 +166,7 @@ class RpmUnit(Unit):
         pulp_py_converter=RpmDependency._from_data,
     )
     """
-    List of dependecies that this RPM requires or ``None`` if this information is unavailable.
+    List of dependencies that this RPM requires or ``None`` if this information is unavailable.
     """
 
     provides = pulp_attrib(
