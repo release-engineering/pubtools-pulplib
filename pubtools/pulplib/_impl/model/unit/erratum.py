@@ -1,23 +1,11 @@
 import six
 
-from .base import Unit, PulpObject, unit_type
+from .base import Unit, PulpObject, unit_type, schemaless_init
 
 from ..attr import pulp_attrib
 from ... import compat_attr as attr
 from ..validate import optional_bool, optional_list_of, optional_str, instance_of
 from ..convert import frozenlist_or_none_sorted_converter, frozenlist_or_none_converter
-
-
-def schemaless_init(cls, data):
-    # Construct and return an instance of (attrs-using) cls from
-    # pulp data, where data in pulp has no schema at all (and hence
-    # every field could possibly be missing).
-    kwargs = {}
-    for key in [fld.name for fld in attr.fields(cls)]:
-        if key in data:
-            kwargs[key] = data[key]
-
-    return cls(**kwargs)
 
 
 @attr.s(kw_only=True, frozen=True)

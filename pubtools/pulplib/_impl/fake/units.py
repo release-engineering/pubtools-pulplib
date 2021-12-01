@@ -8,13 +8,20 @@ import attr
 from pubtools.pulplib import (
     FileUnit,
     RpmUnit,
+    RpmDependency,
     ErratumUnit,
     YumRepoMetadataFileUnit,
     ModulemdUnit,
     ModulemdDefaultsUnit,
 )
 
-from .rpmlib import get_rpm_header, get_header_fields, get_keys_from_header
+from .rpmlib import (
+    get_rpm_header,
+    get_header_fields,
+    get_keys_from_header,
+    get_rpm_requires,
+    get_rpm_provides,
+)
 from ..model.attr import PULP2_UNIT_KEY
 
 LOG = logging.getLogger("pubtools.pulplib")
@@ -197,6 +204,13 @@ def make_rpm_unit(content):
 
     # This isn't actually a property of the RPM at all, but something synthesized.
     rpmattrs["filename"] = "{name}-{version}-{release}.{arch}.rpm".format(**rpmattrs)
+
+    rpmattrs["requires"] = [
+        RpmDependency._from_data(item) for item in get_rpm_requires(header)
+    ]
+    rpmattrs["provides"] = [
+        RpmDependency._from_data(item) for item in get_rpm_provides(header)
+    ]
 
     rpmattrs.update(sumattrs)
 
