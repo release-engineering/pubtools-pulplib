@@ -31,11 +31,55 @@
           <div class="body" role="main">
             
   <h1>Source code for pubtools.pulplib._impl.model.unit.rpm</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">Unit</span><span class="p">,</span> <span class="n">unit_type</span>
+<span></span><span class="kn">from</span> <span class="nn">pubtools.pulplib._impl.model.validate</span> <span class="kn">import</span> <span class="n">optional_list_of</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">Unit</span><span class="p">,</span> <span class="n">unit_type</span><span class="p">,</span> <span class="n">schemaless_init</span>
 
 <span class="kn">from</span> <span class="nn">..attr</span> <span class="kn">import</span> <span class="n">pulp_attrib</span>
 <span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">compat_attr</span> <span class="k">as</span> <span class="n">attr</span>
-<span class="kn">from</span> <span class="nn">..convert</span> <span class="kn">import</span> <span class="n">frozenlist_or_none_sorted_converter</span>
+<span class="kn">from</span> <span class="nn">..convert</span> <span class="kn">import</span> <span class="n">frozenlist_or_none_converter</span><span class="p">,</span> <span class="n">frozenlist_or_none_sorted_converter</span>
+
+
+<span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">RpmDependency</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An RPM dependency entry within :meth:`~RpmUnit.requires` and :meth:`~RpmUnit.provides`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A name of dependency - it can be name of rpm package, shared library, scriplet or </span>
+<span class="sd">    another name of dependency.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">version</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;version&quot;</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Version of this RPM dependency.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">release</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;release&quot;</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Release of this RPM dependency.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">epoch</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;epoch&quot;</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Epoch of this RPM dependency.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">flags</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;flags&quot;</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Flags representing relation to version of this RPM dependency.</span>
+<span class="sd">    Can be one of GT (greater than), EQ (equal), LT (less than), GE (greater than or equal) and</span>
+<span class="sd">    LE (less than or equal).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_from_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="c1"># Convert from raw list/dict as provided in Pulp responses into model.</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">_from_data</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span> <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">schemaless_init</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
 
 
 <span class="c1"># Note: Pulp2 models RPM and SRPM as separate unit types,</span>
@@ -144,6 +188,30 @@
     <span class="sd">&quot;&quot;&quot;IDs of repositories containing the unit, or ``None`` if this information is unavailable.</span>
 
 <span class="sd">    .. versionadded:: 2.6.0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">requires</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span>
+        <span class="n">converter</span><span class="o">=</span><span class="n">frozenlist_or_none_converter</span><span class="p">,</span>
+        <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;requires&quot;</span><span class="p">,</span>
+        <span class="n">validator</span><span class="o">=</span><span class="n">optional_list_of</span><span class="p">(</span><span class="n">RpmDependency</span><span class="p">),</span>
+        <span class="n">pulp_py_converter</span><span class="o">=</span><span class="n">RpmDependency</span><span class="o">.</span><span class="n">_from_data</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    List of dependencies that this RPM requires or ``None`` if this information is unavailable.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">provides</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span>
+        <span class="n">converter</span><span class="o">=</span><span class="n">frozenlist_or_none_converter</span><span class="p">,</span>
+        <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;provides&quot;</span><span class="p">,</span>
+        <span class="n">validator</span><span class="o">=</span><span class="n">optional_list_of</span><span class="p">(</span><span class="n">RpmDependency</span><span class="p">),</span>
+        <span class="n">pulp_py_converter</span><span class="o">=</span><span class="n">RpmDependency</span><span class="o">.</span><span class="n">_from_data</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    List of capabilities that this RPM provides or ``None`` if this information is unavailable.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nd">@md5sum</span><span class="o">.</span><span class="n">validator</span>
