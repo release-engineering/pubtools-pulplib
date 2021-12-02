@@ -451,8 +451,18 @@ def test_search_task():
             "pulp:action:publish",
         ],
     )
+    task2 = Task(
+        id="task2",
+        completed=True,
+        succeeded=True,
+        tags=[
+            "pulp:repository:repo1",
+            "pulp:action:import_upload",
+        ],
+    )
 
     controller.insert_task(task1)
+    controller.insert_task(task2)
 
     client = controller.client
 
@@ -460,6 +470,6 @@ def test_search_task():
     resp = client.search_task(crit).result().data
     assert resp == [task1]
 
-    crit2 = Criteria.with_field("id", "task1")
+    crit2 = Criteria.with_field("id", "task2")
     resp2 = client.search_task(crit2).result().data
-    assert resp2 == [task1]
+    assert resp2 == [task2]

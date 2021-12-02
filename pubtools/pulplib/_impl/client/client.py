@@ -355,7 +355,7 @@ class Client(object):
                 Each page will contain a collection of
                 :class:`~pubtools.pulplib.Task` objects.
 
-        .. versionadded:: 2.18.0
+        .. versionadded:: 2.19.0
         """
         return self._search(Task, "tasks", criteria=criteria)
 
