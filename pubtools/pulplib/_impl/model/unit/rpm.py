@@ -1,9 +1,12 @@
+import datetime
+
 from pubtools.pulplib._impl.model.validate import optional_list_of
 from .base import Unit, unit_type, schemaless_init
 
 from ..attr import pulp_attrib
 from ... import compat_attr as attr
 from ..convert import frozenlist_or_none_converter, frozenlist_or_none_sorted_converter
+from ..validate import optional_str, instance_of
 
 
 @attr.s(kw_only=True, frozen=True)
@@ -145,6 +148,35 @@ class RpmUnit(Unit):
     content_type_id = pulp_attrib(
         default="rpm", type=str, pulp_field="_content_type_id"
     )
+
+    cdn_path = pulp_attrib(
+        type=str,
+        pulp_field="pulp_user_metadata.cdn_path",
+        default=None,
+        validator=optional_str,
+    )
+    """A path, relative to the CDN root, from which this RPM can be downloaded
+    once published.
+
+    This path will not point to any specific repository. However, the RPM must
+    have been published via at least one repository before this path can be
+    accessed.
+
+    .. versionadded:: 2.20.0
+    """
+
+    cdn_published = pulp_attrib(
+        type=datetime.datetime,
+        pulp_field="pulp_user_metadata.cdn_published",
+        default=None,
+        validator=instance_of((datetime.datetime, type(None))),
+    )
+    """Approximate :class:`~datetime.datetime` in UTC at which this RPM first
+    became available at ``cdn_path``, or ``None`` if this information is
+    unavailable.
+
+    .. versionadded:: 2.20.0
+    """
 
     repository_memberships = pulp_attrib(
         default=None,
