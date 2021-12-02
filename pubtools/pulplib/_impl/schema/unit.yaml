@@ -115,6 +115,17 @@ definitions:
         items:
           type: string
 
+      requires:
+        type: array
+        items:
+          type: object
+
+      provides:
+        type: array
+        items:
+          type: object
+
+
     required:
     - _content_type_id
     - name

@@ -1,8 +1,52 @@
-from .base import Unit, unit_type
+from pubtools.pulplib._impl.model.validate import optional_list_of
+from .base import Unit, unit_type, schemaless_init
 
 from ..attr import pulp_attrib
 from ... import compat_attr as attr
-from ..convert import frozenlist_or_none_sorted_converter
+from ..convert import frozenlist_or_none_converter, frozenlist_or_none_sorted_converter
+
+
+@attr.s(kw_only=True, frozen=True)
+class RpmDependency(object):
+    """
+    An RPM dependency entry within :meth:`~RpmUnit.requires` and :meth:`~RpmUnit.provides`.
+    """
+
+    name = pulp_attrib(default=None, type=str, pulp_field="name")
+    """
+    A name of dependency - it can be name of rpm package, shared library, scriplet or 
+    another name of dependency.
+    """
+
+    version = pulp_attrib(default=None, type=str, pulp_field="version")
+    """
+    Version of this RPM dependency.
+    """
+
+    release = pulp_attrib(default=None, type=str, pulp_field="release")
+    """
+    Release of this RPM dependency.
+    """
+
+    epoch = pulp_attrib(default=None, type=str, pulp_field="epoch")
+    """
+    Epoch of this RPM dependency.
+    """
+
+    flags = pulp_attrib(default=None, type=str, pulp_field="flags")
+    """
+    Flags representing relation to version of this RPM dependency.
+    Can be one of GT (greater than), EQ (equal), LT (less than), GE (greater than or equal) and
+    LE (less than or equal).
+    """
+
+    @classmethod
+    def _from_data(cls, data):
+        # Convert from raw list/dict as provided in Pulp responses into model.
+        if isinstance(data, list):
+            return [cls._from_data(elem) for elem in data]
+
+        return schemaless_init(cls, data)
 
 
 # Note: Pulp2 models RPM and SRPM as separate unit types,
@@ -111,6 +155,30 @@ class RpmUnit(Unit):
     """IDs of repositories containing the unit, or ``None`` if this information is unavailable.
 
     .. versionadded:: 2.6.0
+    """
+
+    requires = pulp_attrib(
+        default=None,
+        type=list,
+        converter=frozenlist_or_none_converter,
+        pulp_field="requires",
+        validator=optional_list_of(RpmDependency),
+        pulp_py_converter=RpmDependency._from_data,
+    )
+    """
+    List of dependencies that this RPM requires or ``None`` if this information is unavailable.
+    """
+
+    provides = pulp_attrib(
+        default=None,
+        type=list,
+        converter=frozenlist_or_none_converter,
+        pulp_field="provides",
+        validator=optional_list_of(RpmDependency),
+        pulp_py_converter=RpmDependency._from_data,
+    )
+    """
+    List of capabilities that this RPM provides or ``None`` if this information is unavailable.
     """
 
     @md5sum.validator

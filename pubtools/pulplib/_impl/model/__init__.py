@@ -19,6 +19,7 @@ from .unit import (
     ErratumPackage,
     ErratumModule,
     RpmUnit,
+    RpmDependency,
     ModulemdUnit,
     ModulemdDefaultsUnit,
     YumRepoMetadataFileUnit,

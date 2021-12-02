@@ -226,6 +226,13 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
         to_id = to_repository.id
 
         found = list(from_repository.search_content(criteria).result())
+
+        # Units are being copied to this repo, so that value obviously must appear
+        # in repository_memberships from now on.
+        found = [attr.evolve(unit, repository_memberships=[to_id]) for unit in found]
+
+        # Now put the found units into the destination repo.
+        # Any kind of merging or replacing of units is handled within this step.
         self._insert_repo_units(to_id, found)
 
         # Arbitrarily limit the number of units included per task. The point is

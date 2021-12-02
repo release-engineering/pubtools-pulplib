@@ -75,3 +75,15 @@ class Unit(PulpObject):
             return
         if not re.match(r"^[a-f0-9]{%s}$" % length, value):
             raise ValueError("Not a valid %s: %s" % (sumtype, value))
+
+
+def schemaless_init(cls, data):
+    # Construct and return an instance of (attrs-using) cls from
+    # pulp data, where data in pulp has no schema at all (and hence
+    # every field could possibly be missing).
+    kwargs = {}
+    for key in [fld.name for fld in attr.fields(cls)]:
+        if key in data:
+            kwargs[key] = data[key]
+
+    return cls(**kwargs)
