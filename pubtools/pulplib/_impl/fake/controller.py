@@ -158,3 +158,17 @@ class FakeController(object):
         )
 
         return self.client._upload_history[:]
+
+    @property
+    def tasks(self):
+        """The list of existing tasks in the fake client."""
+        return self.client._tasks[:]
+
+    def insert_task(self, task):
+        """Add a task to the set of existing tasks in the fake client.
+
+        Args:
+            task (:class:`~pubtools.pulplib.Task`)
+                A task object to insert.
+        """
+        self.client._tasks.append(task)

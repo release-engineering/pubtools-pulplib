@@ -97,6 +97,12 @@ def match_field(criteria, obj):
 @visit(EqMatcher)
 def match_field_eq(matcher, field, obj):
     value = get_field(field, obj)
+    # Pulp/mongo query is defined the same when matching
+    # with a list or object/string field e.g.
+    # {"foo": "bar"} will match if "foo": "bar" or
+    # "foo": ["bar", "bas"]
+    if isinstance(value, list) and not isinstance(matcher._value, list):
+        return matcher._value in value
     return value == matcher._value
 
 

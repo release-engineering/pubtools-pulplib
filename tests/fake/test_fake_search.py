@@ -2,7 +2,14 @@ import datetime
 
 import pytest
 
-from pubtools.pulplib import FakeController, Repository, Criteria, Matcher, Distributor
+from pubtools.pulplib import (
+    FakeController,
+    Repository,
+    Criteria,
+    Matcher,
+    Distributor,
+    Task,
+)
 
 
 def test_can_search_id():
@@ -430,3 +437,29 @@ def test_search_mapped_field_less_than():
     found = client.search_distributor(crit).result().data
 
     assert found == [dist1]
+
+
+def test_search_task():
+    controller = FakeController()
+
+    task1 = Task(
+        id="task1",
+        completed=True,
+        succeeded=True,
+        tags=[
+            "pulp:repository:repo1",
+            "pulp:action:publish",
+        ],
+    )
+
+    controller.insert_task(task1)
+
+    client = controller.client
+
+    crit = Criteria.with_field("tags", "pulp:action:publish")
+    resp = client.search_task(crit).result().data
+    assert resp == [task1]
+
+    crit2 = Criteria.with_field("id", "task1")
+    resp2 = client.search_task(crit2).result().data
+    assert resp2 == [task1]
