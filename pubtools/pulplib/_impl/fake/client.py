@@ -79,6 +79,7 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
         self._upload_history = []
         self._uploads_pending = {}
         self._sync_history = []
+        self._tasks = []
         self._maintenance_report = None
         self._type_ids = self._DEFAULT_TYPE_IDS[:]
         self._lock = threading.RLock()
@@ -283,6 +284,23 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
 
         random.shuffle(distributors)
         return self._prepare_pages(distributors)
+
+    def search_task(self, criteria=None):
+        self._ensure_alive()
+        tasks = []
+
+        criteria = criteria or Criteria.true()
+        search_for_criteria(criteria)
+
+        try:
+            for task in self._tasks:
+                if match_object(criteria, task):
+                    tasks.append(task)
+        except Exception as ex:  # pylint: disable=broad-except
+            return f_return_error(ex)
+
+        random.shuffle(tasks)
+        return self._prepare_pages(tasks)
 
     def _search_repo_units(self, repo_id, criteria):
         criteria = criteria or Criteria.true()

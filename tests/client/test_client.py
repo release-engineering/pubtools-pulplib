@@ -677,3 +677,44 @@ def test_can_search_content_by_type(client, requests_mocker):
             version="3.0c",
         ),
     ]
+
+
+def test_can_search_task(client, requests_mocker):
+    """search_task issues tasks/search POST request as expected."""
+    requests_mocker.post(
+        "https://pulp.example.com/pulp/api/v2/tasks/search/",
+        json=[
+            {
+                "task_id": "task1",
+                "state": "finished",
+                "tags": ["pulp:repository:repo1", "pulp:action:publish"],
+            },
+            {
+                "task_id": "task2",
+                "state": "error",
+                "tags": ["pulp:repository:repo1", "pulp:action:publish"],
+            },
+        ],
+    )
+
+    tasks_f = client.search_task()
+    tasks = [task for task in tasks_f.result()]
+    # task objects are returned
+    assert sorted(tasks) == [
+        Task(
+            id="task1",
+            completed=True,
+            succeeded=True,
+            tags=["pulp:repository:repo1", "pulp:action:publish"],
+        ),
+        Task(
+            id="task2",
+            completed=True,
+            succeeded=False,
+            tags=["pulp:repository:repo1", "pulp:action:publish"],
+            error_summary="Pulp task [task2] failed: <unknown error>",
+            error_details="Pulp task [task2] failed: <unknown error>",
+        ),
+    ]
+    # api is called once
+    assert requests_mocker.call_count == 1

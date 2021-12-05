@@ -13,7 +13,7 @@ from six.moves import StringIO
 
 from ..page import Page
 from ..criteria import Criteria
-from ..model import Repository, MaintenanceReport, Distributor, Unit
+from ..model import Repository, MaintenanceReport, Distributor, Unit, Task
 from .search import search_for_criteria
 from .errors import PulpException
 from .poller import TaskPoller
@@ -339,6 +339,25 @@ class Client(object):
         .. versionadded:: 2.1.0
         """
         return self._search(Distributor, "distributors", criteria=criteria)
+
+    def search_task(self, criteria=None):
+        """Search the tasks matching the given criteria.
+
+        Args:
+            criteria (:class:`~pubtools.pulplib.Criteria`)
+                A criteria object used for this search.
+                If None, search for all tasks.
+
+        Returns:
+            Future[:class:`~pubtools.pulplib.Page`]
+                A future representing the first page of results.
+
+                Each page will contain a collection of
+                :class:`~pubtools.pulplib.Task` objects.
+
+        .. versionadded:: 2.19.0
+        """
+        return self._search(Task, "tasks", criteria=criteria)
 
     def _search(
         self,

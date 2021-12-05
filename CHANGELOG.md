@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added `Client.search_task` for searching tasks.
 - Added `requires` and `provides` attrs to `RpmUnit` class
 
 ## [2.18.0] - 2021-11-29
