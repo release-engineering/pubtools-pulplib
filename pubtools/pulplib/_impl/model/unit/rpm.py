@@ -162,6 +162,10 @@ class RpmUnit(Unit):
     have been published via at least one repository before this path can be
     accessed.
 
+    This field is **mutable** and may be set by
+    :meth:`~YumRepository.upload_rpm` or
+    :meth:`~Client.update_content`.
+
     .. versionadded:: 2.20.0
     """
 
@@ -174,6 +178,10 @@ class RpmUnit(Unit):
     """Approximate :class:`~datetime.datetime` in UTC at which this RPM first
     became available at ``cdn_path``, or ``None`` if this information is
     unavailable.
+
+    This field is **mutable** and may be set by
+    :meth:`~YumRepository.upload_rpm` or
+    :meth:`~Client.update_content`.
 
     .. versionadded:: 2.20.0
     """
