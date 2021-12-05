@@ -31,12 +31,15 @@
           <div class="body" role="main">
             
   <h1>Source code for pubtools.pulplib._impl.model.unit.rpm</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">pubtools.pulplib._impl.model.validate</span> <span class="kn">import</span> <span class="n">optional_list_of</span>
+<span></span><span class="kn">import</span> <span class="nn">datetime</span>
+
+<span class="kn">from</span> <span class="nn">pubtools.pulplib._impl.model.validate</span> <span class="kn">import</span> <span class="n">optional_list_of</span>
 <span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">Unit</span><span class="p">,</span> <span class="n">unit_type</span><span class="p">,</span> <span class="n">schemaless_init</span>
 
 <span class="kn">from</span> <span class="nn">..attr</span> <span class="kn">import</span> <span class="n">pulp_attrib</span>
 <span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">compat_attr</span> <span class="k">as</span> <span class="n">attr</span>
 <span class="kn">from</span> <span class="nn">..convert</span> <span class="kn">import</span> <span class="n">frozenlist_or_none_converter</span><span class="p">,</span> <span class="n">frozenlist_or_none_sorted_converter</span>
+<span class="kn">from</span> <span class="nn">..validate</span> <span class="kn">import</span> <span class="n">optional_str</span><span class="p">,</span> <span class="n">instance_of</span>
 
 
 <span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -178,6 +181,35 @@
     <span class="n">content_type_id</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="s2">&quot;rpm&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;_content_type_id&quot;</span>
     <span class="p">)</span>
+
+    <span class="n">cdn_path</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;pulp_user_metadata.cdn_path&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">validator</span><span class="o">=</span><span class="n">optional_str</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;A path, relative to the CDN root, from which this RPM can be downloaded</span>
+<span class="sd">    once published.</span>
+
+<span class="sd">    This path will not point to any specific repository. However, the RPM must</span>
+<span class="sd">    have been published via at least one repository before this path can be</span>
+<span class="sd">    accessed.</span>
+
+<span class="sd">    .. versionadded:: 2.20.0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cdn_published</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">,</span>
+        <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;pulp_user_metadata.cdn_published&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">validator</span><span class="o">=</span><span class="n">instance_of</span><span class="p">((</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">))),</span>
+    <span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;Approximate :class:`~datetime.datetime` in UTC at which this RPM first</span>
+<span class="sd">    became available at ``cdn_path``, or ``None`` if this information is</span>
+<span class="sd">    unavailable.</span>
+
+<span class="sd">    .. versionadded:: 2.20.0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">repository_memberships</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>

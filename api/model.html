@@ -1167,6 +1167,39 @@ in the common case, this is only a basename.</p>
 </dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.FileUnit.description">
+<span class="sig-name descname"><span class="pre">description</span></span><a class="headerlink" href="#pubtools.pulplib.FileUnit.description" title="Permalink to this definition">¶</a></dt>
+<dd><p>A user-oriented terse description of this file.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.20.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.FileUnit.cdn_path">
+<span class="sig-name descname"><span class="pre">cdn_path</span></span><a class="headerlink" href="#pubtools.pulplib.FileUnit.cdn_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>A path, relative to the CDN root, from which this file can be downloaded
+once published.</p>
+<p>This path will not point to any specific repository. However, the file must
+have been published via at least one repository before this path can be
+accessed.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.20.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.FileUnit.cdn_published">
+<span class="sig-name descname"><span class="pre">cdn_published</span></span><a class="headerlink" href="#pubtools.pulplib.FileUnit.cdn_published" title="Permalink to this definition">¶</a></dt>
+<dd><p>Approximate <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a> in UTC at which this file first
+became available at <code class="docutils literal notranslate"><span class="pre">cdn_path</span></code>, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if this information is
+unavailable.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.20.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="pubtools.pulplib.FileUnit.repository_memberships">
 <span class="sig-name descname"><span class="pre">repository_memberships</span></span><a class="headerlink" href="#pubtools.pulplib.FileUnit.repository_memberships" title="Permalink to this definition">¶</a></dt>
 <dd><p>IDs of repositories containing the unit, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if this information is unavailable.</p>
@@ -1260,6 +1293,30 @@ in the common case, this is only a basename.</p>
 <dt class="sig sig-object py" id="pubtools.pulplib.RpmUnit.sha256sum">
 <span class="sig-name descname"><span class="pre">sha256sum</span></span><a class="headerlink" href="#pubtools.pulplib.RpmUnit.sha256sum" title="Permalink to this definition">¶</a></dt>
 <dd><p>SHA256 checksum of this RPM, as a hex string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.RpmUnit.cdn_path">
+<span class="sig-name descname"><span class="pre">cdn_path</span></span><a class="headerlink" href="#pubtools.pulplib.RpmUnit.cdn_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>A path, relative to the CDN root, from which this RPM can be downloaded
+once published.</p>
+<p>This path will not point to any specific repository. However, the RPM must
+have been published via at least one repository before this path can be
+accessed.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.20.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.RpmUnit.cdn_published">
+<span class="sig-name descname"><span class="pre">cdn_published</span></span><a class="headerlink" href="#pubtools.pulplib.RpmUnit.cdn_published" title="Permalink to this definition">¶</a></dt>
+<dd><p>Approximate <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a> in UTC at which this RPM first
+became available at <code class="docutils literal notranslate"><span class="pre">cdn_path</span></code>, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if this information is
+unavailable.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.20.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py attribute">
