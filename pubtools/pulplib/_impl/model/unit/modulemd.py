@@ -64,6 +64,13 @@ class ModulemdUnit(Unit):
 
     .. versionadded:: 2.6.0
     """
+
+    unit_id = pulp_attrib(type=str, pulp_field="_id", default=None)
+    """The unique ID of this unit, if known.
+
+    .. versionadded:: 2.20.0
+    """
+
     artifacts = pulp_attrib(
         default=None,
         type=list,

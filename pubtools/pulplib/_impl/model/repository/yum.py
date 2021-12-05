@@ -512,6 +512,10 @@ class YumRepository(Repository):
         # in unit dicts on read, is passed as a separate parameter on write.
         type_id = erratum_dict.pop("_content_type_id")
 
+        # Drop this because the caller cannot influence the _id (unit id)
+        # for uploaded units.
+        del erratum_dict["_id"]
+
         # And drop this one because repository_memberships is synthesized when
         # Pulp renders units, and can't be set during import.
         del erratum_dict["repository_memberships"]

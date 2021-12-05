@@ -49,6 +49,7 @@ def test_can_upload_units(use_file_object, data_path):
     # And they should be this
     assert units_in_repo == [
         ModulemdDefaultsUnit(
+            unit_id="e3e70682-c209-4cac-629f-6fbed82c07cd",
             name="ant",
             repo_id="repo1",
             # Note, this tests that 1.10 does not get coerced to 1.1,
@@ -59,6 +60,7 @@ def test_can_upload_units(use_file_object, data_path):
             repository_memberships=["repo1"],
         ),
         ModulemdDefaultsUnit(
+            unit_id="d4713d60-c8a7-0639-eb11-67b367a9c378",
             name="dwm",
             repo_id="repo1",
             stream=None,
@@ -72,6 +74,7 @@ def test_can_upload_units(use_file_object, data_path):
             repository_memberships=["repo1"],
         ),
         ModulemdUnit(
+            unit_id="82e2e662-f728-b4fa-4248-5e3a0a5d2f34",
             name="avocado-vt",
             stream="82lts",
             version=3420210902113311,
@@ -91,6 +94,7 @@ def test_can_upload_units(use_file_object, data_path):
             },
         ),
         ModulemdUnit(
+            unit_id="23a7711a-8133-2876-37eb-dcd9e87a1613",
             name="dwm",
             stream="6.0",
             version=3420210201213909,

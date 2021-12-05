@@ -668,6 +668,7 @@ def test_can_load_erratum(data_path):
     loaded = attr.evolve(loaded, pkglist=[], references=[])
 
     assert loaded == ErratumUnit(
+        unit_id="d003313d-2272-4ba3-8ea9-820269284dc2",
         id="RHSA-2019:0975",
         version="1",
         status="final",

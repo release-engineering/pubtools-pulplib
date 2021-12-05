@@ -121,12 +121,14 @@ def test_copy_content_all(controller):
     # because repository_memberships has been updated.
     assert sorted(dest_units, key=repr) == [
         ErratumUnit(
+            unit_id="e3e70682-c209-4cac-629f-6fbed82c07cd",
             id="RHSA-1111:22",
             summary="Fixes bad things",
             content_type_id="erratum",
             repository_memberships=["dest-repo"],
         ),
         ModulemdUnit(
+            unit_id="82e2e662-f728-b4fa-4248-5e3a0a5d2f34",
             name="module1",
             stream="s1",
             version=1234,
@@ -136,6 +138,7 @@ def test_copy_content_all(controller):
             repository_memberships=["dest-repo", "repoA", "repoB"],
         ),
         RpmUnit(
+            unit_id="d4713d60-c8a7-0639-eb11-67b367a9c378",
             name="bash",
             version="4.0",
             release="1",
@@ -191,6 +194,7 @@ def test_copy_content_with_criteria(controller):
     dest_units = list(dest.search_content())
     assert sorted(dest_units, key=repr) == [
         RpmUnit(
+            unit_id="e3e70682-c209-4cac-629f-6fbed82c07cd",
             name="bash",
             version="4.0",
             release="1",
@@ -199,6 +203,7 @@ def test_copy_content_with_criteria(controller):
             repository_memberships=["dest-repo"],
         ),
         RpmUnit(
+            unit_id="d4713d60-c8a7-0639-eb11-67b367a9c378",
             name="bash",
             version="4.1",
             release="3",

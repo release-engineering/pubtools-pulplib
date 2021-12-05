@@ -28,7 +28,6 @@ def test_erratum_roundtrip(data_path):
 
     # A couple of fields synthesized in the Pulp response don't make it
     # into our model
-    del original_data["_id"]
     del original_data["_last_updated"]
     del original_data["_href"]
     del original_data["children"]

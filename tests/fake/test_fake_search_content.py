@@ -98,8 +98,15 @@ def test_search_content_by_type(populated_repo):
     crit = Criteria.with_field("content_type_id", "rpm")
     units = list(populated_repo.search_content(crit))
     assert sorted(units) == [
-        RpmUnit(name="bash", version="4.0", release="1", arch="x86_64"),
         RpmUnit(
+            unit_id="e3e70682-c209-4cac-629f-6fbed82c07cd",
+            name="bash",
+            version="4.0",
+            release="1",
+            arch="x86_64",
+        ),
+        RpmUnit(
+            unit_id="d4713d60-c8a7-0639-eb11-67b367a9c378",
             name="glibc",
             version="5.0",
             release="1",
@@ -114,7 +121,13 @@ def test_search_erratum_by_type(populated_repo):
 
     crit = Criteria.with_field("content_type_id", "erratum")
     units = list(populated_repo.search_content(crit))
-    assert units == [ErratumUnit(id="RHBA-1234:56", summary="The best advisory")]
+    assert units == [
+        ErratumUnit(
+            unit_id="85776e9a-dd84-f39e-7154-5a137a1d5006",
+            id="RHBA-1234:56",
+            summary="The best advisory",
+        )
+    ]
 
 
 def test_search_content_by_unit_field(populated_repo):
@@ -124,9 +137,20 @@ def test_search_content_by_unit_field(populated_repo):
     units = list(populated_repo.search_content(crit))
     assert sorted(units) == [
         RpmUnit(
-            content_type_id="srpm", name="bash", version="4.0", release="1", arch="src"
+            unit_id="82e2e662-f728-b4fa-4248-5e3a0a5d2f34",
+            content_type_id="srpm",
+            name="bash",
+            version="4.0",
+            release="1",
+            arch="src",
         ),
-        RpmUnit(name="bash", version="4.0", release="1", arch="x86_64"),
+        RpmUnit(
+            unit_id="e3e70682-c209-4cac-629f-6fbed82c07cd",
+            name="bash",
+            version="4.0",
+            release="1",
+            arch="x86_64",
+        ),
     ]
 
 
@@ -137,10 +161,20 @@ def test_search_content_by_unit_type(populated_repo):
     units = list(populated_repo.search_content(crit))
     assert sorted(units) == [
         ModulemdUnit(
-            name="module1", stream="s1", version=1234, context="a1b2", arch="x86_64"
+            unit_id="23a7711a-8133-2876-37eb-dcd9e87a1613",
+            name="module1",
+            stream="s1",
+            version=1234,
+            context="a1b2",
+            arch="x86_64",
         ),
         ModulemdUnit(
-            name="module2", stream="s2", version=1234, context="a1b2", arch="x86_64"
+            unit_id="e6f4590b-9a16-4106-cf6a-659eb4862b21",
+            name="module2",
+            stream="s2",
+            version=1234,
+            context="a1b2",
+            arch="x86_64",
         ),
     ]
 
@@ -157,7 +191,18 @@ def test_search_content_mixed_fields(populated_repo):
     # Note: sorting different types not natively supported, hence sorting by repr
     assert sorted(units, key=repr) == [
         ModulemdUnit(
-            name="module1", stream="s1", version=1234, context="a1b2", arch="x86_64"
+            unit_id="23a7711a-8133-2876-37eb-dcd9e87a1613",
+            name="module1",
+            stream="s1",
+            version=1234,
+            context="a1b2",
+            arch="x86_64",
         ),
-        RpmUnit(name="bash", version="4.0", release="1", arch="x86_64"),
+        RpmUnit(
+            unit_id="e3e70682-c209-4cac-629f-6fbed82c07cd",
+            name="bash",
+            version="4.0",
+            release="1",
+            arch="x86_64",
+        ),
     ]

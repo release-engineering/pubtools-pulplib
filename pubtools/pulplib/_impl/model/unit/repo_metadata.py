@@ -36,3 +36,9 @@ class YumRepoMetadataFileUnit(Unit):
     )
     """IDs of repositories containing the unit, or ``None`` if this information is unavailable.
     """
+
+    unit_id = pulp_attrib(type=str, pulp_field="_id", default=None)
+    """The unique ID of this unit, if known.
+
+    .. versionadded:: 2.20.0
+    """

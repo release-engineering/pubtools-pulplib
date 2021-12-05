@@ -50,6 +50,7 @@ def test_can_upload_units(use_file_object, tmpdir):
             sha256sum="0d22cdcc10e6d049dbe1af5123d50873fdfc1a4f58306e58cb6241be9472014d",
             content_type_id="yum_repo_metadata_file",
             repository_memberships=["repo1"],
+            unit_id="e3e70682-c209-4cac-629f-6fbed82c07cd",
         )
     ]
 
@@ -81,6 +82,7 @@ def test_overwrite(tmpdir):
             sha256sum="0d22cdcc10e6d049dbe1af5123d50873fdfc1a4f58306e58cb6241be9472014d",
             content_type_id="yum_repo_metadata_file",
             repository_memberships=["repo1"],
+            unit_id="e3e70682-c209-4cac-629f-6fbed82c07cd",
         )
     ]
 
@@ -97,6 +99,7 @@ def test_overwrite(tmpdir):
             sha256sum="a3ead5eedad5df82318c51685dbc1c147a36d1ff8584fc82de6b08d0bf63a795",
             content_type_id="yum_repo_metadata_file",
             repository_memberships=["repo1"],
+            unit_id="e3e70682-c209-4cac-629f-6fbed82c07cd",
         )
     ]
 
@@ -113,11 +116,13 @@ def test_overwrite(tmpdir):
             sha256sum="a3ead5eedad5df82318c51685dbc1c147a36d1ff8584fc82de6b08d0bf63a795",
             content_type_id="yum_repo_metadata_file",
             repository_memberships=["repo1"],
+            unit_id="e3e70682-c209-4cac-629f-6fbed82c07cd",
         ),
         YumRepoMetadataFileUnit(
             data_type="mdtype2",
             sha256sum="a3ead5eedad5df82318c51685dbc1c147a36d1ff8584fc82de6b08d0bf63a795",
             content_type_id="yum_repo_metadata_file",
             repository_memberships=["repo1"],
+            unit_id="e6f4590b-9a16-4106-cf6a-659eb4862b21",
         ),
     ]
