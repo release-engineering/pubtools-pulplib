@@ -190,7 +190,21 @@
             <span class="s2">&quot;upload_history is deprecated, check repo units instead&quot;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span>
         <span class="p">)</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">_upload_history</span><span class="p">[:]</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">_upload_history</span><span class="p">[:]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The list of existing tasks in the fake client.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">_tasks</span><span class="p">[:]</span>
+
+<div class="viewcode-block" id="FakeController.insert_task"><a class="viewcode-back" href="../../../../../api/testing.html#pubtools.pulplib.FakeController.insert_task">[docs]</a>    <span class="k">def</span> <span class="nf">insert_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add a task to the set of existing tasks in the fake client.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            task (:class:`~pubtools.pulplib.Task`)</span>
+<span class="sd">                A task object to insert.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">_tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">task</span><span class="p">)</span></div></div>
 </pre></div>
 
           </div>

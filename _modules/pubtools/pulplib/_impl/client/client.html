@@ -46,7 +46,7 @@
 
 <span class="kn">from</span> <span class="nn">..page</span> <span class="kn">import</span> <span class="n">Page</span>
 <span class="kn">from</span> <span class="nn">..criteria</span> <span class="kn">import</span> <span class="n">Criteria</span>
-<span class="kn">from</span> <span class="nn">..model</span> <span class="kn">import</span> <span class="n">Repository</span><span class="p">,</span> <span class="n">MaintenanceReport</span><span class="p">,</span> <span class="n">Distributor</span><span class="p">,</span> <span class="n">Unit</span>
+<span class="kn">from</span> <span class="nn">..model</span> <span class="kn">import</span> <span class="n">Repository</span><span class="p">,</span> <span class="n">MaintenanceReport</span><span class="p">,</span> <span class="n">Distributor</span><span class="p">,</span> <span class="n">Unit</span><span class="p">,</span> <span class="n">Task</span>
 <span class="kn">from</span> <span class="nn">.search</span> <span class="kn">import</span> <span class="n">search_for_criteria</span>
 <span class="kn">from</span> <span class="nn">.errors</span> <span class="kn">import</span> <span class="n">PulpException</span>
 <span class="kn">from</span> <span class="nn">.poller</span> <span class="kn">import</span> <span class="n">TaskPoller</span>
@@ -372,6 +372,25 @@
 <span class="sd">        .. versionadded:: 2.1.0</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_search</span><span class="p">(</span><span class="n">Distributor</span><span class="p">,</span> <span class="s2">&quot;distributors&quot;</span><span class="p">,</span> <span class="n">criteria</span><span class="o">=</span><span class="n">criteria</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Client.search_task"><a class="viewcode-back" href="../../../../../api/client.html#pubtools.pulplib.Client.search_task">[docs]</a>    <span class="k">def</span> <span class="nf">search_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">criteria</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Search the tasks matching the given criteria.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            criteria (:class:`~pubtools.pulplib.Criteria`)</span>
+<span class="sd">                A criteria object used for this search.</span>
+<span class="sd">                If None, search for all tasks.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Future[:class:`~pubtools.pulplib.Page`]</span>
+<span class="sd">                A future representing the first page of results.</span>
+
+<span class="sd">                Each page will contain a collection of</span>
+<span class="sd">                :class:`~pubtools.pulplib.Task` objects.</span>
+
+<span class="sd">        .. versionadded:: 2.19.0</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_search</span><span class="p">(</span><span class="n">Task</span><span class="p">,</span> <span class="s2">&quot;tasks&quot;</span><span class="p">,</span> <span class="n">criteria</span><span class="o">=</span><span class="n">criteria</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_search</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
