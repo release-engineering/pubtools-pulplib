@@ -7,10 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- n/a
+
+## [2.19.0] - 2021-12-06
+
+### Fixed
+
+- Fix `copy_content` on fake client failing to update `repository_memberships` field.
+
 ### Added
 
 - Added `Client.search_task` for searching tasks.
-- Added `requires` and `provides` attrs to `RpmUnit` class
+- Added `requires` and `provides` attrs to `RpmUnit` class.
+
+### Changed
+
+- `Criteria`, `Matcher` objects now stringify more concisely.
 
 ## [2.18.0] - 2021-11-29
 
@@ -294,7 +306,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release to PyPI
 
-[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.18.0...HEAD
+[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.19.0...HEAD
+[2.19.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.18.0...v2.19.0
 [2.18.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.17.0...v2.18.0
 [2.17.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.16.0...v2.17.0
 [2.16.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.15.0...v2.16.0
