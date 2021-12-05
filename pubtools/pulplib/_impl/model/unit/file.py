@@ -1,8 +1,11 @@
+import datetime
+
 from .base import Unit, unit_type
 
 from ..attr import pulp_attrib
 from ... import compat_attr as attr
 from ..convert import frozenlist_or_none_sorted_converter
+from ..validate import optional_str, instance_of
 
 
 @unit_type("iso")
@@ -30,6 +33,46 @@ class FileUnit(Unit):
         unit_key=True,
     )
     """SHA256 checksum of this file, as a hex string."""
+
+    description = pulp_attrib(
+        type=str,
+        pulp_field="pulp_user_metadata.description",
+        default=None,
+        validator=optional_str,
+    )
+    """A user-oriented terse description of this file.
+
+    .. versionadded:: 2.20.0
+    """
+
+    cdn_path = pulp_attrib(
+        type=str,
+        pulp_field="pulp_user_metadata.cdn_path",
+        default=None,
+        validator=optional_str,
+    )
+    """A path, relative to the CDN root, from which this file can be downloaded
+    once published.
+
+    This path will not point to any specific repository. However, the file must
+    have been published via at least one repository before this path can be
+    accessed.
+
+    .. versionadded:: 2.20.0
+    """
+
+    cdn_published = pulp_attrib(
+        type=datetime.datetime,
+        pulp_field="pulp_user_metadata.cdn_published",
+        default=None,
+        validator=instance_of((datetime.datetime, type(None))),
+    )
+    """Approximate :class:`~datetime.datetime` in UTC at which this file first
+    became available at ``cdn_path``, or ``None`` if this information is
+    unavailable.
+
+    .. versionadded:: 2.20.0
+    """
 
     content_type_id = pulp_attrib(
         default="iso", type=str, pulp_field="_content_type_id"

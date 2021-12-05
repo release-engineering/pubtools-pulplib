@@ -30,7 +30,13 @@ def null_convert(value):
 
 
 def read_timestamp(value):
-    return datetime.datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ")
+    try:
+        return datetime.datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ")
+    except ValueError:
+        # irritatingly (probably a bug), some values were missing the "Z"
+        # technically meaning we don't know the timezone.
+        # So we try parsing again without it and we just assume it's UTC.
+        return datetime.datetime.strptime(value, "%Y-%m-%dT%H:%M:%S")
 
 
 def write_timestamp(value):
