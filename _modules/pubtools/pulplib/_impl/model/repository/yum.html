@@ -545,6 +545,10 @@
         <span class="c1"># in unit dicts on read, is passed as a separate parameter on write.</span>
         <span class="n">type_id</span> <span class="o">=</span> <span class="n">erratum_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;_content_type_id&quot;</span><span class="p">)</span>
 
+        <span class="c1"># Drop this because the caller cannot influence the _id (unit id)</span>
+        <span class="c1"># for uploaded units.</span>
+        <span class="k">del</span> <span class="n">erratum_dict</span><span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">]</span>
+
         <span class="c1"># And drop this one because repository_memberships is synthesized when</span>
         <span class="c1"># Pulp renders units, and can&#39;t be set during import.</span>
         <span class="k">del</span> <span class="n">erratum_dict</span><span class="p">[</span><span class="s2">&quot;repository_memberships&quot;</span><span class="p">]</span>
