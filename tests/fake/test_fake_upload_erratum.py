@@ -46,7 +46,10 @@ def test_can_upload_units():
     # And they should be this
     assert units_in_repo == [
         ErratumUnit(
-            id="RHBA-1234:56", summary="test advisory", repository_memberships=["repo1"]
+            unit_id="e3e70682-c209-4cac-629f-6fbed82c07cd",
+            id="RHBA-1234:56",
+            summary="test advisory",
+            repository_memberships=["repo1"],
         )
     ]
 
@@ -92,6 +95,7 @@ def test_upload_overwrite():
 
     assert units_repo1 == [
         ErratumUnit(
+            unit_id="e3e70682-c209-4cac-629f-6fbed82c07cd",
             id="RHBA-1234:56",
             summary="updated test advisory",
             description="I've altered the deal",
@@ -101,6 +105,7 @@ def test_upload_overwrite():
     ]
     assert units_repo2 == [
         ErratumUnit(
+            unit_id="e3e70682-c209-4cac-629f-6fbed82c07cd",
             id="RHBA-1234:56",
             summary="updated test advisory",
             description="I've altered the deal",
@@ -108,6 +113,7 @@ def test_upload_overwrite():
             repository_memberships=["repo1", "repo2"],
         ),
         ErratumUnit(
+            unit_id="e6f4590b-9a16-4106-cf6a-659eb4862b21",
             id="RHBA-1234:57",
             summary="a different advisory",
             repository_memberships=["repo2"],
@@ -153,6 +159,7 @@ def test_upload_overwrite_noop():
 
     assert units_repo1 == [
         ErratumUnit(
+            unit_id="e3e70682-c209-4cac-629f-6fbed82c07cd",
             id="RHBA-1234:56",
             summary="test advisory",
             version="3",

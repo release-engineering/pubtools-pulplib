@@ -466,6 +466,7 @@ def test_can_search_content(client, requests_mocker):
     assert sorted(units) == [
         RpmUnit(
             content_type_id="srpm",
+            unit_id="bd2e0321-48f6-4997-a5dc-e73c771bc17d",
             sha256sum="4f5a3a0da6f404f6d9988987cd75f13982bd655a0a4f692406611afbbc597679",
             arch="src",
             epoch="0",
@@ -476,6 +477,7 @@ def test_can_search_content(client, requests_mocker):
             version="2.3.4",
         ),
         RpmUnit(
+            unit_id="bd2e0321-48f6-4997-a5dc-e73c771bc17d",
             sha256sum="4f5a3a0da6f404f6d9988987cd75f13982bd655a0a4f692406611afbbc597679",
             arch="ia64",
             epoch="0",
@@ -486,6 +488,7 @@ def test_can_search_content(client, requests_mocker):
             version="2.3.4",
         ),
         RpmUnit(
+            unit_id="d4633746-1ccc-4d85-9733-0007c87e0724",
             sha1sum="ca995eb1a635c97393466f67aaec8e9e753b8ed5",
             sha256sum="1c4baac658fd56e6ec9cca37f440a4bd8c9c0b02a21f41b30b8ea17b402a1907",
             arch="i386",
@@ -580,6 +583,7 @@ def test_can_search_content_pagination(client, requests_mocker):
     # It should have returned the repos as objects
     assert sorted(units) == [
         RpmUnit(
+            unit_id="bd2e0321-48f6-4997-a5dc-e73c771bc17d",
             content_type_id="srpm",
             sha256sum="4f5a3a0da6f404f6d9988987cd75f13982bd655a0a4f692406611afbbc597679",
             arch="src",
@@ -591,6 +595,7 @@ def test_can_search_content_pagination(client, requests_mocker):
             version="2.3.4",
         ),
         RpmUnit(
+            unit_id="bd2e0321-48f6-4997-a5dc-e73c771bc17d",
             sha256sum="4f5a3a0da6f404f6d9988987cd75f13982bd655a0a4f692406611afbbc597679",
             arch="ia64",
             epoch="0",
@@ -601,6 +606,7 @@ def test_can_search_content_pagination(client, requests_mocker):
             version="2.3.4",
         ),
         RpmUnit(
+            unit_id="d4633746-1ccc-4d85-9733-0007c87e0724",
             sha1sum="ca995eb1a635c97393466f67aaec8e9e753b8ed5",
             sha256sum="1c4baac658fd56e6ec9cca37f440a4bd8c9c0b02a21f41b30b8ea17b402a1907",
             arch="i386",
@@ -645,6 +651,7 @@ def test_can_search_content_by_type(client, requests_mocker):
     # It should have returned the expected units
     assert sorted(units) == [
         RpmUnit(
+            unit_id="bd2e0321-48f6-4997-a5dc-e73c771bc17d",
             content_type_id="srpm",
             sha256sum="4f5a3a0da6f404f6d9988987cd75f13982bd655a0a4f692406611afbbc597679",
             arch="src",
@@ -656,6 +663,7 @@ def test_can_search_content_by_type(client, requests_mocker):
             version="2.3.4",
         ),
         RpmUnit(
+            unit_id="bd2e0321-48f6-4997-a5dc-e73c771bc17d",
             sha256sum="4f5a3a0da6f404f6d9988987cd75f13982bd655a0a4f692406611afbbc597679",
             arch="ia64",
             epoch="0",
@@ -666,6 +674,7 @@ def test_can_search_content_by_type(client, requests_mocker):
             version="2.3.4",
         ),
         RpmUnit(
+            unit_id="d4633746-1ccc-4d85-9733-0007c87e0724",
             sha1sum="ca995eb1a635c97393466f67aaec8e9e753b8ed5",
             sha256sum="1c4baac658fd56e6ec9cca37f440a4bd8c9c0b02a21f41b30b8ea17b402a1907",
             arch="i386",

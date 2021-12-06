@@ -82,9 +82,11 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
         self._tasks = []
         self._maintenance_report = None
         self._type_ids = self._DEFAULT_TYPE_IDS[:]
+        self._seen_unit_ids = set()
         self._lock = threading.RLock()
         self._uuidgen = random.Random()
         self._uuidgen.seed(0)
+        self._unitmaker = units.UnitMaker(self._seen_unit_ids)
         self._shutdown = False
 
     def __enter__(self):
@@ -144,6 +146,18 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
         repo_unit_keys = self._repo_unit_keys.setdefault(repo_id, set())
 
         for unit in units_to_add:
+            # Always consume a unit ID from the unitmaker even if we don't actually
+            # need it. The point of this is to ensure that if you serialize/deserialize
+            # a fake client, e.g. as done in pubtools-pulp, then the freshly created
+            # client will not try to use the same sequence of IDs as already used in
+            # the units we've just deserialized.
+            unit_id = self._unitmaker.next_unit_id()
+
+            if not unit.unit_id:
+                unit = attr.evolve(unit, unit_id=unit_id)
+
+            self._seen_unit_ids.add(unit.unit_id)
+
             self._remove_clashing_units(repo_id, unit)
             unit_key = units.make_unit_key(unit)
             old_unit = self._units_by_key.get(unit_key)
@@ -480,7 +494,7 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
         upload_content = self._uploads_pending.pop(upload_id, six.BytesIO())
         upload_content.seek(0)
 
-        new_units = units.make_units(
+        new_units = self._unitmaker.make_units(
             unit_type_id, unit_key, unit_metadata, upload_content, repo_id
         )
         new_units = [

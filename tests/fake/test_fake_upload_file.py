@@ -44,12 +44,14 @@ def test_can_upload_units(tmpdir):
             size=10,
             sha256sum="94c0c9d847ecaa45df01999676db772e5cb69cc54e1ff9db31d02385c56a86e1",
             repository_memberships=["repo1"],
+            unit_id="d4713d60-c8a7-0639-eb11-67b367a9c378",
         ),
         FileUnit(
             path="some-file.txt",
             size=29,
             sha256sum="fad3fc1e6d583b2003ec0a5273702ed8fcc2504271c87c40d9176467ebe218cb",
             repository_memberships=["repo1"],
+            unit_id="e3e70682-c209-4cac-629f-6fbed82c07cd",
         ),
     ]
 
@@ -84,6 +86,7 @@ def test_replace_file(tmpdir):
             size=10,
             sha256sum="94c0c9d847ecaa45df01999676db772e5cb69cc54e1ff9db31d02385c56a86e1",
             repository_memberships=["repo1"],
+            unit_id="d4713d60-c8a7-0639-eb11-67b367a9c378",
         )
     ]
 
@@ -96,6 +99,7 @@ def test_replace_file(tmpdir):
             sha256sum="fad3fc1e6d583b2003ec0a5273702ed8fcc2504271c87c40d9176467ebe218cb",
             content_type_id="iso",
             repository_memberships=[],
+            unit_id="e3e70682-c209-4cac-629f-6fbed82c07cd",
         )
     ]
 

@@ -44,6 +44,7 @@ def test_can_upload_units(data_path, use_file_object):
     # And they should be this
     assert units_in_repo == [
         RpmUnit(
+            unit_id="e3e70682-c209-4cac-629f-6fbed82c07cd",
             name="walrus",
             version="5.21",
             release="1",

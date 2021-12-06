@@ -89,6 +89,12 @@ class FileUnit(Unit):
     .. versionadded:: 2.6.0
     """
 
+    unit_id = pulp_attrib(type=str, pulp_field="_id", default=None)
+    """The unique ID of this unit, if known.
+
+    .. versionadded:: 2.20.0
+    """
+
     @size.validator
     def _check_size(self, _, value):
         if value < 0:
