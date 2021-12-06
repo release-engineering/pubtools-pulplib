@@ -171,6 +171,7 @@ def test_search_null_and():
     repo1 = Repository(id="repo1", distributors=[dist1])
 
     controller.insert_repository(repo1)
+    controller.insert_task(Task(id="abc123"))
 
     client = controller.client
     crit = Criteria.and_()
@@ -180,6 +181,7 @@ def test_search_null_and():
     assert "Invalid AND in search query" in str(
         client.search_distributor(crit).exception()
     )
+    assert "Invalid AND in search query" in str(client.search_task(crit).exception())
 
 
 def test_search_null_or():
@@ -463,6 +465,9 @@ def test_search_task():
 
     controller.insert_task(task1)
     controller.insert_task(task2)
+
+    # The tasks I inserted should be present
+    assert controller.tasks == [task1, task2]
 
     client = controller.client
 
