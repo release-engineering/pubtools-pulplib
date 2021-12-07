@@ -32,6 +32,7 @@
             
   <h1>Source code for pubtools.pulplib._impl.model.common</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
 
 <span class="kn">import</span> <span class="nn">jsonschema</span>
 <span class="kn">import</span> <span class="nn">six</span>
@@ -185,6 +186,10 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">PulpObject</span><span class="p">):</span>
             <span class="c1"># It&#39;s a model object, then delegate to the instance method.</span>
             <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">_to_data</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">):</span>
+            <span class="c1"># For datetimes, we always use an ISO8601 timestamp format.</span>
+            <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%SZ&quot;</span><span class="p">)</span>
 
         <span class="c1"># For anything else, we assume it can be used as-is.</span>
         <span class="c1"># strs and ints for example fall into this path.</span>

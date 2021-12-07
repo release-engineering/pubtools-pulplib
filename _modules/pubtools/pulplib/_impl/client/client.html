@@ -336,6 +336,47 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_do_associate</span><span class="p">(</span><span class="n">from_repository</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">to_repository</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">criteria</span><span class="p">)</span>
         <span class="p">)</span></div>
 
+<div class="viewcode-block" id="Client.update_content"><a class="viewcode-back" href="../../../../../api/client.html#pubtools.pulplib.Client.update_content">[docs]</a>    <span class="k">def</span> <span class="nf">update_content</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unit</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Update mutable fields on an existing unit.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            unit (:class:`~pubtools.pulplib.Unit`)</span>
+<span class="sd">                A unit to be updated.</span>
+
+<span class="sd">                This unit must have a known ``unit_id``.</span>
+
+<span class="sd">                Only those fields documented as *mutable* will have any effect during</span>
+<span class="sd">                the update (e.g. ``cdn_path``). Other fields either cannot be updated</span>
+<span class="sd">                at all, or can only be updated by re-uploading the associated content.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Future</span>
+<span class="sd">                A future which is resolved with a value of ``None`` once the unit</span>
+<span class="sd">                has been updated.</span>
+
+<span class="sd">        .. versionadded:: 2.20.0</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">unit</span><span class="o">.</span><span class="n">unit_id</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;unit_id missing on call to update_content()&quot;</span><span class="p">)</span>
+
+        <span class="n">url</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_url</span><span class="p">,</span>
+            <span class="s2">&quot;pulp/api/v2/content/units/</span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">/pulp_user_metadata/&quot;</span>
+            <span class="o">%</span> <span class="p">(</span><span class="n">unit</span><span class="o">.</span><span class="n">content_type_id</span><span class="p">,</span> <span class="n">unit</span><span class="o">.</span><span class="n">unit_id</span><span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_do_request</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;PUT&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">unit</span><span class="o">.</span><span class="n">_usermeta</span>
+        <span class="p">)</span>
+
+        <span class="c1"># The Pulp API is defined as returning &#39;null&#39; so this should be a no-op,</span>
+        <span class="c1"># but to be extra sure we don&#39;t return anything unexpected, we&#39;ll force</span>
+        <span class="c1"># the return value to None.</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">f_map</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">_</span><span class="p">:</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">out</span></div>
+
     <span class="k">def</span> <span class="nf">_search_content_with_server_type_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">criteria</span><span class="p">,</span> <span class="n">server_type_ids</span><span class="p">):</span>
         <span class="n">prepared_search</span> <span class="o">=</span> <span class="n">search_for_criteria</span><span class="p">(</span><span class="n">criteria</span><span class="p">,</span> <span class="n">Unit</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">type_ids</span> <span class="o">=</span> <span class="n">prepared_search</span><span class="o">.</span><span class="n">type_ids</span>

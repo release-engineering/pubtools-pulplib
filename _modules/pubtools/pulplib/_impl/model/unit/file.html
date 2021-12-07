@@ -75,6 +75,10 @@
     <span class="p">)</span>
     <span class="sd">&quot;&quot;&quot;A user-oriented terse description of this file.</span>
 
+<span class="sd">    This field is **mutable** and may be set by</span>
+<span class="sd">    :meth:`~FileRepository.upload_file` or</span>
+<span class="sd">    :meth:`~Client.update_content`.</span>
+
 <span class="sd">    .. versionadded:: 2.20.0</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -91,6 +95,10 @@
 <span class="sd">    have been published via at least one repository before this path can be</span>
 <span class="sd">    accessed.</span>
 
+<span class="sd">    This field is **mutable** and may be set by</span>
+<span class="sd">    :meth:`~FileRepository.upload_file` or</span>
+<span class="sd">    :meth:`~Client.update_content`.</span>
+
 <span class="sd">    .. versionadded:: 2.20.0</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -103,6 +111,10 @@
     <span class="sd">&quot;&quot;&quot;Approximate :class:`~datetime.datetime` in UTC at which this file first</span>
 <span class="sd">    became available at ``cdn_path``, or ``None`` if this information is</span>
 <span class="sd">    unavailable.</span>
+
+<span class="sd">    This field is **mutable** and may be set by</span>
+<span class="sd">    :meth:`~FileRepository.upload_file` or</span>
+<span class="sd">    :meth:`~Client.update_content`.</span>
 
 <span class="sd">    .. versionadded:: 2.20.0</span>
 <span class="sd">    &quot;&quot;&quot;</span>

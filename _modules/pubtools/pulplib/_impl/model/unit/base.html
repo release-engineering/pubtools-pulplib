@@ -34,7 +34,8 @@
 <span></span><span class="kn">import</span> <span class="nn">re</span>
 
 <span class="kn">from</span> <span class="nn">..common</span> <span class="kn">import</span> <span class="n">PulpObject</span>
-<span class="kn">from</span> <span class="nn">..attr</span> <span class="kn">import</span> <span class="n">pulp_attrib</span>
+<span class="kn">from</span> <span class="nn">..attr</span> <span class="kn">import</span> <span class="n">pulp_attrib</span><span class="p">,</span> <span class="n">PULP2_FIELD</span>
+<span class="kn">from</span> <span class="nn">...util</span> <span class="kn">import</span> <span class="n">dict_put</span>
 <span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">compat_attr</span> <span class="k">as</span> <span class="n">attr</span>
 <span class="kn">from</span> <span class="nn">...schema</span> <span class="kn">import</span> <span class="n">load_schema</span>
 
@@ -107,7 +108,63 @@
         <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^[a-f0-9]{</span><span class="si">%s</span><span class="s2">}$&quot;</span> <span class="o">%</span> <span class="n">length</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Not a valid </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">sumtype</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span></div>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Not a valid </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">sumtype</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_usermeta</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Returns pulp_user_metadata dict for this unit.</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_usermeta_fields</span><span class="p">():</span>
+            <span class="n">pulp_field</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">PULP2_FIELD</span><span class="p">)</span>
+            <span class="n">python_value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">pulp_value</span> <span class="o">=</span> <span class="n">PulpObject</span><span class="o">.</span><span class="n">_any_to_data</span><span class="p">(</span><span class="n">python_value</span><span class="p">)</span>
+            <span class="n">dict_put</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">pulp_field</span><span class="p">,</span> <span class="n">pulp_value</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">out</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pulp_user_metadata&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_usermeta_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="c1"># Returns the subset of fields on this class which are stored under the</span>
+        <span class="c1"># pulp_user_metadata dict. In public API we refer to these as &#39;mutable&#39; fields.</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">fld</span>
+            <span class="k">for</span> <span class="n">fld</span> <span class="ow">in</span> <span class="n">attr</span><span class="o">.</span><span class="n">fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">fld</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">PULP2_FIELD</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;pulp_user_metadata.&quot;</span><span class="p">)</span>
+        <span class="p">]</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_usermeta_from_kwargs</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># Given kwargs mapping to mutable fields on this unit class, returns a dict</span>
+        <span class="c1"># of the form:</span>
+        <span class="c1">#</span>
+        <span class="c1">#   {&quot;pulp_user_metadata&quot;: {...serialized mutable fields}}</span>
+        <span class="c1">#</span>
+        <span class="c1"># ...suitable for merging into a &#39;metadata&#39; dict on a content upload.</span>
+        <span class="c1">#</span>
+        <span class="c1"># If any of the kwargs do not map to a mutable field, an exception is raised.</span>
+        <span class="c1">#</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_usermeta_fields</span><span class="p">()</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">field</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">pulp_field</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">PULP2_FIELD</span><span class="p">)</span>
+            <span class="n">python_value</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">pulp_value</span> <span class="o">=</span> <span class="n">PulpObject</span><span class="o">.</span><span class="n">_any_to_data</span><span class="p">(</span><span class="n">python_value</span><span class="p">)</span>
+            <span class="n">dict_put</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">pulp_field</span><span class="p">,</span> <span class="n">pulp_value</span><span class="p">)</span>
+
+        <span class="c1"># Ensure that we have consumed all arguments; if not, that means the</span>
+        <span class="c1"># caller tried to set something we don&#39;t support.</span>
+        <span class="n">remaining</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">remaining</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Not mutable </span><span class="si">%s</span><span class="s2"> field(s): </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">remaining</span><span class="p">))</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">out</span></div>
 
 
 <span class="k">def</span> <span class="nf">schemaless_init</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>

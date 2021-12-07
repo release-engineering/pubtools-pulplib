@@ -233,6 +233,33 @@ typically will have only a subset of available fields.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="pubtools.pulplib.Client.update_content">
+<span class="sig-name descname"><span class="pre">update_content</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/client.html#Client.update_content"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Client.update_content" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update mutable fields on an existing unit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>unit</strong> (<a class="reference internal" href="model.html#pubtools.pulplib.Unit" title="pubtools.pulplib.Unit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unit</span></code></a>) – <p>A unit to be updated.</p>
+<p>This unit must have a known <code class="docutils literal notranslate"><span class="pre">unit_id</span></code>.</p>
+<p>Only those fields documented as <em>mutable</em> will have any effect during
+the update (e.g. <code class="docutils literal notranslate"><span class="pre">cdn_path</span></code>). Other fields either cannot be updated
+at all, or can only be updated by re-uploading the associated content.</p>
+</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Future</dt><dd><p>A future which is resolved with a value of <code class="docutils literal notranslate"><span class="pre">None</span></code> once the unit
+has been updated.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.20.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="pubtools.pulplib.Client.search_distributor">
 <span class="sig-name descname"><span class="pre">search_distributor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">criteria</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/client.html#Client.search_distributor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Client.search_distributor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Search the distributors matching the given criteria.</p>

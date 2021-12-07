@@ -38,6 +38,7 @@
 <span class="kn">from</span> <span class="nn">frozenlist2</span> <span class="kn">import</span> <span class="n">frozenlist</span>
 
 <span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">Repository</span><span class="p">,</span> <span class="n">SyncOptions</span><span class="p">,</span> <span class="n">repo_type</span>
+<span class="kn">from</span> <span class="nn">...model.unit</span> <span class="kn">import</span> <span class="n">FileUnit</span>
 <span class="kn">from</span> <span class="nn">..attr</span> <span class="kn">import</span> <span class="n">pulp_attrib</span>
 <span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">compat_attr</span> <span class="k">as</span> <span class="n">attr</span>
 
@@ -79,7 +80,7 @@
         <span class="n">converter</span><span class="o">=</span><span class="n">frozenlist</span><span class="p">,</span>
     <span class="p">)</span>
 
-<div class="viewcode-block" id="FileRepository.upload_file"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.FileRepository.upload_file">[docs]</a>    <span class="k">def</span> <span class="nf">upload_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_obj</span><span class="p">,</span> <span class="n">relative_url</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="FileRepository.upload_file"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.FileRepository.upload_file">[docs]</a>    <span class="k">def</span> <span class="nf">upload_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_obj</span><span class="p">,</span> <span class="n">relative_url</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Upload a file to this repository.</span>
 
 <span class="sd">        Args:</span>
@@ -106,6 +107,13 @@
 <span class="sd">                if file_obj is a file object without a `name` attribute,</span>
 <span class="sd">                passing `relative_url` is mandatory.</span>
 
+<span class="sd">            kwargs</span>
+<span class="sd">                Additional field values to set on the uploaded unit.</span>
+
+<span class="sd">                Any :class:`~pubtools.pulplib.FileUnit` fields documented as</span>
+<span class="sd">                *mutable* may be included here (for example, ``cdn_path``).</span>
+<span class="sd">                An error will occur if attempting to set other fields.</span>
+
 <span class="sd">        Returns:</span>
 <span class="sd">            Future[list of :class:`~pubtools.pulplib.Task`]</span>
 <span class="sd">                A future which is resolved after content has been imported</span>
@@ -116,6 +124,9 @@
 <span class="sd">                If this instance is not attached to a Pulp client.</span>
 
 <span class="sd">        .. versionadded:: 1.2.0</span>
+
+<span class="sd">        .. versionadded:: 2.20.0</span>
+<span class="sd">            Added ability to set mutable fields on upload.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">relative_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_relative_url</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="n">relative_url</span><span class="p">)</span>
 
@@ -124,8 +135,15 @@
             <span class="s2">&quot;checksum&quot;</span><span class="p">:</span> <span class="n">upload</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
             <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">upload</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
         <span class="p">}</span>
+        <span class="n">unit_metadata_fn</span> <span class="o">=</span> <span class="kc">None</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_upload_then_import</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="n">relative_url</span><span class="p">,</span> <span class="s2">&quot;iso&quot;</span><span class="p">,</span> <span class="n">unit_key_fn</span><span class="p">)</span></div>
+        <span class="n">usermeta</span> <span class="o">=</span> <span class="n">FileUnit</span><span class="o">.</span><span class="n">_usermeta_from_kwargs</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">usermeta</span><span class="p">:</span>
+            <span class="n">unit_metadata_fn</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">_</span><span class="p">:</span> <span class="n">usermeta</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_upload_then_import</span><span class="p">(</span>
+            <span class="n">file_obj</span><span class="p">,</span> <span class="n">relative_url</span><span class="p">,</span> <span class="s2">&quot;iso&quot;</span><span class="p">,</span> <span class="n">unit_key_fn</span><span class="p">,</span> <span class="n">unit_metadata_fn</span>
+        <span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_get_relative_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_obj</span><span class="p">,</span> <span class="n">relative_url</span><span class="p">):</span>
         <span class="n">is_file_object</span> <span class="o">=</span> <span class="s2">&quot;close&quot;</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">file_obj</span><span class="p">)</span>
