@@ -48,15 +48,14 @@ class UnitMaker(object):
 
     def make_units(self, type_id, unit_key, unit_metadata, content, repo_id):
         # Obtain valid unit(s) representing uploaded 'content'.
-
         if type_id == "iso":
-            return [self.make_iso_unit(unit_key)]
+            return [self.make_iso_unit(unit_key, unit_metadata)]
 
         if type_id == "yum_repo_metadata_file":
             return [self.make_yum_repo_metadata_unit(unit_key, unit_metadata)]
 
         if type_id == "rpm":
-            return [self.make_rpm_unit(content)]
+            return [self.make_rpm_unit(content, unit_metadata)]
 
         if type_id == "erratum":
             return [self.make_erratum_unit(unit_metadata)]
@@ -82,12 +81,15 @@ class UnitMaker(object):
             "fake client does not support upload of '%s'" % type_id
         )  # pragma: no cover
 
-    def make_iso_unit(self, unit_key):
+    def make_iso_unit(self, unit_key, unit_metadata):
+        usermeta = (unit_metadata or {}).get("pulp_user_metadata") or {}
+
         return FileUnit(
             unit_id=self.next_unit_id(),
             path=unit_key["name"],
             size=unit_key["size"],
             sha256sum=unit_key["checksum"],
+            **usermeta
         )
 
     def make_yum_repo_metadata_unit(self, unit_key, unit_metadata):
@@ -105,7 +107,7 @@ class UnitMaker(object):
         md["_content_type_id"] = "erratum"
         return ErratumUnit.from_data(md)
 
-    def make_rpm_unit(self, content):
+    def make_rpm_unit(self, content, unit_metadata):
         # Since the native RPM library is used under the hood here,
         # any old file-like object isn't good enough; it *must* be a real file with
         # a 'fileno' which can be passed into syscalls. So we have to pipe the content
@@ -162,6 +164,9 @@ class UnitMaker(object):
         ]
 
         rpmattrs.update(sumattrs)
+
+        usermeta = (unit_metadata or {}).get("pulp_user_metadata") or {}
+        rpmattrs.update(usermeta)
 
         return RpmUnit(unit_id=self.next_unit_id(), **rpmattrs)
 

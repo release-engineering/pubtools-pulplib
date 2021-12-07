@@ -42,6 +42,10 @@ class FileUnit(Unit):
     )
     """A user-oriented terse description of this file.
 
+    This field is **mutable** and may be set by
+    :meth:`~FileRepository.upload_file` or
+    :meth:`~Client.update_content`.
+
     .. versionadded:: 2.20.0
     """
 
@@ -58,6 +62,10 @@ class FileUnit(Unit):
     have been published via at least one repository before this path can be
     accessed.
 
+    This field is **mutable** and may be set by
+    :meth:`~FileRepository.upload_file` or
+    :meth:`~Client.update_content`.
+
     .. versionadded:: 2.20.0
     """
 
@@ -70,6 +78,10 @@ class FileUnit(Unit):
     """Approximate :class:`~datetime.datetime` in UTC at which this file first
     became available at ``cdn_path``, or ``None`` if this information is
     unavailable.
+
+    This field is **mutable** and may be set by
+    :meth:`~FileRepository.upload_file` or
+    :meth:`~Client.update_content`.
 
     .. versionadded:: 2.20.0
     """

@@ -7,6 +7,7 @@ from more_executors.futures import f_map, f_proxy, f_return, f_zip, f_flat_map
 from .base import Repository, SyncOptions, repo_type
 from ..attr import pulp_attrib
 from ..common import DetachedException
+from ...model.unit import RpmUnit
 from ... import compat_attr as attr, comps
 from ...criteria import Criteria
 
@@ -181,7 +182,7 @@ class YumRepository(Repository):
         repo_f = f_map(page_f, unpack_page)
         return f_proxy(repo_f)
 
-    def upload_rpm(self, file_obj):
+    def upload_rpm(self, file_obj, **kwargs):
         """Upload an RPM to this repository.
 
         .. warning::
@@ -205,6 +206,13 @@ class YumRepository(Repository):
                 not be modified elsewhere, and will be closed when upload
                 completes.
 
+            kwargs
+                Additional field values to set on the uploaded unit.
+
+                Any :class:`~pubtools.pulplib.RpmUnit` fields documented as
+                *mutable* may be included here (for example, ``cdn_path``).
+                An error will occur if attempting to set other fields.
+
         Returns:
             Future[list of :class:`~pubtools.pulplib.Task`]
                 A future which is resolved after content has been imported
@@ -215,6 +223,9 @@ class YumRepository(Repository):
                 If this instance is not attached to a Pulp client.
 
         .. versionadded:: 2.16.0
+
+        .. versionadded:: 2.20.0
+            Added ability to set mutable fields on upload.
         """
         # We want some name of what we're uploading for logging purposes, but the
         # input could be a plain string, or a file object with 'name' attribute, or
@@ -226,7 +237,15 @@ class YumRepository(Repository):
             # If we don't know what we're uploading we just say it's "an RPM"...
             name = getattr(file_obj, "name", "an RPM")
 
-        return self._upload_then_import(file_obj, name, "rpm")
+        unit_metadata_fn = None
+
+        usermeta = RpmUnit._usermeta_from_kwargs(**kwargs)
+        if usermeta:
+            unit_metadata_fn = lambda _: usermeta
+
+        return self._upload_then_import(
+            file_obj, name, "rpm", unit_metadata_fn=unit_metadata_fn
+        )
 
     def upload_metadata(self, file_obj, metadata_type):
         """Upload a metadata file to this repository.

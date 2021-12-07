@@ -303,6 +303,47 @@ class Client(object):
             self._do_associate(from_repository.id, to_repository.id, criteria)
         )
 
+    def update_content(self, unit):
+        """Update mutable fields on an existing unit.
+
+        Args:
+            unit (:class:`~pubtools.pulplib.Unit`)
+                A unit to be updated.
+
+                This unit must have a known ``unit_id``.
+
+                Only those fields documented as *mutable* will have any effect during
+                the update (e.g. ``cdn_path``). Other fields either cannot be updated
+                at all, or can only be updated by re-uploading the associated content.
+
+        Returns:
+            Future
+                A future which is resolved with a value of ``None`` once the unit
+                has been updated.
+
+        .. versionadded:: 2.20.0
+        """
+
+        if not unit.unit_id:
+            raise ValueError("unit_id missing on call to update_content()")
+
+        url = os.path.join(
+            self._url,
+            "pulp/api/v2/content/units/%s/%s/pulp_user_metadata/"
+            % (unit.content_type_id, unit.unit_id),
+        )
+
+        out = self._request_executor.submit(
+            self._do_request, method="PUT", url=url, json=unit._usermeta
+        )
+
+        # The Pulp API is defined as returning 'null' so this should be a no-op,
+        # but to be extra sure we don't return anything unexpected, we'll force
+        # the return value to None.
+        out = f_map(out, lambda _: None)
+
+        return out
+
     def _search_content_with_server_type_ids(self, criteria, server_type_ids):
         prepared_search = search_for_criteria(criteria, Unit, None)
         type_ids = prepared_search.type_ids

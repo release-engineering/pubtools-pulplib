@@ -1,4 +1,5 @@
 import logging
+import datetime
 
 import jsonschema
 import six
@@ -152,6 +153,10 @@ class PulpObject(object):
         if isinstance(value, PulpObject):
             # It's a model object, then delegate to the instance method.
             return value._to_data()
+
+        if isinstance(value, datetime.datetime):
+            # For datetimes, we always use an ISO8601 timestamp format.
+            return value.strftime("%Y-%m-%dT%H:%M:%SZ")
 
         # For anything else, we assume it can be used as-is.
         # strs and ints for example fall into this path.

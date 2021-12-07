@@ -5,6 +5,7 @@ from attr import validators
 from frozenlist2 import frozenlist
 
 from .base import Repository, SyncOptions, repo_type
+from ...model.unit import FileUnit
 from ..attr import pulp_attrib
 from ... import compat_attr as attr
 
@@ -46,7 +47,7 @@ class FileRepository(Repository):
         converter=frozenlist,
     )
 
-    def upload_file(self, file_obj, relative_url=None):
+    def upload_file(self, file_obj, relative_url=None, **kwargs):
         """Upload a file to this repository.
 
         Args:
@@ -73,6 +74,13 @@ class FileRepository(Repository):
                 if file_obj is a file object without a `name` attribute,
                 passing `relative_url` is mandatory.
 
+            kwargs
+                Additional field values to set on the uploaded unit.
+
+                Any :class:`~pubtools.pulplib.FileUnit` fields documented as
+                *mutable* may be included here (for example, ``cdn_path``).
+                An error will occur if attempting to set other fields.
+
         Returns:
             Future[list of :class:`~pubtools.pulplib.Task`]
                 A future which is resolved after content has been imported
@@ -83,6 +91,9 @@ class FileRepository(Repository):
                 If this instance is not attached to a Pulp client.
 
         .. versionadded:: 1.2.0
+
+        .. versionadded:: 2.20.0
+            Added ability to set mutable fields on upload.
         """
         relative_url = self._get_relative_url(file_obj, relative_url)
 
@@ -91,8 +102,15 @@ class FileRepository(Repository):
             "checksum": upload[0],
             "size": upload[1],
         }
+        unit_metadata_fn = None
 
-        return self._upload_then_import(file_obj, relative_url, "iso", unit_key_fn)
+        usermeta = FileUnit._usermeta_from_kwargs(**kwargs)
+        if usermeta:
+            unit_metadata_fn = lambda _: usermeta
+
+        return self._upload_then_import(
+            file_obj, relative_url, "iso", unit_key_fn, unit_metadata_fn
+        )
 
     def _get_relative_url(self, file_obj, relative_url):
         is_file_object = "close" in dir(file_obj)

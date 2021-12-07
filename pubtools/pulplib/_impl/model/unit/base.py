@@ -1,7 +1,8 @@
 import re
 
 from ..common import PulpObject
-from ..attr import pulp_attrib
+from ..attr import pulp_attrib, PULP2_FIELD
+from ...util import dict_put
 from ... import compat_attr as attr
 from ...schema import load_schema
 
@@ -75,6 +76,62 @@ class Unit(PulpObject):
             return
         if not re.match(r"^[a-f0-9]{%s}$" % length, value):
             raise ValueError("Not a valid %s: %s" % (sumtype, value))
+
+    @property
+    def _usermeta(self):
+        # Returns pulp_user_metadata dict for this unit.
+        out = {}
+
+        for field in self._usermeta_fields():
+            pulp_field = field.metadata.get(PULP2_FIELD)
+            python_value = getattr(self, field.name)
+            pulp_value = PulpObject._any_to_data(python_value)
+            dict_put(out, pulp_field, pulp_value)
+
+        return out.get("pulp_user_metadata") or {}
+
+    @classmethod
+    def _usermeta_fields(cls):
+        # Returns the subset of fields on this class which are stored under the
+        # pulp_user_metadata dict. In public API we refer to these as 'mutable' fields.
+        return [
+            fld
+            for fld in attr.fields(cls)
+            if fld.metadata.get(PULP2_FIELD).startswith("pulp_user_metadata.")
+        ]
+
+    @classmethod
+    def _usermeta_from_kwargs(cls, **kwargs):
+        # Given kwargs mapping to mutable fields on this unit class, returns a dict
+        # of the form:
+        #
+        #   {"pulp_user_metadata": {...serialized mutable fields}}
+        #
+        # ...suitable for merging into a 'metadata' dict on a content upload.
+        #
+        # If any of the kwargs do not map to a mutable field, an exception is raised.
+        #
+        fields = cls._usermeta_fields()
+        out = {}
+
+        for field in fields:
+            if not field.name in kwargs:
+                continue
+
+            pulp_field = field.metadata.get(PULP2_FIELD)
+            python_value = kwargs.pop(field.name)
+            pulp_value = PulpObject._any_to_data(python_value)
+            dict_put(out, pulp_field, pulp_value)
+
+        # Ensure that we have consumed all arguments; if not, that means the
+        # caller tried to set something we don't support.
+        remaining = sorted(kwargs.keys())
+        if remaining:
+            raise ValueError(
+                "Not mutable %s field(s): %s" % (cls.__name__, ", ".join(remaining))
+            )
+
+        return out
 
 
 def schemaless_init(cls, data):

@@ -280,6 +280,36 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
 
         return f_proxy(f_return(tasks))
 
+    def update_content(self, unit):
+        self._ensure_alive()
+
+        if not unit.unit_id:
+            raise ValueError("unit_id missing on call to update_content()")
+
+        # The unit has to exist.
+        existing_unit = None
+        for candidate in self._all_units:
+            if (
+                candidate.content_type_id == unit.content_type_id
+                and candidate.unit_id == unit.unit_id
+            ):
+                existing_unit = candidate
+                break
+        else:
+            return f_return_error(PulpException("unit not found: %s" % unit.unit_id))
+
+        # OK, we have a unit to update. Figure out which fields we can update.
+        update = {}
+        for fld in unit._usermeta_fields():
+            update[fld.name] = getattr(unit, fld.name)
+
+        updated_unit = attr.evolve(existing_unit, **update)
+
+        unit_key = units.make_unit_key(updated_unit)
+        self._units_by_key[unit_key] = updated_unit
+
+        return f_return()
+
     def search_distributor(self, criteria=None):
         self._ensure_alive()
 
