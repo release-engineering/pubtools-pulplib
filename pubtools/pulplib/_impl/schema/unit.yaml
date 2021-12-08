@@ -168,6 +168,11 @@ definitions:
       profiles:
         type: object
 
+      dependencies:
+        type: array
+        items:
+          type: object  
+
     required:
     - _content_type_id
     - name
