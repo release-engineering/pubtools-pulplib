@@ -7,7 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Added `dependencies` attr to `ModulemdUnit` class
+- n/a
+
+## [2.20.0] - 2021-12-10
+
+- Added many new fields: `ModulemdUnit.dependencies`, `FileUnit.description`,
+  `cdn_published` and `cdn_path` on files and RPMs, and `unit_id` on all units.
+- Introduced concept of "mutable fields", which may be set during upload or using
+  the new `update_content` method.
 
 ## [2.19.0] - 2021-12-06
 
@@ -306,7 +313,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release to PyPI
 
-[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.19.0...HEAD
+[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.20.0...HEAD
+[2.20.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.19.0...v2.20.0
 [2.19.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.18.0...v2.19.0
 [2.18.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.17.0...v2.18.0
 [2.17.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.16.0...v2.17.0
