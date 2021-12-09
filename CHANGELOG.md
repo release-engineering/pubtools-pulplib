@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- n/a
+- Added `dependencies` attr to `ModulemdUnit` class
 
 ## [2.19.0] - 2021-12-06
 

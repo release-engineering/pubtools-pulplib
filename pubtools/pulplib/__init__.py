@@ -19,6 +19,7 @@ from ._impl.model import (
     ErratumPackage,
     ErratumModule,
     ModulemdUnit,
+    ModulemdDependency,
     ModulemdDefaultsUnit,
     YumRepoMetadataFileUnit,
     Distributor,

@@ -1,10 +1,47 @@
 import re
 
-from .base import Unit, unit_type
+from .base import Unit, unit_type, schemaless_init
 
 from ..attr import pulp_attrib
 from ... import compat_attr as attr
 from ..convert import frozenlist_or_none_converter, frozenlist_or_none_sorted_converter
+from ..validate import optional_list_of
+
+
+@attr.s(kw_only=True, frozen=True)
+class ModulemdDependency(object):
+    """
+    A module dependency entry within :meth:`~ModulemdUnit.dependencies`.
+    """
+
+    name = pulp_attrib(type=str, default=None)
+    """
+    The name of this dependency.
+    """
+    stream = pulp_attrib(type=str, default=None)
+    """
+    The stream of this dependency.
+    """
+
+    @classmethod
+    def _from_data(cls, data):
+        # Convert from raw list/dict as provided in Pulp responses into model.
+        if isinstance(data, list):
+            raw_data = []
+            for item in data:
+                for key, value in item.items():
+                    # skip key == "platform", not usable as dependency
+                    if key != "platform":
+                        # value list might be empty
+                        if value:
+                            for stream in value:
+                                raw_data.append({"name": key, "stream": stream})
+                        else:
+                            raw_data.append({"name": key})
+
+            return [cls._from_data(elem) for elem in raw_data]
+
+        return schemaless_init(cls, data)
 
 
 @unit_type("modulemd")
@@ -93,6 +130,18 @@ class ModulemdUnit(Unit):
 
     profiles = pulp_attrib(type=dict, pulp_field="profiles", default=None)
     """The profiles of this modulemd unit."""
+
+    dependencies = pulp_attrib(
+        default=None,
+        type=list,
+        converter=frozenlist_or_none_converter,
+        pulp_field="dependencies",
+        validator=optional_list_of(ModulemdDependency),
+        pulp_py_converter=ModulemdDependency._from_data,
+    )
+    """
+    List of dependencies that this modulemd requires for runtime or ``None`` if this information is unavailable.
+    """
 
     @property
     def artifacts_filenames(self):

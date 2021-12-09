@@ -8,6 +8,7 @@ from pubtools.pulplib import (
     YumRepository,
     ModulemdUnit,
     ModulemdDefaultsUnit,
+    ModulemdDependency,
 )
 
 
@@ -92,6 +93,7 @@ def test_can_upload_units(use_file_object, data_path):
                     "rpms": ["python3-avocado-vt"],
                 }
             },
+            dependencies=[ModulemdDependency(name="avocado", stream="82lts")],
         ),
         ModulemdUnit(
             unit_id="23a7711a-8133-2876-37eb-dcd9e87a1613",
@@ -119,5 +121,6 @@ def test_can_upload_units(use_file_object, data_path):
                     "rpms": ["dwm", "dwm-user"],
                 },
             },
+            dependencies=[],
         ),
     ]

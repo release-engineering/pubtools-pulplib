@@ -21,6 +21,7 @@ from .unit import (
     RpmUnit,
     RpmDependency,
     ModulemdUnit,
+    ModulemdDependency,
     ModulemdDefaultsUnit,
     YumRepoMetadataFileUnit,
 )

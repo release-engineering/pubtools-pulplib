@@ -9,7 +9,7 @@ from .erratum import (
     ErratumModule,
 )
 from .repo_metadata import YumRepoMetadataFileUnit
-from .modulemd import ModulemdUnit
+from .modulemd import ModulemdUnit, ModulemdDependency
 from .modulemd_defaults import ModulemdDefaultsUnit
 
 SUPPORTED_UNIT_TYPES = ("iso", "rpm", "srpm", "modulemd", "modulemd_defaults")

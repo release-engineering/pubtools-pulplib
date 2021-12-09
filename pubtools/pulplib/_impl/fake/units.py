@@ -15,6 +15,7 @@ from pubtools.pulplib import (
     ErratumUnit,
     YumRepoMetadataFileUnit,
     ModulemdUnit,
+    ModulemdDependency,
     ModulemdDefaultsUnit,
 )
 
@@ -190,6 +191,20 @@ class UnitMaker(object):
                 artifacts = data.pop("artifacts", None)
                 if artifacts and "rpms" in artifacts:
                     attrs["artifacts"] = artifacts["rpms"]
+
+                dependencies = data.pop("dependencies", None)
+
+                # Pulp does not store entire 'dependencies' but only the 'requires'
+                # part, a little bit of parsing is required in the manner similar to pulp
+                if dependencies:
+                    parsed_deps = []
+                    for dep in dependencies:
+                        dep_item = {}
+                        for k, v in dep["requires"].items():
+                            dep_item[k] = v
+                        parsed_deps.append(dep_item)
+
+                    attrs["dependencies"] = ModulemdDependency._from_data(parsed_deps)
 
             elif doc_type == "modulemd-defaults":
                 klass = ModulemdDefaultsUnit
