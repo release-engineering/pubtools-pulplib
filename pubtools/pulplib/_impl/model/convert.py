@@ -39,6 +39,22 @@ def read_timestamp(value):
         return datetime.datetime.strptime(value, "%Y-%m-%dT%H:%M:%S")
 
 
+def tolerant_timestamp(value):
+    # Converter for fields which can accept a timestamp string, but which
+    # falls back to returning the input verbatim if conversion fails.
+    #
+    # Since it tolerates failed conversions, this is intended to be combined
+    # with a validator.
+    if isinstance(value, six.string_types):
+        try:
+            return read_timestamp(value)
+        except ValueError:
+            # Not a timestamp, conversion doesn't happen
+            pass
+
+    return value
+
+
 def write_timestamp(value):
     # defaults to current time if value is None
     if value is None:
