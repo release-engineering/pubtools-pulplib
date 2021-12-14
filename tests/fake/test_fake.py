@@ -1,8 +1,9 @@
 from functools import partial
 
+import attr
 import pytest
 
-from pubtools.pulplib import FakeController, Repository, PulpException
+from pubtools.pulplib import FakeController, Repository, PulpException, FileUnit
 
 
 def test_can_construct():
@@ -69,3 +70,41 @@ def test_client_lifecycle():
             fn()
 
         assert "cannot schedule new futures after shutdown" in str(excinfo.value)
+
+
+def test_can_insert_orphans():
+    """insert_units with a null repo inserts units as orphans."""
+    controller = FakeController()
+
+    units = [
+        FileUnit(
+            path="bar",
+            size=0,
+            sha256sum="b1a6cb41223dcd02f208827517fe4b59a12684b76e15dbee645e9f9a9daa952e",
+        ),
+        FileUnit(
+            path="quux",
+            size=0,
+            sha256sum="b1a6cb41223dcd02f208827517fe4b59a12684b76e15dbee645e9f9a9daa952e",
+        ),
+    ]
+
+    # Can insert
+    controller.insert_units(None, units)
+
+    client = controller.client
+
+    # If I now search for all content...
+    found = list(client.search_content())
+
+    for unit in found:
+        # It should have an ID
+        assert unit.unit_id
+        # It should have memberships [] (no repos) rather than None (unknown repos)
+        assert unit.repository_memberships == []
+
+    # Other than those two fields, it should be identical to the input
+    found_cmp = [
+        attr.evolve(u, unit_id=None, repository_memberships=None) for u in found
+    ]
+    assert sorted(found_cmp, key=repr) == units

@@ -72,13 +72,17 @@ class FakeController(object):
 
         Args:
             repository (:class:`~pubtools.pulplib.Repository`)
-                A repository object.
+                A repository object, or ``None`` to insert units as orphans.
             units (list[:class:`~pubtools.pulplib.Unit`])
                 A list of units to be inserted.
 
         .. versionadded:: 1.5.0
+
+        .. versionadded:: 2.21.0
+            Added ability to insert orphan units.
         """
-        self.client._insert_repo_units(repository.id, units)
+        repo_id = repository.id if repository else None
+        self.client._insert_repo_units(repo_id, units)
 
     @property
     def content_type_ids(self):
