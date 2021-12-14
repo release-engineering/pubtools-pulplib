@@ -105,13 +105,17 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            repository (:class:`~pubtools.pulplib.Repository`)</span>
-<span class="sd">                A repository object.</span>
+<span class="sd">                A repository object, or ``None`` to insert units as orphans.</span>
 <span class="sd">            units (list[:class:`~pubtools.pulplib.Unit`])</span>
 <span class="sd">                A list of units to be inserted.</span>
 
 <span class="sd">        .. versionadded:: 1.5.0</span>
+
+<span class="sd">        .. versionadded:: 2.21.0</span>
+<span class="sd">            Added ability to insert orphan units.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">_insert_repo_units</span><span class="p">(</span><span class="n">repository</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">units</span><span class="p">)</span></div>
+        <span class="n">repo_id</span> <span class="o">=</span> <span class="n">repository</span><span class="o">.</span><span class="n">id</span> <span class="k">if</span> <span class="n">repository</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">_insert_repo_units</span><span class="p">(</span><span class="n">repo_id</span><span class="p">,</span> <span class="n">units</span><span class="p">)</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">content_type_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
