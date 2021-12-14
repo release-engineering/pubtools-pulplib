@@ -53,5 +53,5 @@ def frozenlist_or_none_converter(obj, map_fn=(lambda x: x)):
 
 
 frozenlist_or_none_sorted_converter = functools.partial(
-    frozenlist_or_none_converter, map_fn=sorted
+    frozenlist_or_none_converter, map_fn=lambda x: sorted(set(x))
 )
