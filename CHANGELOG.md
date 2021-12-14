@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - n/a
 
+## [2.21.0] - 2021-12-15
+
+- Added support for orphaned units to fake client.
+- The `cdn_published` field now accepts ISO8601-format timestamps.
+- It is no longer possible to store duplicates in the `repository_memberships` field.
+
 ## [2.20.0] - 2021-12-10
 
 - Added many new fields: `ModulemdUnit.dependencies`, `FileUnit.description`,
@@ -313,7 +319,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release to PyPI
 
-[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.20.0...HEAD
+[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.21.0...HEAD
+[2.21.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.20.0...v2.21.0
 [2.20.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.19.0...v2.20.0
 [2.19.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.18.0...v2.19.0
 [2.18.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.17.0...v2.18.0
