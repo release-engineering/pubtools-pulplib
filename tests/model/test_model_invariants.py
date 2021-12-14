@@ -51,6 +51,29 @@ def test_unique(model_object, field_name):
     assert getattr(obj1, field_name) == getattr(obj2, field_name)
 
 
+@pytest.mark.parametrize("field_name", ["cdn_published"])
+def test_datetime_str(model_object, field_name):
+    """Test that certain datetime fields on the given object accept timestamps."""
+
+    if not hasattr(model_object, field_name):
+        pytest.skip("This object does not have %s" % field_name)
+
+    updates1 = {field_name: "2021-12-14T09:59:00Z"}
+    updates2 = {field_name: datetime.datetime(2021, 12, 14, 9, 59, 0)}
+
+    # Request two different updates on the object.
+    obj1 = attr.evolve(model_object, **updates1)
+    obj2 = attr.evolve(model_object, **updates2)
+
+    # The result should be exactly the same in both cases.
+    assert getattr(obj1, field_name) == getattr(obj2, field_name)
+
+    # However if I try to set the same field to an *invalid* string, I should
+    # get the usual TypeError from trying to store a str in a datetime field.
+    with pytest.raises(TypeError):
+        attr.evolve(model_object, **{field_name: "oops not a timestamp"})
+
+
 def public_model_objects():
     """Returns a default-constructed instance of every public model class
     found in pubtools.pulplib.

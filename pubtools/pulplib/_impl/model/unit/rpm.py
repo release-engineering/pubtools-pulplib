@@ -5,7 +5,11 @@ from .base import Unit, unit_type, schemaless_init
 
 from ..attr import pulp_attrib
 from ... import compat_attr as attr
-from ..convert import frozenlist_or_none_converter, frozenlist_or_none_sorted_converter
+from ..convert import (
+    frozenlist_or_none_converter,
+    frozenlist_or_none_sorted_converter,
+    tolerant_timestamp,
+)
 from ..validate import optional_str, instance_of
 
 
@@ -173,6 +177,7 @@ class RpmUnit(Unit):
         type=datetime.datetime,
         pulp_field="pulp_user_metadata.cdn_published",
         default=None,
+        converter=tolerant_timestamp,
         validator=instance_of((datetime.datetime, type(None))),
     )
     """Approximate :class:`~datetime.datetime` in UTC at which this RPM first
