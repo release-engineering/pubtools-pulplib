@@ -104,6 +104,7 @@ def test_search_content_by_type(populated_repo):
             version="4.0",
             release="1",
             arch="x86_64",
+            repository_memberships=["repo1"],
         ),
         RpmUnit(
             unit_id="d4713d60-c8a7-0639-eb11-67b367a9c378",
@@ -112,6 +113,7 @@ def test_search_content_by_type(populated_repo):
             release="1",
             arch="x86_64",
             sourcerpm="glibc-5.0-1.el5_11.1.src.rpm",
+            repository_memberships=["repo1"],
         ),
     ]
 
@@ -126,6 +128,7 @@ def test_search_erratum_by_type(populated_repo):
             unit_id="85776e9a-dd84-f39e-7154-5a137a1d5006",
             id="RHBA-1234:56",
             summary="The best advisory",
+            repository_memberships=["repo1"],
         )
     ]
 
@@ -143,6 +146,7 @@ def test_search_content_by_unit_field(populated_repo):
             version="4.0",
             release="1",
             arch="src",
+            repository_memberships=["repo1"],
         ),
         RpmUnit(
             unit_id="e3e70682-c209-4cac-629f-6fbed82c07cd",
@@ -150,6 +154,7 @@ def test_search_content_by_unit_field(populated_repo):
             version="4.0",
             release="1",
             arch="x86_64",
+            repository_memberships=["repo1"],
         ),
     ]
 
@@ -167,6 +172,7 @@ def test_search_content_by_unit_type(populated_repo):
             version=1234,
             context="a1b2",
             arch="x86_64",
+            repository_memberships=["repo1"],
         ),
         ModulemdUnit(
             unit_id="e6f4590b-9a16-4106-cf6a-659eb4862b21",
@@ -175,6 +181,7 @@ def test_search_content_by_unit_type(populated_repo):
             version=1234,
             context="a1b2",
             arch="x86_64",
+            repository_memberships=["repo1"],
         ),
     ]
 
@@ -197,6 +204,7 @@ def test_search_content_mixed_fields(populated_repo):
             version=1234,
             context="a1b2",
             arch="x86_64",
+            repository_memberships=["repo1"],
         ),
         RpmUnit(
             unit_id="e3e70682-c209-4cac-629f-6fbed82c07cd",
@@ -204,5 +212,6 @@ def test_search_content_mixed_fields(populated_repo):
             version="4.0",
             release="1",
             arch="x86_64",
+            repository_memberships=["repo1"],
         ),
     ]

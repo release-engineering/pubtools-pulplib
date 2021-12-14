@@ -144,6 +144,9 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
         # matching units across *all* of those repos - same as a real pulp server.
 
         repo_unit_keys = self._repo_unit_keys.setdefault(repo_id, set())
+        memberships = []
+        if repo_id is not None:
+            memberships.append(repo_id)
 
         for unit in units_to_add:
             # Always consume a unit ID from the unitmaker even if we don't actually
@@ -158,7 +161,19 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
 
             self._seen_unit_ids.add(unit.unit_id)
 
-            self._remove_clashing_units(repo_id, unit)
+            # Unit belongs to the repo we're adding it to.
+            # Note: this may be further merged with an existing unit's
+            # repository_memberships a few lines below.
+            unit = attr.evolve(
+                unit,
+                repository_memberships=(unit.repository_memberships or [])
+                + memberships,
+            )
+
+            if repo_id is not None:
+                # Unit might be replacing earlier units in same repo.
+                self._remove_clashing_units(repo_id, unit)
+
             unit_key = units.make_unit_key(unit)
             old_unit = self._units_by_key.get(unit_key)
             self._units_by_key[unit_key] = units.merge_units(old_unit, unit)

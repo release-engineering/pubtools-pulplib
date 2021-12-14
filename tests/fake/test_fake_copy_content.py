@@ -125,7 +125,7 @@ def test_copy_content_all(controller):
             id="RHSA-1111:22",
             summary="Fixes bad things",
             content_type_id="erratum",
-            repository_memberships=["dest-repo"],
+            repository_memberships=["src-repo", "dest-repo"],
         ),
         ModulemdUnit(
             unit_id="82e2e662-f728-b4fa-4248-5e3a0a5d2f34",
@@ -135,7 +135,7 @@ def test_copy_content_all(controller):
             context="a1b2",
             arch="x86_64",
             content_type_id="modulemd",
-            repository_memberships=["dest-repo", "repoA", "repoB"],
+            repository_memberships=["src-repo", "dest-repo", "repoA", "repoB"],
         ),
         RpmUnit(
             unit_id="d4713d60-c8a7-0639-eb11-67b367a9c378",
@@ -147,7 +147,7 @@ def test_copy_content_all(controller):
             signing_key="a1b2c3",
             filename="bash-4.0-1.x86_64.rpm",
             content_type_id="rpm",
-            repository_memberships=["dest-repo"],
+            repository_memberships=["src-repo", "dest-repo"],
         ),
     ]
 
@@ -200,7 +200,7 @@ def test_copy_content_with_criteria(controller):
             release="1",
             arch="x86_64",
             epoch="0",
-            repository_memberships=["dest-repo"],
+            repository_memberships=["src-repo", "dest-repo"],
         ),
         RpmUnit(
             unit_id="d4713d60-c8a7-0639-eb11-67b367a9c378",
@@ -209,6 +209,6 @@ def test_copy_content_with_criteria(controller):
             release="3",
             arch="x86_64",
             epoch="0",
-            repository_memberships=["dest-repo"],
+            repository_memberships=["src-repo", "dest-repo"],
         ),
     ]
