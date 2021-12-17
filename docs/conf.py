@@ -95,7 +95,7 @@ html_theme_options = {
     "extra_nav_links": {
         "Source": "https://github.com/release-engineering/pubtools-pulplib",
         "PyPI": "https://pypi.org/project/pubtools-pulplib",
-        "Index": "genindex.html",
+        "Index": "https://release-engineering.github.io/pubtools-pulplib/genindex.html",
     },
     # default is 940px which seems to be a little too small to display 88 chars code
     "page_width": "1100px",
@@ -104,7 +104,7 @@ html_theme_options = {
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ["_static"]
+# html_static_path = ["_static"]
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
