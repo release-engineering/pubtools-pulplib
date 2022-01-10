@@ -45,7 +45,7 @@
 <span class="kn">from</span> <span class="nn">...criteria</span> <span class="kn">import</span> <span class="n">Criteria</span>
 
 
-<div class="viewcode-block" id="YumSyncOptions"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.YumSyncOptions">[docs]</a><span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="YumSyncOptions"><a class="viewcode-back" href="../../../../../../api/yum.html#pubtools.pulplib.YumSyncOptions">[docs]</a><span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">YumSyncOptions</span><span class="p">(</span><span class="n">SyncOptions</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Options controlling a yum repository</span>
 <span class="sd">    :meth:`~pubtools.pulplib.Repository.sync`.</span>
@@ -102,7 +102,7 @@
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="YumRepository"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.YumRepository">[docs]</a><span class="nd">@repo_type</span><span class="p">(</span><span class="s2">&quot;rpm-repo&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="YumRepository"><a class="viewcode-back" href="../../../../../../api/yum.html#pubtools.pulplib.YumRepository">[docs]</a><span class="nd">@repo_type</span><span class="p">(</span><span class="s2">&quot;rpm-repo&quot;</span><span class="p">)</span>
 <span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">YumRepository</span><span class="p">(</span><span class="n">Repository</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A :class:`~pubtools.pulplib.Repository` for RPMs, errata and related content.&quot;&quot;&quot;</span>
@@ -137,7 +137,7 @@
     <span class="p">)</span>
     <span class="sd">&quot;&quot;&quot;Version of UBI config that should be used for population of this repository.&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="YumRepository.get_binary_repository"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.YumRepository.get_binary_repository">[docs]</a>    <span class="k">def</span> <span class="nf">get_binary_repository</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="YumRepository.get_binary_repository"><a class="viewcode-back" href="../../../../../../api/yum.html#pubtools.pulplib.YumRepository.get_binary_repository">[docs]</a>    <span class="k">def</span> <span class="nf">get_binary_repository</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Find and return the binary repository relating to this repository.</span>
 
 <span class="sd">        Yum repositories usually come in triplets of</span>
@@ -164,7 +164,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_related_repository</span><span class="p">(</span><span class="n">repo_t</span><span class="o">=</span><span class="s2">&quot;binary&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="YumRepository.get_debug_repository"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.YumRepository.get_debug_repository">[docs]</a>    <span class="k">def</span> <span class="nf">get_debug_repository</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="YumRepository.get_debug_repository"><a class="viewcode-back" href="../../../../../../api/yum.html#pubtools.pulplib.YumRepository.get_debug_repository">[docs]</a>    <span class="k">def</span> <span class="nf">get_debug_repository</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Find and return the debug repository relating to this repository.</span>
 
 <span class="sd">        Returns:</span>
@@ -175,7 +175,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_related_repository</span><span class="p">(</span><span class="n">repo_t</span><span class="o">=</span><span class="s2">&quot;debug&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="YumRepository.get_source_repository"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.YumRepository.get_source_repository">[docs]</a>    <span class="k">def</span> <span class="nf">get_source_repository</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="YumRepository.get_source_repository"><a class="viewcode-back" href="../../../../../../api/yum.html#pubtools.pulplib.YumRepository.get_source_repository">[docs]</a>    <span class="k">def</span> <span class="nf">get_source_repository</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Find and return the source repository relating to this repository.</span>
 
 <span class="sd">        Returns:</span>
@@ -215,7 +215,7 @@
         <span class="n">repo_f</span> <span class="o">=</span> <span class="n">f_map</span><span class="p">(</span><span class="n">page_f</span><span class="p">,</span> <span class="n">unpack_page</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">f_proxy</span><span class="p">(</span><span class="n">repo_f</span><span class="p">)</span>
 
-<div class="viewcode-block" id="YumRepository.upload_rpm"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.YumRepository.upload_rpm">[docs]</a>    <span class="k">def</span> <span class="nf">upload_rpm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="YumRepository.upload_rpm"><a class="viewcode-back" href="../../../../../../api/yum.html#pubtools.pulplib.YumRepository.upload_rpm">[docs]</a>    <span class="k">def</span> <span class="nf">upload_rpm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Upload an RPM to this repository.</span>
 
 <span class="sd">        .. warning::</span>
@@ -280,7 +280,7 @@
             <span class="n">file_obj</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="s2">&quot;rpm&quot;</span><span class="p">,</span> <span class="n">unit_metadata_fn</span><span class="o">=</span><span class="n">unit_metadata_fn</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="YumRepository.upload_metadata"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.YumRepository.upload_metadata">[docs]</a>    <span class="k">def</span> <span class="nf">upload_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_obj</span><span class="p">,</span> <span class="n">metadata_type</span><span class="p">):</span>
+<div class="viewcode-block" id="YumRepository.upload_metadata"><a class="viewcode-back" href="../../../../../../api/yum.html#pubtools.pulplib.YumRepository.upload_metadata">[docs]</a>    <span class="k">def</span> <span class="nf">upload_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_obj</span><span class="p">,</span> <span class="n">metadata_type</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Upload a metadata file to this repository.</span>
 
 <span class="sd">        A metadata file is any additional file which will be published alongside,</span>
@@ -340,7 +340,7 @@
             <span class="p">},</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="YumRepository.upload_modules"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.YumRepository.upload_modules">[docs]</a>    <span class="k">def</span> <span class="nf">upload_modules</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_obj</span><span class="p">):</span>
+<div class="viewcode-block" id="YumRepository.upload_modules"><a class="viewcode-back" href="../../../../../../api/yum.html#pubtools.pulplib.YumRepository.upload_modules">[docs]</a>    <span class="k">def</span> <span class="nf">upload_modules</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Upload a modulemd stream to this repository.</span>
 
 <span class="sd">        All supported documents in the given stream will be imported to this</span>
@@ -381,7 +381,7 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_upload_then_import</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="s2">&quot;modulemd&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="YumRepository.upload_comps_xml"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.YumRepository.upload_comps_xml">[docs]</a>    <span class="k">def</span> <span class="nf">upload_comps_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_obj</span><span class="p">):</span>
+<div class="viewcode-block" id="YumRepository.upload_comps_xml"><a class="viewcode-back" href="../../../../../../api/yum.html#pubtools.pulplib.YumRepository.upload_comps_xml">[docs]</a>    <span class="k">def</span> <span class="nf">upload_comps_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Upload a comps.xml file to this repository.</span>
 
 <span class="sd">        .. warning::</span>
@@ -506,7 +506,7 @@
 
         <span class="k">return</span> <span class="n">upload</span>
 
-<div class="viewcode-block" id="YumRepository.upload_erratum"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.YumRepository.upload_erratum">[docs]</a>    <span class="k">def</span> <span class="nf">upload_erratum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">erratum</span><span class="p">):</span>
+<div class="viewcode-block" id="YumRepository.upload_erratum"><a class="viewcode-back" href="../../../../../../api/yum.html#pubtools.pulplib.YumRepository.upload_erratum">[docs]</a>    <span class="k">def</span> <span class="nf">upload_erratum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">erratum</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Upload an erratum/advisory object to this repository.</span>
 
 <span class="sd">        .. warning::</span>
@@ -603,7 +603,14 @@
 <h3>Navigation</h3>
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../../api-reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../api/client.html">API: client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../api/pulpcore.html">API: core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../api/yum.html">API: yum</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../api/files.html">API: files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../api/containers.html">API: containers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../api/maintenance.html">API: maintenance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../api/searching.html">API: searching</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../api/testing.html">API: testing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../../logging.html">Logging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../../schema.html">Schemas</a></li>
 </ul>
@@ -616,7 +623,7 @@
     
     <li class="toctree-l1"><a href="https://pypi.org/project/pubtools-pulplib">PyPI</a></li>
     
-    <li class="toctree-l1"><a href="genindex.html">Index</a></li>
+    <li class="toctree-l1"><a href="https://release-engineering.github.io/pubtools-pulplib/genindex.html">Index</a></li>
     
 </ul>
 <div class="relations">
@@ -654,7 +661,7 @@
       &copy;2019, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

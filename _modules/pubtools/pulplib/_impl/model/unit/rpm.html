@@ -46,7 +46,7 @@
 <span class="kn">from</span> <span class="nn">..validate</span> <span class="kn">import</span> <span class="n">optional_str</span><span class="p">,</span> <span class="n">instance_of</span>
 
 
-<span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="RpmDependency"><a class="viewcode-back" href="../../../../../../api/yum.html#pubtools.pulplib.RpmDependency">[docs]</a><span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">RpmDependency</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An RPM dependency entry within :meth:`~RpmUnit.requires` and :meth:`~RpmUnit.provides`.</span>
@@ -86,13 +86,13 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="k">return</span> <span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">_from_data</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span> <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]</span>
 
-        <span class="k">return</span> <span class="n">schemaless_init</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">schemaless_init</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span></div>
 
 
 <span class="c1"># Note: Pulp2 models RPM and SRPM as separate unit types,</span>
 <span class="c1"># but there&#39;s actually no difference between their fields at all.</span>
 <span class="c1"># This separation doesn&#39;t seem useful, so we let one class handle both.</span>
-<div class="viewcode-block" id="RpmUnit"><a class="viewcode-back" href="../../../../../../api/model.html#pubtools.pulplib.RpmUnit">[docs]</a><span class="nd">@unit_type</span><span class="p">(</span><span class="s2">&quot;rpm&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="RpmUnit"><a class="viewcode-back" href="../../../../../../api/yum.html#pubtools.pulplib.RpmUnit">[docs]</a><span class="nd">@unit_type</span><span class="p">(</span><span class="s2">&quot;rpm&quot;</span><span class="p">)</span>
 <span class="nd">@unit_type</span><span class="p">(</span><span class="s2">&quot;srpm&quot;</span><span class="p">)</span>
 <span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">RpmUnit</span><span class="p">(</span><span class="n">Unit</span><span class="p">):</span>
@@ -300,7 +300,14 @@
 <h3>Navigation</h3>
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../../api-reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../api/client.html">API: client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../api/pulpcore.html">API: core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../api/yum.html">API: yum</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../api/files.html">API: files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../api/containers.html">API: containers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../api/maintenance.html">API: maintenance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../api/searching.html">API: searching</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../api/testing.html">API: testing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../../logging.html">Logging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../../schema.html">Schemas</a></li>
 </ul>
@@ -313,7 +320,7 @@
     
     <li class="toctree-l1"><a href="https://pypi.org/project/pubtools-pulplib">PyPI</a></li>
     
-    <li class="toctree-l1"><a href="genindex.html">Index</a></li>
+    <li class="toctree-l1"><a href="https://release-engineering.github.io/pubtools-pulplib/genindex.html">Index</a></li>
     
 </ul>
 <div class="relations">
@@ -351,7 +358,7 @@
       &copy;2019, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

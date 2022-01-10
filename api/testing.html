@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Testing &#8212; pubtools-pulplib  documentation</title>
+    <title>API: testing &#8212; pubtools-pulplib  documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
@@ -16,7 +16,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Logging" href="../logging.html" />
-    <link rel="prev" title="Pulp objects" href="model.html" />
+    <link rel="prev" title="API: searching" href="searching.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -33,8 +33,8 @@
 
           <div class="body" role="main">
             
-  <section id="testing">
-<h1>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h1>
+  <section id="api-testing">
+<h1>API: testing<a class="headerlink" href="#api-testing" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="pubtools.pulplib.FakeController">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pubtools.pulplib.</span></span><span class="sig-name descname"><span class="pre">FakeController</span></span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/fake/controller.html#FakeController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.FakeController" title="Permalink to this definition">¶</a></dt>
@@ -96,7 +96,7 @@ on fields known to the <a class="reference internal" href="../schema.html#schema
 <dd><p>Add a repository to the set of existing repositories in the fake client.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>repository</strong> (<a class="reference internal" href="model.html#pubtools.pulplib.Repository" title="pubtools.pulplib.Repository"><code class="xref py py-class docutils literal notranslate"><span class="pre">Repository</span></code></a>) – A repository object to insert.</p>
+<dd class="field-odd"><p><strong>repository</strong> (<a class="reference internal" href="pulpcore.html#pubtools.pulplib.Repository" title="pubtools.pulplib.Repository"><code class="xref py py-class docutils literal notranslate"><span class="pre">Repository</span></code></a>) – A repository object to insert.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -108,8 +108,8 @@ on fields known to the <a class="reference internal" href="../schema.html#schema
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>repository</strong> (<a class="reference internal" href="model.html#pubtools.pulplib.Repository" title="pubtools.pulplib.Repository"><code class="xref py py-class docutils literal notranslate"><span class="pre">Repository</span></code></a>) – A repository object, or <code class="docutils literal notranslate"><span class="pre">None</span></code> to insert units as orphans.</p></li>
-<li><p><strong>units</strong> (list[<a class="reference internal" href="model.html#pubtools.pulplib.Unit" title="pubtools.pulplib.Unit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unit</span></code></a>]) – A list of units to be inserted.</p></li>
+<li><p><strong>repository</strong> (<a class="reference internal" href="pulpcore.html#pubtools.pulplib.Repository" title="pubtools.pulplib.Repository"><code class="xref py py-class docutils literal notranslate"><span class="pre">Repository</span></code></a>) – A repository object, or <code class="docutils literal notranslate"><span class="pre">None</span></code> to insert units as orphans.</p></li>
+<li><p><strong>units</strong> (list[<a class="reference internal" href="pulpcore.html#pubtools.pulplib.Unit" title="pubtools.pulplib.Unit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unit</span></code></a>]) – A list of units to be inserted.</p></li>
 </ul>
 </dd>
 </dl>
@@ -152,9 +152,9 @@ on fields known to the <a class="reference internal" href="../schema.html#schema
 in order:</p>
 <blockquote>
 <div><dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">repository</span></code>:</dt><dd><p><a class="reference internal" href="model.html#pubtools.pulplib.Repository" title="pubtools.pulplib.Repository"><code class="xref py py-class docutils literal notranslate"><span class="pre">Repository</span></code></a> for which publish was triggered</p>
+<dt><code class="docutils literal notranslate"><span class="pre">repository</span></code>:</dt><dd><p><a class="reference internal" href="pulpcore.html#pubtools.pulplib.Repository" title="pubtools.pulplib.Repository"><code class="xref py py-class docutils literal notranslate"><span class="pre">Repository</span></code></a> for which publish was triggered</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">tasks</span></code>:</dt><dd><p>list of <a class="reference internal" href="model.html#pubtools.pulplib.Task" title="pubtools.pulplib.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a> generated as a result
+<dt><code class="docutils literal notranslate"><span class="pre">tasks</span></code>:</dt><dd><p>list of <a class="reference internal" href="pulpcore.html#pubtools.pulplib.Task" title="pubtools.pulplib.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a> generated as a result
 of this publish</p>
 </dd>
 </dl>
@@ -169,9 +169,9 @@ of this publish</p>
 in order:</p>
 <blockquote>
 <div><dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">repository</span></code>:</dt><dd><p><a class="reference internal" href="model.html#pubtools.pulplib.Repository" title="pubtools.pulplib.Repository"><code class="xref py py-class docutils literal notranslate"><span class="pre">Repository</span></code></a> for which sync was triggered</p>
+<dt><code class="docutils literal notranslate"><span class="pre">repository</span></code>:</dt><dd><p><a class="reference internal" href="pulpcore.html#pubtools.pulplib.Repository" title="pubtools.pulplib.Repository"><code class="xref py py-class docutils literal notranslate"><span class="pre">Repository</span></code></a> for which sync was triggered</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">tasks</span></code>:</dt><dd><p>list of <a class="reference internal" href="model.html#pubtools.pulplib.Task" title="pubtools.pulplib.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a> generated as a result
+<dt><code class="docutils literal notranslate"><span class="pre">tasks</span></code>:</dt><dd><p>list of <a class="reference internal" href="pulpcore.html#pubtools.pulplib.Task" title="pubtools.pulplib.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a> generated as a result
 of this sync</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">sync_config</span></code>:</dt><dd><p><code class="xref py py-class docutils literal notranslate"><span class="pre">SyncConfig</span></code> (of the appropriate subclass) used for this sync</p>
@@ -195,7 +195,7 @@ of this sync</p>
 <dd><p>Add a task to the set of existing tasks in the fake client.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>task</strong> (<a class="reference internal" href="model.html#pubtools.pulplib.Task" title="pubtools.pulplib.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a>) – A task object to insert.</p>
+<dd class="field-odd"><p><strong>task</strong> (<a class="reference internal" href="pulpcore.html#pubtools.pulplib.Task" title="pubtools.pulplib.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a>) – A task object to insert.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -227,14 +227,14 @@ of this sync</p>
 <h3>Navigation</h3>
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="../api-reference.html">API Reference</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="client.html">Client</a></li>
-<li class="toctree-l2"><a class="reference internal" href="searching.html">Searching</a></li>
-<li class="toctree-l2"><a class="reference internal" href="maintenance.html">Maintenance Mode</a></li>
-<li class="toctree-l2"><a class="reference internal" href="model.html">Pulp objects</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Testing</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="client.html">API: client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pulpcore.html">API: core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="yum.html">API: yum</a></li>
+<li class="toctree-l1"><a class="reference internal" href="files.html">API: files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="containers.html">API: containers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="maintenance.html">API: maintenance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="searching.html">API: searching</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API: testing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../logging.html">Logging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../schema.html">Schemas</a></li>
 </ul>
@@ -247,17 +247,15 @@ of this sync</p>
     
     <li class="toctree-l1"><a href="https://pypi.org/project/pubtools-pulplib">PyPI</a></li>
     
-    <li class="toctree-l1"><a href="genindex.html">Index</a></li>
+    <li class="toctree-l1"><a href="https://release-engineering.github.io/pubtools-pulplib/genindex.html">Index</a></li>
     
 </ul>
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
-  <li><a href="../api-reference.html">API Reference</a><ul>
-      <li>Previous: <a href="model.html" title="previous chapter">Pulp objects</a></li>
+      <li>Previous: <a href="searching.html" title="previous chapter">API: searching</a></li>
       <li>Next: <a href="../logging.html" title="next chapter">Logging</a></li>
-  </ul></li>
   </ul></li>
 </ul>
 </div>
@@ -287,7 +285,7 @@ of this sync</p>
       &copy;2019, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

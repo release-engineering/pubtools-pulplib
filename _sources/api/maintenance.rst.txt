@@ -1,5 +1,5 @@
-Maintenance Mode
-==================
+API: maintenance
+================
 
 .. contents::
   :local:

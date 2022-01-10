@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Client &#8212; pubtools-pulplib  documentation</title>
+    <title>API: client &#8212; pubtools-pulplib  documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
@@ -15,8 +15,8 @@
     <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Searching" href="searching.html" />
-    <link rel="prev" title="API Reference" href="../api-reference.html" />
+    <link rel="next" title="API: core" href="pulpcore.html" />
+    <link rel="prev" title="pubtools-pulplib" href="../index.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -33,8 +33,8 @@
 
           <div class="body" role="main">
             
-  <section id="client">
-<h1>Client<a class="headerlink" href="#client" title="Permalink to this headline">¶</a></h1>
+  <section id="api-client">
+<h1>API: client<a class="headerlink" href="#api-client" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="pubtools.pulplib.Client">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pubtools.pulplib.</span></span><span class="sig-name descname"><span class="pre">Client</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/client.html#Client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Client" title="Permalink to this definition">¶</a></dt>
@@ -150,7 +150,7 @@ for the Pulp server or to use an alternative CA bundle.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><dl class="simple">
-<dt>Future[<a class="reference internal" href="model.html#pubtools.pulplib.Repository" title="pubtools.pulplib.Repository"><code class="xref py py-class docutils literal notranslate"><span class="pre">Repository</span></code></a>]</dt><dd><p>A future holding the fetched Repository.</p>
+<dt>Future[<a class="reference internal" href="pulpcore.html#pubtools.pulplib.Repository" title="pubtools.pulplib.Repository"><code class="xref py py-class docutils literal notranslate"><span class="pre">Repository</span></code></a>]</dt><dd><p>A future holding the fetched Repository.</p>
 </dd>
 </dl>
 </p>
@@ -171,7 +171,7 @@ If None, search for all repositories.</p>
 <dd class="field-even"><p><dl>
 <dt>Future[<a class="reference internal" href="searching.html#pubtools.pulplib.Page" title="pubtools.pulplib.Page"><code class="xref py py-class docutils literal notranslate"><span class="pre">Page</span></code></a>]</dt><dd><p>A future representing the first page of results.</p>
 <p>Each page will contain a collection of
-<a class="reference internal" href="model.html#pubtools.pulplib.Repository" title="pubtools.pulplib.Repository"><code class="xref py py-class docutils literal notranslate"><span class="pre">Repository</span></code></a> objects.</p>
+<a class="reference internal" href="pulpcore.html#pubtools.pulplib.Repository" title="pubtools.pulplib.Repository"><code class="xref py py-class docutils literal notranslate"><span class="pre">Repository</span></code></a> objects.</p>
 </dd>
 </dl>
 </p>
@@ -192,7 +192,7 @@ If None, search for all units.</p>
 <dd class="field-even"><p><dl>
 <dt>Future[<a class="reference internal" href="searching.html#pubtools.pulplib.Page" title="pubtools.pulplib.Page"><code class="xref py py-class docutils literal notranslate"><span class="pre">Page</span></code></a>]</dt><dd><p>A future representing the first page of results.</p>
 <p>Each page will contain a collection of
-<a class="reference internal" href="model.html#pubtools.pulplib.Unit" title="pubtools.pulplib.Unit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unit</span></code></a> subclasses objects.</p>
+<a class="reference internal" href="pulpcore.html#pubtools.pulplib.Unit" title="pubtools.pulplib.Unit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unit</span></code></a> subclasses objects.</p>
 </dd>
 </dl>
 </p>
@@ -210,16 +210,16 @@ If None, search for all units.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>from_repository</strong> (<a class="reference internal" href="model.html#pubtools.pulplib.Repository" title="pubtools.pulplib.Repository"><code class="xref py py-class docutils literal notranslate"><span class="pre">Repository</span></code></a>) – A repository used as the source of content.</p></li>
-<li><p><strong>to_repository</strong> (<a class="reference internal" href="model.html#pubtools.pulplib.Repository" title="pubtools.pulplib.Repository"><code class="xref py py-class docutils literal notranslate"><span class="pre">Repository</span></code></a>) – A repository to receive copied content.</p></li>
+<li><p><strong>from_repository</strong> (<a class="reference internal" href="pulpcore.html#pubtools.pulplib.Repository" title="pubtools.pulplib.Repository"><code class="xref py py-class docutils literal notranslate"><span class="pre">Repository</span></code></a>) – A repository used as the source of content.</p></li>
+<li><p><strong>to_repository</strong> (<a class="reference internal" href="pulpcore.html#pubtools.pulplib.Repository" title="pubtools.pulplib.Repository"><code class="xref py py-class docutils literal notranslate"><span class="pre">Repository</span></code></a>) – A repository to receive copied content.</p></li>
 <li><p><strong>criteria</strong> (<a class="reference internal" href="searching.html#pubtools.pulplib.Criteria" title="pubtools.pulplib.Criteria"><code class="xref py py-class docutils literal notranslate"><span class="pre">Criteria</span></code></a>) – A criteria object used to find units for copy.
 If None, all units in the source repo will be copied.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><dl>
-<dt>Future[list[<a class="reference internal" href="model.html#pubtools.pulplib.Task" title="pubtools.pulplib.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a>]]</dt><dd><p>A future which is resolved when the copy completes.</p>
-<p>The <a class="reference internal" href="model.html#pubtools.pulplib.Task.units" title="pubtools.pulplib.Task.units"><code class="xref py py-meth docutils literal notranslate"><span class="pre">units()</span></code></a> attribute may be inspected
+<dt>Future[list[<a class="reference internal" href="pulpcore.html#pubtools.pulplib.Task" title="pubtools.pulplib.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a>]]</dt><dd><p>A future which is resolved when the copy completes.</p>
+<p>The <a class="reference internal" href="pulpcore.html#pubtools.pulplib.Task.units" title="pubtools.pulplib.Task.units"><code class="xref py py-meth docutils literal notranslate"><span class="pre">units()</span></code></a> attribute may be inspected
 to determine which unit(s) were copied. Note that the returned units
 typically will have only a subset of available fields.</p>
 </dd>
@@ -238,7 +238,7 @@ typically will have only a subset of available fields.</p>
 <dd><p>Update mutable fields on an existing unit.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>unit</strong> (<a class="reference internal" href="model.html#pubtools.pulplib.Unit" title="pubtools.pulplib.Unit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unit</span></code></a>) – <p>A unit to be updated.</p>
+<dd class="field-odd"><p><strong>unit</strong> (<a class="reference internal" href="pulpcore.html#pubtools.pulplib.Unit" title="pubtools.pulplib.Unit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unit</span></code></a>) – <p>A unit to be updated.</p>
 <p>This unit must have a known <code class="docutils literal notranslate"><span class="pre">unit_id</span></code>.</p>
 <p>Only those fields documented as <em>mutable</em> will have any effect during
 the update (e.g. <code class="docutils literal notranslate"><span class="pre">cdn_path</span></code>). Other fields either cannot be updated
@@ -272,7 +272,7 @@ If None, search for all distributors.</p>
 <dd class="field-even"><p><dl>
 <dt>Future[<a class="reference internal" href="searching.html#pubtools.pulplib.Page" title="pubtools.pulplib.Page"><code class="xref py py-class docutils literal notranslate"><span class="pre">Page</span></code></a>]</dt><dd><p>A future representing the first page of results.</p>
 <p>Each page will contain a collection of
-<a class="reference internal" href="model.html#pubtools.pulplib.Distributor" title="pubtools.pulplib.Distributor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Distributor</span></code></a> objects.</p>
+<a class="reference internal" href="pulpcore.html#pubtools.pulplib.Distributor" title="pubtools.pulplib.Distributor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Distributor</span></code></a> objects.</p>
 </dd>
 </dl>
 </p>
@@ -296,7 +296,7 @@ If None, search for all tasks.</p>
 <dd class="field-even"><p><dl>
 <dt>Future[<a class="reference internal" href="searching.html#pubtools.pulplib.Page" title="pubtools.pulplib.Page"><code class="xref py py-class docutils literal notranslate"><span class="pre">Page</span></code></a>]</dt><dd><p>A future representing the first page of results.</p>
 <p>Each page will contain a collection of
-<a class="reference internal" href="model.html#pubtools.pulplib.Task" title="pubtools.pulplib.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a> objects.</p>
+<a class="reference internal" href="pulpcore.html#pubtools.pulplib.Task" title="pubtools.pulplib.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a> objects.</p>
 </dd>
 </dl>
 </p>
@@ -336,7 +336,7 @@ will be used as the newest maintenance report.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><dl>
-<dt>Future[list[<a class="reference internal" href="model.html#pubtools.pulplib.Task" title="pubtools.pulplib.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a>]]</dt><dd><p>A future which is resolved when maintenance mode has been updated successfully.</p>
+<dt>Future[list[<a class="reference internal" href="pulpcore.html#pubtools.pulplib.Task" title="pubtools.pulplib.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a>]]</dt><dd><p>A future which is resolved when maintenance mode has been updated successfully.</p>
 <p>The future contains a task triggered and awaited during the publish
 maintenance repository operation.</p>
 </dd>
@@ -389,10 +389,23 @@ of common return values.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pubtools.pulplib.TaskFailedException.task">
 <span class="sig-name descname"><span class="pre">task</span></span><a class="headerlink" href="#pubtools.pulplib.TaskFailedException.task" title="Permalink to this definition">¶</a></dt>
-<dd><p>The <a class="reference internal" href="model.html#pubtools.pulplib.Task" title="pubtools.pulplib.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a> which has failed.
+<dd><p>The <a class="reference internal" href="pulpcore.html#pubtools.pulplib.Task" title="pubtools.pulplib.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a> which has failed.
 Error details may be accessed from the task.</p>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pubtools.pulplib.DetachedException">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pubtools.pulplib.</span></span><span class="sig-name descname"><span class="pre">DetachedException</span></span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/common.html#DetachedException"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.DetachedException" title="Permalink to this definition">¶</a></dt>
+<dd><p>If an operation is attempted on a Pulp object which requires an active client,
+and the object is not attached to any client, this exception is raised.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pubtools.pulplib.InvalidDataException">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pubtools.pulplib.</span></span><span class="sig-name descname"><span class="pre">InvalidDataException</span></span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/common.html#InvalidDataException"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.InvalidDataException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised if raw Pulp data appears to be invalid (i.e. not matching expected schema).</p>
 </dd></dl>
 
 </section>
@@ -421,14 +434,14 @@ Error details may be accessed from the task.</p>
 <h3>Navigation</h3>
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="../api-reference.html">API Reference</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Client</a></li>
-<li class="toctree-l2"><a class="reference internal" href="searching.html">Searching</a></li>
-<li class="toctree-l2"><a class="reference internal" href="maintenance.html">Maintenance Mode</a></li>
-<li class="toctree-l2"><a class="reference internal" href="model.html">Pulp objects</a></li>
-<li class="toctree-l2"><a class="reference internal" href="testing.html">Testing</a></li>
-</ul>
-</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API: client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pulpcore.html">API: core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="yum.html">API: yum</a></li>
+<li class="toctree-l1"><a class="reference internal" href="files.html">API: files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="containers.html">API: containers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="maintenance.html">API: maintenance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="searching.html">API: searching</a></li>
+<li class="toctree-l1"><a class="reference internal" href="testing.html">API: testing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../logging.html">Logging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../schema.html">Schemas</a></li>
 </ul>
@@ -441,17 +454,15 @@ Error details may be accessed from the task.</p>
     
     <li class="toctree-l1"><a href="https://pypi.org/project/pubtools-pulplib">PyPI</a></li>
     
-    <li class="toctree-l1"><a href="genindex.html">Index</a></li>
+    <li class="toctree-l1"><a href="https://release-engineering.github.io/pubtools-pulplib/genindex.html">Index</a></li>
     
 </ul>
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
-  <li><a href="../api-reference.html">API Reference</a><ul>
-      <li>Previous: <a href="../api-reference.html" title="previous chapter">API Reference</a></li>
-      <li>Next: <a href="searching.html" title="next chapter">Searching</a></li>
-  </ul></li>
+      <li>Previous: <a href="../index.html" title="previous chapter">pubtools-pulplib</a></li>
+      <li>Next: <a href="pulpcore.html" title="next chapter">API: core</a></li>
   </ul></li>
 </ul>
 </div>
@@ -481,7 +492,7 @@ Error details may be accessed from the task.</p>
       &copy;2019, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

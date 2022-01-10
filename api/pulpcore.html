@@ -1,0 +1,818 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>API: core &#8212; pubtools-pulplib  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="API: yum" href="yum.html" />
+    <link rel="prev" title="API: client" href="client.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="api-core">
+<h1>API: core<a class="headerlink" href="#api-core" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#common-functionality" id="id1">Common functionality</a></p></li>
+<li><p><a class="reference internal" href="#repository" id="id2">Repository</a></p></li>
+<li><p><a class="reference internal" href="#units" id="id3">Units</a></p></li>
+<li><p><a class="reference internal" href="#task" id="id4">Task</a></p></li>
+</ul>
+</div>
+<section id="common-functionality">
+<h2><a class="toc-backref" href="#id1">Common functionality</a><a class="headerlink" href="#common-functionality" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pubtools.pulplib.PulpObject">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pubtools.pulplib.</span></span><span class="sig-name descname"><span class="pre">PulpObject</span></span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/common.html#PulpObject"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.PulpObject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for all modeled Pulp objects.</p>
+<p>Instances of PulpObject subclasses may be obtained by get and search methods
+on <a class="reference internal" href="client.html#pubtools.pulplib.Client" title="pubtools.pulplib.Client"><code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code></a>, or may be instantiated directly by calls
+to <a class="reference internal" href="#pubtools.pulplib.PulpObject.from_data" title="pubtools.pulplib.PulpObject.from_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_data()</span></code></a> when the client is not used.</p>
+<p>Objects which are created via a client may be used to issue further requests
+to Pulp (for example, to update or delete the object).</p>
+<p>Pulp objects use <a class="reference external" href="http://www.attrs.org/en/stable/">attrs</a>.
+Attributes are immutable. Helper functions such as <code class="xref py py-func docutils literal notranslate"><span class="pre">attr.evolve()</span></code>
+may be used to produce new instances.</p>
+<p>Attributes exposed on these Pulp objects include some generic attributes
+applicable to any Pulp installation, but also some custom attributes
+which only make sense for <a class="reference external" href="https://github.com/release-engineering">release-engineering</a>
+Pulp servers.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pubtools.pulplib.PulpObject.from_data">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/common.html#PulpObject.from_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.PulpObject.from_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Obtain a detached instance using data obtained from Pulp.</p>
+<p>This method is provided so that callers who are not using
+<a class="reference internal" href="client.html#pubtools.pulplib.Client" title="pubtools.pulplib.Client"><code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code></a> may make use of the Pulp object classes.</p>
+<p>This method must be invoked on the appropriate <code class="docutils literal notranslate"><span class="pre">PulpObject</span></code> subclass
+matching <code class="docutils literal notranslate"><span class="pre">data</span></code>.  For example, <code class="docutils literal notranslate"><span class="pre">Repository.from_data</span></code> must be invoked
+with a repository object provided by Pulp’s API.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.10)"><em>dict</em></a>) – A dict containing a raw representation of a Pulp object, as rendered
+by Pulp’s API.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a new instance of <code class="docutils literal notranslate"><span class="pre">cls</span></code></p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="client.html#pubtools.pulplib.InvalidDataException" title="pubtools.pulplib.InvalidDataException"><strong>InvalidDataException</strong></a> – If the provided <code class="docutils literal notranslate"><span class="pre">data</span></code> fails validation against an expected schema.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p>Opting-out of using the <code class="docutils literal notranslate"><span class="pre">Client</span></code> class and instead doing a plain <code class="docutils literal notranslate"><span class="pre">requests.get</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;https://pulp.example.com/pulp/api/v2/repositories/zoo/&#39;</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+<span class="n">repo</span> <span class="o">=</span> <span class="n">Repository</span><span class="o">.</span><span class="n">from_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="repository">
+<h2><a class="toc-backref" href="#id2">Repository</a><a class="headerlink" href="#repository" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pubtools.pulplib.Repository">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pubtools.pulplib.</span></span><span class="sig-name descname"><span class="pre">Repository</span></span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository/base.html#Repository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Repository" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents a Pulp repository.</p>
+<p>Method generated by attrs for class Repository.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.Repository.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#pubtools.pulplib.Repository.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>ID of this repository (str).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.Repository.type">
+<span class="sig-name descname"><span class="pre">type</span></span><a class="headerlink" href="#pubtools.pulplib.Repository.type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Type of this repository (str).</p>
+<p>This is a brief string denoting the content / Pulp plugin type used with
+this repository, e.g. <code class="docutils literal notranslate"><span class="pre">rpm-repo</span></code>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.Repository.created">
+<span class="sig-name descname"><span class="pre">created</span></span><a class="headerlink" href="#pubtools.pulplib.Repository.created" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a> in UTC at which this repository was created,
+or None if this information is unavailable.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.Repository.distributors">
+<span class="sig-name descname"><span class="pre">distributors</span></span><a class="headerlink" href="#pubtools.pulplib.Repository.distributors" title="Permalink to this definition">¶</a></dt>
+<dd><p>list of <a class="reference internal" href="#pubtools.pulplib.Distributor" title="pubtools.pulplib.Distributor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Distributor</span></code></a> objects belonging to this
+repository.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.Repository.eng_product_id">
+<span class="sig-name descname"><span class="pre">eng_product_id</span></span><a class="headerlink" href="#pubtools.pulplib.Repository.eng_product_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>ID of the product to which this repository belongs (if any).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.Repository.relative_url">
+<span class="sig-name descname"><span class="pre">relative_url</span></span><a class="headerlink" href="#pubtools.pulplib.Repository.relative_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Default publish URL for this repository, relative to the Pulp content root.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.Repository.mutable_urls">
+<span class="sig-name descname"><span class="pre">mutable_urls</span></span><a class="headerlink" href="#pubtools.pulplib.Repository.mutable_urls" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of URLs relative to repository publish root which are expected
+to change at every publish (if any content of repo changed).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.Repository.is_sigstore">
+<span class="sig-name descname"><span class="pre">is_sigstore</span></span><a class="headerlink" href="#pubtools.pulplib.Repository.is_sigstore" title="Permalink to this definition">¶</a></dt>
+<dd><p>True if this is a sigstore repository, used for container image manifest
+signatures.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.Repository.is_temporary">
+<span class="sig-name descname"><span class="pre">is_temporary</span></span><a class="headerlink" href="#pubtools.pulplib.Repository.is_temporary" title="Permalink to this definition">¶</a></dt>
+<dd><p>True if this is a temporary repository.</p>
+<p>A temporary repository is a repository created by release-engineering tools
+for temporary use during certain workflows.  Such repos are not expected to
+be published externally and generally should have a lifetime of a few days
+or less.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.3.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.Repository.signing_keys">
+<span class="sig-name descname"><span class="pre">signing_keys</span></span><a class="headerlink" href="#pubtools.pulplib.Repository.signing_keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of GPG signing key IDs used to sign content in this repository.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.Repository.skip_rsync_repodata">
+<span class="sig-name descname"><span class="pre">skip_rsync_repodata</span></span><a class="headerlink" href="#pubtools.pulplib.Repository.skip_rsync_repodata" title="Permalink to this definition">¶</a></dt>
+<dd><p>True if this repository is explicitly configured such that a publish of
+this repository will not publish repository metadata to remote hosts.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.Repository.content_set">
+<span class="sig-name descname"><span class="pre">content_set</span></span><a class="headerlink" href="#pubtools.pulplib.Repository.content_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of content set that is associated with this repository.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pubtools.pulplib.Repository.distributor">
+<span class="sig-name descname"><span class="pre">distributor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">distributor_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository/base.html#Repository.distributor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Repository.distributor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Look up a distributor by ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt><a class="reference internal" href="#pubtools.pulplib.Distributor" title="pubtools.pulplib.Distributor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Distributor</span></code></a></dt><dd><p>The distributor belonging to this repository with the given ID.</p>
+</dd>
+<dt>None</dt><dd><p>If this repository has no distributor with the given ID.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pubtools.pulplib.Repository.file_content">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">file_content</span></span><a class="headerlink" href="#pubtools.pulplib.Repository.file_content" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of file units stored in this repository.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>list[<a class="reference internal" href="files.html#pubtools.pulplib.FileUnit" title="pubtools.pulplib.FileUnit"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileUnit</span></code></a>]</p>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.4.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pubtools.pulplib.Repository.rpm_content">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rpm_content</span></span><a class="headerlink" href="#pubtools.pulplib.Repository.rpm_content" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of rpm units stored in this repository.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>list[<a class="reference internal" href="yum.html#pubtools.pulplib.RpmUnit" title="pubtools.pulplib.RpmUnit"><code class="xref py py-class docutils literal notranslate"><span class="pre">RpmUnit</span></code></a>]</p>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.4.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pubtools.pulplib.Repository.srpm_content">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">srpm_content</span></span><a class="headerlink" href="#pubtools.pulplib.Repository.srpm_content" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of srpm units stored in this repository.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>list[<a class="reference internal" href="#pubtools.pulplib.Unit" title="pubtools.pulplib.Unit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unit</span></code></a>]</p>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.4.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pubtools.pulplib.Repository.modulemd_content">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">modulemd_content</span></span><a class="headerlink" href="#pubtools.pulplib.Repository.modulemd_content" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of modulemd units stored in this repository.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>list[<a class="reference internal" href="yum.html#pubtools.pulplib.ModulemdUnit" title="pubtools.pulplib.ModulemdUnit"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModulemdUnit</span></code></a>]</p>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.4.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pubtools.pulplib.Repository.modulemd_defaults_content">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">modulemd_defaults_content</span></span><a class="headerlink" href="#pubtools.pulplib.Repository.modulemd_defaults_content" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of modulemd_defaults units stored in this repository.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>list[<a class="reference internal" href="yum.html#pubtools.pulplib.ModulemdDefaultsUnit" title="pubtools.pulplib.ModulemdDefaultsUnit"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModulemdDefaultsUnit</span></code></a>]</p>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.4.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pubtools.pulplib.Repository.search_content">
+<span class="sig-name descname"><span class="pre">search_content</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">criteria</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository/base.html#Repository.search_content"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Repository.search_content" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search this repository for content matching the given criteria.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>criteria</strong> (<a class="reference internal" href="searching.html#pubtools.pulplib.Criteria" title="pubtools.pulplib.Criteria"><code class="xref py py-class docutils literal notranslate"><span class="pre">Criteria</span></code></a>) – A criteria object used for this search.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl>
+<dt>Future[<a class="reference internal" href="searching.html#pubtools.pulplib.Page" title="pubtools.pulplib.Page"><code class="xref py py-class docutils literal notranslate"><span class="pre">Page</span></code></a>]</dt><dd><p>A future representing the first page of results.</p>
+<p>Each page will contain a collection of
+<a class="reference internal" href="#pubtools.pulplib.Unit" title="pubtools.pulplib.Unit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unit</span></code></a> objects.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.4.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pubtools.pulplib.Repository.delete">
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository/base.html#Repository.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Repository.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete this repository from Pulp.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><dl>
+<dt>Future[list[<a class="reference internal" href="#pubtools.pulplib.Task" title="pubtools.pulplib.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a>]]</dt><dd><p>A future which is resolved when the repository deletion has completed.</p>
+<p>The future contains a list of zero or more tasks triggered and awaited
+during the delete operation.</p>
+<p>This object also becomes detached from the client; no further updates
+are possible.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference internal" href="client.html#pubtools.pulplib.DetachedException" title="pubtools.pulplib.DetachedException"><strong>DetachedException</strong></a> – If this instance is not attached to a Pulp client.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pubtools.pulplib.Repository.publish">
+<span class="sig-name descname"><span class="pre">publish</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">PublishOptions(force=None,</span> <span class="pre">clean=None,</span> <span class="pre">origin_only=None)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository/base.html#Repository.publish"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Repository.publish" title="Permalink to this definition">¶</a></dt>
+<dd><p>Publish this repository.</p>
+<p>The specific operations triggered on Pulp in order to publish a repo are not defined,
+but in Pulp 2.x, generally consists of triggering one or more distributors in sequence.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>options</strong> (<a class="reference internal" href="#pubtools.pulplib.PublishOptions" title="pubtools.pulplib.PublishOptions"><em>PublishOptions</em></a>) – <p>Options used to customize the behavior of this publish.</p>
+<p>If omitted, the Pulp server’s defaults apply.</p>
+</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl>
+<dt>Future[list[<a class="reference internal" href="#pubtools.pulplib.Task" title="pubtools.pulplib.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a>]]</dt><dd><p>A future which is resolved when publish succeeds.</p>
+<p>The future contains a list of zero or more tasks triggered and awaited
+during the publish operation.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="client.html#pubtools.pulplib.DetachedException" title="pubtools.pulplib.DetachedException"><strong>DetachedException</strong></a> – If this instance is not attached to a Pulp client.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pubtools.pulplib.Repository.sync">
+<span class="sig-name descname"><span class="pre">sync</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository/base.html#Repository.sync"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Repository.sync" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sync repository with feed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>options</strong> (<a class="reference internal" href="#pubtools.pulplib.SyncOptions" title="pubtools.pulplib.SyncOptions"><em>SyncOptions</em></a>) – Options used to customize the behavior of sync process.
+If omitted, the Pulp server’s defaults apply.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl>
+<dt>Future[list[<a class="reference internal" href="#pubtools.pulplib.Task" title="pubtools.pulplib.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a>]]</dt><dd><p>A future which is resolved when sync succeeds.</p>
+<p>The future contains a list of zero or more tasks triggered and awaited
+during the sync operation.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="client.html#pubtools.pulplib.DetachedException" title="pubtools.pulplib.DetachedException"><strong>DetachedException</strong></a> – If this instance is not attached to a Pulp client.</p>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.5.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pubtools.pulplib.Repository.remove_content">
+<span class="sig-name descname"><span class="pre">remove_content</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository/base.html#Repository.remove_content"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Repository.remove_content" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove all content of requested types from this repository.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>type_ids</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>]</em>) – <p>IDs of content type(s) to be removed.
+See <a class="reference internal" href="client.html#pubtools.pulplib.Client.get_content_type_ids" title="pubtools.pulplib.Client.get_content_type_ids"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_content_type_ids()</span></code></a>.</p>
+<p>If omitted, content of all types will be removed.</p>
+</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl>
+<dt>Future[list[<a class="reference internal" href="#pubtools.pulplib.Task" title="pubtools.pulplib.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a>]]</dt><dd><p>A future which is resolved when content has been removed.</p>
+<p>The future contains a list of zero or more tasks triggered and awaited
+during the removal.</p>
+<p>To obtain information on the removed content, use
+<a class="reference internal" href="#pubtools.pulplib.Task.units" title="pubtools.pulplib.Task.units"><code class="xref py py-meth docutils literal notranslate"><span class="pre">units()</span></code></a>.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="client.html#pubtools.pulplib.DetachedException" title="pubtools.pulplib.DetachedException"><strong>DetachedException</strong></a> – If this instance is not attached to a Pulp client.</p>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.5.0.</span></p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pubtools.pulplib.Distributor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pubtools.pulplib.</span></span><span class="sig-name descname"><span class="pre">Distributor</span></span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/distributor.html#Distributor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Distributor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents a Pulp distributor.</p>
+<p>Method generated by attrs for class Distributor.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.Distributor.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#pubtools.pulplib.Distributor.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>ID of this distributor (str).</p>
+<p>This is an arbitrary string, though often matches exactly the <cite>type_id</cite>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.Distributor.type_id">
+<span class="sig-name descname"><span class="pre">type_id</span></span><a class="headerlink" href="#pubtools.pulplib.Distributor.type_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Type ID of this distributor (str).</p>
+<p>The type ID of a distributor determines which content may be handled and
+which steps may be performed by the distributor. For example, distributors
+of type <cite>yum_distributor</cite> may be used to create yum repositories.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.Distributor.repo_id">
+<span class="sig-name descname"><span class="pre">repo_id</span></span><a class="headerlink" href="#pubtools.pulplib.Distributor.repo_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="#pubtools.pulplib.Repository" title="pubtools.pulplib.Repository"><code class="xref py py-class docutils literal notranslate"><span class="pre">pubtools.pulplib.Repository</span></code></a> ID this distributor is attached to.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.Distributor.relative_url">
+<span class="sig-name descname"><span class="pre">relative_url</span></span><a class="headerlink" href="#pubtools.pulplib.Distributor.relative_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Default distribution URL for the repository which the distributor is attached to,
+relative to the Pulp content root.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.Distributor.last_publish">
+<span class="sig-name descname"><span class="pre">last_publish</span></span><a class="headerlink" href="#pubtools.pulplib.Distributor.last_publish" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a> at which this distributor was last published,
+if known.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.Distributor.is_rsync">
+<span class="sig-name descname"><span class="pre">is_rsync</span></span><a class="headerlink" href="#pubtools.pulplib.Distributor.is_rsync" title="Permalink to this definition">¶</a></dt>
+<dd><p>True for distributors in the ‘rsync distributor’ family
+(e.g. <code class="docutils literal notranslate"><span class="pre">rpm_rsync_distributor</span></code>).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pubtools.pulplib.Distributor.delete">
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/distributor.html#Distributor.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Distributor.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete this distributor from Pulp.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><dl>
+<dt>Future[list[<a class="reference internal" href="#pubtools.pulplib.Task" title="pubtools.pulplib.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a>]]</dt><dd><p>A future which is resolved when the distributor deletion has completed.</p>
+<p>The future contains a list of zero or more tasks triggered and awaited
+during the delete operation.</p>
+<p>This object also becomes detached from the client; no further updates
+are possible.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference internal" href="client.html#pubtools.pulplib.DetachedException" title="pubtools.pulplib.DetachedException"><strong>DetachedException</strong></a> – If this instance is not attached to a Pulp client or repository.</p>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.3.0.</span></p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pubtools.pulplib.PublishOptions">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pubtools.pulplib.</span></span><span class="sig-name descname"><span class="pre">PublishOptions</span></span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository/base.html#PublishOptions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.PublishOptions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Options controlling a repository
+<a class="reference internal" href="#pubtools.pulplib.Repository.publish" title="pubtools.pulplib.Repository.publish"><code class="xref py py-meth docutils literal notranslate"><span class="pre">publish()</span></code></a>.</p>
+<p>Method generated by attrs for class PublishOptions.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.PublishOptions.force">
+<span class="sig-name descname"><span class="pre">force</span></span><a class="headerlink" href="#pubtools.pulplib.PublishOptions.force" title="Permalink to this definition">¶</a></dt>
+<dd><p>If True, Pulp should publish all data within a repository, rather than attempting
+to publish only changed data (or even skipping the publish).</p>
+<p>Setting <code class="docutils literal notranslate"><span class="pre">force=True</span></code> may have a major performance impact when publishing large repos.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.PublishOptions.clean">
+<span class="sig-name descname"><span class="pre">clean</span></span><a class="headerlink" href="#pubtools.pulplib.PublishOptions.clean" title="Permalink to this definition">¶</a></dt>
+<dd><p>If True, certain publish tasks will not only publish new/changed content, but
+will also attempt to erase formerly published content which is no longer present
+in the repo.</p>
+<p>Setting <code class="docutils literal notranslate"><span class="pre">clean=True</span></code> generally implies <code class="docutils literal notranslate"><span class="pre">force=True</span></code>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.PublishOptions.origin_only">
+<span class="sig-name descname"><span class="pre">origin_only</span></span><a class="headerlink" href="#pubtools.pulplib.PublishOptions.origin_only" title="Permalink to this definition">¶</a></dt>
+<dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, Pulp should only update the content units / origin path on
+remote hosts.</p>
+<p>Only relevant if a repository has one or more distributors where
+<a class="reference internal" href="#pubtools.pulplib.Distributor.is_rsync" title="pubtools.pulplib.Distributor.is_rsync"><code class="xref py py-meth docutils literal notranslate"><span class="pre">is_rsync()</span></code></a> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pubtools.pulplib.SyncOptions">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pubtools.pulplib.</span></span><span class="sig-name descname"><span class="pre">SyncOptions</span></span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository/base.html#SyncOptions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.SyncOptions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Options controlling a repository
+<a class="reference internal" href="#pubtools.pulplib.Repository.sync" title="pubtools.pulplib.Repository.sync"><code class="xref py py-meth docutils literal notranslate"><span class="pre">sync()</span></code></a>.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>Subclasses for specific repository
+types: <a class="reference internal" href="files.html#pubtools.pulplib.FileSyncOptions" title="pubtools.pulplib.FileSyncOptions"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileSyncOptions</span></code></a>,
+<a class="reference internal" href="yum.html#pubtools.pulplib.YumSyncOptions" title="pubtools.pulplib.YumSyncOptions"><code class="xref py py-class docutils literal notranslate"><span class="pre">YumSyncOptions</span></code></a>,
+<a class="reference internal" href="containers.html#pubtools.pulplib.ContainerSyncOptions" title="pubtools.pulplib.ContainerSyncOptions"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContainerSyncOptions</span></code></a></p>
+</div>
+<p>Method generated by attrs for class SyncOptions.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.SyncOptions.feed">
+<span class="sig-name descname"><span class="pre">feed</span></span><a class="headerlink" href="#pubtools.pulplib.SyncOptions.feed" title="Permalink to this definition">¶</a></dt>
+<dd><p>URL where the repository’s content will be synchronized from.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.SyncOptions.ssl_validation">
+<span class="sig-name descname"><span class="pre">ssl_validation</span></span><a class="headerlink" href="#pubtools.pulplib.SyncOptions.ssl_validation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Indicates if the server’s SSL certificate is verified against the CA certificate uploaded.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.SyncOptions.ssl_ca_cert">
+<span class="sig-name descname"><span class="pre">ssl_ca_cert</span></span><a class="headerlink" href="#pubtools.pulplib.SyncOptions.ssl_ca_cert" title="Permalink to this definition">¶</a></dt>
+<dd><p>CA certificate string used to validate the feed source’s SSL certificate</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.SyncOptions.ssl_client_cert">
+<span class="sig-name descname"><span class="pre">ssl_client_cert</span></span><a class="headerlink" href="#pubtools.pulplib.SyncOptions.ssl_client_cert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Certificate used as the client certificate when synchronizing the repository</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.SyncOptions.ssl_client_key">
+<span class="sig-name descname"><span class="pre">ssl_client_key</span></span><a class="headerlink" href="#pubtools.pulplib.SyncOptions.ssl_client_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Private key to the certificate specified in ssl_client_cert</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.SyncOptions.max_speed">
+<span class="sig-name descname"><span class="pre">max_speed</span></span><a class="headerlink" href="#pubtools.pulplib.SyncOptions.max_speed" title="Permalink to this definition">¶</a></dt>
+<dd><p>The maximum download speed in bytes/sec for a task (such as a sync).</p>
+<p>Default is None</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.SyncOptions.proxy_host">
+<span class="sig-name descname"><span class="pre">proxy_host</span></span><a class="headerlink" href="#pubtools.pulplib.SyncOptions.proxy_host" title="Permalink to this definition">¶</a></dt>
+<dd><p>A string representing the URL of the proxy server that should be used when synchronizing</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.SyncOptions.proxy_port">
+<span class="sig-name descname"><span class="pre">proxy_port</span></span><a class="headerlink" href="#pubtools.pulplib.SyncOptions.proxy_port" title="Permalink to this definition">¶</a></dt>
+<dd><p>An integer representing the port that should be used when connecting to proxy_host.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.SyncOptions.proxy_username">
+<span class="sig-name descname"><span class="pre">proxy_username</span></span><a class="headerlink" href="#pubtools.pulplib.SyncOptions.proxy_username" title="Permalink to this definition">¶</a></dt>
+<dd><p>A string representing the username that should be used to authenticate with the proxy server</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.SyncOptions.proxy_password">
+<span class="sig-name descname"><span class="pre">proxy_password</span></span><a class="headerlink" href="#pubtools.pulplib.SyncOptions.proxy_password" title="Permalink to this definition">¶</a></dt>
+<dd><p>A string representing the password that should be used to authenticate with the proxy server</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.SyncOptions.basic_auth_username">
+<span class="sig-name descname"><span class="pre">basic_auth_username</span></span><a class="headerlink" href="#pubtools.pulplib.SyncOptions.basic_auth_username" title="Permalink to this definition">¶</a></dt>
+<dd><p>Username to authenticate with source which supports basic authentication.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.SyncOptions.basic_auth_password">
+<span class="sig-name descname"><span class="pre">basic_auth_password</span></span><a class="headerlink" href="#pubtools.pulplib.SyncOptions.basic_auth_password" title="Permalink to this definition">¶</a></dt>
+<dd><p>Password to authenticate with source which supports basic authentication.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="units">
+<h2><a class="toc-backref" href="#id3">Units</a><a class="headerlink" href="#units" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pubtools.pulplib.Unit">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pubtools.pulplib.</span></span><span class="sig-name descname"><span class="pre">Unit</span></span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/unit/base.html#Unit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Unit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents a Pulp unit (a single piece of content).</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.5.0.</span></p>
+</div>
+<p>Method generated by attrs for class Unit.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.Unit.content_type_id">
+<span class="sig-name descname"><span class="pre">content_type_id</span></span><a class="headerlink" href="#pubtools.pulplib.Unit.content_type_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The type of this unit.</p>
+<p>This value will match one of the content types returned by
+<a class="reference internal" href="client.html#pubtools.pulplib.Client.get_content_type_ids" title="pubtools.pulplib.Client.get_content_type_ids"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_content_type_ids()</span></code></a>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="task">
+<h2><a class="toc-backref" href="#id4">Task</a><a class="headerlink" href="#task" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pubtools.pulplib.Task">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pubtools.pulplib.</span></span><span class="sig-name descname"><span class="pre">Task</span></span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/task.html#Task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Task" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents a Pulp task.</p>
+<p>Method generated by attrs for class Task.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.Task.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#pubtools.pulplib.Task.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>ID of this task (str).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.Task.completed">
+<span class="sig-name descname"><span class="pre">completed</span></span><a class="headerlink" href="#pubtools.pulplib.Task.completed" title="Permalink to this definition">¶</a></dt>
+<dd><p>True if this task has completed, successfully or otherwise.</p>
+<p>May be <cite>None</cite> if the state of this task is unknown.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.Task.succeeded">
+<span class="sig-name descname"><span class="pre">succeeded</span></span><a class="headerlink" href="#pubtools.pulplib.Task.succeeded" title="Permalink to this definition">¶</a></dt>
+<dd><p>True if this task has completed successfully.</p>
+<p>May be <cite>None</cite> if the state of this task is unknown.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.Task.error_summary">
+<span class="sig-name descname"><span class="pre">error_summary</span></span><a class="headerlink" href="#pubtools.pulplib.Task.error_summary" title="Permalink to this definition">¶</a></dt>
+<dd><p>A summary of the reason for this task’s failure (if any).</p>
+<p>This is a short string, generally a single line, suitable for display to users.
+The string includes the ID of the failed task.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.Task.error_details">
+<span class="sig-name descname"><span class="pre">error_details</span></span><a class="headerlink" href="#pubtools.pulplib.Task.error_details" title="Permalink to this definition">¶</a></dt>
+<dd><p>Detailed information for this task’s failure (if any).</p>
+<p>This may be a multi-line string and may include technical information such as
+a Python backtrace generated by Pulp.</p>
+<p><code class="docutils literal notranslate"><span class="pre">error_details</span></code> is a superset of the information available via <code class="docutils literal notranslate"><span class="pre">error_summary</span></code>,
+so it is not necessary to display both.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.Task.tags">
+<span class="sig-name descname"><span class="pre">tags</span></span><a class="headerlink" href="#pubtools.pulplib.Task.tags" title="Permalink to this definition">¶</a></dt>
+<dd><p>The tags for this task.</p>
+<p>Typically includes info on the task’s associated action and
+repo, such as:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="s2">&quot;pulp:repository:rhel-7-server-rpms__7Server_x86_64&quot;</span><span class="p">,</span>
+ <span class="s2">&quot;pulp:action:publish&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.Task.repo_id">
+<span class="sig-name descname"><span class="pre">repo_id</span></span><a class="headerlink" href="#pubtools.pulplib.Task.repo_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The ID of the repository associated with this task, otherwise None.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.Task.units">
+<span class="sig-name descname"><span class="pre">units</span></span><a class="headerlink" href="#pubtools.pulplib.Task.units" title="Permalink to this definition">¶</a></dt>
+<dd><p>Info on the units which were processed as part of this task
+(e.g. associated or unassociated).</p>
+<p>This is an iterable. Each element is an instance of
+<a class="reference internal" href="#pubtools.pulplib.Unit" title="pubtools.pulplib.Unit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unit</span></code></a> containing information on a processed
+unit.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.5.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.Task.units_data">
+<span class="sig-name descname"><span class="pre">units_data</span></span><a class="headerlink" href="#pubtools.pulplib.Task.units_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Info on the units which were processed as part of this task
+(e.g. associated or unassociated).</p>
+<p>This is a list. The list elements are the raw dicts as returned
+by Pulp. These should at least contain a ‘type_id’ and a ‘unit_key’.</p>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version 1.5.0: </span>Use <a class="reference internal" href="#pubtools.pulplib.Task.units" title="pubtools.pulplib.Task.units"><code class="xref py py-meth docutils literal notranslate"><span class="pre">units()</span></code></a> instead.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">pubtools-pulplib</a></h1>
+
+
+
+<p class="blurb">A Pulp library for publishing tools</p>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="client.html">API: client</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API: core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="yum.html">API: yum</a></li>
+<li class="toctree-l1"><a class="reference internal" href="files.html">API: files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="containers.html">API: containers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="maintenance.html">API: maintenance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="searching.html">API: searching</a></li>
+<li class="toctree-l1"><a class="reference internal" href="testing.html">API: testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../schema.html">Schemas</a></li>
+</ul>
+
+
+<hr />
+<ul>
+    
+    <li class="toctree-l1"><a href="https://github.com/release-engineering/pubtools-pulplib">Source</a></li>
+    
+    <li class="toctree-l1"><a href="https://pypi.org/project/pubtools-pulplib">PyPI</a></li>
+    
+    <li class="toctree-l1"><a href="https://release-engineering.github.io/pubtools-pulplib/genindex.html">Index</a></li>
+    
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="client.html" title="previous chapter">API: client</a></li>
+      <li>Next: <a href="yum.html" title="next chapter">API: yum</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Red Hat.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/api/pulpcore.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/release-engineering/pubtools-pulplib" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

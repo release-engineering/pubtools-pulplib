@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pubtools.pulplib._impl.model.unit.modulemd_defaults &#8212; pubtools-pulplib  documentation</title>
+    <title>pubtools.pulplib._impl.model.unit.repo_metadata &#8212; pubtools-pulplib  documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/alabaster.css" />
     <script data-url_root="../../../../../../" id="documentation_options" src="../../../../../../_static/documentation_options.js"></script>
@@ -30,7 +30,7 @@
 
           <div class="body" role="main">
             
-  <h1>Source code for pubtools.pulplib._impl.model.unit.modulemd_defaults</h1><div class="highlight"><pre>
+  <h1>Source code for pubtools.pulplib._impl.model.unit.repo_metadata</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">Unit</span><span class="p">,</span> <span class="n">unit_type</span>
 
 <span class="kn">from</span> <span class="nn">..attr</span> <span class="kn">import</span> <span class="n">pulp_attrib</span>
@@ -38,28 +38,27 @@
 <span class="kn">from</span> <span class="nn">..convert</span> <span class="kn">import</span> <span class="n">frozenlist_or_none_sorted_converter</span>
 
 
-<div class="viewcode-block" id="ModulemdDefaultsUnit"><a class="viewcode-back" href="../../../../../../api/yum.html#pubtools.pulplib.ModulemdDefaultsUnit">[docs]</a><span class="nd">@unit_type</span><span class="p">(</span><span class="s2">&quot;modulemd_defaults&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="YumRepoMetadataFileUnit"><a class="viewcode-back" href="../../../../../../api/yum.html#pubtools.pulplib.YumRepoMetadataFileUnit">[docs]</a><span class="nd">@unit_type</span><span class="p">(</span><span class="s2">&quot;yum_repo_metadata_file&quot;</span><span class="p">)</span>
 <span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">ModulemdDefaultsUnit</span><span class="p">(</span><span class="n">Unit</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A :class:`~pubtools.pulplib.Unit` representing a modulemd_defaults document.</span>
+<span class="k">class</span> <span class="nc">YumRepoMetadataFileUnit</span><span class="p">(</span><span class="n">Unit</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A :class:`~pubtools.pulplib.Unit` representing a metadata file in a yum repo.</span>
 
-<span class="sd">    .. versionadded:: 2.4.0</span>
+<span class="sd">    .. versionadded:: 2.17.0</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">name</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">unit_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="sd">&quot;&quot;&quot;The name of this modulemd defaults unit&quot;&quot;&quot;</span>
+    <span class="n">data_type</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;data_type&quot;</span><span class="p">,</span> <span class="n">unit_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;The type of this metadata file, e.g. &quot;productid&quot;.&quot;&quot;&quot;</span>
 
-    <span class="n">repo_id</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;repo_id&quot;</span><span class="p">,</span> <span class="n">unit_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="sd">&quot;&quot;&quot;The repository ID bound to this modulemd defaults unit&quot;&quot;&quot;</span>
-
-    <span class="n">stream</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;stream&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-    <span class="sd">&quot;&quot;&quot;The stream of this modulemd defaults unit&quot;&quot;&quot;</span>
-
-    <span class="n">profiles</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;profiles&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-    <span class="sd">&quot;&quot;&quot;The profiles of this modulemd defaults unit.&quot;&quot;&quot;</span>
+    <span class="n">sha256sum</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;checksum&quot;</span><span class="p">,</span>
+        <span class="n">converter</span><span class="o">=</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="n">s</span> <span class="k">else</span> <span class="n">s</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;SHA256 checksum of this metadata file, if known, as a hex string.&quot;&quot;&quot;</span>
 
     <span class="n">content_type_id</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;modulemd_defaults&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;_content_type_id&quot;</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;yum_repo_metadata_file&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;_content_type_id&quot;</span>
     <span class="p">)</span>
 
     <span class="n">repository_memberships</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
@@ -69,8 +68,6 @@
         <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;repository_memberships&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="sd">&quot;&quot;&quot;IDs of repositories containing the unit, or ``None`` if this information is unavailable.</span>
-
-<span class="sd">    .. versionadded:: 2.6.0</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">unit_id</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;_id&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>

@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Searching &#8212; pubtools-pulplib  documentation</title>
+    <title>API: searching &#8212; pubtools-pulplib  documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
@@ -15,8 +15,8 @@
     <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Maintenance Mode" href="maintenance.html" />
-    <link rel="prev" title="Client" href="client.html" />
+    <link rel="next" title="API: testing" href="testing.html" />
+    <link rel="prev" title="API: maintenance" href="maintenance.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -33,8 +33,8 @@
 
           <div class="body" role="main">
             
-  <section id="searching">
-<h1>Searching<a class="headerlink" href="#searching" title="Permalink to this headline">¶</a></h1>
+  <section id="api-searching">
+<h1>API: searching<a class="headerlink" href="#api-searching" title="Permalink to this headline">¶</a></h1>
 <section id="model-vs-pulp-fields">
 <span id="model-fields"></span><h2>Model vs Pulp fields<a class="headerlink" href="#model-vs-pulp-fields" title="Permalink to this headline">¶</a></h2>
 <div class="versionadded">
@@ -43,9 +43,9 @@
 <p>The <a class="reference internal" href="#pubtools.pulplib.Criteria" title="pubtools.pulplib.Criteria"><code class="xref py py-class docutils literal notranslate"><span class="pre">Criteria</span></code></a> and <a class="reference internal" href="#pubtools.pulplib.Matcher" title="pubtools.pulplib.Matcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">Matcher</span></code></a>
 classes are able to operate on two types of fields:</p>
 <ul class="simple">
-<li><p>Model fields: fields documented on the <a class="reference internal" href="model.html#pubtools.pulplib.PulpObject" title="pubtools.pulplib.PulpObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">PulpObject</span></code></a>
+<li><p>Model fields: fields documented on the <a class="reference internal" href="pulpcore.html#pubtools.pulplib.PulpObject" title="pubtools.pulplib.PulpObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">PulpObject</span></code></a>
 class hierarchy.  <code class="docutils literal notranslate"><span class="pre">eng_product_id</span></code> from the
-<a class="reference internal" href="model.html#pubtools.pulplib.Repository" title="pubtools.pulplib.Repository"><code class="xref py py-class docutils literal notranslate"><span class="pre">Repository</span></code></a> class is an example of a model field.</p></li>
+<a class="reference internal" href="pulpcore.html#pubtools.pulplib.Repository" title="pubtools.pulplib.Repository"><code class="xref py py-class docutils literal notranslate"><span class="pre">Repository</span></code></a> class is an example of a model field.</p></li>
 <li><p>Pulp fields: any arbitrary fields within the Pulp 2.x database.
 <code class="docutils literal notranslate"><span class="pre">notes.eng_product</span></code> is an example of a Pulp field.</p></li>
 </ul>
@@ -150,7 +150,7 @@ matches <code class="docutils literal notranslate"><span class="pre">field_value
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">with_unit_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/criteria.html#Criteria.with_unit_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Criteria.with_unit_type" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>unit_type</strong> (<em>class</em>) – A subclass of <a class="reference internal" href="model.html#pubtools.pulplib.Unit" title="pubtools.pulplib.Unit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unit</span></code></a>.</p>
+<dd class="field-odd"><p><strong>unit_type</strong> (<em>class</em>) – A subclass of <a class="reference internal" href="pulpcore.html#pubtools.pulplib.Unit" title="pubtools.pulplib.Unit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unit</span></code></a>.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><dl class="simple">
@@ -337,7 +337,7 @@ blocking on more data from Pulp as needed.</p>
 <p><strong>Non-blocking iteration</strong></p>
 <p>This example sets up non-blocking processing of all results from
 a search query. Futures are chained and composed using
-<a class="reference external" href="https://rohanpm.github.io/more-executors/reference/futures-map.html#more_executors.futures.f_flat_map" title="(in more-executors v2.8.1, revision 12960f5)"><code class="xref py py-func docutils literal notranslate"><span class="pre">f_flat_map()</span></code></a> and friends.</p>
+<a class="reference external" href="https://rohanpm.github.io/more-executors/reference/futures-map.html#more_executors.futures.f_flat_map" title="(in more-executors v2.8.1, revision 446e368)"><code class="xref py py-func docutils literal notranslate"><span class="pre">f_flat_map()</span></code></a> and friends.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">handle_results</span><span class="p">(</span><span class="n">page</span><span class="p">):</span>
     <span class="c1"># Returns a future for handling of a single page</span>
     <span class="k">for</span> <span class="n">repo</span> <span class="ow">in</span> <span class="n">page</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
@@ -370,7 +370,7 @@ occur to await more pages from Pulp.</p>
 <span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#pubtools.pulplib.Page.data" title="Permalink to this definition">¶</a></dt>
 <dd><p>List of Pulp objects in this page.</p>
 <p>This list will contain instances of the appropriate Pulp object type
-(e.g. <a class="reference internal" href="model.html#pubtools.pulplib.Repository" title="pubtools.pulplib.Repository"><code class="xref py py-class docutils literal notranslate"><span class="pre">Repository</span></code></a> for a repository search).</p>
+(e.g. <a class="reference internal" href="pulpcore.html#pubtools.pulplib.Repository" title="pubtools.pulplib.Repository"><code class="xref py py-class docutils literal notranslate"><span class="pre">Repository</span></code></a> for a repository search).</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -408,14 +408,14 @@ occur to await more pages from Pulp.</p>
 <h3>Navigation</h3>
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="../api-reference.html">API Reference</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="client.html">Client</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Searching</a></li>
-<li class="toctree-l2"><a class="reference internal" href="maintenance.html">Maintenance Mode</a></li>
-<li class="toctree-l2"><a class="reference internal" href="model.html">Pulp objects</a></li>
-<li class="toctree-l2"><a class="reference internal" href="testing.html">Testing</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="client.html">API: client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pulpcore.html">API: core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="yum.html">API: yum</a></li>
+<li class="toctree-l1"><a class="reference internal" href="files.html">API: files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="containers.html">API: containers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="maintenance.html">API: maintenance</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API: searching</a></li>
+<li class="toctree-l1"><a class="reference internal" href="testing.html">API: testing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../logging.html">Logging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../schema.html">Schemas</a></li>
 </ul>
@@ -428,17 +428,15 @@ occur to await more pages from Pulp.</p>
     
     <li class="toctree-l1"><a href="https://pypi.org/project/pubtools-pulplib">PyPI</a></li>
     
-    <li class="toctree-l1"><a href="genindex.html">Index</a></li>
+    <li class="toctree-l1"><a href="https://release-engineering.github.io/pubtools-pulplib/genindex.html">Index</a></li>
     
 </ul>
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
-  <li><a href="../api-reference.html">API Reference</a><ul>
-      <li>Previous: <a href="client.html" title="previous chapter">Client</a></li>
-      <li>Next: <a href="maintenance.html" title="next chapter">Maintenance Mode</a></li>
-  </ul></li>
+      <li>Previous: <a href="maintenance.html" title="previous chapter">API: maintenance</a></li>
+      <li>Next: <a href="testing.html" title="next chapter">API: testing</a></li>
   </ul></li>
 </ul>
 </div>
@@ -468,7 +466,7 @@ occur to await more pages from Pulp.</p>
       &copy;2019, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

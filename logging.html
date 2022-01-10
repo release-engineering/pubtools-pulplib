@@ -16,7 +16,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Schemas" href="schema.html" />
-    <link rel="prev" title="Testing" href="api/testing.html" />
+    <link rel="prev" title="API: testing" href="api/testing.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -51,10 +51,10 @@ running and waiting tasks in Pulp, such as:</p>
 </pre></div>
 </div>
 <p>These messages will include an <code class="docutils literal notranslate"><span class="pre">event</span></code> attribute of the form:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">event</span><span class="p">:</span>
-  <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">awaiting-pulp</span>
-  <span class="nt">running-tasks</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;count&gt;</span>
-  <span class="nt">waiting-tasks</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;count&gt;</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">event</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">awaiting-pulp</span><span class="w"></span>
+<span class="w">  </span><span class="nt">running-tasks</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;count&gt;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">waiting-tasks</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;count&gt;</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -80,8 +80,8 @@ in the following examples:</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">[1/10]</span></code> indicator shows the current attempt at the operation and the maximum
 number of attempts before the error will be considered fatal.</p>
 <p>These messages will include an <code class="docutils literal notranslate"><span class="pre">event</span></code> attribute of the form:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">event</span><span class="p">:</span>
-  <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">pulp-retry</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">event</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pulp-retry</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -110,13 +110,15 @@ number of attempts before the error will be considered fatal.</p>
 <h3>Navigation</h3>
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="api-reference.html">API Reference</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Logging</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#waiting-on-pulp">Waiting on Pulp</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#task-state-changes">Task state changes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#retrying">Retrying</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="api/client.html">API: client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/pulpcore.html">API: core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/yum.html">API: yum</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/files.html">API: files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/containers.html">API: containers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/maintenance.html">API: maintenance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/searching.html">API: searching</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/testing.html">API: testing</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Logging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="schema.html">Schemas</a></li>
 </ul>
 
@@ -128,14 +130,14 @@ number of attempts before the error will be considered fatal.</p>
     
     <li class="toctree-l1"><a href="https://pypi.org/project/pubtools-pulplib">PyPI</a></li>
     
-    <li class="toctree-l1"><a href="genindex.html">Index</a></li>
+    <li class="toctree-l1"><a href="https://release-engineering.github.io/pubtools-pulplib/genindex.html">Index</a></li>
     
 </ul>
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="api/testing.html" title="previous chapter">Testing</a></li>
+      <li>Previous: <a href="api/testing.html" title="previous chapter">API: testing</a></li>
       <li>Next: <a href="schema.html" title="next chapter">Schemas</a></li>
   </ul></li>
 </ul>
@@ -166,7 +168,7 @@ number of attempts before the error will be considered fatal.</p>
       &copy;2019, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
