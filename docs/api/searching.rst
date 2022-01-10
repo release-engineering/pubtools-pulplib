@@ -1,5 +1,5 @@
-Searching
-=========
+API: searching
+==============
 
 .. _model_fields:
 

@@ -4,10 +4,17 @@ pubtools-pulplib
 A Pulp library for publishing tools.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Contents:
 
-   api-reference
+   api/client
+   api/pulpcore
+   api/yum
+   api/files
+   api/containers
+   api/maintenance
+   api/searching
+   api/testing
    logging
    schema
 
