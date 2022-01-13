@@ -5,8 +5,9 @@ from attr import validators, asdict
 from frozenlist2 import frozenlist
 from more_executors.futures import f_proxy, f_map, f_flat_map
 
-from ..common import PulpObject, Deletable, DetachedException
 from ..attr import pulp_attrib
+from ..common import PulpObject, Deletable, DetachedException
+from ..convert import frozenlist_or_none_converter
 from ..distributor import Distributor
 from ...criteria import Criteria, Matcher
 from ...schema import load_schema
@@ -56,6 +57,15 @@ class PublishOptions(object):
 
     Only relevant if a repository has one or more distributors where
     :meth:`~pubtools.pulplib.Distributor.is_rsync` is ``True``.
+    """
+
+    rsync_extra_args = pulp_attrib(
+        default=None, type=list, converter=frozenlist_or_none_converter
+    )
+    """If present, provide these additional arguments to any rsync commands run
+    during publish.
+
+    Ignored when rsync is not used.
     """
 
 
@@ -382,7 +392,16 @@ class Repository(PulpObject, Deletable):
         if not self._client:
             raise DetachedException()
 
-        # all distributor IDs we're willing to invoke. Anything else is ignored.
+        # Before adding distributors and publishing, we'll activate this hook
+        # to allow subscribing implementers the opportunity to adjust options.
+        hook_rets = pm.hook.pulp_repository_pre_publish(
+            repository=self, options=options
+        )
+        # Use the first non-None hook return value to replace options.
+        hook_rets = [ret for ret in hook_rets if ret is not None]
+        options = hook_rets[0] if hook_rets else options
+
+        # All distributor IDs we're willing to invoke. Anything else is ignored.
         # They'll be invoked in the order listed here.
         candidate_distributor_ids = self._PUBLISH_DISTRIBUTORS
 
@@ -535,11 +554,13 @@ class Repository(PulpObject, Deletable):
     def _config_for_distributor(cls, distributor, options):
         out = {}
 
-        if options.clean is not None and distributor.is_rsync:
-            out["delete"] = options.clean
-
-        if options.origin_only is not None and distributor.is_rsync:
-            out["content_units_only"] = options.origin_only
+        if distributor.is_rsync:
+            if options.clean is not None:
+                out["delete"] = options.clean
+            if options.origin_only is not None:
+                out["content_units_only"] = options.origin_only
+            if options.rsync_extra_args is not None:
+                out["rsync_extra_args"] = options.rsync_extra_args
 
         if options.force is not None:
             out["force_full"] = options.force

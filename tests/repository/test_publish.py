@@ -11,7 +11,7 @@ from pubtools.pulplib import (
     TaskFailedException,
 )
 
-from pubtools.pluggy import pm, hookimpl
+from pubtools.pluggy import pm
 
 
 @pytest.fixture
@@ -112,8 +112,12 @@ def test_publish_distributors(fast_poller, requests_mocker, client, hookspy):
     assert len(req) == 4
 
     # It should have invoked hooks
-    assert len(hookspy) == 1
+    assert len(hookspy) == 2
     (hook_name, hook_kwargs) = hookspy[0]
+    assert hook_name == "pulp_repository_pre_publish"
+    assert hook_kwargs["repository"] is repo
+    assert hook_kwargs["options"] == PublishOptions()
+    (hook_name, hook_kwargs) = hookspy[1]
     assert hook_name == "pulp_repository_published"
     assert hook_kwargs["repository"] is repo
     assert hook_kwargs["options"] == PublishOptions()
@@ -146,7 +150,9 @@ def test_publish_with_options(requests_mocker, client):
         ],
     )
 
-    options = PublishOptions(clean=True, force=True, origin_only=True)
+    options = PublishOptions(
+        clean=True, force=True, origin_only=True, rsync_extra_args=["-a"]
+    )
 
     # It should have succeeded, with the tasks as retrieved from Pulp
     assert sorted(repo.publish(options)) == [
@@ -166,6 +172,7 @@ def test_publish_with_options(requests_mocker, client):
         "force_full": True,
         "delete": True,
         "content_units_only": True,
+        "rsync_extra_args": ["-a"],
     }
 
 
