@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - n/a
 
+## [2.22.0] - 2022-01-25
+
+- Added `pulp_repository_pre_publish` pubtools hook.
+
 ## [2.21.0] - 2021-12-15
 
 - Added support for orphaned units to fake client.
@@ -319,7 +323,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release to PyPI
 
-[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.21.0...HEAD
+[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.22.0...HEAD
+[2.22.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.21.0...v2.22.0
 [2.21.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.20.0...v2.21.0
 [2.20.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.19.0...v2.20.0
 [2.19.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.18.0...v2.19.0
