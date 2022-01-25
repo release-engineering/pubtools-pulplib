@@ -321,7 +321,7 @@ are possible.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pubtools.pulplib.Repository.publish">
-<span class="sig-name descname"><span class="pre">publish</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">PublishOptions(force=None,</span> <span class="pre">clean=None,</span> <span class="pre">origin_only=None)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository/base.html#Repository.publish"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Repository.publish" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">publish</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">PublishOptions(force=None,</span> <span class="pre">clean=None,</span> <span class="pre">origin_only=None,</span> <span class="pre">rsync_extra_args=None)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository/base.html#Repository.publish"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Repository.publish" title="Permalink to this definition">¶</a></dt>
 <dd><p>Publish this repository.</p>
 <p>The specific operations triggered on Pulp in order to publish a repo are not defined,
 but in Pulp 2.x, generally consists of triggering one or more distributors in sequence.</p>
@@ -511,6 +511,14 @@ in the repo.</p>
 remote hosts.</p>
 <p>Only relevant if a repository has one or more distributors where
 <a class="reference internal" href="#pubtools.pulplib.Distributor.is_rsync" title="pubtools.pulplib.Distributor.is_rsync"><code class="xref py py-meth docutils literal notranslate"><span class="pre">is_rsync()</span></code></a> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.PublishOptions.rsync_extra_args">
+<span class="sig-name descname"><span class="pre">rsync_extra_args</span></span><a class="headerlink" href="#pubtools.pulplib.PublishOptions.rsync_extra_args" title="Permalink to this definition">¶</a></dt>
+<dd><p>If present, provide these additional arguments to any rsync commands run
+during publish.</p>
+<p>Ignored when rsync is not used.</p>
 </dd></dl>
 
 </dd></dl>
@@ -799,7 +807,7 @@ by Pulp. These should at least contain a ‘type_id’ and a ‘unit_key’.</p>
       &copy;2019, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

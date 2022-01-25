@@ -325,7 +325,7 @@ value.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="pubtools.pulplib.Page">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pubtools.pulplib.</span></span><span class="sig-name descname"><span class="pre">Page</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">NOTHING</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">next</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">concurrent.futures._base.Future</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/page.html#Page"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Page" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pubtools.pulplib.</span></span><span class="sig-name descname"><span class="pre">Page</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">NOTHING</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">next</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.10)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><span class="pre">concurrent.futures._base.Future</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/page.html#Page"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Page" title="Permalink to this definition">¶</a></dt>
 <dd><p>A page of Pulp search results.</p>
 <p>All Pulp searches issued by this library are paginated.
 Instances of this class may be used to iterate through the returned
@@ -337,7 +337,7 @@ blocking on more data from Pulp as needed.</p>
 <p><strong>Non-blocking iteration</strong></p>
 <p>This example sets up non-blocking processing of all results from
 a search query. Futures are chained and composed using
-<a class="reference external" href="https://rohanpm.github.io/more-executors/reference/futures-map.html#more_executors.futures.f_flat_map" title="(in more-executors v2.8.1, revision 446e368)"><code class="xref py py-func docutils literal notranslate"><span class="pre">f_flat_map()</span></code></a> and friends.</p>
+<a class="reference external" href="https://rohanpm.github.io/more-executors/reference/futures-map.html#more_executors.futures.f_flat_map" title="(in more-executors v2.8.1, revision 374846b)"><code class="xref py py-func docutils literal notranslate"><span class="pre">f_flat_map()</span></code></a> and friends.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">handle_results</span><span class="p">(</span><span class="n">page</span><span class="p">):</span>
     <span class="c1"># Returns a future for handling of a single page</span>
     <span class="k">for</span> <span class="n">repo</span> <span class="ow">in</span> <span class="n">page</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
@@ -466,7 +466,7 @@ occur to await more pages from Pulp.</p>
       &copy;2019, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

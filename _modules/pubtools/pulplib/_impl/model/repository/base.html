@@ -38,8 +38,9 @@
 <span class="kn">from</span> <span class="nn">frozenlist2</span> <span class="kn">import</span> <span class="n">frozenlist</span>
 <span class="kn">from</span> <span class="nn">more_executors.futures</span> <span class="kn">import</span> <span class="n">f_proxy</span><span class="p">,</span> <span class="n">f_map</span><span class="p">,</span> <span class="n">f_flat_map</span>
 
-<span class="kn">from</span> <span class="nn">..common</span> <span class="kn">import</span> <span class="n">PulpObject</span><span class="p">,</span> <span class="n">Deletable</span><span class="p">,</span> <span class="n">DetachedException</span>
 <span class="kn">from</span> <span class="nn">..attr</span> <span class="kn">import</span> <span class="n">pulp_attrib</span>
+<span class="kn">from</span> <span class="nn">..common</span> <span class="kn">import</span> <span class="n">PulpObject</span><span class="p">,</span> <span class="n">Deletable</span><span class="p">,</span> <span class="n">DetachedException</span>
+<span class="kn">from</span> <span class="nn">..convert</span> <span class="kn">import</span> <span class="n">frozenlist_or_none_converter</span>
 <span class="kn">from</span> <span class="nn">..distributor</span> <span class="kn">import</span> <span class="n">Distributor</span>
 <span class="kn">from</span> <span class="nn">...criteria</span> <span class="kn">import</span> <span class="n">Criteria</span><span class="p">,</span> <span class="n">Matcher</span>
 <span class="kn">from</span> <span class="nn">...schema</span> <span class="kn">import</span> <span class="n">load_schema</span>
@@ -89,6 +90,15 @@
 
 <span class="sd">    Only relevant if a repository has one or more distributors where</span>
 <span class="sd">    :meth:`~pubtools.pulplib.Distributor.is_rsync` is ``True``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">rsync_extra_args</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span> <span class="n">converter</span><span class="o">=</span><span class="n">frozenlist_or_none_converter</span>
+    <span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;If present, provide these additional arguments to any rsync commands run</span>
+<span class="sd">    during publish.</span>
+
+<span class="sd">    Ignored when rsync is not used.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
@@ -415,7 +425,16 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">DetachedException</span><span class="p">()</span>
 
-        <span class="c1"># all distributor IDs we&#39;re willing to invoke. Anything else is ignored.</span>
+        <span class="c1"># Before adding distributors and publishing, we&#39;ll activate this hook</span>
+        <span class="c1"># to allow subscribing implementers the opportunity to adjust options.</span>
+        <span class="n">hook_rets</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">hook</span><span class="o">.</span><span class="n">pulp_repository_pre_publish</span><span class="p">(</span>
+            <span class="n">repository</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span>
+        <span class="p">)</span>
+        <span class="c1"># Use the first non-None hook return value to replace options.</span>
+        <span class="n">hook_rets</span> <span class="o">=</span> <span class="p">[</span><span class="n">ret</span> <span class="k">for</span> <span class="n">ret</span> <span class="ow">in</span> <span class="n">hook_rets</span> <span class="k">if</span> <span class="n">ret</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="n">options</span> <span class="o">=</span> <span class="n">hook_rets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">hook_rets</span> <span class="k">else</span> <span class="n">options</span>
+
+        <span class="c1"># All distributor IDs we&#39;re willing to invoke. Anything else is ignored.</span>
         <span class="c1"># They&#39;ll be invoked in the order listed here.</span>
         <span class="n">candidate_distributor_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_PUBLISH_DISTRIBUTORS</span>
 
@@ -568,11 +587,13 @@
     <span class="k">def</span> <span class="nf">_config_for_distributor</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">distributor</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
         <span class="n">out</span> <span class="o">=</span> <span class="p">{}</span>
 
-        <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">clean</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">distributor</span><span class="o">.</span><span class="n">is_rsync</span><span class="p">:</span>
-            <span class="n">out</span><span class="p">[</span><span class="s2">&quot;delete&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">clean</span>
-
-        <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">origin_only</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">distributor</span><span class="o">.</span><span class="n">is_rsync</span><span class="p">:</span>
-            <span class="n">out</span><span class="p">[</span><span class="s2">&quot;content_units_only&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">origin_only</span>
+        <span class="k">if</span> <span class="n">distributor</span><span class="o">.</span><span class="n">is_rsync</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">clean</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">out</span><span class="p">[</span><span class="s2">&quot;delete&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">clean</span>
+            <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">origin_only</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">out</span><span class="p">[</span><span class="s2">&quot;content_units_only&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">origin_only</span>
+            <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">rsync_extra_args</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">out</span><span class="p">[</span><span class="s2">&quot;rsync_extra_args&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">rsync_extra_args</span>
 
         <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">force</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">out</span><span class="p">[</span><span class="s2">&quot;force_full&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">force</span>
@@ -750,7 +771,7 @@
       &copy;2019, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
