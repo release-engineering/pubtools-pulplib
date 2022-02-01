@@ -39,7 +39,10 @@ def test_can_upload_file_meta(tmpdir):
     somefile.write(b"there is some binary data:\x00\x01\x02")
 
     upload_f = repo1.upload_file(
-        str(somefile), description="My great file", cdn_path="/foo/bar.txt"
+        str(somefile),
+        description="My great file",
+        cdn_path="/foo/bar.txt",
+        version="2.0",
     )
 
     # The future should resolve successfully
@@ -59,6 +62,7 @@ def test_can_upload_file_meta(tmpdir):
     # Extra fields we passed during upload should be present here.
     assert unit.description == "My great file"
     assert unit.cdn_path == "/foo/bar.txt"
+    assert unit.version == "2.0"
 
 
 def test_can_reupload_file_meta(tmpdir):

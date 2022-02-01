@@ -35,6 +35,9 @@ def test_can_update_content(requests_mocker, client):
         description="A unit I'm about to update",
         cdn_published=datetime.datetime(2021, 12, 6, 11, 19, 0),
         path="x",
+        version="1.0.0",
+        # display_order will tolerate strings
+        display_order="2.3",
         size=0,
         sha256sum="e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     )
@@ -61,6 +64,8 @@ def test_can_update_content(requests_mocker, client):
         "cdn_path": None,
         "cdn_published": "2021-12-06T11:19:00Z",
         "description": "A unit I'm about to update",
+        "display_order": 2.3,
+        "version": "1.0.0",
     }
 
 

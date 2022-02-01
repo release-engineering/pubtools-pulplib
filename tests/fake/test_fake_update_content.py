@@ -54,7 +54,10 @@ def test_can_update_content(tmpdir):
     somefile.write(b"there is some binary data:\x00\x01\x02")
 
     upload_f = repo1.upload_file(
-        str(somefile), description="My great file", cdn_path="/foo/bar.txt"
+        str(somefile),
+        description="My great file",
+        version="1.0",
+        cdn_path="/foo/bar.txt",
     )
 
     # The future should resolve successfully
@@ -76,6 +79,7 @@ def test_can_update_content(tmpdir):
         unit,
         size=1000,
         description="My greater file",
+        display_order=10,
         cdn_published=datetime.datetime(2021, 12, 6, 11, 19, 0),
     )
 
@@ -92,7 +96,9 @@ def test_can_update_content(tmpdir):
     # The mutable fields on the unit after update should be as expected:
     assert unit_after_update.description == "My greater file"
     assert unit_after_update.cdn_published == datetime.datetime(2021, 12, 6, 11, 19, 0)
+    assert unit_after_update.display_order == 10
     # This one didn't change since it wasn't evolved
     assert unit_after_update.cdn_path == "/foo/bar.txt"
+    assert unit_after_update.version == "1.0"
     # This one didn't change (even though we tried) because it's not mutable
     assert unit_after_update.size == 29
