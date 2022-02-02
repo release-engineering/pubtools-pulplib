@@ -13,11 +13,20 @@ from six.moves import StringIO
 
 from ..page import Page
 from ..criteria import Criteria
-from ..model import Repository, MaintenanceReport, Distributor, Unit, Task
+from ..model import (
+    Repository,
+    FileRepository,
+    MaintenanceReport,
+    Distributor,
+    Unit,
+    Task,
+)
 from .search import search_for_criteria
 from .errors import PulpException
 from .poller import TaskPoller
 from . import retry
+
+from .ud_mappings import compile_ud_mappings
 
 
 LOG = logging.getLogger("pubtools.pulplib")
@@ -553,7 +562,9 @@ class Client(object):
         return upload_f
 
     def _publish_repository(self, repo, distributors_with_config):
-        tasks_f = f_return([])
+        compiled = self._compile_notes(repo)
+
+        tasks_f = f_map(compiled, lambda _: [])
 
         def do_next_publish(accumulated_tasks, distributor, config):
             distributor_tasks_f = self._publish_distributor(
@@ -617,6 +628,25 @@ class Client(object):
         return self._task_executor.submit(
             self._do_request, method="POST", url=url, json=body
         )
+
+    def _compile_notes(self, repo):
+        # Given a repo we're about to publish, calculate and set certain notes
+        # derived from the repo contents.
+        out = f_return()
+
+        if isinstance(repo, FileRepository):
+            out = compile_ud_mappings(
+                repo,
+                # UD mapping code is written to do low-level pulp requests.
+                # In order to keep the code at arms length and don't let it access
+                # client internals directly, we'll just pass a callback
+                # it can use to do these requests.
+                do_request=lambda url, **kwargs: self._request_executor.submit(
+                    self._do_request, url=os.path.join(self._url, url), **kwargs
+                ),
+            )
+
+        return out
 
     @classmethod
     def _unpack_response(cls, pulp_response):
