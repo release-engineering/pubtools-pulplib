@@ -161,6 +161,37 @@ in the common case, this is only a basename.</p>
 </dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.FileUnit.version">
+<span class="sig-name descname"><span class="pre">version</span></span><a class="headerlink" href="#pubtools.pulplib.FileUnit.version" title="Permalink to this definition">¶</a></dt>
+<dd><p>A version string associated with this file.</p>
+<p>This string can be used for display purposes to group
+related files together. For example, files <code class="docutils literal notranslate"><span class="pre">&quot;oc-4.8.10-linux.tar.gz&quot;</span></code>
+and <code class="docutils literal notranslate"><span class="pre">&quot;openshift-install-linux-4.8.10.tar.gz&quot;</span></code> in a repo may both
+have a version string of <code class="docutils literal notranslate"><span class="pre">&quot;4.8.10&quot;</span></code> to indicate that the files relate
+to the same product version.</p>
+<p>This field is <strong>mutable</strong> and may be set by
+<a class="reference internal" href="#pubtools.pulplib.FileRepository.upload_file" title="pubtools.pulplib.FileRepository.upload_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">upload_file()</span></code></a> or
+<a class="reference internal" href="client.html#pubtools.pulplib.Client.update_content" title="pubtools.pulplib.Client.update_content"><code class="xref py py-meth docutils literal notranslate"><span class="pre">update_content()</span></code></a>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.23.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.FileUnit.display_order">
+<span class="sig-name descname"><span class="pre">display_order</span></span><a class="headerlink" href="#pubtools.pulplib.FileUnit.display_order" title="Permalink to this definition">¶</a></dt>
+<dd><p>An ordering hint associated with this file.</p>
+<p>In cases where a UI displays a list of files from Pulp, it is suggested
+that files by default should be ordered by this field ascending.</p>
+<p>This field is <strong>mutable</strong> and may be set by
+<a class="reference internal" href="#pubtools.pulplib.FileRepository.upload_file" title="pubtools.pulplib.FileRepository.upload_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">upload_file()</span></code></a> or
+<a class="reference internal" href="client.html#pubtools.pulplib.Client.update_content" title="pubtools.pulplib.Client.update_content"><code class="xref py py-meth docutils literal notranslate"><span class="pre">update_content()</span></code></a>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.23.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="pubtools.pulplib.FileUnit.cdn_path">
 <span class="sig-name descname"><span class="pre">cdn_path</span></span><a class="headerlink" href="#pubtools.pulplib.FileUnit.cdn_path" title="Permalink to this definition">¶</a></dt>
 <dd><p>A path, relative to the CDN root, from which this file can be downloaded

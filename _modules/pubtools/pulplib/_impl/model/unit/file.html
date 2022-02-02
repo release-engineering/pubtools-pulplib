@@ -82,6 +82,57 @@
 <span class="sd">    .. versionadded:: 2.20.0</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">version</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;pulp_user_metadata.version&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">validator</span><span class="o">=</span><span class="n">optional_str</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;A version string associated with this file.</span>
+
+<span class="sd">    This string can be used for display purposes to group</span>
+<span class="sd">    related files together. For example, files ``&quot;oc-4.8.10-linux.tar.gz&quot;``</span>
+<span class="sd">    and ``&quot;openshift-install-linux-4.8.10.tar.gz&quot;`` in a repo may both</span>
+<span class="sd">    have a version string of ``&quot;4.8.10&quot;`` to indicate that the files relate</span>
+<span class="sd">    to the same product version.</span>
+
+<span class="sd">    This field is **mutable** and may be set by</span>
+<span class="sd">    :meth:`~FileRepository.upload_file` or</span>
+<span class="sd">    :meth:`~Client.update_content`.</span>
+
+<span class="sd">    .. versionadded:: 2.23.0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">display_order</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+        <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;pulp_user_metadata.display_order&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">converter</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;An ordering hint associated with this file.</span>
+
+<span class="sd">    In cases where a UI displays a list of files from Pulp, it is suggested</span>
+<span class="sd">    that files by default should be ordered by this field ascending.</span>
+
+<span class="sd">    This field is **mutable** and may be set by</span>
+<span class="sd">    :meth:`~FileRepository.upload_file` or</span>
+<span class="sd">    :meth:`~Client.update_content`.</span>
+
+<span class="sd">    .. versionadded:: 2.23.0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@display_order</span><span class="o">.</span><span class="n">validator</span>
+    <span class="k">def</span> <span class="nf">_validate_display_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="c1"># Validation here is identical to pushsource.FilePushItem.display_order.</span>
+        <span class="c1"># Check that validator for an explanation.</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">value</span> <span class="o">&gt;=</span> <span class="o">-</span><span class="mi">99999</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">&lt;=</span> <span class="mi">99999</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;display_order must be within range -99999 .. 99999&quot;</span><span class="p">)</span>
+
     <span class="n">cdn_path</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;pulp_user_metadata.cdn_path&quot;</span><span class="p">,</span>
