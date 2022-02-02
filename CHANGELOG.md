@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- n/a
+- Added `version`, `display_order` fields to `FileUnit`.
 
 ## [2.22.0] - 2022-01-25
 

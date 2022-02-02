@@ -1,5 +1,7 @@
 import datetime
 
+import pytest
+
 from pubtools.pulplib import FileUnit
 
 
@@ -41,6 +43,21 @@ def test_zero_size():
         sha256sum="e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         content_type_id="iso",
     )
+
+
+def test_order_out_of_range():
+    """FileUnit rejects an order out of the allowed range."""
+
+    with pytest.raises(ValueError) as excinfo:
+        FileUnit(
+            path="my-empty-file",
+            size=0,
+            sha256sum="e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            content_type_id="iso",
+            display_order=1e17,
+        )
+
+    assert "display_order must be within range -99999 .. 99999" in str(excinfo.value)
 
 
 def test_user_metadata_fields():

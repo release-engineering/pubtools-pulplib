@@ -49,6 +49,57 @@ class FileUnit(Unit):
     .. versionadded:: 2.20.0
     """
 
+    version = pulp_attrib(
+        type=str,
+        pulp_field="pulp_user_metadata.version",
+        default=None,
+        validator=optional_str,
+    )
+    """A version string associated with this file.
+
+    This string can be used for display purposes to group
+    related files together. For example, files ``"oc-4.8.10-linux.tar.gz"``
+    and ``"openshift-install-linux-4.8.10.tar.gz"`` in a repo may both
+    have a version string of ``"4.8.10"`` to indicate that the files relate
+    to the same product version.
+
+    This field is **mutable** and may be set by
+    :meth:`~FileRepository.upload_file` or
+    :meth:`~Client.update_content`.
+
+    .. versionadded:: 2.23.0
+    """
+
+    display_order = pulp_attrib(
+        type=float,
+        pulp_field="pulp_user_metadata.display_order",
+        default=None,
+        converter=lambda x: float(x) if x is not None else None,
+    )
+    """An ordering hint associated with this file.
+
+    In cases where a UI displays a list of files from Pulp, it is suggested
+    that files by default should be ordered by this field ascending.
+
+    This field is **mutable** and may be set by
+    :meth:`~FileRepository.upload_file` or
+    :meth:`~Client.update_content`.
+
+    .. versionadded:: 2.23.0
+    """
+
+    @display_order.validator
+    def _validate_display_order(self, _, value):
+        # Validation here is identical to pushsource.FilePushItem.display_order.
+        # Check that validator for an explanation.
+        if value is None:
+            return
+
+        value = float(value)
+
+        if not (value >= -99999 and value <= 99999):
+            raise ValueError("display_order must be within range -99999 .. 99999")
+
     cdn_path = pulp_attrib(
         type=str,
         pulp_field="pulp_user_metadata.cdn_path",
