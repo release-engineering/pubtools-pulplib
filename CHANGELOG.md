@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 - Added `version`, `display_order` fields to `FileUnit`.
+- The `ud_file_release_mappings_2` repository note is now set on repos during publish.
 
 ## [2.22.0] - 2022-01-25
 
