@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- n/a
+
+## [2.23.0] - 2022-02-07
+
 - Added `version`, `display_order` fields to `FileUnit`.
 - The `ud_file_release_mappings_2` repository note is now set on repos during publish.
 
@@ -324,7 +328,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release to PyPI
 
-[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.22.0...HEAD
+[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.23.0...HEAD
+[2.23.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.22.0...v2.23.0
 [2.22.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.21.0...v2.22.0
 [2.21.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.20.0...v2.21.0
 [2.20.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.19.0...v2.20.0
