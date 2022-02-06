@@ -46,11 +46,20 @@
 
 <span class="kn">from</span> <span class="nn">..page</span> <span class="kn">import</span> <span class="n">Page</span>
 <span class="kn">from</span> <span class="nn">..criteria</span> <span class="kn">import</span> <span class="n">Criteria</span>
-<span class="kn">from</span> <span class="nn">..model</span> <span class="kn">import</span> <span class="n">Repository</span><span class="p">,</span> <span class="n">MaintenanceReport</span><span class="p">,</span> <span class="n">Distributor</span><span class="p">,</span> <span class="n">Unit</span><span class="p">,</span> <span class="n">Task</span>
+<span class="kn">from</span> <span class="nn">..model</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Repository</span><span class="p">,</span>
+    <span class="n">FileRepository</span><span class="p">,</span>
+    <span class="n">MaintenanceReport</span><span class="p">,</span>
+    <span class="n">Distributor</span><span class="p">,</span>
+    <span class="n">Unit</span><span class="p">,</span>
+    <span class="n">Task</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">.search</span> <span class="kn">import</span> <span class="n">search_for_criteria</span>
 <span class="kn">from</span> <span class="nn">.errors</span> <span class="kn">import</span> <span class="n">PulpException</span>
 <span class="kn">from</span> <span class="nn">.poller</span> <span class="kn">import</span> <span class="n">TaskPoller</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">retry</span>
+
+<span class="kn">from</span> <span class="nn">.ud_mappings</span> <span class="kn">import</span> <span class="n">compile_ud_mappings</span>
 
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;pubtools.pulplib&quot;</span><span class="p">)</span>
@@ -586,7 +595,9 @@
         <span class="k">return</span> <span class="n">upload_f</span>
 
     <span class="k">def</span> <span class="nf">_publish_repository</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repo</span><span class="p">,</span> <span class="n">distributors_with_config</span><span class="p">):</span>
-        <span class="n">tasks_f</span> <span class="o">=</span> <span class="n">f_return</span><span class="p">([])</span>
+        <span class="n">compiled</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compile_notes</span><span class="p">(</span><span class="n">repo</span><span class="p">)</span>
+
+        <span class="n">tasks_f</span> <span class="o">=</span> <span class="n">f_map</span><span class="p">(</span><span class="n">compiled</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">_</span><span class="p">:</span> <span class="p">[])</span>
 
         <span class="k">def</span> <span class="nf">do_next_publish</span><span class="p">(</span><span class="n">accumulated_tasks</span><span class="p">,</span> <span class="n">distributor</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
             <span class="n">distributor_tasks_f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_publish_distributor</span><span class="p">(</span>
@@ -650,6 +661,25 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task_executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_do_request</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">body</span>
         <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_compile_notes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repo</span><span class="p">):</span>
+        <span class="c1"># Given a repo we&#39;re about to publish, calculate and set certain notes</span>
+        <span class="c1"># derived from the repo contents.</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">f_return</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">FileRepository</span><span class="p">):</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">compile_ud_mappings</span><span class="p">(</span>
+                <span class="n">repo</span><span class="p">,</span>
+                <span class="c1"># UD mapping code is written to do low-level pulp requests.</span>
+                <span class="c1"># In order to keep the code at arms length and don&#39;t let it access</span>
+                <span class="c1"># client internals directly, we&#39;ll just pass a callback</span>
+                <span class="c1"># it can use to do these requests.</span>
+                <span class="n">do_request</span><span class="o">=</span><span class="k">lambda</span> <span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_do_request</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_url</span><span class="p">,</span> <span class="n">url</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">out</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_unpack_response</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">pulp_response</span><span class="p">):</span>
