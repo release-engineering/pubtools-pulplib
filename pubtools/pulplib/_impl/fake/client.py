@@ -23,6 +23,7 @@ from pubtools.pulplib import (
     FileUnit,
     MaintenanceReport,
 )
+from pubtools.pulplib._impl.client.client import UploadResult
 from pubtools.pulplib._impl.client.search import search_for_criteria
 from .. import compat_attr as attr
 
@@ -468,7 +469,7 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
                 checksum.update(data)
                 size += len(data)
                 return do_next_upload(checksum, size)
-            return f_return((checksum.hexdigest(), size))
+            return f_return(UploadResult(checksum.hexdigest(), size))
 
         out = f_flat_map(f_return(), lambda _: do_next_upload(hashlib.sha256(), 0))
 
