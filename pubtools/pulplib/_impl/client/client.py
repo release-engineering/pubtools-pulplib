@@ -115,9 +115,10 @@ class Client(object):
     # These are not a documented/supported feature of the library.
     # They're more of an emergency escape hatch to temporarily resolve issues.
     _REQUEST_THREADS = int(os.environ.get("PUBTOOLS_PULPLIB_REQUEST_THREADS", "4"))
+    _UPLOAD_THREADS = int(os.environ.get("PUBTOOLS_PULPLIB_UPLOAD_THREADS", "4"))
     _PAGE_SIZE = int(os.environ.get("PUBTOOLS_PULPLIB_PAGE_SIZE", "2000"))
     _TASK_THROTTLE = int(os.environ.get("PUBTOOLS_PULPLIB_TASK_THROTTLE", "200"))
-    _CHUNK_SIZE = int(os.environ.get("PUBTOOLS_PULPLIB_CHUNK_SIZE", 1024 * 1024))
+    _CHUNK_SIZE = int(os.environ.get("PUBTOOLS_PULPLIB_CHUNK_SIZE", 1024 * 1024 * 10))
 
     # Policy used when deciding whether to retry operations.
     # This is mainly provided here as a hook for autotests, so the policy can be
@@ -184,6 +185,15 @@ class Client(object):
             .with_retry(retry_policy=self._RETRY_POLICY)
         )
 
+        # executor for uploads:
+        # - reading of file content for upload, and calculation of checksums,
+        #   happens in this executor
+        # - HTTP requests don't happen here and are still submitted via
+        #   request_executor (hence no retry needed on this executor)
+        self._upload_executor = Executors.thread_pool(
+            name="pubtools-pulplib-uploads", max_workers=self._UPLOAD_THREADS
+        )
+
         # executor for issuing HTTP requests to Pulp which spawn tasks:
         # - checks HTTP response and raises if it's not JSON or
         #   it's not successful
@@ -208,6 +218,7 @@ class Client(object):
 
     def __exit__(self, *args, **kwargs):
         self._request_executor.__exit__(*args, **kwargs)
+        self._upload_executor.__exit__(*args, **kwargs)
         self._task_executor.__exit__(*args, **kwargs)
 
     def get_repository(self, repository_id):
@@ -540,29 +551,58 @@ class Client(object):
         return f_proxy(f_map(out, lambda types: sorted([t["id"] for t in types])))
 
     def _do_upload_file(self, upload_id, file_obj):
-        def do_next_upload(checksum, size):
-            data = file_obj.read(self._CHUNK_SIZE)
-            if data:
-                if isinstance(data, six.text_type):
-                    # if it's unicode, need to encode before calculate checksum
-                    data = data.encode("utf-8")
-                checksum.update(data)
-                return f_flat_map(
-                    self._do_upload(data, upload_id, size),
-                    lambda _: do_next_upload(checksum, size + len(data)),
-                )
-            # nothing more to upload, return checksum and size
-            return f_return(UploadResult(checksum.hexdigest(), size))
+        return self._upload_executor.submit(self._upload_file_loop, upload_id, file_obj)
+
+    def _upload_file_loop(self, upload_id, file_obj):
+        # Read a file in chunks, upload it to pulp under the given upload_id,
+        # and return the checksum & bytes read.
+        #
+        # This method will block for the entire duration of the upload, which can
+        # be slow for a large file. It is intended to be invoked only from within
+        # the upload_executor in order to avoid blocking other operations.
 
         is_file_object = "close" in dir(file_obj)
         if not is_file_object:
             file_obj = open(file_obj, "rb")
 
-        upload_f = f_flat_map(f_return(), lambda _: do_next_upload(hashlib.sha256(), 0))
+        checksum = hashlib.sha256()
+        size = 0
 
-        upload_f.add_done_callback(lambda _: file_obj.close())
+        # We allow having a few chunks in flight at once, up to as many requests
+        # as we can do in parallel.
+        prev_chunks = [f_return() for _ in range(0, self._REQUEST_THREADS)]
 
-        return upload_f
+        try:
+            while True:
+                data = file_obj.read(self._CHUNK_SIZE)
+
+                if not data:
+                    break
+
+                if isinstance(data, six.text_type):
+                    # if it's unicode, need to encode before calculate checksum
+                    data = data.encode("utf-8")
+
+                checksum.update(data)
+
+                # Ensure the number of chunks are kept at a fixed size by waiting
+                # for one of them to complete.
+                prev_chunks.pop(0).result()
+
+                # Then start upload of this chunk to Pulp.
+                prev_chunks.append(self._do_upload(data, upload_id, size))
+
+                size += len(data)
+
+            # No more data to read. As soon as all chunks in progress are done,
+            # we have finished with the upload.
+            for chunk in prev_chunks:
+                chunk.result()
+
+            return UploadResult(checksum.hexdigest(), size)
+
+        finally:
+            file_obj.close()
 
     def _publish_repository(self, repo, distributors_with_config):
         compiled = self._compile_notes(repo)
