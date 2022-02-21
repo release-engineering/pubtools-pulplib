@@ -40,6 +40,12 @@ class FileRepository(Repository):
         type=bool,
         validator=validators.instance_of(bool),
     )
+    """True if this is a sigstore repository, used for container image manifest
+    signatures.
+
+    .. deprecated:: 2.24.0
+       The signatures are not stored in a Pulp repository any more.
+    """
 
     mutable_urls = attr.ib(
         default=attr.Factory(lambda: frozenlist(["PULP_MANIFEST"])),
