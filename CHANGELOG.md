@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - n/a
 
+## [2.23.1] - 2022-02-21
+
+- Minor internal refactors for improved debuggability.
+
 ## [2.23.0] - 2022-02-07
 
 - Added `version`, `display_order` fields to `FileUnit`.
@@ -328,7 +332,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release to PyPI
 
-[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.23.0...HEAD
+[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.23.1...HEAD
+[2.23.1]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.23.0...v2.23.1
 [2.23.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.22.0...v2.23.0
 [2.22.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.21.0...v2.22.0
 [2.21.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.20.0...v2.21.0
