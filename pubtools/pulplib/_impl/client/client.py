@@ -4,6 +4,7 @@ import logging
 import os
 import threading
 from functools import partial
+from collections import namedtuple
 
 import requests
 import six
@@ -30,6 +31,8 @@ from .ud_mappings import compile_ud_mappings
 
 
 LOG = logging.getLogger("pubtools.pulplib")
+
+UploadResult = namedtuple("UploadResult", ["checksum", "size"])
 
 
 class Client(object):
@@ -549,7 +552,7 @@ class Client(object):
                     lambda _: do_next_upload(checksum, size + len(data)),
                 )
             # nothing more to upload, return checksum and size
-            return f_return((checksum.hexdigest(), size))
+            return f_return(UploadResult(checksum.hexdigest(), size))
 
         is_file_object = "close" in dir(file_obj)
         if not is_file_object:
