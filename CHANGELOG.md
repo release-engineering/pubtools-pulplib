@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - n/a
 
+## [2.24.0] - 2022-02-23
+
+- The `Repository.is_sigstore` attribute has been deprecated.
+- Fixed a crash bug when uploading files of size >1GB.
+
 ## [2.23.2] - 2022-02-22
 
 - Improved searching capabilities for fake client.
@@ -336,7 +341,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release to PyPI
 
-[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.23.2...HEAD
+[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.24.0...HEAD
+[2.24.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.23.2...v2.24.0
 [2.23.2]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.23.1...v2.23.2
 [2.23.1]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.23.0...v2.23.1
 [2.23.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.22.0...v2.23.0
