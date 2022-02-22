@@ -148,9 +148,10 @@
     <span class="c1"># These are not a documented/supported feature of the library.</span>
     <span class="c1"># They&#39;re more of an emergency escape hatch to temporarily resolve issues.</span>
     <span class="n">_REQUEST_THREADS</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;PUBTOOLS_PULPLIB_REQUEST_THREADS&quot;</span><span class="p">,</span> <span class="s2">&quot;4&quot;</span><span class="p">))</span>
+    <span class="n">_UPLOAD_THREADS</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;PUBTOOLS_PULPLIB_UPLOAD_THREADS&quot;</span><span class="p">,</span> <span class="s2">&quot;4&quot;</span><span class="p">))</span>
     <span class="n">_PAGE_SIZE</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;PUBTOOLS_PULPLIB_PAGE_SIZE&quot;</span><span class="p">,</span> <span class="s2">&quot;2000&quot;</span><span class="p">))</span>
     <span class="n">_TASK_THROTTLE</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;PUBTOOLS_PULPLIB_TASK_THROTTLE&quot;</span><span class="p">,</span> <span class="s2">&quot;200&quot;</span><span class="p">))</span>
-    <span class="n">_CHUNK_SIZE</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;PUBTOOLS_PULPLIB_CHUNK_SIZE&quot;</span><span class="p">,</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">))</span>
+    <span class="n">_CHUNK_SIZE</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;PUBTOOLS_PULPLIB_CHUNK_SIZE&quot;</span><span class="p">,</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">10</span><span class="p">))</span>
 
     <span class="c1"># Policy used when deciding whether to retry operations.</span>
     <span class="c1"># This is mainly provided here as a hook for autotests, so the policy can be</span>
@@ -217,6 +218,15 @@
             <span class="o">.</span><span class="n">with_retry</span><span class="p">(</span><span class="n">retry_policy</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_RETRY_POLICY</span><span class="p">)</span>
         <span class="p">)</span>
 
+        <span class="c1"># executor for uploads:</span>
+        <span class="c1"># - reading of file content for upload, and calculation of checksums,</span>
+        <span class="c1">#   happens in this executor</span>
+        <span class="c1"># - HTTP requests don&#39;t happen here and are still submitted via</span>
+        <span class="c1">#   request_executor (hence no retry needed on this executor)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_upload_executor</span> <span class="o">=</span> <span class="n">Executors</span><span class="o">.</span><span class="n">thread_pool</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;pubtools-pulplib-uploads&quot;</span><span class="p">,</span> <span class="n">max_workers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_UPLOAD_THREADS</span>
+        <span class="p">)</span>
+
         <span class="c1"># executor for issuing HTTP requests to Pulp which spawn tasks:</span>
         <span class="c1"># - checks HTTP response and raises if it&#39;s not JSON or</span>
         <span class="c1">#   it&#39;s not successful</span>
@@ -241,6 +251,7 @@
 
     <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_request_executor</span><span class="o">.</span><span class="fm">__exit__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_upload_executor</span><span class="o">.</span><span class="fm">__exit__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_task_executor</span><span class="o">.</span><span class="fm">__exit__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Client.get_repository"><a class="viewcode-back" href="../../../../../api/client.html#pubtools.pulplib.Client.get_repository">[docs]</a>    <span class="k">def</span> <span class="nf">get_repository</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repository_id</span><span class="p">):</span>
@@ -573,29 +584,58 @@
         <span class="k">return</span> <span class="n">f_proxy</span><span class="p">(</span><span class="n">f_map</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">types</span><span class="p">:</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">t</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">types</span><span class="p">])))</span></div>
 
     <span class="k">def</span> <span class="nf">_do_upload_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">upload_id</span><span class="p">,</span> <span class="n">file_obj</span><span class="p">):</span>
-        <span class="k">def</span> <span class="nf">do_next_upload</span><span class="p">(</span><span class="n">checksum</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="n">file_obj</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_CHUNK_SIZE</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">data</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">text_type</span><span class="p">):</span>
-                    <span class="c1"># if it&#39;s unicode, need to encode before calculate checksum</span>
-                    <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
-                <span class="n">checksum</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-                <span class="k">return</span> <span class="n">f_flat_map</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_do_upload</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">upload_id</span><span class="p">,</span> <span class="n">size</span><span class="p">),</span>
-                    <span class="k">lambda</span> <span class="n">_</span><span class="p">:</span> <span class="n">do_next_upload</span><span class="p">(</span><span class="n">checksum</span><span class="p">,</span> <span class="n">size</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)),</span>
-                <span class="p">)</span>
-            <span class="c1"># nothing more to upload, return checksum and size</span>
-            <span class="k">return</span> <span class="n">f_return</span><span class="p">(</span><span class="n">UploadResult</span><span class="p">(</span><span class="n">checksum</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">(),</span> <span class="n">size</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_upload_executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_upload_file_loop</span><span class="p">,</span> <span class="n">upload_id</span><span class="p">,</span> <span class="n">file_obj</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_upload_file_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">upload_id</span><span class="p">,</span> <span class="n">file_obj</span><span class="p">):</span>
+        <span class="c1"># Read a file in chunks, upload it to pulp under the given upload_id,</span>
+        <span class="c1"># and return the checksum &amp; bytes read.</span>
+        <span class="c1">#</span>
+        <span class="c1"># This method will block for the entire duration of the upload, which can</span>
+        <span class="c1"># be slow for a large file. It is intended to be invoked only from within</span>
+        <span class="c1"># the upload_executor in order to avoid blocking other operations.</span>
 
         <span class="n">is_file_object</span> <span class="o">=</span> <span class="s2">&quot;close&quot;</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">file_obj</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">is_file_object</span><span class="p">:</span>
             <span class="n">file_obj</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span>
 
-        <span class="n">upload_f</span> <span class="o">=</span> <span class="n">f_flat_map</span><span class="p">(</span><span class="n">f_return</span><span class="p">(),</span> <span class="k">lambda</span> <span class="n">_</span><span class="p">:</span> <span class="n">do_next_upload</span><span class="p">(</span><span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">(),</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="n">checksum</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">()</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="mi">0</span>
 
-        <span class="n">upload_f</span><span class="o">.</span><span class="n">add_done_callback</span><span class="p">(</span><span class="k">lambda</span> <span class="n">_</span><span class="p">:</span> <span class="n">file_obj</span><span class="o">.</span><span class="n">close</span><span class="p">())</span>
+        <span class="c1"># We allow having a few chunks in flight at once, up to as many requests</span>
+        <span class="c1"># as we can do in parallel.</span>
+        <span class="n">prev_chunks</span> <span class="o">=</span> <span class="p">[</span><span class="n">f_return</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_REQUEST_THREADS</span><span class="p">)]</span>
 
-        <span class="k">return</span> <span class="n">upload_f</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">file_obj</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_CHUNK_SIZE</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="p">:</span>
+                    <span class="k">break</span>
+
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">text_type</span><span class="p">):</span>
+                    <span class="c1"># if it&#39;s unicode, need to encode before calculate checksum</span>
+                    <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+
+                <span class="n">checksum</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+                <span class="c1"># Ensure the number of chunks are kept at a fixed size by waiting</span>
+                <span class="c1"># for one of them to complete.</span>
+                <span class="n">prev_chunks</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+
+                <span class="c1"># Then start upload of this chunk to Pulp.</span>
+                <span class="n">prev_chunks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_do_upload</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">upload_id</span><span class="p">,</span> <span class="n">size</span><span class="p">))</span>
+
+                <span class="n">size</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+            <span class="c1"># No more data to read. As soon as all chunks in progress are done,</span>
+            <span class="c1"># we have finished with the upload.</span>
+            <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">prev_chunks</span><span class="p">:</span>
+                <span class="n">chunk</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+
+            <span class="k">return</span> <span class="n">UploadResult</span><span class="p">(</span><span class="n">checksum</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">(),</span> <span class="n">size</span><span class="p">)</span>
+
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">file_obj</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_publish_repository</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repo</span><span class="p">,</span> <span class="n">distributors_with_config</span><span class="p">):</span>
         <span class="n">compiled</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compile_notes</span><span class="p">(</span><span class="n">repo</span><span class="p">)</span>
