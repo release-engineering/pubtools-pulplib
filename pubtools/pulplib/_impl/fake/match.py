@@ -144,6 +144,13 @@ def pulp_value(pulp_field, obj):
     for cls_field in attr.fields(type(obj)):
         pulp_key = cls_field.metadata.get(PULP2_FIELD)
         if pulp_key:
+            subfield = None
+            # provides and requires attributes of RpmUnit needs special conversion
+            # method as we want to get values of specific attribute in list of objects
+            if pulp_key == "provides" or pulp_key == "requires":
+                pulp_key = pulp_field
+                subfield = pulp_field.split(".")[1]
+
             obj_value = getattr(obj, cls_field.name, None)
             # TODO: will we need to differentiate between "absent" and
             # "present but None"? There is no way to tell here if
@@ -151,18 +158,19 @@ def pulp_value(pulp_field, obj):
             # to None when the object was constructed.
             if obj_value is not None:
                 pulp_dict[pulp_key] = convert_field_to_pulp(
-                    obj, cls_field.name, obj_value
+                    obj, cls_field.name, obj_value, subfield
                 )
 
     return pulp_dict.get(pulp_field, ABSENT)
 
 
-def convert_field_to_pulp(obj, field_name, value):
+def convert_field_to_pulp(obj, field_name, value, subfield):
     # Return a value converted from Python representation into the representation
     # expected in Pulp's API.
     # obj - some PulpObject subclass
     # field - some attr.ib name
     # value - the value possibly to convert into Pulp representation
+    # subfield - a field within an object in a list that needs specific conversion
 
     cls_fields = attr.fields(type(obj))
     cls_field = getattr(cls_fields, field_name)
@@ -172,5 +180,7 @@ def convert_field_to_pulp(obj, field_name, value):
         # used within Pulp
         return value.strftime("%Y-%m-%dT%H:%M:%SZ")
 
+    if subfield:
+        return [getattr(item, subfield) for item in value]
     # no conversion
     return value

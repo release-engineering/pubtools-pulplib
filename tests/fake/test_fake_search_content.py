@@ -8,6 +8,7 @@ from pubtools.pulplib import (
     ErratumUnit,
     ModulemdUnit,
     YumRepository,
+    RpmDependency,
 )
 
 
@@ -29,6 +30,7 @@ def populated_repo(controller):
             release="1",
             arch="x86_64",
             sourcerpm="glibc-5.0-1.el5_11.1.src.rpm",
+            provides=[RpmDependency(name="gcc")],
         ),
         ModulemdUnit(
             name="module1", stream="s1", version=1234, context="a1b2", arch="x86_64"
@@ -114,6 +116,7 @@ def test_search_content_by_type(populated_repo):
             arch="x86_64",
             sourcerpm="glibc-5.0-1.el5_11.1.src.rpm",
             repository_memberships=["repo1"],
+            provides=[RpmDependency(name="gcc")],
         ),
     ]
 
@@ -214,4 +217,28 @@ def test_search_content_mixed_fields(populated_repo):
             arch="x86_64",
             repository_memberships=["repo1"],
         ),
+    ]
+
+
+def test_search_content_subfields(populated_repo):
+    """
+    search_content using subfield in attributes that are lists of objects.
+    This applies for 'provides' and 'requires' attributes in RpmUnit.
+    """
+    crit = Criteria.and_(
+        Criteria.with_unit_type(RpmUnit), Criteria.with_field("provides.name", "gcc")
+    )
+    units = list(populated_repo.search_content(crit))
+
+    assert units == [
+        RpmUnit(
+            unit_id="d4713d60-c8a7-0639-eb11-67b367a9c378",
+            name="glibc",
+            version="5.0",
+            release="1",
+            arch="x86_64",
+            sourcerpm="glibc-5.0-1.el5_11.1.src.rpm",
+            provides=[RpmDependency(name="gcc")],
+            repository_memberships=["repo1"],
+        )
     ]
