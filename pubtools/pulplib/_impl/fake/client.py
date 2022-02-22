@@ -461,14 +461,16 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
             file_obj = open(file_obj, "rb")
 
         def do_next_upload(checksum, size):
-            data = file_obj.read(1024 * 1024)
-            if data:
+            while True:
+                data = file_obj.read(1024 * 1024)
+                if not data:
+                    break
                 if isinstance(data, six.text_type):
                     data = data.encode("utf-8")
                 buffer.write(data)
                 checksum.update(data)
                 size += len(data)
-                return do_next_upload(checksum, size)
+
             return f_return(UploadResult(checksum.hexdigest(), size))
 
         out = f_flat_map(f_return(), lambda _: do_next_upload(hashlib.sha256(), 0))

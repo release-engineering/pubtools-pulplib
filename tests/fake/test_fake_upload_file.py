@@ -4,6 +4,8 @@ import pytest
 
 from pubtools.pulplib import FakeController, FileUnit, FileRepository, PulpException
 
+from ..ioutil import ZeroesIO
+
 
 def test_can_upload_units(tmpdir):
     """repo.upload_file() succeeds with fake client and populates units."""
@@ -136,6 +138,44 @@ def test_can_upload_history(tmpdir):
     assert history[0].tasks == tasks
     assert history[0].name == somefile.basename
     assert history[0].sha256 == digest
+
+
+def test_upload_file_verylarge():
+    """Fake client can upload a 2GB file successfully."""
+    controller = FakeController()
+
+    controller.insert_repository(FileRepository(id="repo1"))
+
+    client = controller.client
+    repo1 = client.get_repository("repo1").result()
+
+    file_size = 2000000000
+    file_obj = ZeroesIO(file_size)
+
+    upload_f = repo1.upload_file(file_obj, relative_url="big-file")
+
+    # The future should resolve successfully
+    tasks = upload_f.result()
+
+    # The task should be successful.
+    assert tasks[0].succeeded
+
+    # I should be able to find the corresponding unit.
+    units_all = sorted(client.search_content().result(), key=lambda u: u.sha256sum)
+
+    assert units_all == [
+        FileUnit(
+            path="big-file",
+            size=2000000000,
+            # If you want to verify this checksum, try:
+            #
+            #   dd if=/dev/zero bs=1000000 count=2000 status=none | sha256sum
+            #
+            sha256sum="2e0c654b6cba3a1e816726bae0eac481eb7fd0351633768c3c18392e0f02b619",
+            repository_memberships=["repo1"],
+            unit_id="e3e70682-c209-4cac-629f-6fbed82c07cd",
+        )
+    ]
 
 
 def test_upload_nonexistent_file_raises():
