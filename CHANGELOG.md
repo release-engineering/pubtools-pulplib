@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - n/a
 
+## [2.23.2] - 2022-02-22
+
+- Improved searching capabilities for fake client.
+
 ## [2.23.1] - 2022-02-21
 
 - Minor internal refactors for improved debuggability.
@@ -332,7 +336,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release to PyPI
 
-[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.23.1...HEAD
+[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.23.2...HEAD
+[2.23.2]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.23.1...v2.23.2
 [2.23.1]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.23.0...v2.23.1
 [2.23.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.22.0...v2.23.0
 [2.22.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.21.0...v2.22.0
