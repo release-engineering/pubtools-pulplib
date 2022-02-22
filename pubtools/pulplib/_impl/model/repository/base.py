@@ -197,7 +197,11 @@ class Repository(PulpObject, Deletable):
 
     is_sigstore = pulp_attrib(default=False, type=bool)
     """True if this is a sigstore repository, used for container image manifest
-    signatures."""
+    signatures.
+
+    .. deprecated:: 2.24.0
+       The signatures are not stored in a Pulp repository any more.
+    """
 
     is_temporary = pulp_attrib(
         default=False,
