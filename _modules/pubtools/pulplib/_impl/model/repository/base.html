@@ -230,7 +230,11 @@
 
     <span class="n">is_sigstore</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
     <span class="sd">&quot;&quot;&quot;True if this is a sigstore repository, used for container image manifest</span>
-<span class="sd">    signatures.&quot;&quot;&quot;</span>
+<span class="sd">    signatures.</span>
+
+<span class="sd">    .. deprecated:: 2.24.0</span>
+<span class="sd">       The signatures are not stored in a Pulp repository any more.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">is_temporary</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
