@@ -493,17 +493,19 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
         removed_units = set()
         kept_keys = set()
 
-        # use type hint=Unit so that if type_ids are the goal here
-        # then we will get back a properly prepared PulpSearch with
-        # a populated type_ids field
+        criteria = criteria or Criteria.true()
+        # validating the criteria here like in actual scenario.
         pulp_search = search_for_criteria(criteria, type_hint=Unit, type_ids_accum=None)
+
+        # raise an error if criteria with filters doesn't include type_ids
+        if pulp_search.filters and not pulp_search.type_ids:
+            raise ValueError(
+                "Criteria to remove_content must specify at least one unit type!"
+            )
 
         for unit_with_key in units_with_key:
             unit = unit_with_key["unit"]
-            if (
-                pulp_search.type_ids is None
-                or unit.content_type_id in pulp_search.type_ids
-            ):
+            if match_object(criteria, unit):
                 removed_units.add(unit)
             else:
                 kept_keys.add(unit_with_key["key"])

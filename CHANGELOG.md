@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- n/a
+- Added `criteria` to `Repository.remove_content`.
 
 ## [2.27.0] - 2022-03-10
 
