@@ -8,7 +8,6 @@ from collections import namedtuple
 
 import requests
 import six
-import humanize
 from more_executors import Executors
 from more_executors.futures import f_map, f_flat_map, f_return, f_proxy, f_sequence
 from six.moves import StringIO
@@ -28,6 +27,7 @@ from .search import search_for_criteria
 from .errors import PulpException
 from .poller import TaskPoller
 from . import retry
+from .humanize_compat import naturalsize
 
 from .ud_mappings import compile_ud_mappings
 
@@ -616,7 +616,7 @@ class Client(object):
                 upload_logger.info(
                     "Still uploading %s: %s%s [%s]",
                     name,
-                    humanize.naturalsize(size),
+                    naturalsize(size),
                     pct,
                     upload_id,
                 )
