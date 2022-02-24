@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - n/a
 
+## [2.25.0] - 2022-02-25
+
+- Added progress logging during long-running uploads.
+
 ## [2.24.0] - 2022-02-23
 
 - The `Repository.is_sigstore` attribute has been deprecated.
@@ -341,7 +345,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release to PyPI
 
-[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.24.0...HEAD
+[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.25.0...HEAD
+[2.25.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.24.0...v2.25.0
 [2.24.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.23.2...v2.24.0
 [2.23.2]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.23.1...v2.23.2
 [2.23.1]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.23.0...v2.23.1
