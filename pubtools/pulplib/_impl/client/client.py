@@ -8,6 +8,7 @@ from collections import namedtuple
 
 import requests
 import six
+import humanize
 from more_executors import Executors
 from more_executors.futures import f_map, f_flat_map, f_return, f_proxy, f_sequence
 from six.moves import StringIO
@@ -22,6 +23,7 @@ from ..model import (
     Unit,
     Task,
 )
+from ..log import TimedLogger
 from .search import search_for_criteria
 from .errors import PulpException
 from .poller import TaskPoller
@@ -550,10 +552,12 @@ class Client(object):
         # We only support returning the ID at this time.
         return f_proxy(f_map(out, lambda types: sorted([t["id"] for t in types])))
 
-    def _do_upload_file(self, upload_id, file_obj):
-        return self._upload_executor.submit(self._upload_file_loop, upload_id, file_obj)
+    def _do_upload_file(self, upload_id, file_obj, name="<unknown file>"):
+        return self._upload_executor.submit(
+            self._upload_file_loop, upload_id, file_obj, name
+        )
 
-    def _upload_file_loop(self, upload_id, file_obj):
+    def _upload_file_loop(self, upload_id, file_obj, name):
         # Read a file in chunks, upload it to pulp under the given upload_id,
         # and return the checksum & bytes read.
         #
@@ -561,10 +565,17 @@ class Client(object):
         # be slow for a large file. It is intended to be invoked only from within
         # the upload_executor in order to avoid blocking other operations.
 
+        total_size = None
+
         is_file_object = "close" in dir(file_obj)
         if not is_file_object:
+            # This is the preferred case (we're responsible for opening the file),
+            # as we can then know the total expected size. (file-like objects in
+            # general do not know their own size)
+            total_size = os.path.getsize(file_obj)
             file_obj = open(file_obj, "rb")
 
+        upload_logger = TimedLogger()
         checksum = hashlib.sha256()
         size = 0
 
@@ -593,6 +604,22 @@ class Client(object):
                 prev_chunks.append(self._do_upload(data, upload_id, size))
 
                 size += len(data)
+
+                # Log a message about the upload progress.
+                if not total_size:
+                    # no percentage can be calculated
+                    pct = ""
+                else:
+                    pct = float(size) / total_size * 100
+                    pct = " / %2d%%" % pct
+
+                upload_logger.info(
+                    "Still uploading %s: %s%s [%s]",
+                    name,
+                    humanize.naturalsize(size),
+                    pct,
+                    upload_id,
+                )
 
             # No more data to read. As soon as all chunks in progress are done,
             # we have finished with the upload.
@@ -805,10 +832,10 @@ class Client(object):
         LOG.debug("Queuing request to DELETE %s", url)
         return self._task_executor.submit(self._do_request, method="DELETE", url=url)
 
-    def _request_upload(self):
+    def _request_upload(self, name):
         url = os.path.join(self._url, "pulp/api/v2/content/uploads/")
 
-        LOG.debug("Requesting upload id")
+        LOG.debug("Requesting upload id for %s", name)
         return self._request_executor.submit(self._do_request, method="POST", url=url)
 
     def _do_upload(self, data, upload_id, offset):
@@ -841,10 +868,10 @@ class Client(object):
             self._do_request, method="POST", url=url, json=body
         )
 
-    def _delete_upload_request(self, upload_id):
+    def _delete_upload_request(self, upload_id, name):
         url = os.path.join(self._url, "pulp/api/v2/content/uploads/%s/" % upload_id)
 
-        LOG.debug("Deleting upload request %s", upload_id)
+        LOG.debug("Deleting upload request %s for %s", upload_id, name)
         return self._request_executor.submit(self._do_request, method="DELETE", url=url)
 
     def _do_get_maintenance(self):

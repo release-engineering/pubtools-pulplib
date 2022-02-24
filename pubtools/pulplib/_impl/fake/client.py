@@ -451,7 +451,9 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
 
         return f_proxy(f_return(self._type_ids))
 
-    def _do_upload_file(self, upload_id, file_obj):
+    def _do_upload_file(
+        self, upload_id, file_obj, name="<unknown file>"
+    ):  # pylint: disable=unused-argument
         # We keep track of uploaded content as we may need it at import time.
         buffer = six.BytesIO()
         self._uploads_pending[upload_id] = buffer
@@ -518,7 +520,7 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
 
         return f_return([task])
 
-    def _request_upload(self):
+    def _request_upload(self, name):  # pylint: disable=unused-argument
         upload_request = {
             "_href": "/pulp/api/v2/content/uploads/%s/" % self._next_request_id(),
             "upload_id": "%s" % self._next_request_id(),

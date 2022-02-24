@@ -620,7 +620,7 @@ class Repository(PulpObject, Deletable):
         unit_metadata_fn = unit_metadata_fn or (lambda _: None)
 
         upload_id_f = f_map(
-            self._client._request_upload(), lambda upload: upload["upload_id"]
+            self._client._request_upload(name), lambda upload: upload["upload_id"]
         )
 
         f_map(
@@ -640,7 +640,9 @@ class Repository(PulpObject, Deletable):
         else:
             upload_complete_f = f_flat_map(
                 upload_id_f,
-                lambda upload_id: self._client._do_upload_file(upload_id, file_obj),
+                lambda upload_id: self._client._do_upload_file(
+                    upload_id, file_obj, name
+                ),
             )
 
         import_complete_f = f_flat_map(
@@ -656,7 +658,7 @@ class Repository(PulpObject, Deletable):
 
         f_map(
             import_complete_f,
-            lambda _: self._client._delete_upload_request(upload_id_f.result()),
+            lambda _: self._client._delete_upload_request(upload_id_f.result(), name),
         )
 
         return f_proxy(import_complete_f)

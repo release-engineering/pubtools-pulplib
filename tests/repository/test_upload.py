@@ -14,7 +14,23 @@ from pubtools.pulplib import (
     TaskFailedException,
 )
 
+from pubtools.pulplib._impl.log import TimedLogger
+from pubtools.pulplib._impl.client import client
+
 from ..ioutil import ZeroesIO
+
+
+@pytest.fixture()
+def fast_timed_logger(monkeypatch):
+    # Force TimedLogger class to use an interval of 0 (i.e. it logs every time).
+    # Tests otherwise will run too fast for any of the log messages to ever
+    # be produced.
+
+    class FastTimedLogger(TimedLogger):
+        def __init__(self):
+            super(FastTimedLogger, self).__init__(interval=0)
+
+    monkeypatch.setattr(client, "TimedLogger", FastTimedLogger)
 
 
 def test_upload_detached():
@@ -23,7 +39,7 @@ def test_upload_detached():
         FileRepository(id="some-repo").upload_file("some-file")
 
 
-def test_upload_file(client, requests_mocker, tmpdir, caplog):
+def test_upload_file(client, requests_mocker, tmpdir, caplog, fast_timed_logger):
     """test upload a file to a repo in pulp"""
 
     logging.getLogger().setLevel(logging.INFO)
@@ -107,6 +123,18 @@ def test_upload_file(client, requests_mocker, tmpdir, caplog):
     # It should tell us about the upload
     assert (
         "Uploading some-file.txt to repo1 [cfb1fed0-752b-439e-aa68-fba68eababa3]"
+        in messages
+    )
+
+    # It should log some progress info during the upload.
+    # (Note these logs would not normally be produced for such a small amount of
+    # progress - it's only because we have reduced the logging interval for testing)
+    assert (
+        "Still uploading some-file.txt: 20 Bytes / 68% [cfb1fed0-752b-439e-aa68-fba68eababa3]"
+        in messages
+    )
+    assert (
+        "Still uploading some-file.txt: 29 Bytes / 100% [cfb1fed0-752b-439e-aa68-fba68eababa3]"
         in messages
     )
 
