@@ -41,7 +41,6 @@
 
 <span class="kn">import</span> <span class="nn">requests</span>
 <span class="kn">import</span> <span class="nn">six</span>
-<span class="kn">import</span> <span class="nn">humanize</span>
 <span class="kn">from</span> <span class="nn">more_executors</span> <span class="kn">import</span> <span class="n">Executors</span>
 <span class="kn">from</span> <span class="nn">more_executors.futures</span> <span class="kn">import</span> <span class="n">f_map</span><span class="p">,</span> <span class="n">f_flat_map</span><span class="p">,</span> <span class="n">f_return</span><span class="p">,</span> <span class="n">f_proxy</span><span class="p">,</span> <span class="n">f_sequence</span>
 <span class="kn">from</span> <span class="nn">six.moves</span> <span class="kn">import</span> <span class="n">StringIO</span>
@@ -61,6 +60,7 @@
 <span class="kn">from</span> <span class="nn">.errors</span> <span class="kn">import</span> <span class="n">PulpException</span>
 <span class="kn">from</span> <span class="nn">.poller</span> <span class="kn">import</span> <span class="n">TaskPoller</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">retry</span>
+<span class="kn">from</span> <span class="nn">.humanize_compat</span> <span class="kn">import</span> <span class="n">naturalsize</span>
 
 <span class="kn">from</span> <span class="nn">.ud_mappings</span> <span class="kn">import</span> <span class="n">compile_ud_mappings</span>
 
@@ -649,7 +649,7 @@
                 <span class="n">upload_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
                     <span class="s2">&quot;Still uploading </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s%s</span><span class="s2"> [</span><span class="si">%s</span><span class="s2">]&quot;</span><span class="p">,</span>
                     <span class="n">name</span><span class="p">,</span>
-                    <span class="n">humanize</span><span class="o">.</span><span class="n">naturalsize</span><span class="p">(</span><span class="n">size</span><span class="p">),</span>
+                    <span class="n">naturalsize</span><span class="p">(</span><span class="n">size</span><span class="p">),</span>
                     <span class="n">pct</span><span class="p">,</span>
                     <span class="n">upload_id</span><span class="p">,</span>
                 <span class="p">)</span>
