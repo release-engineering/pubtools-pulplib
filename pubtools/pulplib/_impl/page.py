@@ -18,7 +18,7 @@ LOG = logging.getLogger("pubtools.pulplib")
 # pylint: disable=no-member
 
 
-@attr.s(kw_only=True, frozen=True)
+@attr.s(kw_only=True, frozen=True, slots=False)
 class Page(object):
     """A page of Pulp search results.
 

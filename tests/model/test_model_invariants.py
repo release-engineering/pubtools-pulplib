@@ -5,6 +5,7 @@ import sys
 import pytest
 
 import pubtools.pulplib
+from pubtools.pulplib import Distributor, Repository, Page
 
 from .assertions import assert_model_invariants
 
@@ -72,6 +73,21 @@ def test_datetime_str(model_object, field_name):
     # get the usual TypeError from trying to store a str in a datetime field.
     with pytest.raises(TypeError):
         attr.evolve(model_object, **{field_name: "oops not a timestamp"})
+
+
+def test_slots(model_object):
+    """Test that model uses slotted classes (other than a few exceptions)."""
+
+    # These classes are currently permitted to not use slots,
+    # because they were written to access __dict__ internally so as to
+    # hide some private fields from attrs.
+    #
+    # They could potentially be rewritten to avoid this and also start
+    # using slots, so this could be considered a TODO.
+    if isinstance(model_object, (Repository, Distributor, Page)):
+        pytest.xfail("not compatible with __slots__")
+
+    assert not hasattr(model_object, "__dict__")
 
 
 def public_model_objects():

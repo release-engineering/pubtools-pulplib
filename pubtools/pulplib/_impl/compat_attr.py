@@ -19,6 +19,12 @@ def s(*args, **kwargs):
     # using this library will surely not be tested solely on Py2.
     kwargs = kwargs.copy()
 
+    if "slots" not in kwargs:
+        # Slotted classes should be used where possible, but there
+        # are a few cases where it won't work, so the possibility
+        # is left open to disable it via slots=False.
+        kwargs["slots"] = True
+
     if "kw_only" in kwargs and sys.version_info < (3,):  # pragma: no cover
         # This is only implemented for Python 3.
         # attrs will raise if kw_only is provided on Py2.

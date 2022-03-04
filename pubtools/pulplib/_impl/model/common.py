@@ -49,6 +49,8 @@ class PulpObject(object):
     # validate anything.
     _SCHEMA = False
 
+    __slots__ = ()
+
     @classmethod
     def from_data(cls, data):
         """Obtain a detached instance using data obtained from Pulp.
@@ -186,7 +188,7 @@ class PulpObject(object):
         return out
 
 
-@attr.s(kw_only=True, frozen=True)
+@attr.s(kw_only=True, frozen=True, slots=False)
 class WithClient(object):
     # A mixin for objects holding a private reference to client.
 
