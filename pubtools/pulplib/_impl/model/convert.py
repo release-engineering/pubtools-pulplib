@@ -6,6 +6,16 @@ from frozenlist2 import frozenlist
 
 from .attr import PULP2_PY_CONVERTER
 
+# Work around http://bugs.python.org/issue7980 which is closed "Won't Fix"
+# for python2:
+#
+# If multiple threads in a process do the first call to strptime at once,
+# a crash can occur. Calling strptime once at import time will avoid that
+# condition.
+#
+# TODO: remove me when py2 support is dropped
+datetime.datetime.strptime("", "")
+
 
 def get_converter(field, value):
     """Given an attrs target field and an input value from Pulp,
