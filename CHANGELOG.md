@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - n/a
 
+## [2.26.1] - 2022-03-09
+
+- Add a workaround for Python 2 strptime bug [7980](https://bugs.python.org/issue7980).
+
 ## [2.26.0] - 2022-03-08
 
 - Make most model classes slotted, for reduced memory usage.
@@ -353,7 +357,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release to PyPI
 
-[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.26.0...HEAD
+[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.26.1...HEAD
+[2.26.1]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.26.0...v2.26.1
 [2.26.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.25.1...v2.26.0
 [2.25.1]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.25.0...v2.25.1
 [2.25.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.24.0...v2.25.0
