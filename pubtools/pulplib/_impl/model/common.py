@@ -187,6 +187,30 @@ class PulpObject(object):
 
         return out
 
+    def __repr__(self):
+        # We provide a custom repr with one difference from the one generated
+        # by attrs:
+        # - The attrs repr includes all attributes
+        # - Ours includes only the attributes with non-default values
+        # Since we have a lot of optional attributes which are typically left
+        # at their default values, this helps make repr much less verbose and
+        # noisy for us.
+        class_name = self.__class__.__name__
+
+        fields = attr.fields(self.__class__)
+        kv = []
+        for field in fields:
+            if field.repr:
+                name = field.name
+                default = field.default
+                value = getattr(self, name, attr.NOTHING)
+                if value != default:
+                    kv.append((name, value))
+
+        return "{0}({1})".format(
+            class_name, ", ".join([name + "=" + repr(value) for (name, value) in kv])
+        )
+
 
 @attr.s(kw_only=True, frozen=True, slots=False)
 class WithClient(object):
