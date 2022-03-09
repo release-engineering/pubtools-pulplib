@@ -177,10 +177,18 @@ class YumRepository(Repository):
 
         base_url = re.sub(regex, "", self.relative_url)
         relative_url = base_url + suffix
-        criteria = Criteria.with_field("notes.relative_url", relative_url)
-        page_f = self._client.search_repository(criteria)
-        repo_f = f_map(page_f, unpack_page)
-        return f_proxy(repo_f)
+        criteria = Criteria.and_(
+            Criteria.with_field("relative_url", relative_url),
+            Criteria.with_field("type_id", "yum_distributor"),
+        )
+        page_f = self._client.search_distributor(criteria)
+        distributor_f = f_proxy(f_map(page_f, unpack_page))
+
+        if distributor_f.result() is None:
+            out = f_return()
+        else:
+            out = self._client.get_repository(distributor_f.repo_id)
+        return out
 
     def upload_rpm(self, file_obj, **kwargs):
         """Upload an RPM to this repository.
