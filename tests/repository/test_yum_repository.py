@@ -87,6 +87,32 @@ def test_related_repositories(client, requests_mocker):
     repo_binary_test.__dict__["_client"] = client
 
     requests_mocker.post(
+        "https://pulp.example.com/pulp/api/v2/distributors/search/",
+        [
+            {
+                "json": [
+                    {
+                        "id": "yum_distributor",
+                        "distributor_type_id": "yum_distributor",
+                        "repo_id": "repo_debug",
+                        "config": {"relative_url": "some/repo/debug"},
+                    }
+                ]
+            },
+            {
+                "json": [
+                    {
+                        "id": "yum_distributor",
+                        "distributor_type_id": "yum_distributor",
+                        "repo_id": "repo_source",
+                        "config": {"relative_url": "some/repo/SRPMS"},
+                    }
+                ]
+            },
+        ],
+    )
+
+    requests_mocker.post(
         "https://pulp.example.com/pulp/api/v2/repositories/search/",
         [{"json": [{"id": "repo_debug"}]}, {"json": [{"id": "repo_source"}]}],
     )
@@ -106,7 +132,7 @@ def test_related_repositories_not_found(client, requests_mocker):
     repo_binary_test.__dict__["_client"] = client
 
     requests_mocker.post(
-        "https://pulp.example.com/pulp/api/v2/repositories/search/", json=[]
+        "https://pulp.example.com/pulp/api/v2/distributors/search/", json=[]
     )
 
     repo = repo_binary_test.get_source_repository()
