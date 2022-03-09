@@ -13,7 +13,7 @@ class TaskFailedException(PulpException):
         Error details may be accessed from the task.
         """
 
-        super(TaskFailedException, self).__init__("Task %s failed" % task.id)
+        super(TaskFailedException, self).__init__(task.error_details)
 
 
 class MissingTaskException(PulpException):

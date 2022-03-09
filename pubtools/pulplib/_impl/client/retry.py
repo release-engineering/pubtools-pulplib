@@ -49,12 +49,22 @@ class PulpRetryPolicy(RetryPolicy):
         exception = future.exception()
         LOG.warning(
             "Retrying due to error: %s [%d/%d]%s",
-            exception,
+            self._message(exception),
             attempt,
             self._max_attempts,
             self._traceback(exception),
             extra={"event": {"type": "pulp-retry"}},
         )
+
+    def _message(self, exception):
+        if isinstance(exception, TaskFailedException):
+            # For the retry logs, don't include the full details on the task.
+            # It's too verbose to include inline.
+            # It can be logged separately or if all retries are exhausted.
+            return "Task %s failed" % exception.task.id
+
+        # Anything else uses default stringification.
+        return str(exception)
 
     def _traceback(self, exception):
         out = ""

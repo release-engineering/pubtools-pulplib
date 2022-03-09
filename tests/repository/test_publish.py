@@ -191,7 +191,13 @@ def test_publish_fail(fast_poller, requests_mocker, client):
 
     requests_mocker.post(
         "https://pulp.example.com/pulp/api/v2/tasks/search/",
-        json=[{"task_id": "task1", "state": "error"}],
+        json=[
+            {
+                "task_id": "task1",
+                "state": "error",
+                "error": {"code": "ABC00123", "description": "Simulated error"},
+            }
+        ],
     )
 
     publish_f = repo.publish()
@@ -202,7 +208,7 @@ def test_publish_fail(fast_poller, requests_mocker, client):
 
     # The exception should have a reference to the task which failed
     assert error.value.task.id == "task1"
-    assert "Task task1 failed" in str(error.value)
+    assert "Pulp task [task1] failed: ABC00123: Simulated error" in str(error.value)
 
 
 def test_publish_broken_response(fast_poller, requests_mocker, client):
