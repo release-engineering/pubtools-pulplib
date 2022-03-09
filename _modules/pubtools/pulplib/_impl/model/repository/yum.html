@@ -210,10 +210,18 @@
 
         <span class="n">base_url</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">regex</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">relative_url</span><span class="p">)</span>
         <span class="n">relative_url</span> <span class="o">=</span> <span class="n">base_url</span> <span class="o">+</span> <span class="n">suffix</span>
-        <span class="n">criteria</span> <span class="o">=</span> <span class="n">Criteria</span><span class="o">.</span><span class="n">with_field</span><span class="p">(</span><span class="s2">&quot;notes.relative_url&quot;</span><span class="p">,</span> <span class="n">relative_url</span><span class="p">)</span>
-        <span class="n">page_f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">search_repository</span><span class="p">(</span><span class="n">criteria</span><span class="p">)</span>
-        <span class="n">repo_f</span> <span class="o">=</span> <span class="n">f_map</span><span class="p">(</span><span class="n">page_f</span><span class="p">,</span> <span class="n">unpack_page</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">f_proxy</span><span class="p">(</span><span class="n">repo_f</span><span class="p">)</span>
+        <span class="n">criteria</span> <span class="o">=</span> <span class="n">Criteria</span><span class="o">.</span><span class="n">and_</span><span class="p">(</span>
+            <span class="n">Criteria</span><span class="o">.</span><span class="n">with_field</span><span class="p">(</span><span class="s2">&quot;relative_url&quot;</span><span class="p">,</span> <span class="n">relative_url</span><span class="p">),</span>
+            <span class="n">Criteria</span><span class="o">.</span><span class="n">with_field</span><span class="p">(</span><span class="s2">&quot;type_id&quot;</span><span class="p">,</span> <span class="s2">&quot;yum_distributor&quot;</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">page_f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">search_distributor</span><span class="p">(</span><span class="n">criteria</span><span class="p">)</span>
+        <span class="n">distributor_f</span> <span class="o">=</span> <span class="n">f_proxy</span><span class="p">(</span><span class="n">f_map</span><span class="p">(</span><span class="n">page_f</span><span class="p">,</span> <span class="n">unpack_page</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">distributor_f</span><span class="o">.</span><span class="n">result</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">f_return</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">get_repository</span><span class="p">(</span><span class="n">distributor_f</span><span class="o">.</span><span class="n">repo_id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span>
 
 <div class="viewcode-block" id="YumRepository.upload_rpm"><a class="viewcode-back" href="../../../../../../api/yum.html#pubtools.pulplib.YumRepository.upload_rpm">[docs]</a>    <span class="k">def</span> <span class="nf">upload_rpm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Upload an RPM to this repository.</span>
