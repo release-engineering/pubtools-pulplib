@@ -46,7 +46,7 @@
 <span class="sd">        Error details may be accessed from the task.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="nb">super</span><span class="p">(</span><span class="n">TaskFailedException</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;Task </span><span class="si">%s</span><span class="s2"> failed&quot;</span> <span class="o">%</span> <span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">)</span></div>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TaskFailedException</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">task</span><span class="o">.</span><span class="n">error_details</span><span class="p">)</span></div>
 
 
 <span class="k">class</span> <span class="nc">MissingTaskException</span><span class="p">(</span><span class="n">PulpException</span><span class="p">):</span>
