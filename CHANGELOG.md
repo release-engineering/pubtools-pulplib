@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - n/a
 
+## [2.27.0] - 2022-03-10
+
+- Pulp objects have an improved `repr` implementation which omits redundant information.
+- `TaskFailedException` now includes task failure details in the exception's message.
+- `YumRepository.get_(debug|binary|source)_repository` have been revised to use
+  distributor config rather than repo config. This allows the methods to work on the
+  fake client.
+
 ## [2.26.1] - 2022-03-09
 
 - Add a workaround for Python 2 strptime bug [7980](https://bugs.python.org/issue7980).
@@ -357,7 +365,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release to PyPI
 
-[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.26.1...HEAD
+[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.27.0...HEAD
+[2.27.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.26.1...v2.27.0
 [2.26.1]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.26.0...v2.26.1
 [2.26.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.25.1...v2.26.0
 [2.25.1]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.25.0...v2.25.1
