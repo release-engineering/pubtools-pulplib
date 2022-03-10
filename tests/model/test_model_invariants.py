@@ -90,6 +90,12 @@ def test_slots(model_object):
     assert not hasattr(model_object, "__dict__")
 
 
+def test_repr(model_object):
+    """Test that repr successfully returns a string."""
+
+    assert isinstance(repr(model_object), str)
+
+
 def public_model_objects():
     """Returns a default-constructed instance of every public model class
     found in pubtools.pulplib.

@@ -33,3 +33,11 @@ def test_user_metadata_fields():
         cdn_path="/some/path/to/my.rpm",
         cdn_published=datetime.datetime(2021, 4, 1, 1, 8, 26),
     )
+
+
+def test_repr_no_defaults():
+    """Verify that repr only shows those fields with non-default values."""
+
+    u = RpmUnit(name="bash", version="4.0", release="1", arch="x86_64")
+
+    assert repr(u) == "RpmUnit(name='bash', version='4.0', release='1', arch='x86_64')"
