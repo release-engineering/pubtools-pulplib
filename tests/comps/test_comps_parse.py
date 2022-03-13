@@ -95,7 +95,10 @@ def test_can_parse_units(data_path):
         },
         "display_order": None,
         "group_ids": ["networkmanager-submodules", "standard"],
-        "options": [{"default": True, "group": "xmonad"}, {"group": "xmonad-mate"}],
+        "options": [
+            {"default": True, "group": "xmonad"},
+            {"default": False, "group": "xmonad-mate"},
+        ],
     }
 
     assert units[5] == {
@@ -109,7 +112,7 @@ def test_can_parse_units(data_path):
         },
         "display_order": 22,
         "group_ids": ["input-methods", "multimedia"],
-        "options": [{"group": "libreoffice"}],
+        "options": [{"default": False, "group": "libreoffice"}],
     }
 
     assert units[6] == {

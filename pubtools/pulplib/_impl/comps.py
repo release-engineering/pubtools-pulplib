@@ -217,8 +217,7 @@ class CompsParser(object):
 
         option = {"group": self.current_buf}
 
-        if (attrs.get("default") or "").lower() == "true":
-            option["default"] = True
+        option["default"] = (attrs.get("default") or "").lower() == "true"
 
         self.current_unit.setdefault("options", []).append(option)
 

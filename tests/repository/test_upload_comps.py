@@ -152,7 +152,10 @@ def test_upload_comps_xml(client, requests_mocker):
             "translated_name": {"af": "Basiese werkskerm"},
             "description": "X Window System with a choice of window manager.",
             "group_ids": ["networkmanager-submodules", "standard"],
-            "options": [{"group": "xmonad", "default": True}, {"group": "xmonad-mate"}],
+            "options": [
+                {"group": "xmonad", "default": True},
+                {"group": "xmonad-mate", "default": False},
+            ],
             "repo_id": "repo1",
         },
         {
