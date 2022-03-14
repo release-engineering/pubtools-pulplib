@@ -378,13 +378,15 @@ during the sync operation.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pubtools.pulplib.Repository.remove_content">
-<span class="sig-name descname"><span class="pre">remove_content</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository/base.html#Repository.remove_content"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Repository.remove_content" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">remove_content</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">criteria</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository/base.html#Repository.remove_content"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Repository.remove_content" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove all content of requested types from this repository.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>type_ids</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>]</em>) – <p>IDs of content type(s) to be removed.
-See <a class="reference internal" href="client.html#pubtools.pulplib.Client.get_content_type_ids" title="pubtools.pulplib.Client.get_content_type_ids"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_content_type_ids()</span></code></a>.</p>
-<p>If omitted, content of all types will be removed.</p>
+<dd class="field-odd"><p><strong>criteria</strong> (<a class="reference internal" href="searching.html#pubtools.pulplib.Criteria" title="pubtools.pulplib.Criteria"><code class="xref py py-class docutils literal notranslate"><span class="pre">Criteria</span></code></a>) – <p>A criteria object used to filter the contents for removal.</p>
+<p>Type IDs must be included in the criteria with any other filters.
+If omitted, filter criteria will be ignored and all the content will
+be removed.
+If criteria is omitted, all the content will be removed.</p>
 </p>
 </dd>
 <dt class="field-even">Returns</dt>

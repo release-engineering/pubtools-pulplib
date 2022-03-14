@@ -33,6 +33,7 @@
   <h1>Source code for pubtools.pulplib._impl.model.repository.base</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">datetime</span>
 <span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
 
 <span class="kn">from</span> <span class="nn">attr</span> <span class="kn">import</span> <span class="n">validators</span><span class="p">,</span> <span class="n">asdict</span>
 <span class="kn">from</span> <span class="nn">frozenlist2</span> <span class="kn">import</span> <span class="n">frozenlist</span>
@@ -502,15 +503,17 @@
             <span class="p">)</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Repository.remove_content"><a class="viewcode-back" href="../../../../../../api/pulpcore.html#pubtools.pulplib.Repository.remove_content">[docs]</a>    <span class="k">def</span> <span class="nf">remove_content</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="Repository.remove_content"><a class="viewcode-back" href="../../../../../../api/pulpcore.html#pubtools.pulplib.Repository.remove_content">[docs]</a>    <span class="k">def</span> <span class="nf">remove_content</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">criteria</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Remove all content of requested types from this repository.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            type_ids (list[str])</span>
-<span class="sd">                IDs of content type(s) to be removed.</span>
-<span class="sd">                See :meth:`~pubtools.pulplib.Client.get_content_type_ids`.</span>
+<span class="sd">            criteria (:class:`~pubtools.pulplib.Criteria`)</span>
+<span class="sd">                A criteria object used to filter the contents for removal.</span>
 
-<span class="sd">                If omitted, content of all types will be removed.</span>
+<span class="sd">                Type IDs must be included in the criteria with any other filters.</span>
+<span class="sd">                If omitted, filter criteria will be ignored and all the content will</span>
+<span class="sd">                be removed.</span>
+<span class="sd">                If criteria is omitted, all the content will be removed.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Future[list[:class:`~pubtools.pulplib.Task`]]</span>
@@ -531,33 +534,30 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">DetachedException</span><span class="p">()</span>
 
-        <span class="c1"># Note: we use dynamic kwargs because it&#39;s very likely that a future</span>
-        <span class="c1"># version of this method will support some &quot;criteria&quot;.  Let&#39;s not fix the</span>
-        <span class="c1"># argument order at least until then.</span>
+        <span class="c1"># Type IDs are must for the criteria filter to be effective. It must be included</span>
+        <span class="c1"># in the criteria. Type IDs provided as type_id kwargs will be ignored for the</span>
+        <span class="c1"># criteria and will remove all the content in the repo.</span>
+        <span class="c1"># Refer to https://bugzilla.redhat.com/show_bug.cgi?id=1021579 and Pulp</span>
+        <span class="c1"># documentation for more details.</span>
 
-        <span class="c1"># start down the path of using Criteria per this issue:</span>
-        <span class="c1"># https://github.com/release-engineering/pubtools-pulplib/issues/62</span>
-        <span class="c1"># by using Criteria internally.</span>
-        <span class="c1"># there seems to be pretty complex handling of Criteria</span>
-        <span class="c1"># for serialization in the search API, and it is unclear which parts</span>
-        <span class="c1"># might also be necessary to use for content removal.</span>
-        <span class="c1"># If any or all of the same handling is needed, it would be beneficial</span>
-        <span class="c1"># to encapsulate the preparation of a criteria JSON object in some</span>
-        <span class="c1"># (more generically named) functions or a class to avoid duplicating code.</span>
-        <span class="c1"># for reference see search_content, _impl.client.Client._search_repo_units,</span>
-        <span class="c1"># _impl.client.Client._search, and _impl.client.search.search_for_criteria</span>
-        <span class="n">criteria</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="n">type_ids</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;type_ids&quot;</span><span class="p">)</span>
-        <span class="c1"># use _content_type_id field name to coerce</span>
-        <span class="c1"># search_for_criteria to fill out the PulpSearch#type_ids field.</span>
-        <span class="c1"># passing a criteria with an empty type_ids list rather than</span>
-        <span class="c1"># None results in failing tests due to the implementation of</span>
-        <span class="c1"># FakeClient#_do_unassociate</span>
-        <span class="k">if</span> <span class="n">type_ids</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">criteria</span> <span class="o">=</span> <span class="n">Criteria</span><span class="o">.</span><span class="n">with_field</span><span class="p">(</span>
-                <span class="s2">&quot;_content_type_id&quot;</span><span class="p">,</span>
-                <span class="n">Matcher</span><span class="o">.</span><span class="n">in_</span><span class="p">(</span><span class="n">type_ids</span><span class="p">),</span>  <span class="c1"># Criteria.with_field_in is deprecated</span>
-            <span class="p">)</span>
+        <span class="c1"># Note: type_ids is deprecated. Criteria.with_unit_type should be used to</span>
+        <span class="c1"># filter on type_ids. This is kept for backward compatibility and will be</span>
+        <span class="c1"># removed in future versions.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">criteria</span><span class="p">:</span>
+            <span class="n">type_ids</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;type_ids&quot;</span><span class="p">)</span>
+            <span class="c1"># use content_type_id field name to coerce</span>
+            <span class="c1"># search_for_criteria to fill out the PulpSearch#type_ids field.</span>
+            <span class="c1"># passing a criteria with an empty type_ids list rather than</span>
+            <span class="c1"># None results in failing tests due to the implementation of</span>
+            <span class="c1"># FakeClient#_do_unassociate</span>
+            <span class="k">if</span> <span class="n">type_ids</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                    <span class="s2">&quot;type_ids is deprecated, use criteria instead&quot;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span>
+                <span class="p">)</span>
+                <span class="n">criteria</span> <span class="o">=</span> <span class="n">Criteria</span><span class="o">.</span><span class="n">with_field</span><span class="p">(</span>
+                    <span class="s2">&quot;content_type_id&quot;</span><span class="p">,</span>
+                    <span class="n">Matcher</span><span class="o">.</span><span class="n">in_</span><span class="p">(</span><span class="n">type_ids</span><span class="p">),</span>  <span class="c1"># Criteria.with_field_in is deprecated</span>
+                <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">f_proxy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_do_unassociate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">criteria</span><span class="o">=</span><span class="n">criteria</span><span class="p">))</span></div>
 

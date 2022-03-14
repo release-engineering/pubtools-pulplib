@@ -726,6 +726,17 @@
 
         <span class="n">body</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;criteria&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type_ids&quot;</span><span class="p">:</span> <span class="n">pulp_search</span><span class="o">.</span><span class="n">type_ids</span><span class="p">}}</span>
 
+        <span class="k">if</span> <span class="n">pulp_search</span><span class="o">.</span><span class="n">filters</span><span class="p">:</span>
+            <span class="c1"># Filters to remove content are only effective when provided</span>
+            <span class="c1"># with a type_id. Otherwise filters are skipped and all the</span>
+            <span class="c1"># content is removed.</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">pulp_search</span><span class="o">.</span><span class="n">type_ids</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;Criteria to remove_content must specify at least one unit type!&quot;</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">body</span><span class="p">[</span><span class="s2">&quot;criteria&quot;</span><span class="p">][</span><span class="s2">&quot;filters&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="n">pulp_search</span><span class="o">.</span><span class="n">filters</span><span class="p">}</span>
+
         <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Submitting </span><span class="si">%s</span><span class="s2"> unassociate: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">body</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task_executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
