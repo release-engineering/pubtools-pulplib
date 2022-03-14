@@ -1,5 +1,6 @@
 import datetime
 import logging
+import warnings
 
 from attr import validators, asdict
 from frozenlist2 import frozenlist
@@ -469,15 +470,17 @@ class Repository(PulpObject, Deletable):
             )
         )
 
-    def remove_content(self, **kwargs):
+    def remove_content(self, criteria=None, **kwargs):
         """Remove all content of requested types from this repository.
 
         Args:
-            type_ids (list[str])
-                IDs of content type(s) to be removed.
-                See :meth:`~pubtools.pulplib.Client.get_content_type_ids`.
+            criteria (:class:`~pubtools.pulplib.Criteria`)
+                A criteria object used to filter the contents for removal.
 
-                If omitted, content of all types will be removed.
+                Type IDs must be included in the criteria with any other filters.
+                If omitted, filter criteria will be ignored and all the content will
+                be removed.
+                If criteria is omitted, all the content will be removed.
 
         Returns:
             Future[list[:class:`~pubtools.pulplib.Task`]]
@@ -498,33 +501,30 @@ class Repository(PulpObject, Deletable):
         if not self._client:
             raise DetachedException()
 
-        # Note: we use dynamic kwargs because it's very likely that a future
-        # version of this method will support some "criteria".  Let's not fix the
-        # argument order at least until then.
+        # Type IDs are must for the criteria filter to be effective. It must be included
+        # in the criteria. Type IDs provided as type_id kwargs will be ignored for the
+        # criteria and will remove all the content in the repo.
+        # Refer to https://bugzilla.redhat.com/show_bug.cgi?id=1021579 and Pulp
+        # documentation for more details.
 
-        # start down the path of using Criteria per this issue:
-        # https://github.com/release-engineering/pubtools-pulplib/issues/62
-        # by using Criteria internally.
-        # there seems to be pretty complex handling of Criteria
-        # for serialization in the search API, and it is unclear which parts
-        # might also be necessary to use for content removal.
-        # If any or all of the same handling is needed, it would be beneficial
-        # to encapsulate the preparation of a criteria JSON object in some
-        # (more generically named) functions or a class to avoid duplicating code.
-        # for reference see search_content, _impl.client.Client._search_repo_units,
-        # _impl.client.Client._search, and _impl.client.search.search_for_criteria
-        criteria = None
-        type_ids = kwargs.get("type_ids")
-        # use _content_type_id field name to coerce
-        # search_for_criteria to fill out the PulpSearch#type_ids field.
-        # passing a criteria with an empty type_ids list rather than
-        # None results in failing tests due to the implementation of
-        # FakeClient#_do_unassociate
-        if type_ids is not None:
-            criteria = Criteria.with_field(
-                "_content_type_id",
-                Matcher.in_(type_ids),  # Criteria.with_field_in is deprecated
-            )
+        # Note: type_ids is deprecated. Criteria.with_unit_type should be used to
+        # filter on type_ids. This is kept for backward compatibility and will be
+        # removed in future versions.
+        if not criteria:
+            type_ids = kwargs.get("type_ids")
+            # use content_type_id field name to coerce
+            # search_for_criteria to fill out the PulpSearch#type_ids field.
+            # passing a criteria with an empty type_ids list rather than
+            # None results in failing tests due to the implementation of
+            # FakeClient#_do_unassociate
+            if type_ids is not None:
+                warnings.warn(
+                    "type_ids is deprecated, use criteria instead", DeprecationWarning
+                )
+                criteria = Criteria.with_field(
+                    "content_type_id",
+                    Matcher.in_(type_ids),  # Criteria.with_field_in is deprecated
+                )
 
         return f_proxy(self._client._do_unassociate(self.id, criteria=criteria))
 

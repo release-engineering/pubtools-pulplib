@@ -693,6 +693,17 @@ class Client(object):
 
         body = {"criteria": {"type_ids": pulp_search.type_ids}}
 
+        if pulp_search.filters:
+            # Filters to remove content are only effective when provided
+            # with a type_id. Otherwise filters are skipped and all the
+            # content is removed.
+            if not pulp_search.type_ids:
+                raise ValueError(
+                    "Criteria to remove_content must specify at least one unit type!"
+                )
+            else:
+                body["criteria"]["filters"] = {"unit": pulp_search.filters}
+
         LOG.debug("Submitting %s unassociate: %s", url, body)
 
         return self._task_executor.submit(

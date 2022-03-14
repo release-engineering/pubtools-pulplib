@@ -1,4 +1,12 @@
-from pubtools.pulplib import FakeController, YumRepository, RpmUnit, ModulemdUnit
+import pytest
+
+from pubtools.pulplib import (
+    FakeController,
+    YumRepository,
+    RpmUnit,
+    ModulemdUnit,
+    Criteria,
+)
 
 
 def test_can_remove_empty():
@@ -100,3 +108,97 @@ def test_remove_deleted_repo_fails():
 
     # It should fail
     assert "Repository id=repo1 not found" in str(remove.exception())
+
+
+def test_remove_filtered_content():
+    """repo.remove_content() succeeds and removes expected units inserted via controller."""
+    controller = FakeController()
+    client = controller.client
+
+    rpm_units = [
+        RpmUnit(name="bash", version="4.0", release="1", arch="x86_64"),
+        RpmUnit(name="glibc", version="5.0", release="1", arch="x86_64"),
+    ]
+    modulemd_units = [
+        ModulemdUnit(
+            name="module1", stream="s1", version=1234, context="a1b2", arch="x86_64"
+        ),
+        ModulemdUnit(
+            name="module1", stream="s1", version=1235, context="a1b2", arch="x86_64"
+        ),
+    ]
+    units = rpm_units + modulemd_units
+
+    repo = YumRepository(id="repo1")
+    controller.insert_repository(repo)
+    controller.insert_units(repo, units)
+
+    criteria = Criteria.and_(
+        Criteria.with_unit_type(RpmUnit), Criteria.with_field("name", "bash")
+    )
+    remove_rpms = client.get_repository("repo1").remove_content(criteria=criteria)
+
+    assert len(remove_rpms) == 1
+    task = remove_rpms[0]
+
+    # It should have completed successfully
+    assert task.completed
+    assert task.succeeded
+
+    # It should have removed the specific rpm
+    assert len(task.units) == 1
+    assert task.units[0] == sorted(rpm_units)[0]
+
+    # Try removing a module with incorrect type_ids
+    criteria = Criteria.and_(
+        Criteria.with_unit_type(RpmUnit), Criteria.with_field("name", "module1")
+    )
+    remove_rpms = client.get_repository("repo1").remove_content(criteria=criteria)
+
+    assert len(remove_rpms) == 1
+    task = remove_rpms[0]
+
+    # It should have completed successfully
+    assert task.completed
+    assert task.succeeded
+
+    # Nothing's removed as criteria isn't fulfilled
+    assert len(task.units) == 0
+
+    # Removing module with correct type_ids
+    criteria = Criteria.and_(
+        Criteria.with_unit_type(ModulemdUnit), Criteria.with_field("name", "module1")
+    )
+    remove_rpms = client.get_repository("repo1").remove_content(criteria=criteria)
+
+    assert len(remove_rpms) == 1
+    task = remove_rpms[0]
+
+    # It should have completed successfully
+    assert task.completed
+    assert task.succeeded
+
+    # It should have removed both the modules as they
+    # match the criteria
+    assert len(task.units) == 2
+    assert sorted(task.units) == sorted(modulemd_units)
+
+
+def test_remove_fails_without_type_id():
+    """repo.remove_content() fails when a criteria is provided without unit type"""
+    controller = FakeController()
+    client = controller.client
+
+    rpm_units = [
+        RpmUnit(name="bash", version="4.0", release="1", arch="x86_64"),
+        RpmUnit(name="glibc", version="5.0", release="1", arch="x86_64"),
+    ]
+
+    repo = YumRepository(id="repo1")
+    controller.insert_repository(repo)
+    controller.insert_units(repo, rpm_units)
+
+    criteria = Criteria.and_(Criteria.with_field("name", "bash"))
+
+    with pytest.raises(ValueError):
+        client.get_repository("repo1").remove_content(criteria=criteria)

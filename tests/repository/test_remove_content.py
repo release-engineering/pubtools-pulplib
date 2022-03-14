@@ -14,6 +14,8 @@ from pubtools.pulplib import (
     ModulemdUnit,
     YumRepoMetadataFileUnit,
     Unit,
+    Criteria,
+    Matcher,
 )
 
 
@@ -171,3 +173,93 @@ def test_remove_loads_units(fast_poller, requests_mocker, client):
             Unit(content_type_id="bizarre_type"),
         ]
     )
+
+
+def test_remove_with_criteria(fast_poller, requests_mocker, client):
+    """Remove succeeds when given a critria/filter for removal"""
+    repo = Repository(id="some-repo")
+    repo.__dict__["_client"] = client
+
+    requests_mocker.post(
+        "https://pulp.example.com/pulp/api/v2/repositories/some-repo/actions/unassociate/",
+        [
+            {"json": {"spawned_tasks": [{"task_id": "task1"}]}},
+            {"json": {"spawned_tasks": [{"task_id": "task2"}]}},
+        ],
+    )
+
+    requests_mocker.post(
+        "https://pulp.example.com/pulp/api/v2/tasks/search/",
+        [
+            {"json": [{"task_id": "task1", "state": "finished"}]},
+            {"json": [{"task_id": "task2", "state": "finished"}]},
+        ],
+    )
+    criteria = Criteria.and_(
+        Criteria.with_unit_type(RpmUnit),
+        Criteria.with_field("filename", "some.rpm"),
+        Criteria.with_field("signing_key", Matcher.in_(["key123"])),
+    )
+
+    assert repo.remove_content(criteria=criteria).result() == [
+        Task(id="task1", completed=True, succeeded=True)
+    ]
+
+    # It should have passed the criteria to Pulp
+    req = requests_mocker.request_history
+    assert (
+        req[0].url
+        == "https://pulp.example.com/pulp/api/v2/repositories/some-repo/actions/unassociate/"
+    )
+    assert req[0].json() == {
+        "criteria": {
+            "filters": {
+                "unit": {
+                    "$and": [
+                        {"filename": {"$eq": "some.rpm"}},
+                        {"signing_key": {"$in": ["key123"]}},
+                    ]
+                }
+            },
+            "type_ids": ["rpm", "srpm"],
+        }
+    }
+
+    # Providing both criteria and type_ids
+    assert repo.remove_content(
+        criteria=criteria, type_ids=["type1", "type2"]
+    ).result() == [Task(id="task2", completed=True, succeeded=True)]
+
+    # It should have passed only the critera to Pulp and ignore type_ids as kwarg
+    req = requests_mocker.request_history
+    assert (
+        req[0].url
+        == "https://pulp.example.com/pulp/api/v2/repositories/some-repo/actions/unassociate/"
+    )
+    assert req[0].json() == {
+        "criteria": {
+            "filters": {
+                "unit": {
+                    "$and": [
+                        {"filename": {"$eq": "some.rpm"}},
+                        {"signing_key": {"$in": ["key123"]}},
+                    ]
+                }
+            },
+            "type_ids": ["rpm", "srpm"],
+        }
+    }
+
+
+def test_remove_fail_without_type_id(fast_poller, client):
+    """Remove fails when a critria is provided without unit type"""
+    repo = Repository(id="some-repo")
+    repo.__dict__["_client"] = client
+
+    criteria = Criteria.and_(
+        Criteria.with_field("filename", "some.rpm"),
+        Criteria.with_field("signing_key", Matcher.in_(["key123"])),
+    )
+
+    with pytest.raises(ValueError):
+        repo.remove_content(criteria=criteria)
