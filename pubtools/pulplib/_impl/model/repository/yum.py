@@ -9,7 +9,7 @@ from ..attr import pulp_attrib
 from ..common import DetachedException
 from ...model.unit import RpmUnit
 from ... import compat_attr as attr, comps
-from ...criteria import Criteria
+from ...criteria import Criteria, Matcher
 
 
 @attr.s(kw_only=True, frozen=True)
@@ -427,7 +427,8 @@ class YumRepository(Repository):
 
         # Remove former units of comps-related types so that the end result is only
         # those units included in the current XML.
-        out = self.remove_content(type_ids=comps_type_ids)
+        crit = Criteria.with_field("content_type_id", Matcher.in_(comps_type_ids))
+        out = self.remove_content(crit)
 
         # Once removal is done we can upload each unit.
         upload_f = []
