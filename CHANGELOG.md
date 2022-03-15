@@ -7,7 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- n/a
+
+## [2.28.0] - 2022-03-15
+
 - Added `criteria` to `Repository.remove_content`.
+- Fixed handling of absent `default` fields in package environment options during
+  upload of comps.xml.
 
 ## [2.27.0] - 2022-03-10
 
@@ -365,7 +371,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release to PyPI
 
-[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.27.0...HEAD
+[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.28.0...HEAD
+[2.28.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.27.0...v2.28.0
 [2.27.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.26.1...v2.27.0
 [2.26.1]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.26.0...v2.26.1
 [2.26.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.25.1...v2.26.0
