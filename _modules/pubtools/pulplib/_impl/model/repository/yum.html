@@ -42,7 +42,7 @@
 <span class="kn">from</span> <span class="nn">..common</span> <span class="kn">import</span> <span class="n">DetachedException</span>
 <span class="kn">from</span> <span class="nn">...model.unit</span> <span class="kn">import</span> <span class="n">RpmUnit</span>
 <span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">compat_attr</span> <span class="k">as</span> <span class="n">attr</span><span class="p">,</span> <span class="n">comps</span>
-<span class="kn">from</span> <span class="nn">...criteria</span> <span class="kn">import</span> <span class="n">Criteria</span>
+<span class="kn">from</span> <span class="nn">...criteria</span> <span class="kn">import</span> <span class="n">Criteria</span><span class="p">,</span> <span class="n">Matcher</span>
 
 
 <div class="viewcode-block" id="YumSyncOptions"><a class="viewcode-back" href="../../../../../../api/yum.html#pubtools.pulplib.YumSyncOptions">[docs]</a><span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -460,7 +460,8 @@
 
         <span class="c1"># Remove former units of comps-related types so that the end result is only</span>
         <span class="c1"># those units included in the current XML.</span>
-        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">remove_content</span><span class="p">(</span><span class="n">type_ids</span><span class="o">=</span><span class="n">comps_type_ids</span><span class="p">)</span>
+        <span class="n">crit</span> <span class="o">=</span> <span class="n">Criteria</span><span class="o">.</span><span class="n">with_field</span><span class="p">(</span><span class="s2">&quot;content_type_id&quot;</span><span class="p">,</span> <span class="n">Matcher</span><span class="o">.</span><span class="n">in_</span><span class="p">(</span><span class="n">comps_type_ids</span><span class="p">))</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">remove_content</span><span class="p">(</span><span class="n">crit</span><span class="p">)</span>
 
         <span class="c1"># Once removal is done we can upload each unit.</span>
         <span class="n">upload_f</span> <span class="o">=</span> <span class="p">[]</span>
