@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - n/a
 
+## [2.28.1] - 2022-03-16
+
+- Fixed a deprecation warning logged during upload of comps.xml.
+
 ## [2.28.0] - 2022-03-15
 
 - Added `criteria` to `Repository.remove_content`.
@@ -371,7 +375,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release to PyPI
 
-[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.28.0...HEAD
+[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.28.1...HEAD
+[2.28.1]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.28.0...v2.28.1
 [2.28.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.27.0...v2.28.0
 [2.27.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.26.1...v2.27.0
 [2.26.1]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.26.0...v2.26.1
