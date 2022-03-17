@@ -77,8 +77,10 @@
     <span class="n">flags</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;flags&quot;</span><span class="p">)</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Flags representing relation to version of this RPM dependency.</span>
-<span class="sd">    Can be one of GT (greater than), EQ (equal), LT (less than), GE (greater than or equal) and</span>
-<span class="sd">    LE (less than or equal).</span>
+
+<span class="sd">    Can be None if dependency does not specify any version.</span>
+<span class="sd">    Otherwise, will be one of GT (greater than), EQ (equal), LT (less than),</span>
+<span class="sd">    GE (greater than or equal) or LE (less than or equal).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nd">@classmethod</span>
