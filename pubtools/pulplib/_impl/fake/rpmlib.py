@@ -69,13 +69,13 @@ def _get_rpm_deps(header, header_flags_map):
     deps = []
 
     for name, evr, flag in zip(names, versions, flags):
-        evr = parse_evr(evr)
+        evr = parse_evr(evr, allow_empty_release=True) if evr else {}
 
         deps_item = {
             "name": name,
-            "version": evr["version"],
-            "release": evr["release"],
-            "epoch": "0" if evr["epoch"] == "" else evr["epoch"],
+            "version": evr.get("version") or None,
+            "release": evr.get("release") or None,
+            "epoch": "0" if evr.get("epoch") == "" else None,
             "flags": _parse_dep_relation(flag),
         }
 
@@ -100,6 +100,6 @@ def _parse_dep_relation(flag):
     elif flag & EQ:
         flag_str = "EQ"
     else:
-        flag_str = ""
+        flag_str = None
 
     return flag_str
