@@ -11,10 +11,11 @@ from ..convert import (
     tolerant_timestamp,
 )
 from ..validate import optional_str, instance_of
+from ..common import PulpObject
 
 
 @attr.s(kw_only=True, frozen=True)
-class RpmDependency(object):
+class RpmDependency(PulpObject):
     """
     An RPM dependency entry within :meth:`~RpmUnit.requires` and :meth:`~RpmUnit.provides`.
     """
