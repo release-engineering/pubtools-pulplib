@@ -44,8 +44,10 @@ class RpmDependency(PulpObject):
     flags = pulp_attrib(default=None, type=str, pulp_field="flags")
     """
     Flags representing relation to version of this RPM dependency.
-    Can be one of GT (greater than), EQ (equal), LT (less than), GE (greater than or equal) and
-    LE (less than or equal).
+
+    Can be None if dependency does not specify any version.
+    Otherwise, will be one of GT (greater than), EQ (equal), LT (less than),
+    GE (greater than or equal) or LE (less than or equal).
     """
 
     @classmethod
