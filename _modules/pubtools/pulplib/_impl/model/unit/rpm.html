@@ -44,10 +44,11 @@
     <span class="n">tolerant_timestamp</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">..validate</span> <span class="kn">import</span> <span class="n">optional_str</span><span class="p">,</span> <span class="n">instance_of</span>
+<span class="kn">from</span> <span class="nn">..common</span> <span class="kn">import</span> <span class="n">PulpObject</span>
 
 
 <div class="viewcode-block" id="RpmDependency"><a class="viewcode-back" href="../../../../../../api/yum.html#pubtools.pulplib.RpmDependency">[docs]</a><span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">RpmDependency</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">RpmDependency</span><span class="p">(</span><span class="n">PulpObject</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An RPM dependency entry within :meth:`~RpmUnit.requires` and :meth:`~RpmUnit.provides`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
