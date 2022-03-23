@@ -10,6 +10,9 @@ PULP2_FIELD = "_pubtools.pulplib.pulp2_field"
 # attr metadata private key indicating whether a field is part of the unit_key.
 PULP2_UNIT_KEY = "_pubtools.pulplib.pulp2_unit_key"
 
+# attr metadata private key indicating whether a field is considered mutable.
+PULP2_MUTABLE = "_pubtools.pulplib.pulp2_mutable"
+
 # attr metadata private key for converting from a pulp2 representation and a Python
 # object.
 # Why not using attr.ib built-in 'converter'?  Because that makes it public API,
@@ -26,6 +29,7 @@ def pulp_attrib(
     pulp_field=None,
     pulp_py_converter=None,
     py_pulp_converter=None,
+    mutable=False,
     unit_key=None,
     **kwargs
 ):
@@ -47,6 +51,9 @@ def pulp_attrib(
 
     if unit_key is not None:
         metadata[PULP2_UNIT_KEY] = unit_key
+
+    if mutable:
+        metadata[PULP2_MUTABLE] = True
 
     if "type" in kwargs:
         # As a convenience, you may define string types as type=str

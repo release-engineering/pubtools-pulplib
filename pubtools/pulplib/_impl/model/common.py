@@ -9,7 +9,7 @@ from more_executors.futures import f_map, f_proxy
 from pubtools.pulplib._impl import compat_attr as attr
 from pubtools.pulplib._impl.util import lookup, dict_put
 
-from .attr import PULP2_FIELD
+from .attr import PULP2_FIELD, PY_PULP2_CONVERTER
 from .convert import get_converter
 
 LOG = logging.getLogger("pubtools.pulplib")
@@ -126,15 +126,12 @@ class PulpObject(object):
 
             python_value = getattr(self, field.name)
 
-            # Note: in theory we should also get and use PY_PULP2_CONVERTER
-            # here if that was set on the metadata. It's not currently
-            # implemented because ErratumUnit is the only type for which
-            # this code can be reached from public API, and it has no fields
-            # which need a custom converter, so it would be dead code.
-            # Implement it when you need it!
-            #
-            # For now, conversions supported by PulpObject are sufficient.
-            pulp_value = PulpObject._any_to_data(python_value)
+            # If the field has defined a specific PY_PULP2_CONVERTER, it's
+            # used here. Otherwise the generic converter is used.
+            py_pulp_converter = field.metadata.get(
+                PY_PULP2_CONVERTER, PulpObject._any_to_data
+            )
+            pulp_value = py_pulp_converter(python_value)
 
             # Put converted value into the output dict:
             # This may create nested dicts if needed, e.g. if

@@ -80,6 +80,48 @@ def test_populate_attrs():
     assert repo.ubi_config_version == "fake_ubi_config_version"
 
 
+def test_productid_attrs():
+    """All attributes relating to productid are correctly parsed from repo notes."""
+
+    repo = Repository.from_data(
+        {
+            "id": "my-repo",
+            "notes": {
+                "_repo-type": "rpm-repo",
+                "arch": "x86_64",
+                "product_versions": '["1.4", "1.100", "1.2"]',
+                "platform_full_version": "whatever",
+                "eng_product": "123",
+            },
+            "distributors": [],
+        }
+    )
+
+    assert repo.arch == "x86_64"
+    assert repo.eng_product_id == 123
+    assert repo.platform_full_version == "whatever"
+
+    # Note the version-aware sorting: 1.100 is larger than 1.4
+    assert repo.product_versions == ["1.2", "1.4", "1.100"]
+
+
+def test_product_versions_unusual_attrs():
+    """Odd values in product_versions are tolerated."""
+
+    repo = Repository.from_data(
+        {
+            "id": "my-repo",
+            "notes": {
+                "_repo-type": "rpm-repo",
+                "product_versions": '["1.4", 234, "1.100", "not numeric"]',
+            },
+            "distributors": [],
+        }
+    )
+
+    assert repo.product_versions == ["1.100", "1.4", "234", "not numeric"]
+
+
 def test_related_repositories(client, requests_mocker):
     """test Repository.get_*_repository returns expected objects"""
 
