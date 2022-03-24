@@ -8,6 +8,7 @@ from pubtools.pulplib import (
     ErratumUnit,
     ModulemdUnit,
     YumRepository,
+    CopyOptions,
 )
 
 
@@ -181,7 +182,11 @@ def test_copy_content_with_criteria(controller):
     )
 
     # Copy should succeed
-    copy_tasks = list(client.copy_content(src, dest, crit))
+    copy_tasks = list(
+        client.copy_content(
+            src, dest, crit, options=CopyOptions(require_signed_rpms=False)
+        )
+    )
 
     # It should have copied only those units matching the criteria
     units = sum([t.units for t in copy_tasks], [])
@@ -212,3 +217,59 @@ def test_copy_content_with_criteria(controller):
             repository_memberships=["src-repo", "dest-repo"],
         ),
     ]
+
+
+def test_copy_requires_rpm_signature(controller):
+    copy_sig = CopyOptions(require_signed_rpms=True)
+    copy_nosig = CopyOptions(require_signed_rpms=False)
+
+    src = YumRepository(id="src-repo")
+    dest = YumRepository(id="dest-repo")
+    controller.insert_repository(src)
+    controller.insert_repository(dest)
+
+    src_units = [
+        # A signed RPM
+        RpmUnit(
+            name="bash",
+            version="4.0",
+            release="1",
+            arch="x86_64",
+            filename="bash-4.0-1.x86_64.rpm",
+            signing_key="a1b2c3",
+        ),
+        # An unsigned RPM
+        RpmUnit(
+            name="ksh",
+            version="5.0",
+            release="1",
+            arch="x86_64",
+            filename="ksh-5.0-1.x86_64.rpm",
+        ),
+    ]
+    controller.insert_units(src, src_units)
+
+    client = controller.client
+
+    # Repos are initially detached, re-fetch them via client
+    src = client.get_repository(src.id).result()
+    dest = client.get_repository(dest.id).result()
+
+    # First, try a copy with default behavior.
+    assert client.copy_content(src, dest).result()
+
+    # It should have copied only the signed RPM into the dest repo.
+    assert sorted([u.name for u in dest.search_content()]) == ["bash"]
+
+    # Try again with the requires sig flag as true.
+    assert client.copy_content(src, dest, options=copy_sig).result()
+
+    # That shouldn't make any difference since the fake always uses
+    # true as the default anyway.
+    assert sorted([u.name for u in dest.search_content()]) == ["bash"]
+
+    # Try again with the requires sig flag as false.
+    assert client.copy_content(src, dest, options=copy_nosig).result()
+
+    # This time we should finally see the unsigned RPM show up as well.
+    assert sorted([u.name for u in dest.search_content()]) == ["bash", "ksh"]

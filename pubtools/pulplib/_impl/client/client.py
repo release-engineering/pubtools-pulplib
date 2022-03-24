@@ -17,12 +17,14 @@ from ..criteria import Criteria
 from ..model import (
     Repository,
     FileRepository,
+    YumRepository,
     MaintenanceReport,
     Distributor,
     Unit,
     Task,
 )
 from ..log import TimedLogger
+from ..util import dict_put
 from .search import search_for_criteria
 from .errors import PulpException
 from .poller import TaskPoller
@@ -30,6 +32,7 @@ from . import retry
 from .humanize_compat import naturalsize
 
 from .ud_mappings import compile_ud_mappings
+from .copy import CopyOptions
 
 
 LOG = logging.getLogger("pubtools.pulplib")
@@ -300,7 +303,9 @@ class Client(object):
             )
         )
 
-    def copy_content(self, from_repository, to_repository, criteria=None):
+    def copy_content(
+        self, from_repository, to_repository, criteria=None, options=CopyOptions()
+    ):
         """Copy content from one repository to another.
 
         Args:
@@ -314,6 +319,13 @@ class Client(object):
                 A criteria object used to find units for copy.
                 If None, all units in the source repo will be copied.
 
+            options (:class:`~pubtools.pulplib.CopyOptions`)
+                Options influencing the copy.
+
+                Some options may be specific to certain repository and content
+                types. Options which are not applicable to this copy will be
+                ignored.
+
         Returns:
             Future[list[:class:`~pubtools.pulplib.Task`]]
                 A future which is resolved when the copy completes.
@@ -323,9 +335,27 @@ class Client(object):
                 typically will have only a subset of available fields.
 
         .. versionadded:: 2.17.0
+
+        .. versionadded:: 2.30.0
+            Added the ``options`` argument.
         """
+
+        raw_options = {}
+
+        if (
+            isinstance(to_repository, YumRepository)
+            and options.require_signed_rpms is not None
+        ):
+            dict_put(
+                raw_options,
+                "override_config.require_signature",
+                options.require_signed_rpms,
+            )
+
         return f_proxy(
-            self._do_associate(from_repository.id, to_repository.id, criteria)
+            self._do_associate(
+                from_repository.id, to_repository.id, criteria, raw_options
+            )
         )
 
     def update_content(self, unit):
@@ -662,7 +692,7 @@ class Client(object):
             self._do_request, method="POST", url=url, json=body
         )
 
-    def _do_associate(self, src_repo_id, dest_repo_id, criteria=None):
+    def _do_associate(self, src_repo_id, dest_repo_id, criteria=None, raw_options=None):
         url = os.path.join(
             self._url, "pulp/api/v2/repositories/%s/actions/associate/" % dest_repo_id
         )
@@ -674,6 +704,8 @@ class Client(object):
             body["criteria"]["type_ids"] = pulp_search.type_ids
         if pulp_search.filters:
             body["criteria"]["filters"] = {"unit": pulp_search.filters}
+
+        body.update(raw_options or {})
 
         LOG.debug("Submitting %s associate: %s", url, body)
 

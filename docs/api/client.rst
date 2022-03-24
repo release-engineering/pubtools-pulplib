@@ -4,6 +4,8 @@ API: client
 .. autoclass:: pubtools.pulplib.Client
    :members:
 
+.. autoclass:: pubtools.pulplib.CopyOptions
+   :members:
 
 Errors
 ------

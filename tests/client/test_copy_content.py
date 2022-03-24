@@ -1,4 +1,13 @@
-from pubtools.pulplib import Repository, Task, RpmUnit, ModulemdUnit, Criteria, Matcher
+from pubtools.pulplib import (
+    Repository,
+    Task,
+    RpmUnit,
+    ModulemdUnit,
+    Criteria,
+    Matcher,
+    YumRepository,
+    CopyOptions,
+)
 
 
 def test_copy_no_criteria(fast_poller, requests_mocker, client):
@@ -140,4 +149,55 @@ def test_copy_with_criteria(fast_poller, requests_mocker, client):
             "type_ids": ["rpm", "srpm"],
         },
         "source_repo_id": "src-repo",
+    }
+
+
+def test_copy_require_signed_rpms(fast_poller, requests_mocker, client):
+    """Copy passes options.require_signed_rpms through to override_config"""
+
+    src = YumRepository(id="src-repo")
+    dest = YumRepository(id="dest-repo")
+
+    src.__dict__["_client"] = client
+    dest.__dict__["_client"] = client
+
+    requests_mocker.post(
+        "https://pulp.example.com/pulp/api/v2/repositories/dest-repo/actions/associate/",
+        [{"json": {"spawned_tasks": [{"task_id": "task1"}]}}],
+    )
+
+    requests_mocker.post(
+        "https://pulp.example.com/pulp/api/v2/tasks/search/",
+        [
+            {
+                "json": [
+                    {
+                        "task_id": "task1",
+                        "state": "finished",
+                        "result": {"units_successful": []},
+                    }
+                ]
+            }
+        ],
+    )
+
+    # Copy should succeed
+    assert client.copy_content(
+        src, dest, options=CopyOptions(require_signed_rpms=False)
+    ).result()
+
+    hist = requests_mocker.request_history
+
+    # First request should have been the associate.
+    assert (
+        hist[0].url
+        == "https://pulp.example.com/pulp/api/v2/repositories/dest-repo/actions/associate/"
+    )
+
+    # The request body should have been this - note that require_signature has
+    # been passed via override_config.
+    assert hist[0].json() == {
+        "criteria": {},
+        "source_repo_id": "src-repo",
+        "override_config": {"require_signature": False},
     }
