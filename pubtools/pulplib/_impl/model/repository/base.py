@@ -1,12 +1,14 @@
 import datetime
 import logging
 import warnings
+import json
+from functools import partial
 
 from attr import validators, asdict
 from frozenlist2 import frozenlist
 from more_executors.futures import f_proxy, f_map, f_flat_map
 
-from ..attr import pulp_attrib
+from ..attr import pulp_attrib, PULP2_FIELD, PULP2_MUTABLE
 from ..common import PulpObject, Deletable, DetachedException
 from ..convert import frozenlist_or_none_converter
 from ..distributor import Distributor
@@ -14,6 +16,7 @@ from ...criteria import Criteria, Matcher
 from ...schema import load_schema
 from ... import compat_attr as attr
 from ...hooks import pm
+from ...util import dict_put, lookup, ABSENT
 
 
 LOG = logging.getLogger("pubtools.pulplib")
@@ -132,6 +135,27 @@ class SyncOptions(object):
     """
 
 
+def pv_converter(versions):
+    # Converter for values in a product_versions field.
+    #
+    # We try to sort numerically while decomposing dotted versions into
+    # their components, so e.g. "8.10" is sorted later than "8.8".
+    # However, we don't know for sure which version strings might be stored
+    # in the field (or even non-strings), so we can fall back to a generic
+    # string sort.
+
+    # Everything is initially interpreted as a string regardless of how
+    # it was stored.
+    versions = [str(v) for v in versions]
+
+    try:
+        return sorted(
+            versions, key=lambda version: [int(c) for c in str(version).split(".")]
+        )
+    except ValueError:
+        return sorted(versions)
+
+
 @attr.s(kw_only=True, frozen=True)
 class Repository(PulpObject, Deletable):
     """Represents a Pulp repository."""
@@ -238,6 +262,47 @@ class Repository(PulpObject, Deletable):
     content_set = pulp_attrib(default=None, type=str, pulp_field="notes.content_set")
     """Name of content set that is associated with this repository."""
 
+    arch = pulp_attrib(default=None, type=str, pulp_field="notes.arch")
+    """The primary architecture of content within this repository (e.g. 'x86_64').
+
+    .. versionadded:: 2.30.0
+    """
+
+    platform_full_version = pulp_attrib(
+        default=None, type=str, pulp_field="notes.platform_full_version"
+    )
+    """A version string associated with the repository.
+
+    This field should be used with care, as the semantics are not well defined.
+    It is often, but not always, equal to the $releasever yum variable associated
+    with a repository.
+
+    Due to the unclear meaning of this field, it's strongly recommended to avoid
+    making use of it in any new code.
+
+    .. versionadded:: 2.30.0
+    """
+
+    product_versions = pulp_attrib(
+        default=None,
+        type=list,
+        pulp_field="notes.product_versions",
+        pulp_py_converter=json.loads,
+        py_pulp_converter=partial(json.dumps, separators=(",", ":")),
+        converter=partial(frozenlist_or_none_converter, map_fn=pv_converter),
+        mutable=True,
+    )
+    """A list of product versions associated with this repository.
+
+    The versions found in this list are derived from the product versions found in any
+    product certificates (productid) historically uploaded to this repository and
+    related repositories.
+
+    This field is **mutable** and may be set by :meth:`~Client.update_repository`.
+
+    .. versionadded:: 2.30.0
+    """
+
     @distributors.validator
     def _check_repo_id(self, _, value):
         # checks if distributor's repository id is same as the repository it
@@ -258,6 +323,38 @@ class Repository(PulpObject, Deletable):
         for dist in self.distributors:
             out[dist.id] = dist
         return out
+
+    @classmethod
+    def _mutable_note_fields(cls):
+        # Returns the subset of fields on this class which are stored under the
+        # notes dict and considered mutable, and thus can potentially be updated.
+        return [
+            fld
+            for fld in attr.fields(cls)
+            if fld.metadata.get(PULP2_FIELD, "").startswith("notes.")
+            and fld.metadata.get(PULP2_MUTABLE)
+        ]
+
+    @property
+    def _mutable_notes(self):
+        # Returns notes dict containing only mutable notes, appropriate
+        # for updating the repo.
+
+        # Get self in raw Pulp form.
+        self_raw = self._to_data()
+
+        # Make a filtered view keeping only mutable note fields.
+        out = {}
+
+        for field in self._mutable_note_fields():
+            pulp_field = field.metadata.get(PULP2_FIELD)
+            pulp_value = lookup(self_raw, pulp_field)
+
+            if pulp_value is not ABSENT:
+                dict_put(out, pulp_field, pulp_value)
+
+        # Return only the notes portion.
+        return out.get("notes") or {}
 
     def distributor(self, distributor_id):
         """Look up a distributor by ID.

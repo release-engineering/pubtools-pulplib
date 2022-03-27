@@ -369,6 +369,39 @@ class Client(object):
 
         return out
 
+    def update_repository(self, repository):
+        """Update mutable fields on an existing repository.
+
+        Args:
+            repository (:class:`~pubtools.pulplib.Repository`)
+                A repository to be updated.
+
+                Only those fields documented as *mutable* will have any effect during
+                the update (e.g. ``product_versions``). Other fields cannot be updated
+                using this library.
+
+        Returns:
+            Future
+                A future which is resolved with a value of ``None`` once the
+                repository has been updated.
+
+        .. versionadded:: 2.30.0
+        """
+
+        url = os.path.join(self._url, "pulp/api/v2/repositories/%s/" % repository.id)
+
+        update = {"delta": {"notes": repository._mutable_notes}}
+        out = self._request_executor.submit(
+            self._do_request, method="PUT", url=url, json=update
+        )
+
+        # The Pulp API may actually return an updated version of the repository,
+        # but for consistency with update_content we won't return it.
+        # The caller can re-fetch if desired.
+        out = f_map(out, lambda _: None)
+
+        return out
+
     def _search_content_with_server_type_ids(self, criteria, server_type_ids):
         prepared_search = search_for_criteria(criteria, Unit, None)
         type_ids = prepared_search.type_ids

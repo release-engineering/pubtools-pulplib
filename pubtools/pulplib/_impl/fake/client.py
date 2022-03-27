@@ -326,6 +326,32 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
 
         return f_return()
 
+    def update_repository(self, repository):
+        self._ensure_alive()
+
+        existing_repo = None
+        for candidate in self._repositories:
+            if candidate.id == repository.id:
+                existing_repo = candidate
+                break
+        else:
+            return f_return_error(
+                PulpException("repository not found: %s" % repository.id)
+            )
+
+        # We've got a repo, now update it.
+        update = {}
+        for fld in existing_repo._mutable_note_fields():
+            update[fld.name] = getattr(repository, fld.name)
+
+        updated_repo = attr.evolve(existing_repo, **update)
+
+        self._repositories = [
+            repo for repo in self._repositories if repo.id != updated_repo.id
+        ] + [updated_repo]
+
+        return f_return()
+
     def search_distributor(self, criteria=None):
         self._ensure_alive()
 
