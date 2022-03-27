@@ -34,12 +34,14 @@
 <span></span><span class="kn">import</span> <span class="nn">datetime</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
 
 <span class="kn">from</span> <span class="nn">attr</span> <span class="kn">import</span> <span class="n">validators</span><span class="p">,</span> <span class="n">asdict</span>
 <span class="kn">from</span> <span class="nn">frozenlist2</span> <span class="kn">import</span> <span class="n">frozenlist</span>
 <span class="kn">from</span> <span class="nn">more_executors.futures</span> <span class="kn">import</span> <span class="n">f_proxy</span><span class="p">,</span> <span class="n">f_map</span><span class="p">,</span> <span class="n">f_flat_map</span>
 
-<span class="kn">from</span> <span class="nn">..attr</span> <span class="kn">import</span> <span class="n">pulp_attrib</span>
+<span class="kn">from</span> <span class="nn">..attr</span> <span class="kn">import</span> <span class="n">pulp_attrib</span><span class="p">,</span> <span class="n">PULP2_FIELD</span><span class="p">,</span> <span class="n">PULP2_MUTABLE</span>
 <span class="kn">from</span> <span class="nn">..common</span> <span class="kn">import</span> <span class="n">PulpObject</span><span class="p">,</span> <span class="n">Deletable</span><span class="p">,</span> <span class="n">DetachedException</span>
 <span class="kn">from</span> <span class="nn">..convert</span> <span class="kn">import</span> <span class="n">frozenlist_or_none_converter</span>
 <span class="kn">from</span> <span class="nn">..distributor</span> <span class="kn">import</span> <span class="n">Distributor</span>
@@ -47,6 +49,7 @@
 <span class="kn">from</span> <span class="nn">...schema</span> <span class="kn">import</span> <span class="n">load_schema</span>
 <span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">compat_attr</span> <span class="k">as</span> <span class="n">attr</span>
 <span class="kn">from</span> <span class="nn">...hooks</span> <span class="kn">import</span> <span class="n">pm</span>
+<span class="kn">from</span> <span class="nn">...util</span> <span class="kn">import</span> <span class="n">dict_put</span><span class="p">,</span> <span class="n">lookup</span><span class="p">,</span> <span class="n">ABSENT</span>
 
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;pubtools.pulplib&quot;</span><span class="p">)</span>
@@ -165,6 +168,27 @@
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
+<span class="k">def</span> <span class="nf">pv_converter</span><span class="p">(</span><span class="n">versions</span><span class="p">):</span>
+    <span class="c1"># Converter for values in a product_versions field.</span>
+    <span class="c1">#</span>
+    <span class="c1"># We try to sort numerically while decomposing dotted versions into</span>
+    <span class="c1"># their components, so e.g. &quot;8.10&quot; is sorted later than &quot;8.8&quot;.</span>
+    <span class="c1"># However, we don&#39;t know for sure which version strings might be stored</span>
+    <span class="c1"># in the field (or even non-strings), so we can fall back to a generic</span>
+    <span class="c1"># string sort.</span>
+
+    <span class="c1"># Everything is initially interpreted as a string regardless of how</span>
+    <span class="c1"># it was stored.</span>
+    <span class="n">versions</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">versions</span><span class="p">]</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span>
+            <span class="n">versions</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">version</span><span class="p">:</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">version</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)]</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">versions</span><span class="p">)</span>
+
+
 <div class="viewcode-block" id="Repository"><a class="viewcode-back" href="../../../../../../api/pulpcore.html#pubtools.pulplib.Repository">[docs]</a><span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">Repository</span><span class="p">(</span><span class="n">PulpObject</span><span class="p">,</span> <span class="n">Deletable</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Represents a Pulp repository.&quot;&quot;&quot;</span>
@@ -271,6 +295,47 @@
     <span class="n">content_set</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;notes.content_set&quot;</span><span class="p">)</span>
     <span class="sd">&quot;&quot;&quot;Name of content set that is associated with this repository.&quot;&quot;&quot;</span>
 
+    <span class="n">arch</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;notes.arch&quot;</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;The primary architecture of content within this repository (e.g. &#39;x86_64&#39;).</span>
+
+<span class="sd">    .. versionadded:: 2.30.0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">platform_full_version</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;notes.platform_full_version&quot;</span>
+    <span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;A version string associated with the repository.</span>
+
+<span class="sd">    This field should be used with care, as the semantics are not well defined.</span>
+<span class="sd">    It is often, but not always, equal to the $releasever yum variable associated</span>
+<span class="sd">    with a repository.</span>
+
+<span class="sd">    Due to the unclear meaning of this field, it&#39;s strongly recommended to avoid</span>
+<span class="sd">    making use of it in any new code.</span>
+
+<span class="sd">    .. versionadded:: 2.30.0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">product_versions</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span>
+        <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;notes.product_versions&quot;</span><span class="p">,</span>
+        <span class="n">pulp_py_converter</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">,</span>
+        <span class="n">py_pulp_converter</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">,</span> <span class="n">separators</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="s2">&quot;:&quot;</span><span class="p">)),</span>
+        <span class="n">converter</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="n">frozenlist_or_none_converter</span><span class="p">,</span> <span class="n">map_fn</span><span class="o">=</span><span class="n">pv_converter</span><span class="p">),</span>
+        <span class="n">mutable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;A list of product versions associated with this repository.</span>
+
+<span class="sd">    The versions found in this list are derived from the product versions found in any</span>
+<span class="sd">    product certificates (productid) historically uploaded to this repository and</span>
+<span class="sd">    related repositories.</span>
+
+<span class="sd">    This field is **mutable** and may be set by :meth:`~Client.update_repository`.</span>
+
+<span class="sd">    .. versionadded:: 2.30.0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="nd">@distributors</span><span class="o">.</span><span class="n">validator</span>
     <span class="k">def</span> <span class="nf">_check_repo_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="c1"># checks if distributor&#39;s repository id is same as the repository it</span>
@@ -291,6 +356,38 @@
         <span class="k">for</span> <span class="n">dist</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">distributors</span><span class="p">:</span>
             <span class="n">out</span><span class="p">[</span><span class="n">dist</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">dist</span>
         <span class="k">return</span> <span class="n">out</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_mutable_note_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="c1"># Returns the subset of fields on this class which are stored under the</span>
+        <span class="c1"># notes dict and considered mutable, and thus can potentially be updated.</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">fld</span>
+            <span class="k">for</span> <span class="n">fld</span> <span class="ow">in</span> <span class="n">attr</span><span class="o">.</span><span class="n">fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">fld</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">PULP2_FIELD</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;notes.&quot;</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="n">fld</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">PULP2_MUTABLE</span><span class="p">)</span>
+        <span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_mutable_notes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Returns notes dict containing only mutable notes, appropriate</span>
+        <span class="c1"># for updating the repo.</span>
+
+        <span class="c1"># Get self in raw Pulp form.</span>
+        <span class="n">self_raw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_data</span><span class="p">()</span>
+
+        <span class="c1"># Make a filtered view keeping only mutable note fields.</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mutable_note_fields</span><span class="p">():</span>
+            <span class="n">pulp_field</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">PULP2_FIELD</span><span class="p">)</span>
+            <span class="n">pulp_value</span> <span class="o">=</span> <span class="n">lookup</span><span class="p">(</span><span class="n">self_raw</span><span class="p">,</span> <span class="n">pulp_field</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">pulp_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">ABSENT</span><span class="p">:</span>
+                <span class="n">dict_put</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">pulp_field</span><span class="p">,</span> <span class="n">pulp_value</span><span class="p">)</span>
+
+        <span class="c1"># Return only the notes portion.</span>
+        <span class="k">return</span> <span class="n">out</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;notes&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
 
 <div class="viewcode-block" id="Repository.distributor"><a class="viewcode-back" href="../../../../../../api/pulpcore.html#pubtools.pulplib.Repository.distributor">[docs]</a>    <span class="k">def</span> <span class="nf">distributor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">distributor_id</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Look up a distributor by ID.</span>
@@ -777,7 +874,7 @@
       &copy;2019, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

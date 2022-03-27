@@ -402,6 +402,39 @@
 
         <span class="k">return</span> <span class="n">out</span></div>
 
+<div class="viewcode-block" id="Client.update_repository"><a class="viewcode-back" href="../../../../../api/client.html#pubtools.pulplib.Client.update_repository">[docs]</a>    <span class="k">def</span> <span class="nf">update_repository</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repository</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Update mutable fields on an existing repository.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            repository (:class:`~pubtools.pulplib.Repository`)</span>
+<span class="sd">                A repository to be updated.</span>
+
+<span class="sd">                Only those fields documented as *mutable* will have any effect during</span>
+<span class="sd">                the update (e.g. ``product_versions``). Other fields cannot be updated</span>
+<span class="sd">                using this library.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Future</span>
+<span class="sd">                A future which is resolved with a value of ``None`` once the</span>
+<span class="sd">                repository has been updated.</span>
+
+<span class="sd">        .. versionadded:: 2.30.0</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">url</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_url</span><span class="p">,</span> <span class="s2">&quot;pulp/api/v2/repositories/</span><span class="si">%s</span><span class="s2">/&quot;</span> <span class="o">%</span> <span class="n">repository</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+        <span class="n">update</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;delta&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;notes&quot;</span><span class="p">:</span> <span class="n">repository</span><span class="o">.</span><span class="n">_mutable_notes</span><span class="p">}}</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_do_request</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;PUT&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">update</span>
+        <span class="p">)</span>
+
+        <span class="c1"># The Pulp API may actually return an updated version of the repository,</span>
+        <span class="c1"># but for consistency with update_content we won&#39;t return it.</span>
+        <span class="c1"># The caller can re-fetch if desired.</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">f_map</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">_</span><span class="p">:</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">out</span></div>
+
     <span class="k">def</span> <span class="nf">_search_content_with_server_type_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">criteria</span><span class="p">,</span> <span class="n">server_type_ids</span><span class="p">):</span>
         <span class="n">prepared_search</span> <span class="o">=</span> <span class="n">search_for_criteria</span><span class="p">(</span><span class="n">criteria</span><span class="p">,</span> <span class="n">Unit</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">type_ids</span> <span class="o">=</span> <span class="n">prepared_search</span><span class="o">.</span><span class="n">type_ids</span>
@@ -1033,7 +1066,7 @@
       &copy;2019, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

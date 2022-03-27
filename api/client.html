@@ -260,6 +260,32 @@ has been updated.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="pubtools.pulplib.Client.update_repository">
+<span class="sig-name descname"><span class="pre">update_repository</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">repository</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/client.html#Client.update_repository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Client.update_repository" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update mutable fields on an existing repository.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>repository</strong> (<a class="reference internal" href="pulpcore.html#pubtools.pulplib.Repository" title="pubtools.pulplib.Repository"><code class="xref py py-class docutils literal notranslate"><span class="pre">Repository</span></code></a>) – <p>A repository to be updated.</p>
+<p>Only those fields documented as <em>mutable</em> will have any effect during
+the update (e.g. <code class="docutils literal notranslate"><span class="pre">product_versions</span></code>). Other fields cannot be updated
+using this library.</p>
+</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Future</dt><dd><p>A future which is resolved with a value of <code class="docutils literal notranslate"><span class="pre">None</span></code> once the
+repository has been updated.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.30.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="pubtools.pulplib.Client.search_distributor">
 <span class="sig-name descname"><span class="pre">search_distributor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">criteria</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/client.html#Client.search_distributor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Client.search_distributor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Search the distributors matching the given criteria.</p>
@@ -492,7 +518,7 @@ and the object is not attached to any client, this exception is raised.</p>
       &copy;2019, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

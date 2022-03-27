@@ -190,6 +190,42 @@ this repository will not publish repository metadata to remote hosts.</p>
 <dd><p>Name of content set that is associated with this repository.</p>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.Repository.arch">
+<span class="sig-name descname"><span class="pre">arch</span></span><a class="headerlink" href="#pubtools.pulplib.Repository.arch" title="Permalink to this definition">¶</a></dt>
+<dd><p>The primary architecture of content within this repository (e.g. ‘x86_64’).</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.30.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.Repository.platform_full_version">
+<span class="sig-name descname"><span class="pre">platform_full_version</span></span><a class="headerlink" href="#pubtools.pulplib.Repository.platform_full_version" title="Permalink to this definition">¶</a></dt>
+<dd><p>A version string associated with the repository.</p>
+<p>This field should be used with care, as the semantics are not well defined.
+It is often, but not always, equal to the $releasever yum variable associated
+with a repository.</p>
+<p>Due to the unclear meaning of this field, it’s strongly recommended to avoid
+making use of it in any new code.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.30.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.Repository.product_versions">
+<span class="sig-name descname"><span class="pre">product_versions</span></span><a class="headerlink" href="#pubtools.pulplib.Repository.product_versions" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of product versions associated with this repository.</p>
+<p>The versions found in this list are derived from the product versions found in any
+product certificates (productid) historically uploaded to this repository and
+related repositories.</p>
+<p>This field is <strong>mutable</strong> and may be set by <a class="reference internal" href="client.html#pubtools.pulplib.Client.update_repository" title="pubtools.pulplib.Client.update_repository"><code class="xref py py-meth docutils literal notranslate"><span class="pre">update_repository()</span></code></a>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.30.0.</span></p>
+</div>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="pubtools.pulplib.Repository.distributor">
 <span class="sig-name descname"><span class="pre">distributor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">distributor_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository/base.html#Repository.distributor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Repository.distributor" title="Permalink to this definition">¶</a></dt>
@@ -812,7 +848,7 @@ by Pulp. These should at least contain a ‘type_id’ and a ‘unit_key’.</p>
       &copy;2019, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

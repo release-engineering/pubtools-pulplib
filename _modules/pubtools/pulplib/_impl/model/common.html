@@ -42,7 +42,7 @@
 <span class="kn">from</span> <span class="nn">pubtools.pulplib._impl</span> <span class="kn">import</span> <span class="n">compat_attr</span> <span class="k">as</span> <span class="n">attr</span>
 <span class="kn">from</span> <span class="nn">pubtools.pulplib._impl.util</span> <span class="kn">import</span> <span class="n">lookup</span><span class="p">,</span> <span class="n">dict_put</span>
 
-<span class="kn">from</span> <span class="nn">.attr</span> <span class="kn">import</span> <span class="n">PULP2_FIELD</span>
+<span class="kn">from</span> <span class="nn">.attr</span> <span class="kn">import</span> <span class="n">PULP2_FIELD</span><span class="p">,</span> <span class="n">PY_PULP2_CONVERTER</span>
 <span class="kn">from</span> <span class="nn">.convert</span> <span class="kn">import</span> <span class="n">get_converter</span>
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;pubtools.pulplib&quot;</span><span class="p">)</span>
@@ -159,15 +159,12 @@
 
             <span class="n">python_value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 
-            <span class="c1"># Note: in theory we should also get and use PY_PULP2_CONVERTER</span>
-            <span class="c1"># here if that was set on the metadata. It&#39;s not currently</span>
-            <span class="c1"># implemented because ErratumUnit is the only type for which</span>
-            <span class="c1"># this code can be reached from public API, and it has no fields</span>
-            <span class="c1"># which need a custom converter, so it would be dead code.</span>
-            <span class="c1"># Implement it when you need it!</span>
-            <span class="c1">#</span>
-            <span class="c1"># For now, conversions supported by PulpObject are sufficient.</span>
-            <span class="n">pulp_value</span> <span class="o">=</span> <span class="n">PulpObject</span><span class="o">.</span><span class="n">_any_to_data</span><span class="p">(</span><span class="n">python_value</span><span class="p">)</span>
+            <span class="c1"># If the field has defined a specific PY_PULP2_CONVERTER, it&#39;s</span>
+            <span class="c1"># used here. Otherwise the generic converter is used.</span>
+            <span class="n">py_pulp_converter</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="n">PY_PULP2_CONVERTER</span><span class="p">,</span> <span class="n">PulpObject</span><span class="o">.</span><span class="n">_any_to_data</span>
+            <span class="p">)</span>
+            <span class="n">pulp_value</span> <span class="o">=</span> <span class="n">py_pulp_converter</span><span class="p">(</span><span class="n">python_value</span><span class="p">)</span>
 
             <span class="c1"># Put converted value into the output dict:</span>
             <span class="c1"># This may create nested dicts if needed, e.g. if</span>
@@ -353,7 +350,7 @@
       &copy;2019, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
