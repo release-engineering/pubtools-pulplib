@@ -50,12 +50,14 @@
 <span class="kn">from</span> <span class="nn">..model</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">Repository</span><span class="p">,</span>
     <span class="n">FileRepository</span><span class="p">,</span>
+    <span class="n">YumRepository</span><span class="p">,</span>
     <span class="n">MaintenanceReport</span><span class="p">,</span>
     <span class="n">Distributor</span><span class="p">,</span>
     <span class="n">Unit</span><span class="p">,</span>
     <span class="n">Task</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">..log</span> <span class="kn">import</span> <span class="n">TimedLogger</span>
+<span class="kn">from</span> <span class="nn">..util</span> <span class="kn">import</span> <span class="n">dict_put</span>
 <span class="kn">from</span> <span class="nn">.search</span> <span class="kn">import</span> <span class="n">search_for_criteria</span>
 <span class="kn">from</span> <span class="nn">.errors</span> <span class="kn">import</span> <span class="n">PulpException</span>
 <span class="kn">from</span> <span class="nn">.poller</span> <span class="kn">import</span> <span class="n">TaskPoller</span>
@@ -63,6 +65,7 @@
 <span class="kn">from</span> <span class="nn">.humanize_compat</span> <span class="kn">import</span> <span class="n">naturalsize</span>
 
 <span class="kn">from</span> <span class="nn">.ud_mappings</span> <span class="kn">import</span> <span class="n">compile_ud_mappings</span>
+<span class="kn">from</span> <span class="nn">.copy</span> <span class="kn">import</span> <span class="n">CopyOptions</span>
 
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;pubtools.pulplib&quot;</span><span class="p">)</span>
@@ -333,7 +336,9 @@
             <span class="p">)</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Client.copy_content"><a class="viewcode-back" href="../../../../../api/client.html#pubtools.pulplib.Client.copy_content">[docs]</a>    <span class="k">def</span> <span class="nf">copy_content</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_repository</span><span class="p">,</span> <span class="n">to_repository</span><span class="p">,</span> <span class="n">criteria</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Client.copy_content"><a class="viewcode-back" href="../../../../../api/client.html#pubtools.pulplib.Client.copy_content">[docs]</a>    <span class="k">def</span> <span class="nf">copy_content</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">from_repository</span><span class="p">,</span> <span class="n">to_repository</span><span class="p">,</span> <span class="n">criteria</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">CopyOptions</span><span class="p">()</span>
+    <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Copy content from one repository to another.</span>
 
 <span class="sd">        Args:</span>
@@ -347,6 +352,13 @@
 <span class="sd">                A criteria object used to find units for copy.</span>
 <span class="sd">                If None, all units in the source repo will be copied.</span>
 
+<span class="sd">            options (:class:`~pubtools.pulplib.CopyOptions`)</span>
+<span class="sd">                Options influencing the copy.</span>
+
+<span class="sd">                Some options may be specific to certain repository and content</span>
+<span class="sd">                types. Options which are not applicable to this copy will be</span>
+<span class="sd">                ignored.</span>
+
 <span class="sd">        Returns:</span>
 <span class="sd">            Future[list[:class:`~pubtools.pulplib.Task`]]</span>
 <span class="sd">                A future which is resolved when the copy completes.</span>
@@ -356,9 +368,27 @@
 <span class="sd">                typically will have only a subset of available fields.</span>
 
 <span class="sd">        .. versionadded:: 2.17.0</span>
+
+<span class="sd">        .. versionadded:: 2.30.0</span>
+<span class="sd">            Added the ``options`` argument.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">raw_options</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">to_repository</span><span class="p">,</span> <span class="n">YumRepository</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="n">options</span><span class="o">.</span><span class="n">require_signed_rpms</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">):</span>
+            <span class="n">dict_put</span><span class="p">(</span>
+                <span class="n">raw_options</span><span class="p">,</span>
+                <span class="s2">&quot;override_config.require_signature&quot;</span><span class="p">,</span>
+                <span class="n">options</span><span class="o">.</span><span class="n">require_signed_rpms</span><span class="p">,</span>
+            <span class="p">)</span>
+
         <span class="k">return</span> <span class="n">f_proxy</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_do_associate</span><span class="p">(</span><span class="n">from_repository</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">to_repository</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">criteria</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_do_associate</span><span class="p">(</span>
+                <span class="n">from_repository</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">to_repository</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">criteria</span><span class="p">,</span> <span class="n">raw_options</span>
+            <span class="p">)</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Client.update_content"><a class="viewcode-back" href="../../../../../api/client.html#pubtools.pulplib.Client.update_content">[docs]</a>    <span class="k">def</span> <span class="nf">update_content</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unit</span><span class="p">):</span>
@@ -728,7 +758,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_do_request</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">body</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_do_associate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src_repo_id</span><span class="p">,</span> <span class="n">dest_repo_id</span><span class="p">,</span> <span class="n">criteria</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_do_associate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src_repo_id</span><span class="p">,</span> <span class="n">dest_repo_id</span><span class="p">,</span> <span class="n">criteria</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">raw_options</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">url</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_url</span><span class="p">,</span> <span class="s2">&quot;pulp/api/v2/repositories/</span><span class="si">%s</span><span class="s2">/actions/associate/&quot;</span> <span class="o">%</span> <span class="n">dest_repo_id</span>
         <span class="p">)</span>
@@ -740,6 +770,8 @@
             <span class="n">body</span><span class="p">[</span><span class="s2">&quot;criteria&quot;</span><span class="p">][</span><span class="s2">&quot;type_ids&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pulp_search</span><span class="o">.</span><span class="n">type_ids</span>
         <span class="k">if</span> <span class="n">pulp_search</span><span class="o">.</span><span class="n">filters</span><span class="p">:</span>
             <span class="n">body</span><span class="p">[</span><span class="s2">&quot;criteria&quot;</span><span class="p">][</span><span class="s2">&quot;filters&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="n">pulp_search</span><span class="o">.</span><span class="n">filters</span><span class="p">}</span>
+
+        <span class="n">body</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">raw_options</span> <span class="ow">or</span> <span class="p">{})</span>
 
         <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Submitting </span><span class="si">%s</span><span class="s2"> associate: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">body</span><span class="p">)</span>
 
