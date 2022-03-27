@@ -336,7 +336,7 @@ class Client(object):
 
         .. versionadded:: 2.17.0
 
-        .. versionadded:: 2.30.0
+        .. versionadded:: 2.29.0
             Added the ``options`` argument.
         """
 
@@ -415,7 +415,7 @@ class Client(object):
                 A future which is resolved with a value of ``None`` once the
                 repository has been updated.
 
-        .. versionadded:: 2.30.0
+        .. versionadded:: 2.29.0
         """
 
         url = os.path.join(self._url, "pulp/api/v2/repositories/%s/" % repository.id)

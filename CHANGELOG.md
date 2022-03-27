@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - n/a
 
+## [2.29.0] - 2022-03-28
+
+- Fixed upload of RPMs with versionless dependencies via fake client
+- Fixed `repr` for `RpmDependency`
+- Added fields to repository model: `arch`, `platform_full_version`, `product_versions`
+- Added `update_repository` method to update a repository's mutable fields
+- Added `CopyOptions` for `copy_content` method
+
 ## [2.28.1] - 2022-03-16
 
 - Fixed a deprecation warning logged during upload of comps.xml.
@@ -375,7 +383,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release to PyPI
 
-[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.28.1...HEAD
+[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.29.0...HEAD
+[2.29.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.28.1...v2.29.0
 [2.28.1]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.28.0...v2.28.1
 [2.28.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.27.0...v2.28.0
 [2.27.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.26.1...v2.27.0

@@ -265,7 +265,7 @@ class Repository(PulpObject, Deletable):
     arch = pulp_attrib(default=None, type=str, pulp_field="notes.arch")
     """The primary architecture of content within this repository (e.g. 'x86_64').
 
-    .. versionadded:: 2.30.0
+    .. versionadded:: 2.29.0
     """
 
     platform_full_version = pulp_attrib(
@@ -280,7 +280,7 @@ class Repository(PulpObject, Deletable):
     Due to the unclear meaning of this field, it's strongly recommended to avoid
     making use of it in any new code.
 
-    .. versionadded:: 2.30.0
+    .. versionadded:: 2.29.0
     """
 
     product_versions = pulp_attrib(
@@ -300,7 +300,7 @@ class Repository(PulpObject, Deletable):
 
     This field is **mutable** and may be set by :meth:`~Client.update_repository`.
 
-    .. versionadded:: 2.30.0
+    .. versionadded:: 2.29.0
     """
 
     @distributors.validator
