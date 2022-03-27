@@ -21,7 +21,9 @@ from pubtools.pulplib import (
     Distributor,
     Unit,
     FileUnit,
+    RpmUnit,
     MaintenanceReport,
+    CopyOptions,
 )
 from pubtools.pulplib._impl.client.client import UploadResult
 from pubtools.pulplib._impl.client.search import search_for_criteria
@@ -249,13 +251,22 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
         random.shuffle(out)
         return self._prepare_pages(out)
 
-    def copy_content(self, from_repository, to_repository, criteria=None):
+    def copy_content(
+        self, from_repository, to_repository, criteria=None, options=CopyOptions()
+    ):
         self._ensure_alive()
 
         from_id = from_repository.id
         to_id = to_repository.id
 
         found = list(from_repository.search_content(criteria).result())
+
+        # RPM signature filter: if signatures are required, unsigned RPMs are not
+        # included in the copy.
+        # Because we don't model this flag on distributor objects and because in
+        # practice it's set to True, we default to True.
+        if options.require_signed_rpms is not False:
+            found = [u for u in found if not isinstance(u, RpmUnit) or u.signing_key]
 
         # Units are being copied to this repo, so that value obviously must appear
         # in repository_memberships from now on.
