@@ -41,7 +41,7 @@ class UnitMaker(object):
     def next_unit_id(self):
         with self._lock:
             while True:
-                next_raw_id = self._uuidgen.randint(0, 2 ** 128)
+                next_raw_id = self._uuidgen.randint(0, 2**128)
                 if next_raw_id not in self._seen_unit_ids:
                     break
 

@@ -4,6 +4,10 @@ import os
 
 from pubtools.pulplib._impl.comps import units_for_xml
 
+# Don't use autoformatting in this file because we use u'' string literals
+# at least until py2 support is dropped, and black wants to remove them...
+# fmt: off
+
 
 def test_can_parse_units(data_path):
     """units_for_xml parses typical comps.xml data correctly."""
