@@ -87,22 +87,31 @@ class Page(object):
 
     def __attrs_post_init__(self):
         if self.next:
-            # If *this* page disappears, it's pointless to keep querying for
-            # the next page, so we could cancel that future.
+            # We have a next, which means there are subsequent pages currently being
+            # searched for.
+            #
+            # If *this* page disappears, and 'next' hasn't been accessed by that time,
+            # it's pointless to keep querying for the next page, so we could
+            # cancel that future.
             #
             # Note: when we are Py3-only, this could be better rewritten
             # using weakref.finalize or even just plain __del__
 
             to_cancel = self.next
 
+            # We're going to use self.__dict__, but we must avoid capturing
+            # a reference to self in do_cancel since that would be a cycle.
+            stash = self.__dict__
+
             def do_cancel(*_):
-                if not to_cancel.done():
+                if stash.get("_should_cancel") and not to_cancel.done():
                     cancel_result = to_cancel.cancel()
                     LOG.debug("Cancel next page due to GC: %s", cancel_result)
 
             # Just stash a weakref anywhere it'll stay alive for as long
             # as the page itself.
-            self.__dict__["_cancel_ref"] = weakref.ref(self, do_cancel)
+            stash["_should_cancel"] = True
+            stash["_cancel_ref"] = weakref.ref(self, do_cancel)
 
     def as_iter(self):
         # TODO: remove me. Originally deprecated 2019-09.
@@ -121,3 +130,28 @@ class Page(object):
                 return
             # blocks here if next page is not yet fetched
             page = page.next.result()
+
+
+# Wrap any access to 'next' to avoid cancellation.
+#
+# When initially created, we are in a state where we potentially have a search
+# in progress for the next page, but we might cancel it if we're GC'd.
+# As soon as someone references 'next' though, we can no longer safely do such
+# a cancellation.
+#
+# This has to be installed as a property dynamically after class creation, since
+# attrs will not generate the 'next' attribute normally if it sees that a next
+# @property was already defined.
+def page_next(self):
+    self.__dict__.pop("_should_cancel", None)
+    return self.__dict__["next"]
+
+
+def page_set_next(self, value):  # pragma: no cover
+    # A setter seems to be needed for compatibility with attrs on py2
+    # because we can't use 'frozen' there, but this is never reached
+    # on py3. Hence the no cover pragma.
+    self.__dict__["next"] = value
+
+
+Page.next = property(page_next, page_set_next)
