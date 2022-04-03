@@ -112,9 +112,9 @@ def test_upload_file(client, requests_mocker, tmpdir, caplog, fast_timed_logger)
     # 4th call should be import, check if right unit_key's passed
     import_request = requests_mocker.request_history[3].json()
     import_unit_key = {
-        u"name": somefile.basename,
-        u"checksum": u"fad3fc1e6d583b2003ec0a5273702ed8fcc2504271c87c40d9176467ebe218cb",
-        u"size": 29,
+        "name": somefile.basename,
+        "checksum": "fad3fc1e6d583b2003ec0a5273702ed8fcc2504271c87c40d9176467ebe218cb",
+        "size": 29,
     }
     assert import_request["unit_key"] == import_unit_key
 

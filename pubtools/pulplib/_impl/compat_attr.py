@@ -48,7 +48,6 @@ if ATTR_VERSION < (18, 1):  # pragma: no cover
             out[field.name] = field
         return out
 
-
 else:
     fields_dict = attr.fields_dict
 

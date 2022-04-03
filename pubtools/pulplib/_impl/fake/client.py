@@ -706,7 +706,7 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
 
     def _next_task_id(self):
         with self._lock:
-            next_raw_id = self._uuidgen.randint(0, 2 ** 128)
+            next_raw_id = self._uuidgen.randint(0, 2**128)
         return str(uuid.UUID(int=next_raw_id))
 
     def _next_request_id(self):
