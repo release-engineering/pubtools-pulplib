@@ -120,22 +120,31 @@
 
     <span class="k">def</span> <span class="nf">__attrs_post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">next</span><span class="p">:</span>
-            <span class="c1"># If *this* page disappears, it&#39;s pointless to keep querying for</span>
-            <span class="c1"># the next page, so we could cancel that future.</span>
+            <span class="c1"># We have a next, which means there are subsequent pages currently being</span>
+            <span class="c1"># searched for.</span>
+            <span class="c1">#</span>
+            <span class="c1"># If *this* page disappears, and &#39;next&#39; hasn&#39;t been accessed by that time,</span>
+            <span class="c1"># it&#39;s pointless to keep querying for the next page, so we could</span>
+            <span class="c1"># cancel that future.</span>
             <span class="c1">#</span>
             <span class="c1"># Note: when we are Py3-only, this could be better rewritten</span>
             <span class="c1"># using weakref.finalize or even just plain __del__</span>
 
             <span class="n">to_cancel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">next</span>
 
+            <span class="c1"># We&#39;re going to use self.__dict__, but we must avoid capturing</span>
+            <span class="c1"># a reference to self in do_cancel since that would be a cycle.</span>
+            <span class="n">stash</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span>
+
             <span class="k">def</span> <span class="nf">do_cancel</span><span class="p">(</span><span class="o">*</span><span class="n">_</span><span class="p">):</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">to_cancel</span><span class="o">.</span><span class="n">done</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">stash</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_should_cancel&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">to_cancel</span><span class="o">.</span><span class="n">done</span><span class="p">():</span>
                     <span class="n">cancel_result</span> <span class="o">=</span> <span class="n">to_cancel</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
                     <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Cancel next page due to GC: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">cancel_result</span><span class="p">)</span>
 
             <span class="c1"># Just stash a weakref anywhere it&#39;ll stay alive for as long</span>
             <span class="c1"># as the page itself.</span>
-            <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s2">&quot;_cancel_ref&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">weakref</span><span class="o">.</span><span class="n">ref</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">do_cancel</span><span class="p">)</span>
+            <span class="n">stash</span><span class="p">[</span><span class="s2">&quot;_should_cancel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">stash</span><span class="p">[</span><span class="s2">&quot;_cancel_ref&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">weakref</span><span class="o">.</span><span class="n">ref</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">do_cancel</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">as_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># TODO: remove me. Originally deprecated 2019-09.</span>
@@ -154,6 +163,31 @@
                 <span class="k">return</span>
             <span class="c1"># blocks here if next page is not yet fetched</span>
             <span class="n">page</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="n">next</span><span class="o">.</span><span class="n">result</span><span class="p">()</span></div>
+
+
+<span class="c1"># Wrap any access to &#39;next&#39; to avoid cancellation.</span>
+<span class="c1">#</span>
+<span class="c1"># When initially created, we are in a state where we potentially have a search</span>
+<span class="c1"># in progress for the next page, but we might cancel it if we&#39;re GC&#39;d.</span>
+<span class="c1"># As soon as someone references &#39;next&#39; though, we can no longer safely do such</span>
+<span class="c1"># a cancellation.</span>
+<span class="c1">#</span>
+<span class="c1"># This has to be installed as a property dynamically after class creation, since</span>
+<span class="c1"># attrs will not generate the &#39;next&#39; attribute normally if it sees that a next</span>
+<span class="c1"># @property was already defined.</span>
+<span class="k">def</span> <span class="nf">page_next</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;_should_cancel&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s2">&quot;next&quot;</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">page_set_next</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+    <span class="c1"># A setter seems to be needed for compatibility with attrs on py2</span>
+    <span class="c1"># because we can&#39;t use &#39;frozen&#39; there, but this is never reached</span>
+    <span class="c1"># on py3. Hence the no cover pragma.</span>
+    <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s2">&quot;next&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+
+<span class="n">Page</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">page_next</span><span class="p">,</span> <span class="n">page_set_next</span><span class="p">)</span>
 </pre></div>
 
           </div>
