@@ -4,8 +4,12 @@ from .base import Unit, unit_type, schemaless_init
 
 from ..attr import pulp_attrib
 from ... import compat_attr as attr
-from ..convert import frozenlist_or_none_converter, frozenlist_or_none_sorted_converter
-from ..validate import optional_list_of
+from ..convert import (
+    frozenlist_or_none_converter,
+    frozenlist_or_none_sorted_converter,
+    frozendict_or_none_converter,
+)
+from ..validate import optional_list_of, optional_dict
 
 
 @attr.s(kw_only=True, frozen=True)
@@ -128,7 +132,13 @@ class ModulemdUnit(Unit):
 
     """
 
-    profiles = pulp_attrib(type=dict, pulp_field="profiles", default=None)
+    profiles = pulp_attrib(
+        type=dict,
+        pulp_field="profiles",
+        default=None,
+        validator=optional_dict,
+        converter=frozendict_or_none_converter,
+    )
     """The profiles of this modulemd unit."""
 
     dependencies = pulp_attrib(

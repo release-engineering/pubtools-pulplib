@@ -6,6 +6,7 @@ instance_of = validators.instance_of
 
 optional_str = instance_of(six.string_types + (type(None),))
 optional_bool = instance_of((bool, type(None)))
+optional_dict = instance_of((dict, type(None)))
 
 # This is a workaround for the absence of deep_iterable on older attr.
 # Drop it when the legacy environment is no longer required.
