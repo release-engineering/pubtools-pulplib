@@ -5,6 +5,7 @@ import six
 from frozenlist2 import frozenlist
 
 from .attr import PULP2_PY_CONVERTER
+from ..compat_frozendict import frozendict
 
 # Work around http://bugs.python.org/issue7980 which is closed "Won't Fix"
 # for python2:
@@ -81,3 +82,17 @@ def frozenlist_or_none_converter(obj, map_fn=(lambda x: x)):
 frozenlist_or_none_sorted_converter = functools.partial(
     frozenlist_or_none_converter, map_fn=lambda x: sorted(set(x))
 )
+
+
+def frozendict_or_none_converter(obj):
+    # Convert object and values to immutable structures.
+    # Skip convert if the obj is already frozendict.
+    # This happens when the class containing the value is copied (e.g: with attr.evolve).
+    if obj is not None and not isinstance(obj, frozendict):
+        for (key, value) in obj.items():
+            if isinstance(value, list):
+                obj[key] = frozenlist_or_none_converter(value)
+            if isinstance(value, dict):
+                obj[key] = frozendict_or_none_converter(value)
+        return frozendict(obj)
+    return obj

@@ -2,7 +2,9 @@ from .base import Unit, unit_type
 
 from ..attr import pulp_attrib
 from ... import compat_attr as attr
-from ..convert import frozenlist_or_none_sorted_converter
+from ...compat_frozendict import frozendict
+from ..convert import frozenlist_or_none_sorted_converter, frozendict_or_none_converter
+from ..validate import optional_dict
 
 
 @unit_type("modulemd_defaults")
@@ -22,7 +24,13 @@ class ModulemdDefaultsUnit(Unit):
     stream = pulp_attrib(type=str, pulp_field="stream", default=None)
     """The stream of this modulemd defaults unit"""
 
-    profiles = pulp_attrib(type=dict, pulp_field="profiles", default=None)
+    profiles = pulp_attrib(
+        type=frozendict,
+        pulp_field="profiles",
+        default=None,
+        validator=optional_dict,
+        converter=frozendict_or_none_converter,
+    )
     """The profiles of this modulemd defaults unit."""
 
     content_type_id = pulp_attrib(
