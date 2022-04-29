@@ -141,12 +141,23 @@ class Client(object):
                 If more than this number of tasks are running, the client will wait before triggering more.
                 This can be used to ensure no single client overwhelms the Pulp server.
 
+            int threads
+                A hint for the number of threads the client should use in order to
+                make concurrent requests to Pulp.
+
+                This number should be considered as more of a scaling factor than
+                a precise thread count. The client in practice will use more than
+                this number of threads.
+
             object auth, cert, headers, max_redirects, params, proxies, verify
                 Any of these arguments, if provided, are used to initialize
                 :class:`requests.Session` objects used by the client.
 
                 These may be used, for example, to configure the credentials
                 for the Pulp server or to use an alternative CA bundle.
+
+        .. versionadded:: 2.31.0
+            Added the ``threads`` argument.
         """
         self._url = url
 
@@ -166,7 +177,10 @@ class Client(object):
             if arg in kwargs:
                 self._session_kwargs[arg] = kwargs.pop(arg)
 
-        _task_throttle = kwargs.pop("task_throttle", self._TASK_THROTTLE)
+        task_throttle = kwargs.pop("task_throttle", self._TASK_THROTTLE)
+        threads = kwargs.pop("threads", None)
+        if threads is not None and threads < 1:
+            threads = 1
 
         if kwargs:
             raise TypeError(
@@ -184,7 +198,8 @@ class Client(object):
         #   it's not successful
         self._request_executor = (
             Executors.thread_pool(
-                name="pubtools-pulplib-requests", max_workers=self._REQUEST_THREADS
+                name="pubtools-pulplib-requests",
+                max_workers=threads or self._REQUEST_THREADS,
             )
             .with_map(self._unpack_response)
             .with_retry(retry_policy=self._RETRY_POLICY)
@@ -196,7 +211,7 @@ class Client(object):
         # - HTTP requests don't happen here and are still submitted via
         #   request_executor (hence no retry needed on this executor)
         self._upload_executor = Executors.thread_pool(
-            name="pubtools-pulplib-uploads", max_workers=self._UPLOAD_THREADS
+            name="pubtools-pulplib-uploads", max_workers=threads or self._UPLOAD_THREADS
         )
 
         # executor for issuing HTTP requests to Pulp which spawn tasks:
@@ -209,12 +224,13 @@ class Client(object):
         poller = TaskPoller(self._new_session(), self._url)
         self._task_executor = (
             Executors.thread_pool(
-                name="pubtools-pulplib-tasks", max_workers=self._REQUEST_THREADS
+                name="pubtools-pulplib-tasks",
+                max_workers=threads or self._REQUEST_THREADS,
             )
             .with_map(self._unpack_response)
             .with_map(self._log_spawned_tasks)
             .with_poll(poller, cancel_fn=poller.cancel)
-            .with_throttle(_task_throttle)
+            .with_throttle(task_throttle)
             .with_retry(retry_policy=self._RETRY_POLICY)
         )
 
