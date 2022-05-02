@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - n/a
 
+## [2.31.0] - 2022-05-03
+
+- Ensure that `profiles` field on modulemd units is immutable
+- `Client` now has a configurable thread count
+
 ## [2.30.0] - 2022-04-04
 
 - Fixed searches in progress sometimes incorrectly cancelled during pagination
@@ -387,7 +392,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release to PyPI
 
-[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.30.0...HEAD
+[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.31.0...HEAD
+[2.31.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.30.0...v2.31.0
 [2.30.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.29.0...v2.30.0
 [2.29.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.28.1...v2.29.0
 [2.28.1]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.28.0...v2.28.1
