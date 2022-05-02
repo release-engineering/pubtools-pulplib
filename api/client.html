@@ -102,6 +102,12 @@ task queue.</p>
 <li><p><strong>task_throttle</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – Maximum number of queued or running tasks permitted for this client.
 If more than this number of tasks are running, the client will wait before triggering more.
 This can be used to ensure no single client overwhelms the Pulp server.</p></li>
+<li><p><strong>threads</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – <p>A hint for the number of threads the client should use in order to
+make concurrent requests to Pulp.</p>
+<p>This number should be considered as more of a scaling factor than
+a precise thread count. The client in practice will use more than
+this number of threads.</p>
+</p></li>
 <li><p><strong>auth</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.10)"><em>object</em></a>) – <p>Any of these arguments, if provided, are used to initialize
 <a class="reference external" href="https://2.python-requests.org/en/master/api/#requests.Session" title="(in Requests v2.26.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">requests.Session</span></code></a> objects used by the client.</p>
 <p>These may be used, for example, to configure the credentials
@@ -140,6 +146,9 @@ for the Pulp server or to use an alternative CA bundle.</p>
 </ul>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.31.0: </span>Added the <code class="docutils literal notranslate"><span class="pre">threads</span></code> argument.</p>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="pubtools.pulplib.Client.get_repository">
 <span class="sig-name descname"><span class="pre">get_repository</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">repository_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/client.html#Client.get_repository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Client.get_repository" title="Permalink to this definition">¶</a></dt>

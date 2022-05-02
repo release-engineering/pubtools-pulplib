@@ -174,12 +174,23 @@
 <span class="sd">                If more than this number of tasks are running, the client will wait before triggering more.</span>
 <span class="sd">                This can be used to ensure no single client overwhelms the Pulp server.</span>
 
+<span class="sd">            int threads</span>
+<span class="sd">                A hint for the number of threads the client should use in order to</span>
+<span class="sd">                make concurrent requests to Pulp.</span>
+
+<span class="sd">                This number should be considered as more of a scaling factor than</span>
+<span class="sd">                a precise thread count. The client in practice will use more than</span>
+<span class="sd">                this number of threads.</span>
+
 <span class="sd">            object auth, cert, headers, max_redirects, params, proxies, verify</span>
 <span class="sd">                Any of these arguments, if provided, are used to initialize</span>
 <span class="sd">                :class:`requests.Session` objects used by the client.</span>
 
 <span class="sd">                These may be used, for example, to configure the credentials</span>
 <span class="sd">                for the Pulp server or to use an alternative CA bundle.</span>
+
+<span class="sd">        .. versionadded:: 2.31.0</span>
+<span class="sd">            Added the ``threads`` argument.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_url</span> <span class="o">=</span> <span class="n">url</span>
 
@@ -199,7 +210,10 @@
             <span class="k">if</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_session_kwargs</span><span class="p">[</span><span class="n">arg</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
 
-        <span class="n">_task_throttle</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;task_throttle&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_TASK_THROTTLE</span><span class="p">)</span>
+        <span class="n">task_throttle</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;task_throttle&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_TASK_THROTTLE</span><span class="p">)</span>
+        <span class="n">threads</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;threads&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">threads</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">threads</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">threads</span> <span class="o">=</span> <span class="mi">1</span>
 
         <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
@@ -217,7 +231,8 @@
         <span class="c1">#   it&#39;s not successful</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_request_executor</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">Executors</span><span class="o">.</span><span class="n">thread_pool</span><span class="p">(</span>
-                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;pubtools-pulplib-requests&quot;</span><span class="p">,</span> <span class="n">max_workers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_REQUEST_THREADS</span>
+                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;pubtools-pulplib-requests&quot;</span><span class="p">,</span>
+                <span class="n">max_workers</span><span class="o">=</span><span class="n">threads</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_REQUEST_THREADS</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="o">.</span><span class="n">with_map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_unpack_response</span><span class="p">)</span>
             <span class="o">.</span><span class="n">with_retry</span><span class="p">(</span><span class="n">retry_policy</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_RETRY_POLICY</span><span class="p">)</span>
@@ -229,7 +244,7 @@
         <span class="c1"># - HTTP requests don&#39;t happen here and are still submitted via</span>
         <span class="c1">#   request_executor (hence no retry needed on this executor)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_upload_executor</span> <span class="o">=</span> <span class="n">Executors</span><span class="o">.</span><span class="n">thread_pool</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;pubtools-pulplib-uploads&quot;</span><span class="p">,</span> <span class="n">max_workers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_UPLOAD_THREADS</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;pubtools-pulplib-uploads&quot;</span><span class="p">,</span> <span class="n">max_workers</span><span class="o">=</span><span class="n">threads</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_UPLOAD_THREADS</span>
         <span class="p">)</span>
 
         <span class="c1"># executor for issuing HTTP requests to Pulp which spawn tasks:</span>
@@ -242,12 +257,13 @@
         <span class="n">poller</span> <span class="o">=</span> <span class="n">TaskPoller</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_new_session</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_url</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_task_executor</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">Executors</span><span class="o">.</span><span class="n">thread_pool</span><span class="p">(</span>
-                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;pubtools-pulplib-tasks&quot;</span><span class="p">,</span> <span class="n">max_workers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_REQUEST_THREADS</span>
+                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;pubtools-pulplib-tasks&quot;</span><span class="p">,</span>
+                <span class="n">max_workers</span><span class="o">=</span><span class="n">threads</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_REQUEST_THREADS</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="o">.</span><span class="n">with_map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_unpack_response</span><span class="p">)</span>
             <span class="o">.</span><span class="n">with_map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_log_spawned_tasks</span><span class="p">)</span>
             <span class="o">.</span><span class="n">with_poll</span><span class="p">(</span><span class="n">poller</span><span class="p">,</span> <span class="n">cancel_fn</span><span class="o">=</span><span class="n">poller</span><span class="o">.</span><span class="n">cancel</span><span class="p">)</span>
-            <span class="o">.</span><span class="n">with_throttle</span><span class="p">(</span><span class="n">_task_throttle</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">with_throttle</span><span class="p">(</span><span class="n">task_throttle</span><span class="p">)</span>
             <span class="o">.</span><span class="n">with_retry</span><span class="p">(</span><span class="n">retry_policy</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_RETRY_POLICY</span><span class="p">)</span>
         <span class="p">)</span>
 
