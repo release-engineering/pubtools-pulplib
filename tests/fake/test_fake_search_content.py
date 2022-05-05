@@ -121,6 +121,44 @@ def test_search_content_by_type(populated_repo):
     ]
 
 
+def test_search_content_with_fields(populated_repo):
+    """search_content can limit fields"""
+
+    # unit_fields=[] will request the minimum possible set of fields.
+    crit = Criteria.with_unit_type(RpmUnit, unit_fields=[])
+
+    units = list(populated_repo.search_content(crit))
+    assert sorted(units) == [
+        # Note that 'sourcerpm' and 'provides' fields, visible in other tests,
+        # are filtered out here.
+        RpmUnit(
+            unit_id="82e2e662-f728-b4fa-4248-5e3a0a5d2f34",
+            content_type_id="srpm",
+            name="bash",
+            version="4.0",
+            release="1",
+            arch="src",
+            repository_memberships=["repo1"],
+        ),
+        RpmUnit(
+            unit_id="e3e70682-c209-4cac-629f-6fbed82c07cd",
+            name="bash",
+            version="4.0",
+            release="1",
+            arch="x86_64",
+            repository_memberships=["repo1"],
+        ),
+        RpmUnit(
+            unit_id="d4713d60-c8a7-0639-eb11-67b367a9c378",
+            name="glibc",
+            version="5.0",
+            release="1",
+            arch="x86_64",
+            repository_memberships=["repo1"],
+        ),
+    ]
+
+
 def test_search_erratum_by_type(populated_repo):
     """search_content for erratum returns matching content"""
 

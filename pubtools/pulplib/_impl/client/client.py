@@ -533,16 +533,27 @@ class Client(object):
                     "filters": prepared_search.filters,
                 }
             }
+
+            if prepared_search.unit_fields is not None:
+                search["criteria"]["fields"] = sorted(
+                    set(
+                        [field.pulp_field_name for field in prepared_search.unit_fields]
+                    )
+                )
+
             search.update(search_options or {})
 
             if search_type == "search/units":
                 # Unit searches need a little special handling:
                 # - serialization might have extracted some type_ids
-                # - filters should be wrapped under 'unit'
+                # - filters/fields should be wrapped under 'unit'
                 #   (we do not support searching on associations right now)
                 if prepared_search.type_ids:
                     search["criteria"]["type_ids"] = prepared_search.type_ids
-                search["criteria"]["filters"] = {"unit": search["criteria"]["filters"]}
+
+                for elem in ("filters", "fields"):
+                    if elem in search["criteria"]:
+                        search["criteria"][elem] = {"unit": search["criteria"][elem]}
 
             searches.append(search)
             responses.append(self._do_search(url, search))
@@ -746,7 +757,9 @@ class Client(object):
             self._url, "pulp/api/v2/repositories/%s/actions/associate/" % dest_repo_id
         )
 
-        pulp_search = search_for_criteria(criteria, type_hint=Unit, type_ids_accum=None)
+        pulp_search = search_for_criteria(
+            criteria, type_hint=Unit, unit_type_accum=None
+        )
 
         body = {"source_repo_id": src_repo_id, "criteria": {}}
         if pulp_search.type_ids:
@@ -770,7 +783,9 @@ class Client(object):
         # use type hint=Unit so that if type_ids are the goal here
         # then we will get back a properly prepared PulpSearch with
         # a populated type_ids field
-        pulp_search = search_for_criteria(criteria, type_hint=Unit, type_ids_accum=None)
+        pulp_search = search_for_criteria(
+            criteria, type_hint=Unit, unit_type_accum=None
+        )
 
         body = {"criteria": {"type_ids": pulp_search.type_ids}}
 

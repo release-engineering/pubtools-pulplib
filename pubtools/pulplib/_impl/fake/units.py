@@ -378,3 +378,27 @@ def with_key_only(units):
         out.append(klass(**kwargs))
 
     return out
+
+
+def with_filtered_fields(unit, fields):
+    # Given a unit and a set of fields (e.g. from a prepared search),
+    # returns a copy of that unit with only the specified fields (plus
+    # a few special cases), similarly to a Pulp server's handling of the
+    # 'fields' argument during a search.
+    if fields is None:
+        return unit
+
+    model_field_names = set([f.model_field_name for f in fields])
+
+    # These are special, not subject to field filtering.
+    model_field_names.add("repository_memberships")
+    model_field_names.add("unit_id")
+    model_field_names.add("content_type_id")
+
+    klass = type(unit)
+    kwargs = {}
+    for field in attr.fields(klass):
+        if field.name in model_field_names:
+            kwargs[field.name] = getattr(unit, field.name)
+
+    return klass(**kwargs)
