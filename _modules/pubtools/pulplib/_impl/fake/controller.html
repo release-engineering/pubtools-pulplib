@@ -34,16 +34,17 @@
 <span></span><span class="kn">import</span> <span class="nn">warnings</span>
 
 <span class="kn">from</span> <span class="nn">.client</span> <span class="kn">import</span> <span class="n">FakeClient</span>
+<span class="kn">from</span> <span class="nn">.state</span> <span class="kn">import</span> <span class="n">FakeState</span>
 
 
 <div class="viewcode-block" id="FakeController"><a class="viewcode-back" href="../../../../../api/testing.html#pubtools.pulplib.FakeController">[docs]</a><span class="k">class</span> <span class="nc">FakeController</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A controller for a fake :class:`~pubtools.pulplib.Client`, to be used</span>
-<span class="sd">    within automated tests.</span>
+    <span class="sd">&quot;&quot;&quot;A controller for fake instances of :class:`~pubtools.pulplib.Client`, to</span>
+<span class="sd">    be used within automated tests.</span>
 
-<span class="sd">    This class provides a client which has the same public interface as</span>
-<span class="sd">    :class:`~pubtools.pulplib.Client`. This client can do most of the same</span>
-<span class="sd">    actions as a real client, but uses a simple in-memory implementation rather</span>
-<span class="sd">    than issuing requests to a remote Pulp server. The client&#39;s data may be</span>
+<span class="sd">    This class provide clients which have the same public interface as</span>
+<span class="sd">    :class:`~pubtools.pulplib.Client`. These clients can do most of the same</span>
+<span class="sd">    actions as a real client, but use a simple in-memory implementation rather</span>
+<span class="sd">    than issuing requests to a remote Pulp server. Client data may be</span>
 <span class="sd">    inspected and modified via the FakeController instance.</span>
 
 <span class="sd">    Example:</span>
@@ -83,13 +84,34 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">FakeClient</span><span class="p">()</span>
-        <span class="sd">&quot;&quot;&quot;The client instance attached to this controller.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">=</span> <span class="n">FakeState</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shared_client</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_client</span><span class="p">()</span>
+
+<div class="viewcode-block" id="FakeController.new_client"><a class="viewcode-back" href="../../../../../api/testing.html#pubtools.pulplib.FakeController.new_client">[docs]</a>    <span class="k">def</span> <span class="nf">new_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns a new fake Client attached to this controller.</span>
+
+<span class="sd">        All clients created from the same controller will share the same underlying</span>
+<span class="sd">        state; changes made via one client will be visible to all other clients</span>
+<span class="sd">        attached to this controller.</span>
+
+<span class="sd">        .. versionadded:: 2.32.0</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">FakeClient</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A shared client instance attached to this controller.</span>
+
+<span class="sd">        This property may be used if only a single client is required.</span>
+<span class="sd">        Otherwise, :meth:`new_client` can be used to obtain multiple clients.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared_client</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">repositories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;The list of existing repositories in the fake client.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">_repositories</span><span class="p">[:]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">repositories</span><span class="p">[:]</span>
 
 <div class="viewcode-block" id="FakeController.insert_repository"><a class="viewcode-back" href="../../../../../api/testing.html#pubtools.pulplib.FakeController.insert_repository">[docs]</a>    <span class="k">def</span> <span class="nf">insert_repository</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repository</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Add a repository to the set of existing repositories in the fake client.</span>
@@ -98,7 +120,8 @@
 <span class="sd">            repository (:class:`~pubtools.pulplib.Repository`)</span>
 <span class="sd">                A repository object to insert.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">_repositories</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">repository</span><span class="p">)</span></div>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">repositories</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">repository</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="FakeController.insert_units"><a class="viewcode-back" href="../../../../../api/testing.html#pubtools.pulplib.FakeController.insert_units">[docs]</a>    <span class="k">def</span> <span class="nf">insert_units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repository</span><span class="p">,</span> <span class="n">units</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Add units to the set of existing content for a repository.</span>
@@ -115,7 +138,8 @@
 <span class="sd">            Added ability to insert orphan units.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">repo_id</span> <span class="o">=</span> <span class="n">repository</span><span class="o">.</span><span class="n">id</span> <span class="k">if</span> <span class="n">repository</span> <span class="k">else</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">_insert_repo_units</span><span class="p">(</span><span class="n">repo_id</span><span class="p">,</span> <span class="n">units</span><span class="p">)</span></div>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">insert_repo_units</span><span class="p">(</span><span class="n">repo_id</span><span class="p">,</span> <span class="n">units</span><span class="p">)</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">content_type_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -123,7 +147,7 @@
 
 <span class="sd">        .. versionadded:: 1.4.0</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">_type_ids</span><span class="p">[:]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">type_ids</span><span class="p">[:]</span>
 
 <div class="viewcode-block" id="FakeController.set_content_type_ids"><a class="viewcode-back" href="../../../../../api/testing.html#pubtools.pulplib.FakeController.set_content_type_ids">[docs]</a>    <span class="k">def</span> <span class="nf">set_content_type_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_ids</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Set the list of content type IDs the fake client will claim to support.</span>
@@ -134,11 +158,13 @@
 
 <span class="sd">        .. versionadded:: 1.4.0</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">_type_ids</span> <span class="o">=</span> <span class="n">type_ids</span><span class="p">[:]</span></div>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">type_ids</span> <span class="o">=</span> <span class="n">type_ids</span><span class="p">[:]</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">publish_history</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;A list of repository publishes triggered via this client.</span>
+        <span class="sd">&quot;&quot;&quot;A list of repository publishes triggered via clients associated with</span>
+<span class="sd">        this controller.</span>
 
 <span class="sd">        Each element of this list is a named tuple with the following attributes,</span>
 <span class="sd">        in order:</span>
@@ -149,11 +175,12 @@
 <span class="sd">                list of :class:`~pubtools.pulplib.Task` generated as a result</span>
 <span class="sd">                of this publish</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">_publish_history</span><span class="p">[:]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">publish_history</span><span class="p">[:]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">sync_history</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;A list of repository syncs triggered via this client.</span>
+        <span class="sd">&quot;&quot;&quot;A list of repository syncs triggered via clients associated with this</span>
+<span class="sd">        controller.</span>
 
 <span class="sd">        Each element of this list is a named tuple with the following attributes,</span>
 <span class="sd">        in order:</span>
@@ -168,7 +195,7 @@
 
 <span class="sd">        .. versionadded:: 2.5.0</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">_sync_history</span><span class="p">[:]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">sync_history</span><span class="p">[:]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">upload_history</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -194,21 +221,22 @@
             <span class="s2">&quot;upload_history is deprecated, check repo units instead&quot;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span>
         <span class="p">)</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">_upload_history</span><span class="p">[:]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">upload_history</span><span class="p">[:]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;The list of existing tasks in the fake client.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">_tasks</span><span class="p">[:]</span>
+        <span class="sd">&quot;&quot;&quot;The list of existing tasks in the fake.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">tasks</span><span class="p">[:]</span>
 
 <div class="viewcode-block" id="FakeController.insert_task"><a class="viewcode-back" href="../../../../../api/testing.html#pubtools.pulplib.FakeController.insert_task">[docs]</a>    <span class="k">def</span> <span class="nf">insert_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Add a task to the set of existing tasks in the fake client.</span>
+        <span class="sd">&quot;&quot;&quot;Add a task to the set of existing tasks in the fake.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            task (:class:`~pubtools.pulplib.Task`)</span>
 <span class="sd">                A task object to insert.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">_tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">task</span><span class="p">)</span></div></div>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">task</span><span class="p">)</span></div></div>
 </pre></div>
 
           </div>
