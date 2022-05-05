@@ -1,16 +1,17 @@
 import warnings
 
 from .client import FakeClient
+from .state import FakeState
 
 
 class FakeController(object):
-    """A controller for a fake :class:`~pubtools.pulplib.Client`, to be used
-    within automated tests.
+    """A controller for fake instances of :class:`~pubtools.pulplib.Client`, to
+    be used within automated tests.
 
-    This class provides a client which has the same public interface as
-    :class:`~pubtools.pulplib.Client`. This client can do most of the same
-    actions as a real client, but uses a simple in-memory implementation rather
-    than issuing requests to a remote Pulp server. The client's data may be
+    This class provide clients which have the same public interface as
+    :class:`~pubtools.pulplib.Client`. These clients can do most of the same
+    actions as a real client, but use a simple in-memory implementation rather
+    than issuing requests to a remote Pulp server. Client data may be
     inspected and modified via the FakeController instance.
 
     Example:
@@ -50,13 +51,34 @@ class FakeController(object):
     """
 
     def __init__(self):
-        self.client = FakeClient()
-        """The client instance attached to this controller."""
+        self._state = FakeState()
+
+        self._shared_client = self.new_client()
+
+    def new_client(self):
+        """Returns a new fake Client attached to this controller.
+
+        All clients created from the same controller will share the same underlying
+        state; changes made via one client will be visible to all other clients
+        attached to this controller.
+
+        .. versionadded:: 2.32.0
+        """
+        return FakeClient(self._state)
+
+    @property
+    def client(self):
+        """A shared client instance attached to this controller.
+
+        This property may be used if only a single client is required.
+        Otherwise, :meth:`new_client` can be used to obtain multiple clients.
+        """
+        return self._shared_client
 
     @property
     def repositories(self):
         """The list of existing repositories in the fake client."""
-        return self.client._repositories[:]
+        return self._state.repositories[:]
 
     def insert_repository(self, repository):
         """Add a repository to the set of existing repositories in the fake client.
@@ -65,7 +87,8 @@ class FakeController(object):
             repository (:class:`~pubtools.pulplib.Repository`)
                 A repository object to insert.
         """
-        self.client._repositories.append(repository)
+        with self._state.lock:
+            self._state.repositories.append(repository)
 
     def insert_units(self, repository, units):
         """Add units to the set of existing content for a repository.
@@ -82,7 +105,8 @@ class FakeController(object):
             Added ability to insert orphan units.
         """
         repo_id = repository.id if repository else None
-        self.client._insert_repo_units(repo_id, units)
+        with self._state.lock:
+            self._state.insert_repo_units(repo_id, units)
 
     @property
     def content_type_ids(self):
@@ -90,7 +114,7 @@ class FakeController(object):
 
         .. versionadded:: 1.4.0
         """
-        return self.client._type_ids[:]
+        return self._state.type_ids[:]
 
     def set_content_type_ids(self, type_ids):
         """Set the list of content type IDs the fake client will claim to support.
@@ -101,11 +125,13 @@ class FakeController(object):
 
         .. versionadded:: 1.4.0
         """
-        self.client._type_ids = type_ids[:]
+        with self._state.lock:
+            self._state.type_ids = type_ids[:]
 
     @property
     def publish_history(self):
-        """A list of repository publishes triggered via this client.
+        """A list of repository publishes triggered via clients associated with
+        this controller.
 
         Each element of this list is a named tuple with the following attributes,
         in order:
@@ -116,11 +142,12 @@ class FakeController(object):
                 list of :class:`~pubtools.pulplib.Task` generated as a result
                 of this publish
         """
-        return self.client._publish_history[:]
+        return self._state.publish_history[:]
 
     @property
     def sync_history(self):
-        """A list of repository syncs triggered via this client.
+        """A list of repository syncs triggered via clients associated with this
+        controller.
 
         Each element of this list is a named tuple with the following attributes,
         in order:
@@ -135,7 +162,7 @@ class FakeController(object):
 
         .. versionadded:: 2.5.0
         """
-        return self.client._sync_history[:]
+        return self._state.sync_history[:]
 
     @property
     def upload_history(self):
@@ -161,18 +188,19 @@ class FakeController(object):
             "upload_history is deprecated, check repo units instead", DeprecationWarning
         )
 
-        return self.client._upload_history[:]
+        return self._state.upload_history[:]
 
     @property
     def tasks(self):
-        """The list of existing tasks in the fake client."""
-        return self.client._tasks[:]
+        """The list of existing tasks in the fake."""
+        return self._state.tasks[:]
 
     def insert_task(self, task):
-        """Add a task to the set of existing tasks in the fake client.
+        """Add a task to the set of existing tasks in the fake.
 
         Args:
             task (:class:`~pubtools.pulplib.Task`)
                 A task object to insert.
         """
-        self.client._tasks.append(task)
+        with self._state.lock:
+            self._state.tasks.append(task)
