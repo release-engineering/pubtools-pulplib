@@ -95,6 +95,36 @@ composed by calls to the documented class methods.</p>
 </dd>
 </dl>
 <dl class="py method">
+<dt class="sig sig-object py" id="pubtools.pulplib.Criteria.with_unit_type">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">with_unit_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit_fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/criteria.html#Criteria.with_unit_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Criteria.with_unit_type" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>unit_type</strong> (<em>class</em>) – A subclass of <a class="reference internal" href="pulpcore.html#pubtools.pulplib.Unit" title="pubtools.pulplib.Unit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unit</span></code></a>.</p></li>
+<li><p><strong>unit_fields</strong> (<em>Iterable</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>]</em>) – <p>Names of the desired field(s) to include in response to a search
+using this criteria. If omitted, all fields are included.</p>
+<p>Some fields will always be included even when not requested.</p>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Criteria</dt><dd><p>criteria for finding units of type <code class="docutils literal notranslate"><span class="pre">unit_type</span></code> populated with
+(at least) the fields from <code class="docutils literal notranslate"><span class="pre">unit_fields</span></code>.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.14.0.</span></p>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.33.0: </span>Introduced <code class="docutils literal notranslate"><span class="pre">unit_fields</span></code>.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="pubtools.pulplib.Criteria.with_id">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">with_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ids</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/criteria.html#Criteria.with_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Criteria.with_id" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -143,26 +173,6 @@ matches <code class="docutils literal notranslate"><span class="pre">field_value
 </p>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pubtools.pulplib.Criteria.with_unit_type">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">with_unit_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/criteria.html#Criteria.with_unit_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Criteria.with_unit_type" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>unit_type</strong> (<em>class</em>) – A subclass of <a class="reference internal" href="pulpcore.html#pubtools.pulplib.Unit" title="pubtools.pulplib.Unit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unit</span></code></a>.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>Criteria</dt><dd><p>criteria for finding units of type <code class="docutils literal notranslate"><span class="pre">unit_type</span></code>.</p>
-</dd>
-</dl>
-</p>
-</dd>
-</dl>
-<div class="versionadded">
-<p><span class="versionmodified added">New in version 2.14.0.</span></p>
-</div>
 </dd></dl>
 
 <dl class="py method">
