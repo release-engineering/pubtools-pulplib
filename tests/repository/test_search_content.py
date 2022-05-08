@@ -67,6 +67,42 @@ def test_mixed_search(client, requests_mocker):
     }
 
 
+def test_search_fields(client, requests_mocker):
+    """Searching with limited fields works correctly"""
+    repo = Repository(id="some-repo")
+    repo.__dict__["_client"] = client
+    requests_mocker.post(
+        "https://pulp.example.com/pulp/api/v2/repositories/some-repo/search/units/",
+        json=[],
+    )
+
+    crit = Criteria.and_(
+        Criteria.with_unit_type(FileUnit, unit_fields=["sha256sum"]),
+        Criteria.with_field("name", "hello.txt"),
+    )
+
+    repo.search_content(crit).result()
+
+    history = requests_mocker.request_history
+
+    # There should have been just one request
+    assert len(history) == 1
+
+    request = history[0]
+    body = request.json()
+
+    # This should have been the request body.
+    assert body == {
+        "criteria": {
+            "type_ids": ["iso"],
+            "skip": 0,
+            "limit": 2000,
+            "filters": {"unit": {"name": {"$eq": "hello.txt"}}},
+            "fields": {"unit": ["checksum", "name", "size"]},
+        }
+    }
+
+
 def test_search_content_type_id_in_or(client, requests_mocker):
     """Searching with a content_type_id within $or fails as unsupported"""
     repo = Repository(id="some-repo")

@@ -17,6 +17,7 @@ from pubtools.pulplib import (
     Task,
     Distributor,
     RpmUnit,
+    FileUnit,
 )
 
 
@@ -686,6 +687,46 @@ def test_can_search_content_by_type(client, requests_mocker):
             version="3.0c",
         ),
     ]
+
+
+def test_can_search_content_specific_fields(client, requests_mocker):
+    """search_content can search while requesting specific fields."""
+    requests_mocker.get(
+        "https://pulp.example.com/pulp/api/v2/plugins/types/",
+        json=[{"id": "iso"}],
+    )
+    requests_mocker.post(
+        "https://pulp.example.com/pulp/api/v2/content/units/iso/search/",
+        json=[],
+    )
+
+    client.search_content(
+        Criteria.with_unit_type(
+            FileUnit,
+            unit_fields=["size", "sha256sum", "description", "version", "notexist"],
+        )
+    ).result()
+
+    # Check the criteria it passed to the server...
+    req = requests_mocker.request_history[-1]
+
+    assert req.json() == {
+        "criteria": {
+            # Note the following behaviors:
+            # - for an unknown field (notexist) we keep it with no changes
+            # - for a mandatory field (name) we include it despite not being requested
+            # - for fields with different model and pulp names (checksum) we use the
+            #   pulp name here
+            # - for fields stored under an object (description, version) we use the
+            #   name of the outermost object (pulp_user_metadata) without duplicates.
+            #
+            "fields": ["checksum", "name", "notexist", "pulp_user_metadata", "size"],
+            "filters": {},
+            "limit": 2000,
+            "skip": 0,
+        },
+        "include_repos": True,
+    }
 
 
 def test_can_search_task(client, requests_mocker):

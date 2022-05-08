@@ -116,6 +116,7 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
             ):
                 continue
             if match_object(criteria, unit):
+                unit = units.with_filtered_fields(unit, prepared_search.unit_fields)
                 out.append(unit)
 
         # callers should not make any assumption about the order of returned
@@ -280,9 +281,9 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
         criteria = criteria or Criteria.true()
 
         # Pass the criteria through the same handling as used by the real client
-        # for serialization, to ensure we reject criteria also rejected by real client.
-        # We don't actually use the result, this is only for validation.
-        search_for_criteria(criteria, Unit)
+        # for serialization, to ensure we reject criteria also rejected by real client
+        # and also accumulate unit_fields.
+        prepared_search = search_for_criteria(criteria, Unit)
 
         repo_f = self.get_repository(repo_id)
         if repo_f.exception():
@@ -296,6 +297,7 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
         try:
             for unit in repo_units:
                 if match_object(criteria, unit):
+                    unit = units.with_filtered_fields(unit, prepared_search.unit_fields)
                     out.append(unit)
         except Exception as ex:  # pylint: disable=broad-except
             return f_return_error(ex)
@@ -418,7 +420,7 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
             criteria = criteria or Criteria.true()
             # validating the criteria here like in actual scenario.
             pulp_search = search_for_criteria(
-                criteria, type_hint=Unit, type_ids_accum=None
+                criteria, type_hint=Unit, unit_type_accum=None
             )
 
             # raise an error if criteria with filters doesn't include type_ids

@@ -11,6 +11,7 @@ from pubtools.pulplib._impl.criteria import (
     InMatcher,
     ExistsMatcher,
     LessThanMatcher,
+    UnitTypeMatchCriteria,
 )
 
 from pubtools.pulplib._impl import compat_attr as attr
@@ -76,15 +77,39 @@ def map_field_for_type(field_name, matcher, type_hint):
 class PulpSearch(object):
     # Helper class representing a prepared Pulp search.
     # Usually just a filters dict, but may include type_ids
-    # for unit searches.
+    # and fields for unit searches.
     filters = attr.ib(type=dict)
     type_ids = attr.ib(type=list, default=None)
+    unit_fields = attr.ib(type=list, default=None)
 
 
-class TypeIdAccumulator(object):
+class UnitTypeAccumulator(object):
+    # A helper to accumulate info on the unit types we're dealing with
+    # within a search:
+    # - collects type_ids (the types we're searching for)
+    # - collects unit_fields (the fields we want to query)
+    # - complains if criteria is too complicated to gather a single consistent
+    #   list of type_ids for the entire search
+    #
     def __init__(self):
         self.can_accumulate = True
-        self.values = []
+        self.type_ids = []
+
+        # When no fields are requested, this must remain as None in order
+        # to indicate that no field limits should be applied at all.
+        self.unit_fields = None
+
+    def accumulate_from_criteria(self, crit, match_expr):
+        assert isinstance(crit, FieldMatchCriteria)
+
+        # Accumulate type IDs here
+        self.accumulate_from_match(match_expr)
+
+        # And if this is specifically a criteria on unit type with
+        # fields, accumulate those too
+        if isinstance(crit, UnitTypeMatchCriteria) and crit._unit_fields is not None:
+            self.unit_fields = self.unit_fields or set()
+            self.unit_fields.update(crit._unit_fields)
 
     def accumulate_from_match(self, match_expr):
         # Are we still in a state where accumulation is possible?
@@ -98,9 +123,9 @@ class TypeIdAccumulator(object):
 
         # OK, we can accumulate if it's a supported expression type.
         if isinstance(match_expr, dict) and list(match_expr.keys()) == ["$eq"]:
-            self.values = [match_expr["$eq"]]
+            self.type_ids = [match_expr["$eq"]]
         elif isinstance(match_expr, dict) and list(match_expr.keys()) == ["$in"]:
-            self.values = match_expr["$in"]
+            self.type_ids = match_expr["$in"]
         else:
             raise ValueError(
                 (
@@ -124,7 +149,7 @@ class TypeIdAccumulator(object):
             self.can_accumulate = old_can_accumulate
 
 
-def search_for_criteria(criteria, type_hint=None, type_ids_accum=None):
+def search_for_criteria(criteria, type_hint=None, unit_type_accum=None):
     # convert a Criteria object to a PulpSearch with filters as used in the Pulp 2.x API:
     # https://docs.pulpproject.org/dev-guide/conventions/criteria.html#search-criteria
     #
@@ -134,11 +159,11 @@ def search_for_criteria(criteria, type_hint=None, type_ids_accum=None):
     if criteria is None or isinstance(criteria, TrueCriteria):
         return PulpSearch(filters={})
 
-    type_ids_accum = type_ids_accum or TypeIdAccumulator()
+    unit_type_accum = unit_type_accum or UnitTypeAccumulator()
 
     if isinstance(criteria, AndCriteria):
         clauses = [
-            search_for_criteria(c, type_hint, type_ids_accum).filters
+            search_for_criteria(c, type_hint, unit_type_accum).filters
             for c in criteria._operands
         ]
 
@@ -152,10 +177,10 @@ def search_for_criteria(criteria, type_hint=None, type_ids_accum=None):
             filters = {"$and": clauses}
 
     elif isinstance(criteria, OrCriteria):
-        with type_ids_accum.no_accumulate:
+        with unit_type_accum.no_accumulate:
             filters = {
                 "$or": [
-                    search_for_criteria(c, type_hint, type_ids_accum).filters
+                    search_for_criteria(c, type_hint, unit_type_accum).filters
                     for c in criteria._operands
                 ]
             }
@@ -178,7 +203,7 @@ def search_for_criteria(criteria, type_hint=None, type_ids_accum=None):
             # This is because type_ids needs to be serialized into the
             # top-level 'criteria' and not 'filters', and there are
             # additional restrictions on its usage.
-            type_ids_accum.accumulate_from_match(match_expr)
+            unit_type_accum.accumulate_from_criteria(criteria, match_expr)
 
             filters = {}
         else:
@@ -187,7 +212,13 @@ def search_for_criteria(criteria, type_hint=None, type_ids_accum=None):
     else:
         raise TypeError("Not a criteria: %s" % repr(criteria))
 
-    return PulpSearch(filters=filters, type_ids=type_ids_accum.values[:])
+    return PulpSearch(
+        filters=filters,
+        type_ids=unit_type_accum.type_ids[:],
+        unit_fields=sorted(unit_type_accum.unit_fields)
+        if unit_type_accum.unit_fields is not None
+        else None,
+    )
 
 
 def filters_for_criteria(criteria, type_hint=None):

@@ -17,6 +17,12 @@ except AttributeError:  # pragma: no cover
 from pubtools.pulplib._impl import compat_attr as attr
 
 from .model.unit import type_ids_for_class
+from .model.attr import PULP2_FIELD
+
+
+FieldNamePair = collections.namedtuple(
+    "FieldNamePair", ["model_field_name", "pulp_field_name"]
+)
 
 
 class Criteria(object):
@@ -102,25 +108,73 @@ class Criteria(object):
         return FieldMatchCriteria(field_name, field_value)
 
     @classmethod
-    def with_unit_type(cls, unit_type):
+    def with_unit_type(cls, unit_type, **kwargs):
         """Args:
             unit_type (class)
                 A subclass of :class:`~pubtools.pulplib.Unit`.
 
+            unit_fields (Iterable[str])
+                Names of the desired field(s) to include in response to a search
+                using this criteria. If omitted, all fields are included.
+
+                Some fields will always be included even when not requested.
+
         Returns:
             Criteria
-                criteria for finding units of type ``unit_type``.
+                criteria for finding units of type ``unit_type`` populated with
+                (at least) the fields from ``unit_fields``.
 
         .. versionadded:: 2.14.0
+
+        .. versionadded:: 2.33.0
+            Introduced ``unit_fields``.
         """
 
-        # This is just a thin wrapper for searching on content_type_id which allows
+        # This is mainly a thin wrapper for searching on content_type_id which allows
         # the caller to avoid having to handle the (unit class <=> type id) mapping.
         type_ids = type_ids_for_class(unit_type)
         if not type_ids:
             raise TypeError("Expected a Unit type, got: %s" % repr(unit_type))
 
-        return FieldMatchCriteria("content_type_id", Matcher.in_(type_ids))
+        unit_fields = kwargs.pop("unit_fields", None)
+        if unit_fields is not None:
+            # We have some non-default set of fields to query.
+            # We must do the following:
+            # - ensure that we also include all the mandatory fields for this model
+            # - generate pairs of (model field, pulp field) names, as we'll need both
+
+            model_field_names = set(unit_fields)
+
+            model_fields_dict = attr.fields_dict(unit_type)
+            for field in model_fields_dict.values():
+                if field.default is attr.NOTHING:
+                    # No default => it's mandatory to use this field
+                    model_field_names.add(field.name)
+
+            # Now build up (model, pulp) pairs
+            pairs = set()
+            for model_field_name in model_field_names:
+                # The default/fallback is to assume that the pulp field is named the
+                # same as the model field...
+                pulp_field_name = model_field_name
+
+                # ... but if the field exists and declares an explicit PULP2_FIELD then we
+                # use that instead
+                field = model_fields_dict.get(model_field_name)
+                if field and field.metadata.get(PULP2_FIELD):
+                    # We have a defined pulp field, so use it.
+                    # Note we only care about the first component of the field, because that's
+                    # all the granularity supported by Pulp search API (e.g. if actual field
+                    # is pulp_user_metadata.description, we need to query pulp_user_metadata).
+                    pulp_field_name = field.metadata[PULP2_FIELD].split(".")[0]
+
+                pairs.add(FieldNamePair(model_field_name, pulp_field_name))
+
+            unit_fields = tuple(sorted(pairs))
+
+        return UnitTypeMatchCriteria(
+            "content_type_id", Matcher.in_(type_ids), unit_fields
+        )
 
     @classmethod
     def with_field_in(cls, field_name, field_value):
@@ -379,6 +433,13 @@ class FieldMatchCriteria(Criteria):
         if " " in matcher:
             out = "(%s)" % out
         return out
+
+
+@attr.s
+class UnitTypeMatchCriteria(FieldMatchCriteria):
+    # This specialization of FieldMatchCriteria is used to match on unit types
+    # while also keeping info on the fields of interest to the user.
+    _unit_fields = attr.ib()
 
 
 @attr.s

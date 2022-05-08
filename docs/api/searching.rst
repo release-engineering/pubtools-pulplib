@@ -32,6 +32,9 @@ Class reference
 
 .. autoclass:: pubtools.pulplib.Criteria
    :members:
+   :exclude-members: with_unit_type
+
+   .. automethod:: with_unit_type(unit_type, unit_fields=None)
 
 .. autoclass:: pubtools.pulplib.Matcher
    :members:
