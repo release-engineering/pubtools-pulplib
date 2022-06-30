@@ -14,6 +14,8 @@ except AttributeError:  # pragma: no cover
     # python 2
     Iterable = collections.Iterable  # pylint: disable=invalid-name
 
+from frozenlist2 import frozenlist
+
 from pubtools.pulplib._impl import compat_attr as attr
 
 from .model.unit import type_ids_for_class
@@ -339,7 +341,7 @@ class Matcher(object):
         return self
 
 
-@attr.s
+@attr.s(frozen=True)
 class RegexMatcher(Matcher):
     _pattern = attr.ib()
 
@@ -361,7 +363,7 @@ class RegexMatcher(Matcher):
         return "=~/%s/" % self._pattern
 
 
-@attr.s
+@attr.s(frozen=True)
 class EqMatcher(Matcher):
     _value = attr.ib()
 
@@ -372,15 +374,15 @@ class EqMatcher(Matcher):
         return "==%s" % repr(self._value)
 
 
-@attr.s
-class InMatcher(Matcher):
-    _values = attr.ib()
+def iterable_nonstr_then_frozenlist(values):
+    if isinstance(values, Iterable) and not isinstance(values, six.string_types):
+        return frozenlist(values)
+    raise ValueError("Must be an iterable: %s" % repr(values))
 
-    @_values.validator
-    def _check_values(self, _, values):
-        if isinstance(values, Iterable) and not isinstance(values, six.string_types):
-            return
-        raise ValueError("Must be an iterable: %s" % repr(values))
+
+@attr.s(frozen=True)
+class InMatcher(Matcher):
+    _values = attr.ib(converter=iterable_nonstr_then_frozenlist)
 
     def _map(self, fn):
         return attr.evolve(self, values=[fn(x) for x in self._values])
@@ -389,13 +391,13 @@ class InMatcher(Matcher):
         return " IN %s" % repr(self._values)
 
 
-@attr.s
+@attr.s(frozen=True)
 class ExistsMatcher(Matcher):
     def __str__(self):
         return " EXISTS"
 
 
-@attr.s
+@attr.s(frozen=True)
 class LessThanMatcher(Matcher):
     _value = attr.ib()
 
@@ -421,7 +423,7 @@ def coerce_to_matcher(value):
     return EqMatcher(value)
 
 
-@attr.s
+@attr.s(frozen=True)
 class FieldMatchCriteria(Criteria):
     _field = attr.ib()
     _matcher = attr.ib(converter=coerce_to_matcher)
@@ -435,14 +437,14 @@ class FieldMatchCriteria(Criteria):
         return out
 
 
-@attr.s
+@attr.s(frozen=True)
 class UnitTypeMatchCriteria(FieldMatchCriteria):
     # This specialization of FieldMatchCriteria is used to match on unit types
     # while also keeping info on the fields of interest to the user.
     _unit_fields = attr.ib()
 
 
-@attr.s
+@attr.s(frozen=True)
 class AndCriteria(Criteria):
     _operands = attr.ib()
 
@@ -456,7 +458,7 @@ class AndCriteria(Criteria):
         return "(" + " AND ".join([str(o) for o in self._operands]) + ")"
 
 
-@attr.s
+@attr.s(frozen=True)
 class OrCriteria(Criteria):
     _operands = attr.ib()
 

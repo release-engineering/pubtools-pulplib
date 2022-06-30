@@ -16,7 +16,8 @@ from pubtools.pulplib._impl.criteria import (
 
 from pubtools.pulplib._impl import compat_attr as attr
 from pubtools.pulplib._impl.model.attr import PULP2_FIELD, PY_PULP2_CONVERTER
-from pubtools.pulplib._impl.model.unit.base import Unit
+from pubtools.pulplib._impl.model.unit.base import Unit, class_for_type_id
+from pubtools.pulplib._impl.client.errors import AmbiguousQueryException
 
 LOG = logging.getLogger("pubtools.pulplib")
 
@@ -47,12 +48,36 @@ def to_mongo_json(value):
     return value
 
 
+def raise_ambiguous_query(field_name, type_hint, grouped_class_names):
+    # Raise an exception with a meaningful message in the case where a query
+    # can't be executed due to field ambiguity.
+    #
+    # Example: if searching on field 'version', the caller might be intending
+    # to use FileUnit.version or ModulemdUnit.version.
+    # This message will point out the ambiguity and suggest how to resolve
+    # the problem.
+
+    message = ["Field '%s' is ambiguous." % field_name]
+    message.append(
+        "A subtype of %s must be provided to select one of the following groups:"
+        % type_hint.__name__
+    )
+    field_lines = []
+    for class_names in grouped_class_names:
+        field_names = ["%s.%s" % (name, field_name) for name in sorted(class_names)]
+        field_lines.append("  " + ", ".join(field_names))
+    field_lines.sort()
+    message.extend(field_lines)
+    raise AmbiguousQueryException("\n".join(message))
+
+
 def map_field_for_type(field_name, matcher, type_hint):
     if not type_hint:
         return None
 
     attrs_classes = all_subclasses(type_hint)
     attrs_classes = [cls for cls in attrs_classes if attr.has(cls)]
+    found = {}
     for klass in attrs_classes:
         # Does the class have this field?
         klass_fields = attr.fields(klass)
@@ -61,13 +86,24 @@ def map_field_for_type(field_name, matcher, type_hint):
         field = getattr(klass_fields, field_name)
         metadata = field.metadata
         if PULP2_FIELD in metadata:
-            field_name = metadata[PULP2_FIELD]
+            pulp_field_name = metadata[PULP2_FIELD]
             converter = metadata.get(PY_PULP2_CONVERTER, lambda x: x)
-            return (field_name, matcher._map(converter) if matcher else None)
+            mapped = matcher._map(converter) if matcher else None
+            key = (pulp_field_name, mapped)
+            found.setdefault(key, []).append(klass.__name__)
+            continue
 
         # Field was found on the model, but we don't support mapping it to
         # a Pulp field.
         raise NotImplementedError("Searching on field %s is not supported" % field_name)
+
+    if len(found) == 1:
+        # Found exactly one definition => great, use it
+        return list(found.keys())[0]
+
+    if len(found) > 1:
+        # Found multiple definitions => a problem, we don't know what to use.
+        return raise_ambiguous_query(field_name, type_hint, found.values())
 
     # No match => no change, search exactly what was requested
     return None
@@ -149,13 +185,41 @@ class UnitTypeAccumulator(object):
             self.can_accumulate = old_can_accumulate
 
 
-def search_for_criteria(criteria, type_hint=None, unit_type_accum=None):
+def search_for_criteria(
+    criteria, type_hint=None, unit_type_accum=None, accum_only=None
+):
     # convert a Criteria object to a PulpSearch with filters as used in the Pulp 2.x API:
     # https://docs.pulpproject.org/dev-guide/conventions/criteria.html#search-criteria
     #
     # type_hint optionally provides the class expected to be found by this search.
     # This can impact the application of certain criteria, e.g. it will affect
     # field mappings looked up by FieldMatchCriteria.
+
+    if type_hint is Unit and accum_only is None:
+        # If the caller asked for a generic Unit type hint, we'll do two passes.
+        # The first pass tries to figure out exactly what kind of Unit subtype is
+        # being searched for. This is important because the same field might exist
+        # on different models but be stored in Pulp in different ways (e.g.
+        # FileUnit.version vs ModulemdUnit.version).
+        accum = UnitTypeAccumulator()
+        search_for_criteria(criteria, type_hint, accum, accum_only=True)
+
+        # We should now know what type_ids we want to query. Map them back to
+        # a specific unit type.
+        unit_classes = set()
+        for type_id in accum.type_ids:
+            unit_class = class_for_type_id(type_id)
+            if unit_class:
+                unit_classes.add(unit_class)
+
+        # If the type IDs map to exactly one unit subtype, then we update our
+        # type_hint to be more accurate and continue.
+        # Otherwise any field ambiguities should be detected later on
+        # and a helpful error raised telling the caller to be more specific
+        # with their query.
+        if len(unit_classes) == 1:
+            type_hint = list(unit_classes)[0]
+
     if criteria is None or isinstance(criteria, TrueCriteria):
         return PulpSearch(filters={})
 
@@ -163,7 +227,9 @@ def search_for_criteria(criteria, type_hint=None, unit_type_accum=None):
 
     if isinstance(criteria, AndCriteria):
         clauses = [
-            search_for_criteria(c, type_hint, unit_type_accum).filters
+            search_for_criteria(
+                c, type_hint, unit_type_accum, accum_only=accum_only
+            ).filters
             for c in criteria._operands
         ]
 
@@ -180,7 +246,9 @@ def search_for_criteria(criteria, type_hint=None, unit_type_accum=None):
         with unit_type_accum.no_accumulate:
             filters = {
                 "$or": [
-                    search_for_criteria(c, type_hint, unit_type_accum).filters
+                    search_for_criteria(
+                        c, type_hint, unit_type_accum, accum_only=accum_only
+                    ).filters
                     for c in criteria._operands
                 ]
             }
@@ -189,7 +257,15 @@ def search_for_criteria(criteria, type_hint=None, unit_type_accum=None):
         field = criteria._field
         matcher = criteria._matcher
 
-        mapped = map_field_for_type(field, matcher, type_hint)
+        # Figure out the Pulp field being referenced here.
+        #
+        # If in accumulate-only mode (to calculate type_ids) we should skip this for now
+        # because we may not have the final type_hint yet, which can lead to ambiguity.
+        # content_type_id field itself is an exception as skipping that would interfere
+        # with the calculation of type_ids.
+        mapped = None
+        if not accum_only or field == "content_type_id":
+            mapped = map_field_for_type(field, matcher, type_hint)
         if mapped:
             field, matcher = mapped
 
@@ -197,7 +273,7 @@ def search_for_criteria(criteria, type_hint=None, unit_type_accum=None):
 
         # If we are looking at the special _content_type_id field
         # for the purpose of a unit search...
-        if field == "_content_type_id" and type_hint is Unit:
+        if field == "_content_type_id" and issubclass(type_hint, Unit):
             # We should not include this into filters, but instead
             # attempt to accumulate it into type_ids_out.
             # This is because type_ids needs to be serialized into the

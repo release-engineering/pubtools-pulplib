@@ -19,3 +19,8 @@ class TaskFailedException(PulpException):
 class MissingTaskException(PulpException):
     # this is not public API, this exception should be extremely rare
     pass
+
+
+class AmbiguousQueryException(PulpException):
+    # not public API
+    pass
