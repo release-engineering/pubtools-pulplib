@@ -303,6 +303,34 @@ class Repository(PulpObject, Deletable):
     .. versionadded:: 2.29.0
     """
 
+    include_in_download_service = pulp_attrib(
+        default=False,
+        type=bool,
+        mutable=True,
+        pulp_field="notes.include_in_download_service",
+        pulp_py_converter=lambda x: x == "True",
+        py_pulp_converter=str,
+    )
+    """Flag indicating whether the repository is visible in production instance
+    of download service.
+
+    .. versionadded:: 2.34.0
+    """
+
+    include_in_download_service_preview = pulp_attrib(
+        default=False,
+        type=bool,
+        mutable=True,
+        pulp_field="notes.include_in_download_service_preview",
+        pulp_py_converter=lambda x: x == "True",
+        py_pulp_converter=str,
+    )
+    """Flag indicating whether the repository is visible in staging instance
+    of download service.
+
+    .. versionadded:: 2.34.0
+    """
+
     @distributors.validator
     def _check_repo_id(self, _, value):
         # checks if distributor's repository id is same as the repository it

@@ -67,6 +67,8 @@ def test_populate_attrs():
             "notes": {
                 "_repo-type": "rpm-repo",
                 "content_set": "fake_content_set",
+                "include_in_download_service": "True",
+                "include_in_download_service_preview": "True",
                 "population_sources": ["populate_repo1", "populate_repo2"],
                 "ubi_population": True,
                 "ubi_config_version": "fake_ubi_config_version",
@@ -78,6 +80,8 @@ def test_populate_attrs():
     assert repo.ubi_population
     assert repo.content_set == "fake_content_set"
     assert repo.ubi_config_version == "fake_ubi_config_version"
+    assert repo.include_in_download_service
+    assert repo.include_in_download_service_preview
 
 
 def test_productid_attrs():
