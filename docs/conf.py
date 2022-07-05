@@ -64,7 +64,7 @@ master_doc = "index"
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = "en"
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -132,7 +132,7 @@ autodoc_member_order = "bysource"
 autodoc_inherit_docstrings = False
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
-    "requests": ("https://2.python-requests.org/en/master/", None),
+    "requests": ("https://requests.readthedocs.io/en/latest/", None),
     "more-executors": ("https://rohanpm.github.io/more-executors/", None),
     "attrs": ("https://www.attrs.org/en/stable/", None),
 }
