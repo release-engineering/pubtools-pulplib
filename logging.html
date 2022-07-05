@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>Logging &#8212; pubtools-pulplib  documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
@@ -12,6 +12,7 @@
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -34,13 +35,13 @@
           <div class="body" role="main">
             
   <section id="logging">
-<h1>Logging<a class="headerlink" href="#logging" title="Permalink to this headline">¶</a></h1>
+<h1>Logging<a class="headerlink" href="#logging" title="Permalink to this heading">¶</a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">pubtools-pulplib</span></code> produces various log messages which may be of interest to
 clients.</p>
 <p>These log messages are sent to the <code class="docutils literal notranslate"><span class="pre">pubtools.pulplib</span></code> <a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Logger</span></code></a>. For a
 general-purpose command, it’s recommended to enable this logger at <code class="docutils literal notranslate"><span class="pre">INFO</span></code> level.</p>
 <section id="waiting-on-pulp">
-<h2>Waiting on Pulp<a class="headerlink" href="#waiting-on-pulp" title="Permalink to this headline">¶</a></h2>
+<h2>Waiting on Pulp<a class="headerlink" href="#waiting-on-pulp" title="Permalink to this heading">¶</a></h2>
 <p>If the library is awaiting the completion of Pulp tasks and no progress is being
 made, it will produce an <code class="docutils literal notranslate"><span class="pre">INFO</span></code> log message every few minutes with a count of the
 running and waiting tasks in Pulp, such as:</p>
@@ -59,7 +60,7 @@ running and waiting tasks in Pulp, such as:</p>
 </div>
 </section>
 <section id="task-state-changes">
-<h2>Task state changes<a class="headerlink" href="#task-state-changes" title="Permalink to this headline">¶</a></h2>
+<h2>Task state changes<a class="headerlink" href="#task-state-changes" title="Permalink to this heading">¶</a></h2>
 <p>A log message will be produced when a Pulp task is created, cancelled,
 succeeds or fails. Failed Pulp tasks produce a <code class="docutils literal notranslate"><span class="pre">WARNING</span></code>; other state
 changes produce an <code class="docutils literal notranslate"><span class="pre">INFO</span></code> message.</p>
@@ -69,7 +70,7 @@ changes produce an <code class="docutils literal notranslate"><span class="pre">
 </div>
 </section>
 <section id="retrying">
-<h2>Retrying<a class="headerlink" href="#retrying" title="Permalink to this headline">¶</a></h2>
+<h2>Retrying<a class="headerlink" href="#retrying" title="Permalink to this heading">¶</a></h2>
 <p>Many methods in this library will implicitly retry failing operations a few times.
 When this occurs, a <code class="docutils literal notranslate"><span class="pre">WARNING</span></code> message is logged before the retry occurs, as
 in the following examples:</p>
@@ -151,7 +152,7 @@ number of attempts before the error will be considered fatal.</p>
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -168,7 +169,7 @@ number of attempts before the error will be considered fatal.</p>
       &copy;2019, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

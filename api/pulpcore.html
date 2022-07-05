@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>API: core &#8212; pubtools-pulplib  documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
@@ -12,6 +12,7 @@
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -34,17 +35,17 @@
           <div class="body" role="main">
             
   <section id="api-core">
-<h1>API: core<a class="headerlink" href="#api-core" title="Permalink to this headline">¶</a></h1>
-<div class="contents local topic" id="contents">
+<h1>API: core<a class="headerlink" href="#api-core" title="Permalink to this heading">¶</a></h1>
+<nav class="contents local" id="contents">
 <ul class="simple">
 <li><p><a class="reference internal" href="#common-functionality" id="id1">Common functionality</a></p></li>
 <li><p><a class="reference internal" href="#repository" id="id2">Repository</a></p></li>
 <li><p><a class="reference internal" href="#units" id="id3">Units</a></p></li>
 <li><p><a class="reference internal" href="#task" id="id4">Task</a></p></li>
 </ul>
-</div>
+</nav>
 <section id="common-functionality">
-<h2><a class="toc-backref" href="#id1">Common functionality</a><a class="headerlink" href="#common-functionality" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Common functionality</a><a class="headerlink" href="#common-functionality" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="pubtools.pulplib.PulpObject">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pubtools.pulplib.</span></span><span class="sig-name descname"><span class="pre">PulpObject</span></span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/common.html#PulpObject"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.PulpObject" title="Permalink to this definition">¶</a></dt>
@@ -71,14 +72,14 @@ Pulp servers.</p>
 matching <code class="docutils literal notranslate"><span class="pre">data</span></code>.  For example, <code class="docutils literal notranslate"><span class="pre">Repository.from_data</span></code> must be invoked
 with a repository object provided by Pulp’s API.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.10)"><em>dict</em></a>) – A dict containing a raw representation of a Pulp object, as rendered
 by Pulp’s API.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>a new instance of <code class="docutils literal notranslate"><span class="pre">cls</span></code></p>
 </dd>
-<dt class="field-odd">Raises</dt>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="client.html#pubtools.pulplib.InvalidDataException" title="pubtools.pulplib.InvalidDataException"><strong>InvalidDataException</strong></a> – If the provided <code class="docutils literal notranslate"><span class="pre">data</span></code> fails validation against an expected schema.</p>
 </dd>
 </dl>
@@ -95,7 +96,7 @@ by Pulp’s API.</p>
 
 </section>
 <section id="repository">
-<h2><a class="toc-backref" href="#id2">Repository</a><a class="headerlink" href="#repository" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Repository</a><a class="headerlink" href="#repository" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="pubtools.pulplib.Repository">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pubtools.pulplib.</span></span><span class="sig-name descname"><span class="pre">Repository</span></span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository/base.html#Repository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Repository" title="Permalink to this definition">¶</a></dt>
@@ -231,7 +232,7 @@ related repositories.</p>
 <span class="sig-name descname"><span class="pre">distributor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">distributor_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository/base.html#Repository.distributor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Repository.distributor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Look up a distributor by ID.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><dl class="simple">
 <dt><a class="reference internal" href="#pubtools.pulplib.Distributor" title="pubtools.pulplib.Distributor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Distributor</span></code></a></dt><dd><p>The distributor belonging to this repository with the given ID.</p>
 </dd>
@@ -248,7 +249,7 @@ related repositories.</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">file_content</span></span><a class="headerlink" href="#pubtools.pulplib.Repository.file_content" title="Permalink to this definition">¶</a></dt>
 <dd><p>A list of file units stored in this repository.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list[<a class="reference internal" href="files.html#pubtools.pulplib.FileUnit" title="pubtools.pulplib.FileUnit"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileUnit</span></code></a>]</p>
 </dd>
 </dl>
@@ -262,7 +263,7 @@ related repositories.</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rpm_content</span></span><a class="headerlink" href="#pubtools.pulplib.Repository.rpm_content" title="Permalink to this definition">¶</a></dt>
 <dd><p>A list of rpm units stored in this repository.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list[<a class="reference internal" href="yum.html#pubtools.pulplib.RpmUnit" title="pubtools.pulplib.RpmUnit"><code class="xref py py-class docutils literal notranslate"><span class="pre">RpmUnit</span></code></a>]</p>
 </dd>
 </dl>
@@ -276,7 +277,7 @@ related repositories.</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">srpm_content</span></span><a class="headerlink" href="#pubtools.pulplib.Repository.srpm_content" title="Permalink to this definition">¶</a></dt>
 <dd><p>A list of srpm units stored in this repository.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list[<a class="reference internal" href="#pubtools.pulplib.Unit" title="pubtools.pulplib.Unit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unit</span></code></a>]</p>
 </dd>
 </dl>
@@ -290,7 +291,7 @@ related repositories.</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">modulemd_content</span></span><a class="headerlink" href="#pubtools.pulplib.Repository.modulemd_content" title="Permalink to this definition">¶</a></dt>
 <dd><p>A list of modulemd units stored in this repository.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list[<a class="reference internal" href="yum.html#pubtools.pulplib.ModulemdUnit" title="pubtools.pulplib.ModulemdUnit"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModulemdUnit</span></code></a>]</p>
 </dd>
 </dl>
@@ -304,7 +305,7 @@ related repositories.</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">modulemd_defaults_content</span></span><a class="headerlink" href="#pubtools.pulplib.Repository.modulemd_defaults_content" title="Permalink to this definition">¶</a></dt>
 <dd><p>A list of modulemd_defaults units stored in this repository.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list[<a class="reference internal" href="yum.html#pubtools.pulplib.ModulemdDefaultsUnit" title="pubtools.pulplib.ModulemdDefaultsUnit"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModulemdDefaultsUnit</span></code></a>]</p>
 </dd>
 </dl>
@@ -318,10 +319,10 @@ related repositories.</p>
 <span class="sig-name descname"><span class="pre">search_content</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">criteria</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository/base.html#Repository.search_content"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Repository.search_content" title="Permalink to this definition">¶</a></dt>
 <dd><p>Search this repository for content matching the given criteria.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>criteria</strong> (<a class="reference internal" href="searching.html#pubtools.pulplib.Criteria" title="pubtools.pulplib.Criteria"><code class="xref py py-class docutils literal notranslate"><span class="pre">Criteria</span></code></a>) – A criteria object used for this search.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl>
 <dt>Future[<a class="reference internal" href="searching.html#pubtools.pulplib.Page" title="pubtools.pulplib.Page"><code class="xref py py-class docutils literal notranslate"><span class="pre">Page</span></code></a>]</dt><dd><p>A future representing the first page of results.</p>
 <p>Each page will contain a collection of
@@ -341,7 +342,7 @@ related repositories.</p>
 <span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository/base.html#Repository.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Repository.delete" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete this repository from Pulp.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><dl>
 <dt>Future[list[<a class="reference internal" href="#pubtools.pulplib.Task" title="pubtools.pulplib.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a>]]</dt><dd><p>A future which is resolved when the repository deletion has completed.</p>
 <p>The future contains a list of zero or more tasks triggered and awaited
@@ -352,7 +353,7 @@ are possible.</p>
 </dl>
 </p>
 </dd>
-<dt class="field-even">Raises</dt>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="client.html#pubtools.pulplib.DetachedException" title="pubtools.pulplib.DetachedException"><strong>DetachedException</strong></a> – If this instance is not attached to a Pulp client.</p>
 </dd>
 </dl>
@@ -365,12 +366,12 @@ are possible.</p>
 <p>The specific operations triggered on Pulp in order to publish a repo are not defined,
 but in Pulp 2.x, generally consists of triggering one or more distributors in sequence.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>options</strong> (<a class="reference internal" href="#pubtools.pulplib.PublishOptions" title="pubtools.pulplib.PublishOptions"><em>PublishOptions</em></a>) – <p>Options used to customize the behavior of this publish.</p>
 <p>If omitted, the Pulp server’s defaults apply.</p>
 </p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl>
 <dt>Future[list[<a class="reference internal" href="#pubtools.pulplib.Task" title="pubtools.pulplib.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a>]]</dt><dd><p>A future which is resolved when publish succeeds.</p>
 <p>The future contains a list of zero or more tasks triggered and awaited
@@ -379,7 +380,7 @@ during the publish operation.</p>
 </dl>
 </p>
 </dd>
-<dt class="field-odd">Raises</dt>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="client.html#pubtools.pulplib.DetachedException" title="pubtools.pulplib.DetachedException"><strong>DetachedException</strong></a> – If this instance is not attached to a Pulp client.</p>
 </dd>
 </dl>
@@ -390,11 +391,11 @@ during the publish operation.</p>
 <span class="sig-name descname"><span class="pre">sync</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository/base.html#Repository.sync"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Repository.sync" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sync repository with feed.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>options</strong> (<a class="reference internal" href="#pubtools.pulplib.SyncOptions" title="pubtools.pulplib.SyncOptions"><em>SyncOptions</em></a>) – Options used to customize the behavior of sync process.
 If omitted, the Pulp server’s defaults apply.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl>
 <dt>Future[list[<a class="reference internal" href="#pubtools.pulplib.Task" title="pubtools.pulplib.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a>]]</dt><dd><p>A future which is resolved when sync succeeds.</p>
 <p>The future contains a list of zero or more tasks triggered and awaited
@@ -403,7 +404,7 @@ during the sync operation.</p>
 </dl>
 </p>
 </dd>
-<dt class="field-odd">Raises</dt>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="client.html#pubtools.pulplib.DetachedException" title="pubtools.pulplib.DetachedException"><strong>DetachedException</strong></a> – If this instance is not attached to a Pulp client.</p>
 </dd>
 </dl>
@@ -417,7 +418,7 @@ during the sync operation.</p>
 <span class="sig-name descname"><span class="pre">remove_content</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">criteria</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository/base.html#Repository.remove_content"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Repository.remove_content" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove all content of requested types from this repository.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>criteria</strong> (<a class="reference internal" href="searching.html#pubtools.pulplib.Criteria" title="pubtools.pulplib.Criteria"><code class="xref py py-class docutils literal notranslate"><span class="pre">Criteria</span></code></a>) – <p>A criteria object used to filter the contents for removal.</p>
 <p>Type IDs must be included in the criteria with any other filters.
 If omitted, filter criteria will be ignored and all the content will
@@ -425,7 +426,7 @@ be removed.
 If criteria is omitted, all the content will be removed.</p>
 </p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl>
 <dt>Future[list[<a class="reference internal" href="#pubtools.pulplib.Task" title="pubtools.pulplib.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a>]]</dt><dd><p>A future which is resolved when content has been removed.</p>
 <p>The future contains a list of zero or more tasks triggered and awaited
@@ -436,7 +437,7 @@ during the removal.</p>
 </dl>
 </p>
 </dd>
-<dt class="field-odd">Raises</dt>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="client.html#pubtools.pulplib.DetachedException" title="pubtools.pulplib.DetachedException"><strong>DetachedException</strong></a> – If this instance is not attached to a Pulp client.</p>
 </dd>
 </dl>
@@ -500,7 +501,7 @@ if known.</p>
 <span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/distributor.html#Distributor.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Distributor.delete" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete this distributor from Pulp.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><dl>
 <dt>Future[list[<a class="reference internal" href="#pubtools.pulplib.Task" title="pubtools.pulplib.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a>]]</dt><dd><p>A future which is resolved when the distributor deletion has completed.</p>
 <p>The future contains a list of zero or more tasks triggered and awaited
@@ -511,7 +512,7 @@ are possible.</p>
 </dl>
 </p>
 </dd>
-<dt class="field-even">Raises</dt>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="client.html#pubtools.pulplib.DetachedException" title="pubtools.pulplib.DetachedException"><strong>DetachedException</strong></a> – If this instance is not attached to a Pulp client or repository.</p>
 </dd>
 </dl>
@@ -654,7 +655,7 @@ types: <a class="reference internal" href="files.html#pubtools.pulplib.FileSyncO
 
 </section>
 <section id="units">
-<h2><a class="toc-backref" href="#id3">Units</a><a class="headerlink" href="#units" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Units</a><a class="headerlink" href="#units" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="pubtools.pulplib.Unit">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pubtools.pulplib.</span></span><span class="sig-name descname"><span class="pre">Unit</span></span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/unit/base.html#Unit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Unit" title="Permalink to this definition">¶</a></dt>
@@ -675,7 +676,7 @@ types: <a class="reference internal" href="files.html#pubtools.pulplib.FileSyncO
 
 </section>
 <section id="task">
-<h2><a class="toc-backref" href="#id4">Task</a><a class="headerlink" href="#task" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Task</a><a class="headerlink" href="#task" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="pubtools.pulplib.Task">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pubtools.pulplib.</span></span><span class="sig-name descname"><span class="pre">Task</span></span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/task.html#Task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Task" title="Permalink to this definition">¶</a></dt>
@@ -831,7 +832,7 @@ by Pulp. These should at least contain a ‘type_id’ and a ‘unit_key’.</p>
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -848,7 +849,7 @@ by Pulp. These should at least contain a ‘type_id’ and a ‘unit_key’.</p>
       &copy;2019, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

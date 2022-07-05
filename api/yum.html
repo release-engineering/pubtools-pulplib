@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>API: yum &#8212; pubtools-pulplib  documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
@@ -12,6 +12,7 @@
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -34,8 +35,8 @@
           <div class="body" role="main">
             
   <section id="api-yum">
-<h1>API: yum<a class="headerlink" href="#api-yum" title="Permalink to this headline">¶</a></h1>
-<div class="contents local topic" id="contents">
+<h1>API: yum<a class="headerlink" href="#api-yum" title="Permalink to this heading">¶</a></h1>
+<nav class="contents local" id="contents">
 <ul class="simple">
 <li><p><a class="reference internal" href="#repository" id="id4">Repository</a></p></li>
 <li><p><a class="reference internal" href="#units-rpm" id="id5">Units: RPM</a></p></li>
@@ -43,9 +44,9 @@
 <li><p><a class="reference internal" href="#units-modules" id="id7">Units: modules</a></p></li>
 <li><p><a class="reference internal" href="#units-metadata" id="id8">Units: metadata</a></p></li>
 </ul>
-</div>
+</nav>
 <section id="repository">
-<h2><a class="toc-backref" href="#id4">Repository</a><a class="headerlink" href="#repository" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Repository</a><a class="headerlink" href="#repository" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="pubtools.pulplib.YumRepository">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pubtools.pulplib.</span></span><span class="sig-name descname"><span class="pre">YumRepository</span></span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository/yum.html#YumRepository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.YumRepository" title="Permalink to this definition">¶</a></dt>
@@ -75,7 +76,7 @@
 <dd><p>Find and return the binary repository relating to this repository.</p>
 <p>Yum repositories usually come in triplets of
 (binary RPMs, debuginfo RPMs, source RPMs). For example:</p>
-<table class="colwidths-given docutils align-default">
+<table class="docutils align-default">
 <colgroup>
 <col style="width: 75%" />
 <col style="width: 25%" />
@@ -95,7 +96,7 @@
 <p>This method along with <a class="reference internal" href="#pubtools.pulplib.YumRepository.get_debug_repository" title="pubtools.pulplib.YumRepository.get_debug_repository"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_debug_repository()</span></code></a> and <a class="reference internal" href="#pubtools.pulplib.YumRepository.get_source_repository" title="pubtools.pulplib.YumRepository.get_source_repository"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_source_repository()</span></code></a> allow locating other repositories
 from within this group.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><dl class="simple">
 <dt><code class="docutils literal notranslate"><span class="pre">Future[YumRepository]</span></code></dt><dd><p>Binary repository relating to this repository.</p>
 </dd>
@@ -112,7 +113,7 @@ from within this group.</p>
 <span class="sig-name descname"><span class="pre">get_debug_repository</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository/yum.html#YumRepository.get_debug_repository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.YumRepository.get_debug_repository" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find and return the debug repository relating to this repository.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><dl class="simple">
 <dt><code class="docutils literal notranslate"><span class="pre">Future[YumRepository]</span></code></dt><dd><p>Debug repository relating to this repository.</p>
 </dd>
@@ -129,7 +130,7 @@ from within this group.</p>
 <span class="sig-name descname"><span class="pre">get_source_repository</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository/yum.html#YumRepository.get_source_repository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.YumRepository.get_source_repository" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find and return the source repository relating to this repository.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><dl class="simple">
 <dt><code class="docutils literal notranslate"><span class="pre">Future[YumRepository]</span></code></dt><dd><p>Source repository relating to this repository.</p>
 </dd>
@@ -155,7 +156,7 @@ modular RPMs without the corresponding metadata (which has a much
 worse impact than publishing metadata without the corresponding RPMs).</p>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>file_obj</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>file object</em>) – <p>If it’s a string, then it’s the path of an RPM to upload.</p>
 <p>Otherwise, it should be a
@@ -172,7 +173,7 @@ An error will occur if attempting to set other fields.</p>
 </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
 <dt>Future[list of <a class="reference internal" href="pulpcore.html#pubtools.pulplib.Task" title="pubtools.pulplib.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a>]</dt><dd><p>A future which is resolved after content has been imported
 to this repo.</p>
@@ -180,7 +181,7 @@ to this repo.</p>
 </dl>
 </p>
 </dd>
-<dt class="field-odd">Raises</dt>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="client.html#pubtools.pulplib.DetachedException" title="pubtools.pulplib.DetachedException"><strong>DetachedException</strong></a> – If this instance is not attached to a Pulp client.</p>
 </dd>
 </dl>
@@ -200,7 +201,7 @@ to this repo.</p>
 and referenced from, the repodata <code class="docutils literal notranslate"><span class="pre">.xml</span></code> and <code class="docutils literal notranslate"><span class="pre">.sqlite</span></code> files when this
 repo is published.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>file_obj</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>file object</em>) – <p>If it’s a string, then it’s the path of a file to upload.</p>
 <p>Otherwise, it should be a
@@ -221,7 +222,7 @@ overwritten by the upload.</p>
 </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
 <dt>Future[list of <a class="reference internal" href="pulpcore.html#pubtools.pulplib.Task" title="pubtools.pulplib.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a>]</dt><dd><p>A future which is resolved after content has been imported
 to this repo.</p>
@@ -229,7 +230,7 @@ to this repo.</p>
 </dl>
 </p>
 </dd>
-<dt class="field-odd">Raises</dt>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="client.html#pubtools.pulplib.DetachedException" title="pubtools.pulplib.DetachedException"><strong>DetachedException</strong></a> – If this instance is not attached to a Pulp client.</p>
 </dd>
 </dl>
@@ -250,7 +251,7 @@ repository. On current versions of Pulp 2.x, this means only:</p>
 </ul>
 <p>Attempting to use other document types may result in an error.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>file_obj</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>file object</em>) – <p>If it’s a string, then it’s the path of a modulemd YAML
 file to upload.</p>
 <p>Otherwise, it should be a
@@ -261,7 +262,7 @@ not be modified elsewhere, and will be closed when upload
 completes.</p>
 </p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
 <dt>Future[list of <a class="reference internal" href="pulpcore.html#pubtools.pulplib.Task" title="pubtools.pulplib.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a>]</dt><dd><p>A future which is resolved after content has been imported
 to this repo.</p>
@@ -269,7 +270,7 @@ to this repo.</p>
 </dl>
 </p>
 </dd>
-<dt class="field-odd">Raises</dt>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="client.html#pubtools.pulplib.DetachedException" title="pubtools.pulplib.DetachedException"><strong>DetachedException</strong></a> – If this instance is not attached to a Pulp client.</p>
 </dd>
 </dl>
@@ -300,7 +301,7 @@ data</em>. It’s recommended to avoid publishing a repository in this state.</p
 </ul>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>file_obj</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>file object</em>) – <p>If it’s a string, then it’s the path of a comps XML
 file to upload.</p>
 <p>Otherwise, it should be a
@@ -311,7 +312,7 @@ not be modified elsewhere, and will be closed when upload
 completes.</p>
 </p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
 <dt>Future[list of <a class="reference internal" href="pulpcore.html#pubtools.pulplib.Task" title="pubtools.pulplib.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a>]</dt><dd><p>A future which is resolved after content has been imported
 to this repo.</p>
@@ -319,7 +320,7 @@ to this repo.</p>
 </dl>
 </p>
 </dd>
-<dt class="field-odd">Raises</dt>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="client.html#pubtools.pulplib.DetachedException" title="pubtools.pulplib.DetachedException"><strong>DetachedException</strong></a> – If this instance is not attached to a Pulp client.</p>
 </dd>
 </dl>
@@ -360,13 +361,13 @@ be republished. <em>The library will not take care of this for you.</em></p></li
 </ul>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>erratum</strong> (<a class="reference internal" href="#pubtools.pulplib.ErratumUnit" title="pubtools.pulplib.ErratumUnit"><code class="xref py py-class docutils literal notranslate"><span class="pre">ErratumUnit</span></code></a>) – <p>An erratum object.</p>
 <p>Unlike most other uploaded content, errata are not backed by any
 file; any arbitrarily constructed ErratumUnit may be uploaded.</p>
 </p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
 <dt>Future[list of <a class="reference internal" href="pulpcore.html#pubtools.pulplib.Task" title="pubtools.pulplib.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a>]</dt><dd><p>A future which is resolved after content has been imported
 to this repo.</p>
@@ -374,7 +375,7 @@ to this repo.</p>
 </dl>
 </p>
 </dd>
-<dt class="field-odd">Raises</dt>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="client.html#pubtools.pulplib.DetachedException" title="pubtools.pulplib.DetachedException"><strong>DetachedException</strong></a> – If this instance is not attached to a Pulp client.</p>
 </dd>
 </dl>
@@ -464,7 +465,7 @@ to this repo.</p>
 
 </section>
 <section id="units-rpm">
-<h2><a class="toc-backref" href="#id5">Units: RPM</a><a class="headerlink" href="#units-rpm" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">Units: RPM</a><a class="headerlink" href="#units-rpm" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="pubtools.pulplib.RpmUnit">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pubtools.pulplib.</span></span><span class="sig-name descname"><span class="pre">RpmUnit</span></span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/unit/rpm.html#RpmUnit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.RpmUnit" title="Permalink to this definition">¶</a></dt>
@@ -655,7 +656,7 @@ GE (greater than or equal) or LE (less than or equal).</p>
 
 </section>
 <section id="units-errata">
-<h2><a class="toc-backref" href="#id6">Units: errata</a><a class="headerlink" href="#units-errata" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">Units: errata</a><a class="headerlink" href="#units-errata" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="pubtools.pulplib.ErratumUnit">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pubtools.pulplib.</span></span><span class="sig-name descname"><span class="pre">ErratumUnit</span></span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/unit/erratum.html#ErratumUnit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.ErratumUnit" title="Permalink to this definition">¶</a></dt>
@@ -935,7 +936,7 @@ but must be unique within an advisory.</p>
 <span class="sig-name descname"><span class="pre">packages</span></span><a class="headerlink" href="#pubtools.pulplib.ErratumPackageCollection.packages" title="Permalink to this definition">¶</a></dt>
 <dd><p>List of packages within this collection.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)">list</a>[<a class="reference internal" href="#pubtools.pulplib.ErratumPackage" title="pubtools.pulplib.ErratumPackage">ErratumPackage</a>]</p>
 </dd>
 </dl>
@@ -997,7 +998,7 @@ and includes at least:</p>
 
 </section>
 <section id="units-modules">
-<h2><a class="toc-backref" href="#id7">Units: modules</a><a class="headerlink" href="#units-modules" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id7" role="doc-backlink">Units: modules</a><a class="headerlink" href="#units-modules" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="pubtools.pulplib.ModulemdUnit">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pubtools.pulplib.</span></span><span class="sig-name descname"><span class="pre">ModulemdUnit</span></span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/unit/modulemd.html#ModulemdUnit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.ModulemdUnit" title="Permalink to this definition">¶</a></dt>
@@ -1095,7 +1096,7 @@ and source RPMs.</p>
 <dd><p>RPM filenames for artifacts in this module (as opposed to the RPM
 NEVRAs returned by <a class="reference internal" href="#pubtools.pulplib.ModulemdUnit.artifacts" title="pubtools.pulplib.ModulemdUnit.artifacts"><code class="xref py py-meth docutils literal notranslate"><span class="pre">artifacts()</span></code></a>).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><dl class="simple">
 <dt>List[str]</dt><dd><p>Artifact RPM filenames.</p>
 </dd>
@@ -1187,7 +1188,7 @@ NEVRAs returned by <a class="reference internal" href="#pubtools.pulplib.Modulem
 
 </section>
 <section id="units-metadata">
-<h2><a class="toc-backref" href="#id8">Units: metadata</a><a class="headerlink" href="#units-metadata" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id8" role="doc-backlink">Units: metadata</a><a class="headerlink" href="#units-metadata" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="pubtools.pulplib.YumRepoMetadataFileUnit">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pubtools.pulplib.</span></span><span class="sig-name descname"><span class="pre">YumRepoMetadataFileUnit</span></span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/unit/repo_metadata.html#YumRepoMetadataFileUnit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.YumRepoMetadataFileUnit" title="Permalink to this definition">¶</a></dt>
@@ -1292,7 +1293,7 @@ NEVRAs returned by <a class="reference internal" href="#pubtools.pulplib.Modulem
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -1309,7 +1310,7 @@ NEVRAs returned by <a class="reference internal" href="#pubtools.pulplib.Modulem
       &copy;2019, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

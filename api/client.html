@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>API: client &#8212; pubtools-pulplib  documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
@@ -12,6 +12,7 @@
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -34,7 +35,7 @@
           <div class="body" role="main">
             
   <section id="api-client">
-<h1>API: client<a class="headerlink" href="#api-client" title="Permalink to this headline">¶</a></h1>
+<h1>API: client<a class="headerlink" href="#api-client" title="Permalink to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="pubtools.pulplib.Client">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pubtools.pulplib.</span></span><span class="sig-name descname"><span class="pre">Client</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/client.html#Client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Client" title="Permalink to this definition">¶</a></dt>
@@ -96,7 +97,7 @@ of failure.</p>
 outstanding at any given time, so that no single client can overload the Pulp
 task queue.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – URL of a Pulp server, e.g. <a class="reference external" href="https://pulp.example.com/">https://pulp.example.com/</a>.</p></li>
 <li><p><strong>task_throttle</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – Maximum number of queued or running tasks permitted for this client.
@@ -109,37 +110,37 @@ a precise thread count. The client in practice will use more than
 this number of threads.</p>
 </p></li>
 <li><p><strong>auth</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.10)"><em>object</em></a>) – <p>Any of these arguments, if provided, are used to initialize
-<a class="reference external" href="https://2.python-requests.org/en/master/api/#requests.Session" title="(in Requests v2.26.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">requests.Session</span></code></a> objects used by the client.</p>
+<a class="reference external" href="https://requests.readthedocs.io/en/latest/api/#requests.Session" title="(in Requests v2.28.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">requests.Session</span></code></a> objects used by the client.</p>
 <p>These may be used, for example, to configure the credentials
 for the Pulp server or to use an alternative CA bundle.</p>
 </p></li>
 <li><p><strong>cert</strong> – <p>Any of these arguments, if provided, are used to initialize
-<a class="reference external" href="https://2.python-requests.org/en/master/api/#requests.Session" title="(in Requests v2.26.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">requests.Session</span></code></a> objects used by the client.</p>
+<a class="reference external" href="https://requests.readthedocs.io/en/latest/api/#requests.Session" title="(in Requests v2.28.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">requests.Session</span></code></a> objects used by the client.</p>
 <p>These may be used, for example, to configure the credentials
 for the Pulp server or to use an alternative CA bundle.</p>
 </p></li>
 <li><p><strong>headers</strong> – <p>Any of these arguments, if provided, are used to initialize
-<a class="reference external" href="https://2.python-requests.org/en/master/api/#requests.Session" title="(in Requests v2.26.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">requests.Session</span></code></a> objects used by the client.</p>
+<a class="reference external" href="https://requests.readthedocs.io/en/latest/api/#requests.Session" title="(in Requests v2.28.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">requests.Session</span></code></a> objects used by the client.</p>
 <p>These may be used, for example, to configure the credentials
 for the Pulp server or to use an alternative CA bundle.</p>
 </p></li>
 <li><p><strong>max_redirects</strong> – <p>Any of these arguments, if provided, are used to initialize
-<a class="reference external" href="https://2.python-requests.org/en/master/api/#requests.Session" title="(in Requests v2.26.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">requests.Session</span></code></a> objects used by the client.</p>
+<a class="reference external" href="https://requests.readthedocs.io/en/latest/api/#requests.Session" title="(in Requests v2.28.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">requests.Session</span></code></a> objects used by the client.</p>
 <p>These may be used, for example, to configure the credentials
 for the Pulp server or to use an alternative CA bundle.</p>
 </p></li>
 <li><p><strong>params</strong> – <p>Any of these arguments, if provided, are used to initialize
-<a class="reference external" href="https://2.python-requests.org/en/master/api/#requests.Session" title="(in Requests v2.26.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">requests.Session</span></code></a> objects used by the client.</p>
+<a class="reference external" href="https://requests.readthedocs.io/en/latest/api/#requests.Session" title="(in Requests v2.28.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">requests.Session</span></code></a> objects used by the client.</p>
 <p>These may be used, for example, to configure the credentials
 for the Pulp server or to use an alternative CA bundle.</p>
 </p></li>
 <li><p><strong>proxies</strong> – <p>Any of these arguments, if provided, are used to initialize
-<a class="reference external" href="https://2.python-requests.org/en/master/api/#requests.Session" title="(in Requests v2.26.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">requests.Session</span></code></a> objects used by the client.</p>
+<a class="reference external" href="https://requests.readthedocs.io/en/latest/api/#requests.Session" title="(in Requests v2.28.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">requests.Session</span></code></a> objects used by the client.</p>
 <p>These may be used, for example, to configure the credentials
 for the Pulp server or to use an alternative CA bundle.</p>
 </p></li>
 <li><p><strong>verify</strong> – <p>Any of these arguments, if provided, are used to initialize
-<a class="reference external" href="https://2.python-requests.org/en/master/api/#requests.Session" title="(in Requests v2.26.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">requests.Session</span></code></a> objects used by the client.</p>
+<a class="reference external" href="https://requests.readthedocs.io/en/latest/api/#requests.Session" title="(in Requests v2.28.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">requests.Session</span></code></a> objects used by the client.</p>
 <p>These may be used, for example, to configure the credentials
 for the Pulp server or to use an alternative CA bundle.</p>
 </p></li>
@@ -154,10 +155,10 @@ for the Pulp server or to use an alternative CA bundle.</p>
 <span class="sig-name descname"><span class="pre">get_repository</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">repository_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/client.html#Client.get_repository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Client.get_repository" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a repository by ID.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>repository_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – The ID of the repository to be fetched.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
 <dt>Future[<a class="reference internal" href="pulpcore.html#pubtools.pulplib.Repository" title="pubtools.pulplib.Repository"><code class="xref py py-class docutils literal notranslate"><span class="pre">Repository</span></code></a>]</dt><dd><p>A future holding the fetched Repository.</p>
 </dd>
@@ -172,11 +173,11 @@ for the Pulp server or to use an alternative CA bundle.</p>
 <span class="sig-name descname"><span class="pre">search_repository</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">criteria</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/client.html#Client.search_repository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Client.search_repository" title="Permalink to this definition">¶</a></dt>
 <dd><p>Search for repositories matching the given criteria.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>criteria</strong> (<a class="reference internal" href="searching.html#pubtools.pulplib.Criteria" title="pubtools.pulplib.Criteria"><code class="xref py py-class docutils literal notranslate"><span class="pre">Criteria</span></code></a>) – A criteria object used for this search.
 If None, search for all repositories.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl>
 <dt>Future[<a class="reference internal" href="searching.html#pubtools.pulplib.Page" title="pubtools.pulplib.Page"><code class="xref py py-class docutils literal notranslate"><span class="pre">Page</span></code></a>]</dt><dd><p>A future representing the first page of results.</p>
 <p>Each page will contain a collection of
@@ -193,11 +194,11 @@ If None, search for all repositories.</p>
 <span class="sig-name descname"><span class="pre">search_content</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">criteria</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/client.html#Client.search_content"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Client.search_content" title="Permalink to this definition">¶</a></dt>
 <dd><p>Search for units across all repositories.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>criteria</strong> (<a class="reference internal" href="searching.html#pubtools.pulplib.Criteria" title="pubtools.pulplib.Criteria"><code class="xref py py-class docutils literal notranslate"><span class="pre">Criteria</span></code></a>) – A criteria object used for this search.
 If None, search for all units.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl>
 <dt>Future[<a class="reference internal" href="searching.html#pubtools.pulplib.Page" title="pubtools.pulplib.Page"><code class="xref py py-class docutils literal notranslate"><span class="pre">Page</span></code></a>]</dt><dd><p>A future representing the first page of results.</p>
 <p>Each page will contain a collection of
@@ -217,7 +218,7 @@ If None, search for all units.</p>
 <span class="sig-name descname"><span class="pre">copy_content</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">from_repository</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_repository</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">criteria</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">CopyOptions(require_signed_rpms=None)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/client.html#Client.copy_content"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Client.copy_content" title="Permalink to this definition">¶</a></dt>
 <dd><p>Copy content from one repository to another.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>from_repository</strong> (<a class="reference internal" href="pulpcore.html#pubtools.pulplib.Repository" title="pubtools.pulplib.Repository"><code class="xref py py-class docutils literal notranslate"><span class="pre">Repository</span></code></a>) – A repository used as the source of content.</p></li>
 <li><p><strong>to_repository</strong> (<a class="reference internal" href="pulpcore.html#pubtools.pulplib.Repository" title="pubtools.pulplib.Repository"><code class="xref py py-class docutils literal notranslate"><span class="pre">Repository</span></code></a>) – A repository to receive copied content.</p></li>
@@ -230,7 +231,7 @@ ignored.</p>
 </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl>
 <dt>Future[list[<a class="reference internal" href="pulpcore.html#pubtools.pulplib.Task" title="pubtools.pulplib.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a>]]</dt><dd><p>A future which is resolved when the copy completes.</p>
 <p>The <a class="reference internal" href="pulpcore.html#pubtools.pulplib.Task.units" title="pubtools.pulplib.Task.units"><code class="xref py py-meth docutils literal notranslate"><span class="pre">units()</span></code></a> attribute may be inspected
@@ -254,7 +255,7 @@ typically will have only a subset of available fields.</p>
 <span class="sig-name descname"><span class="pre">update_content</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/client.html#Client.update_content"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Client.update_content" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update mutable fields on an existing unit.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>unit</strong> (<a class="reference internal" href="pulpcore.html#pubtools.pulplib.Unit" title="pubtools.pulplib.Unit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unit</span></code></a>) – <p>A unit to be updated.</p>
 <p>This unit must have a known <code class="docutils literal notranslate"><span class="pre">unit_id</span></code>.</p>
 <p>Only those fields documented as <em>mutable</em> will have any effect during
@@ -262,7 +263,7 @@ the update (e.g. <code class="docutils literal notranslate"><span class="pre">cd
 at all, or can only be updated by re-uploading the associated content.</p>
 </p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
 <dt>Future</dt><dd><p>A future which is resolved with a value of <code class="docutils literal notranslate"><span class="pre">None</span></code> once the unit
 has been updated.</p>
@@ -281,14 +282,14 @@ has been updated.</p>
 <span class="sig-name descname"><span class="pre">update_repository</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">repository</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/client.html#Client.update_repository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Client.update_repository" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update mutable fields on an existing repository.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>repository</strong> (<a class="reference internal" href="pulpcore.html#pubtools.pulplib.Repository" title="pubtools.pulplib.Repository"><code class="xref py py-class docutils literal notranslate"><span class="pre">Repository</span></code></a>) – <p>A repository to be updated.</p>
 <p>Only those fields documented as <em>mutable</em> will have any effect during
 the update (e.g. <code class="docutils literal notranslate"><span class="pre">product_versions</span></code>). Other fields cannot be updated
 using this library.</p>
 </p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
 <dt>Future</dt><dd><p>A future which is resolved with a value of <code class="docutils literal notranslate"><span class="pre">None</span></code> once the
 repository has been updated.</p>
@@ -307,11 +308,11 @@ repository has been updated.</p>
 <span class="sig-name descname"><span class="pre">search_distributor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">criteria</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/client.html#Client.search_distributor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Client.search_distributor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Search the distributors matching the given criteria.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>criteria</strong> (<a class="reference internal" href="searching.html#pubtools.pulplib.Criteria" title="pubtools.pulplib.Criteria"><code class="xref py py-class docutils literal notranslate"><span class="pre">Criteria</span></code></a>) – A criteria object used for this search.
 If None, search for all distributors.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl>
 <dt>Future[<a class="reference internal" href="searching.html#pubtools.pulplib.Page" title="pubtools.pulplib.Page"><code class="xref py py-class docutils literal notranslate"><span class="pre">Page</span></code></a>]</dt><dd><p>A future representing the first page of results.</p>
 <p>Each page will contain a collection of
@@ -331,11 +332,11 @@ If None, search for all distributors.</p>
 <span class="sig-name descname"><span class="pre">search_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">criteria</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/client.html#Client.search_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Client.search_task" title="Permalink to this definition">¶</a></dt>
 <dd><p>Search the tasks matching the given criteria.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>criteria</strong> (<a class="reference internal" href="searching.html#pubtools.pulplib.Criteria" title="pubtools.pulplib.Criteria"><code class="xref py py-class docutils literal notranslate"><span class="pre">Criteria</span></code></a>) – A criteria object used for this search.
 If None, search for all tasks.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl>
 <dt>Future[<a class="reference internal" href="searching.html#pubtools.pulplib.Page" title="pubtools.pulplib.Page"><code class="xref py py-class docutils literal notranslate"><span class="pre">Page</span></code></a>]</dt><dd><p>A future representing the first page of results.</p>
 <p>Each page will contain a collection of
@@ -355,7 +356,7 @@ If None, search for all tasks.</p>
 <span class="sig-name descname"><span class="pre">get_maintenance_report</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/client.html#Client.get_maintenance_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Client.get_maintenance_report" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the current maintenance mode status for this Pulp server.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><dl class="simple">
 <dt>Future[<a class="reference internal" href="maintenance.html#pubtools.pulplib.MaintenanceReport" title="pubtools.pulplib.MaintenanceReport"><code class="xref py py-class docutils literal notranslate"><span class="pre">MaintenanceReport</span></code></a>]</dt><dd><p>A future describes the maintenance status</p>
 </dd>
@@ -373,11 +374,11 @@ If None, search for all tasks.</p>
 <span class="sig-name descname"><span class="pre">set_maintenance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">report</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/client.html#Client.set_maintenance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Client.set_maintenance" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set maintenance mode for this Pulp server.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>report</strong> – An updated <a class="reference internal" href="maintenance.html#pubtools.pulplib.MaintenanceReport" title="pubtools.pulplib.MaintenanceReport"><code class="xref py py-class docutils literal notranslate"><span class="pre">MaintenanceReport</span></code></a> object that
 will be used as the newest maintenance report.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl>
 <dt>Future[list[<a class="reference internal" href="pulpcore.html#pubtools.pulplib.Task" title="pubtools.pulplib.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a>]]</dt><dd><p>A future which is resolved when maintenance mode has been updated successfully.</p>
 <p>The future contains a task triggered and awaited during the publish
@@ -397,7 +398,7 @@ maintenance repository operation.</p>
 <span class="sig-name descname"><span class="pre">get_content_type_ids</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/client.html#Client.get_content_type_ids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Client.get_content_type_ids" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the content types supported by this Pulp server.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><dl>
 <dt>Future[list[str]]</dt><dd><p>A future holding the IDs of supported content types.</p>
 <p>The returned values will depend on the plugins installed
@@ -434,7 +435,7 @@ be silently omitted from the copy.</p>
 </dd></dl>
 
 <section id="errors">
-<h2>Errors<a class="headerlink" href="#errors" title="Permalink to this headline">¶</a></h2>
+<h2>Errors<a class="headerlink" href="#errors" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="pubtools.pulplib.PulpException">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pubtools.pulplib.</span></span><span class="sig-name descname"><span class="pre">PulpException</span></span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/errors.html#PulpException"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.PulpException" title="Permalink to this definition">¶</a></dt>
@@ -535,7 +536,7 @@ and the object is not attached to any client, this exception is raised.</p>
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -552,7 +553,7 @@ and the object is not attached to any client, this exception is raised.</p>
       &copy;2019, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
