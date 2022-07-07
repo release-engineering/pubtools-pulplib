@@ -117,8 +117,8 @@ class UnitMaker(object):
             # While we're at it, we can calculate each of the checksum types expected to
             # exist on the unit.
             hashers = {
-                "md5sum": hashlib.md5(),
-                "sha1sum": hashlib.sha1(),
+                "md5sum": hashlib.md5(),  # nosec
+                "sha1sum": hashlib.sha1(),  # nosec
                 "sha256sum": hashlib.sha256(),
             }
 
