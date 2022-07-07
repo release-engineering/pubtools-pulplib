@@ -33,8 +33,10 @@ def test_can_update_repo(requests_mocker, client):
     assert req.json() == {
         "delta": {
             "notes": {
+                "include_in_download_service": "False",
+                "include_in_download_service_preview": "False",
                 # Note the serialization into embedded JSON here.
-                "product_versions": '["1.0","1.1"]'
+                "product_versions": '["1.0","1.1"]',
             }
         }
     }
