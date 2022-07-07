@@ -337,6 +337,34 @@
 <span class="sd">    .. versionadded:: 2.29.0</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">include_in_download_service</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">bool</span><span class="p">,</span>
+        <span class="n">mutable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;notes.include_in_download_service&quot;</span><span class="p">,</span>
+        <span class="n">pulp_py_converter</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">==</span> <span class="s2">&quot;True&quot;</span><span class="p">,</span>
+        <span class="n">py_pulp_converter</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;Flag indicating whether the repository is visible in production instance</span>
+<span class="sd">    of download service.</span>
+
+<span class="sd">    .. versionadded:: 2.34.0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">include_in_download_service_preview</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">bool</span><span class="p">,</span>
+        <span class="n">mutable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;notes.include_in_download_service_preview&quot;</span><span class="p">,</span>
+        <span class="n">pulp_py_converter</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">==</span> <span class="s2">&quot;True&quot;</span><span class="p">,</span>
+        <span class="n">py_pulp_converter</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;Flag indicating whether the repository is visible in staging instance</span>
+<span class="sd">    of download service.</span>
+
+<span class="sd">    .. versionadded:: 2.34.0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="nd">@distributors</span><span class="o">.</span><span class="n">validator</span>
     <span class="k">def</span> <span class="nf">_check_repo_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="c1"># checks if distributor&#39;s repository id is same as the repository it</span>

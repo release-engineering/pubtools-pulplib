@@ -154,6 +154,20 @@ properties:
       ubi_config_version:
         type: string
 
+      # Flag indicating whether the repository is visible in production instance
+      # of download service. Stored as string.
+      include_in_download_service:
+        enum:
+          - &quot;True&quot;
+          - &quot;False&quot;
+
+      # Flag indicating whether the repository is visible in staging instance
+      # of download service. Stored as string.
+      include_in_download_service_preview:
+        enum:
+          - &quot;True&quot;
+          - &quot;False&quot;
+
   # List of repository distributors.
   # Note that order matters in this list.
   distributors:
