@@ -32,6 +32,13 @@ def type_ids_for_class(unit_class):
     return sorted(out)
 
 
+def class_for_type_id(type_id):
+    # Inverse of type_ids_for_class: given a Pulp type ID,
+    # returns the corresponding Unit class, or None if there is no
+    # corresponding class.
+    return UNIT_CLASSES.get(type_id)
+
+
 @attr.s(kw_only=True, frozen=True)
 class Unit(PulpObject):
     """Represents a Pulp unit (a single piece of content).
