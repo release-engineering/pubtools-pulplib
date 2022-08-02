@@ -66,6 +66,13 @@
     <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
 
 
+<span class="k">def</span> <span class="nf">class_for_type_id</span><span class="p">(</span><span class="n">type_id</span><span class="p">):</span>
+    <span class="c1"># Inverse of type_ids_for_class: given a Pulp type ID,</span>
+    <span class="c1"># returns the corresponding Unit class, or None if there is no</span>
+    <span class="c1"># corresponding class.</span>
+    <span class="k">return</span> <span class="n">UNIT_CLASSES</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">type_id</span><span class="p">)</span>
+
+
 <div class="viewcode-block" id="Unit"><a class="viewcode-back" href="../../../../../../api/pulpcore.html#pubtools.pulplib.Unit">[docs]</a><span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">Unit</span><span class="p">(</span><span class="n">PulpObject</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Represents a Pulp unit (a single piece of content).</span>
