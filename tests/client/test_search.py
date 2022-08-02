@@ -8,6 +8,8 @@ from pubtools.pulplib._impl.client.search import (
     field_match,
 )
 
+from pubtools.pulplib import RpmUnit, FileUnit
+
 
 def test_null_criteria():
     """Searching for None or True translates to empty filters."""
@@ -99,4 +101,36 @@ def test_dict_matcher_value():
 
     assert filters_for_criteria(crit) == {
         "created": {"$lt": {"created_date": {"$date": "2019-09-04T00:00:00Z"}}}
+    }
+
+
+def test_cdn_published():
+    """criteria using cdn_published as matcher value
+    with a datetime in RpmUnit, FileUnit
+    """
+
+    crit = Criteria.with_field("cdn_published", datetime.datetime(2019, 9, 4, 0, 0, 0))
+
+    assert filters_for_criteria(crit, RpmUnit) == {
+        "pulp_user_metadata.cdn_published": {"$eq": "2019-09-04T00:00:00Z"}
+    }
+
+    assert filters_for_criteria(crit, FileUnit) == {
+        "pulp_user_metadata.cdn_published": {"$eq": "2019-09-04T00:00:00Z"}
+    }
+
+
+def test_cdn_published_not_datetime():
+    """criteria using cdn_published as matcher value
+    with a string in RpmUnit, FileUnit
+    """
+
+    crit = Criteria.with_field("cdn_published", "not datetime")
+
+    assert filters_for_criteria(crit, RpmUnit) == {
+        "pulp_user_metadata.cdn_published": {"$eq": "not datetime"}
+    }
+
+    assert filters_for_criteria(crit, FileUnit) == {
+        "pulp_user_metadata.cdn_published": {"$eq": "not datetime"}
     }

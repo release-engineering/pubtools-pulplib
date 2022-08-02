@@ -66,6 +66,17 @@ def tolerant_timestamp(value):
     return value
 
 
+def timestamp_converter(value):
+    # Converter for fields which are stored as strings,
+    # but which model is expecting datetime
+    # falls back to returning the input verbatim if not a datetime.
+    #
+    if isinstance(value, datetime.datetime):
+        return value.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    return value
+
+
 def write_timestamp(value):
     # defaults to current time if value is None
     if value is None:

@@ -9,6 +9,7 @@ from ..convert import (
     frozenlist_or_none_converter,
     frozenlist_or_none_sorted_converter,
     tolerant_timestamp,
+    timestamp_converter,
 )
 from ..validate import optional_str, instance_of
 from ..common import PulpObject
@@ -181,6 +182,7 @@ class RpmUnit(Unit):
         pulp_field="pulp_user_metadata.cdn_published",
         default=None,
         converter=tolerant_timestamp,
+        py_pulp_converter=timestamp_converter,
         validator=instance_of((datetime.datetime, type(None))),
     )
     """Approximate :class:`~datetime.datetime` in UTC at which this RPM first
