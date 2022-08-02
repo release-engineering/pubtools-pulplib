@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - n/a
 
+## [2.34.1] - 2022-08-02
+
+- Fixed incorrect results on searches using `FileUnit.cdn_published`, `RpmUnit.cdn_published`
+  fields due to missing converters.
+
 ## [2.34.0] - 2022-07-08
 
 - Introduced `include_in_download_service`, `include_in_download_service_preview` fields
@@ -407,7 +412,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release to PyPI
 
-[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.34.0...HEAD
+[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.34.1...HEAD
+[2.34.1]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.34.0...v2.34.1
 [2.34.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.33.0...v2.34.0
 [2.33.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.32.0...v2.33.0
 [2.32.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.31.0...v2.32.0
