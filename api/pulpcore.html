@@ -14,6 +14,7 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="API: yum" href="yum.html" />
@@ -73,7 +74,7 @@ matching <code class="docutils literal notranslate"><span class="pre">data</span
 with a repository object provided by Pulp’s API.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.10)"><em>dict</em></a>) – A dict containing a raw representation of a Pulp object, as rendered
+<dd class="field-odd"><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><em>dict</em></a>) – A dict containing a raw representation of a Pulp object, as rendered
 by Pulp’s API.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -119,7 +120,7 @@ this repository, e.g. <code class="docutils literal notranslate"><span class="pr
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pubtools.pulplib.Repository.created">
 <span class="sig-name descname"><span class="pre">created</span></span><a class="headerlink" href="#pubtools.pulplib.Repository.created" title="Permalink to this definition">¶</a></dt>
-<dd><p><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a> in UTC at which this repository was created,
+<dd><p><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a> in UTC at which this repository was created,
 or None if this information is unavailable.</p>
 </dd></dl>
 
@@ -505,7 +506,7 @@ relative to the Pulp content root.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pubtools.pulplib.Distributor.last_publish">
 <span class="sig-name descname"><span class="pre">last_publish</span></span><a class="headerlink" href="#pubtools.pulplib.Distributor.last_publish" title="Permalink to this definition">¶</a></dt>
-<dd><p>The <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a> at which this distributor was last published,
+<dd><p>The <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a> at which this distributor was last published,
 if known.</p>
 </dd></dl>
 
@@ -869,7 +870,7 @@ by Pulp. These should at least contain a ‘type_id’ and a ‘unit_key’.</p>
       &copy;2019, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.1.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.3.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
