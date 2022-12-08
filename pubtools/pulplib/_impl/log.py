@@ -1,6 +1,9 @@
 import logging
 
-from monotonic import monotonic
+try:
+    from time import monotonic
+except ImportError:  # pragma: no cover
+    from monotonic import monotonic
 
 
 class TimedLogger(object):
