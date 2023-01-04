@@ -30,9 +30,11 @@ def s(*args, **kwargs):
         # don't use the attrs-generated repr by default
         kwargs["repr"] = False
 
-    if "kw_only" in kwargs and sys.version_info < (3,):  # pragma: no cover
-        # This is only implemented for Python 3.
-        # attrs will raise if kw_only is provided on Py2.
+    if "kw_only" in kwargs and (
+        ATTR_VERSION < (18, 2) or sys.version_info < (3,)
+    ):  # pragma: no cover
+        # This is only implemented for Python 3 and only in attrs 18.2 and newer.
+        # attrs will raise if kw_only is provided on Py2 or older version of attrs.
         del kwargs["kw_only"]
 
     return attr.s(*args, **kwargs)
