@@ -9,9 +9,6 @@
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/alabaster.css" />
     <script data-url_root="../../../../../../" id="documentation_options" src="../../../../../../_static/documentation_options.js"></script>
-    <script src="../../../../../../_static/jquery.js"></script>
-    <script src="../../../../../../_static/underscore.js"></script>
-    <script src="../../../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../../../../_static/doctools.js"></script>
     <script src="../../../../../../_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="../../../../../../genindex.html" />
@@ -49,65 +46,65 @@
 
 <div class="viewcode-block" id="YumSyncOptions"><a class="viewcode-back" href="../../../../../../api/yum.html#pubtools.pulplib.YumSyncOptions">[docs]</a><span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">YumSyncOptions</span><span class="p">(</span><span class="n">SyncOptions</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Options controlling a yum repository</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Options controlling a yum repository</span>
 <span class="sd">    :meth:`~pubtools.pulplib.Repository.sync`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">query_auth_token</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
-    <span class="sd">&quot;&quot;&quot;An authorization token that will be added to every request made to the feed URL&#39;s server</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;An authorization token that will be added to every request made to the feed URL&#39;s server</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">max_downloads</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
-    <span class="sd">&quot;&quot;&quot;Number of threads used when synchronizing the repository.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Number of threads used when synchronizing the repository.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">remove_missing</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
-    <span class="sd">&quot;&quot;&quot;If true, as the repository is synchronized, old rpms will be removed.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;If true, as the repository is synchronized, old rpms will be removed.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">retain_old_count</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
-    <span class="sd">&quot;&quot;&quot;Count indicating how many old rpm versions to retain.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Count indicating how many old rpm versions to retain.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">skip</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
-    <span class="sd">&quot;&quot;&quot;List of content types to be skipped during the repository synchronization</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;List of content types to be skipped during the repository synchronization</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">checksum_type</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
-    <span class="sd">&quot;&quot;&quot;checksum type to use for metadata generation.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;checksum type to use for metadata generation.</span>
 
 <span class="sd">    Defaults to source checksum type of sha256</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">num_retries</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
-    <span class="sd">&quot;&quot;&quot;Number of times to retry before declaring an error during repository synchronization</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Number of times to retry before declaring an error during repository synchronization</span>
 
 <span class="sd">    Default is 2.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">download_policy</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
-    <span class="sd">&quot;&quot;&quot;Set the download policy for a repository.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Set the download policy for a repository.</span>
 
 <span class="sd">    Supported options are immediate,on_demand,background</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">force_full</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
-    <span class="sd">&quot;&quot;&quot;Boolean flag. If true, full re-sync is triggered.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Boolean flag. If true, full re-sync is triggered.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">require_signature</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
-    <span class="sd">&quot;&quot;&quot;Requires that imported packages like RPM/DRPM/SRPM should be signed</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Requires that imported packages like RPM/DRPM/SRPM should be signed</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">allowed_keys</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
-    <span class="sd">&quot;&quot;&quot;List of allowed signature key IDs that imported packages can be signed with</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;List of allowed signature key IDs that imported packages can be signed with</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="YumRepository"><a class="viewcode-back" href="../../../../../../api/yum.html#pubtools.pulplib.YumRepository">[docs]</a><span class="nd">@repo_type</span><span class="p">(</span><span class="s2">&quot;rpm-repo&quot;</span><span class="p">)</span>
 <span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">YumRepository</span><span class="p">(</span><span class="n">Repository</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A :class:`~pubtools.pulplib.Repository` for RPMs, errata and related content.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A :class:`~pubtools.pulplib.Repository` for RPMs, errata and related content.&quot;&quot;&quot;</span>
 
     <span class="c1"># this class only overrides some defaults for attributes defined in super</span>
 
@@ -119,13 +116,13 @@
         <span class="n">converter</span><span class="o">=</span><span class="n">frozenlist</span><span class="p">,</span>
         <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;notes.population_sources&quot;</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="sd">&quot;&quot;&quot;List of repository IDs used to populate this repository</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;List of repository IDs used to populate this repository</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">ubi_population</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">bool</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;notes.ubi_population&quot;</span>
     <span class="p">)</span>
-    <span class="sd">&quot;&quot;&quot;Flag indicating whether repo should be populated from population_sources for the purposes of UBI</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Flag indicating whether repo should be populated from population_sources for the purposes of UBI</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">mutable_urls</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span>
@@ -137,10 +134,10 @@
     <span class="n">ubi_config_version</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;notes.ubi_config_version&quot;</span>
     <span class="p">)</span>
-    <span class="sd">&quot;&quot;&quot;Version of UBI config that should be used for population of this repository.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Version of UBI config that should be used for population of this repository.&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="YumRepository.get_binary_repository"><a class="viewcode-back" href="../../../../../../api/yum.html#pubtools.pulplib.YumRepository.get_binary_repository">[docs]</a>    <span class="k">def</span> <span class="nf">get_binary_repository</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Find and return the binary repository relating to this repository.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Find and return the binary repository relating to this repository.</span>
 
 <span class="sd">        Yum repositories usually come in triplets of</span>
 <span class="sd">        (binary RPMs, debuginfo RPMs, source RPMs). For example:</span>
@@ -167,7 +164,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_related_repository</span><span class="p">(</span><span class="n">repo_t</span><span class="o">=</span><span class="s2">&quot;binary&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="YumRepository.get_debug_repository"><a class="viewcode-back" href="../../../../../../api/yum.html#pubtools.pulplib.YumRepository.get_debug_repository">[docs]</a>    <span class="k">def</span> <span class="nf">get_debug_repository</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Find and return the debug repository relating to this repository.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Find and return the debug repository relating to this repository.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            ``Future[YumRepository]``</span>
@@ -178,7 +175,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_related_repository</span><span class="p">(</span><span class="n">repo_t</span><span class="o">=</span><span class="s2">&quot;debug&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="YumRepository.get_source_repository"><a class="viewcode-back" href="../../../../../../api/yum.html#pubtools.pulplib.YumRepository.get_source_repository">[docs]</a>    <span class="k">def</span> <span class="nf">get_source_repository</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Find and return the source repository relating to this repository.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Find and return the source repository relating to this repository.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            ``Future[YumRepository]``</span>
@@ -226,7 +223,7 @@
         <span class="k">return</span> <span class="n">out</span>
 
 <div class="viewcode-block" id="YumRepository.upload_rpm"><a class="viewcode-back" href="../../../../../../api/yum.html#pubtools.pulplib.YumRepository.upload_rpm">[docs]</a>    <span class="k">def</span> <span class="nf">upload_rpm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Upload an RPM to this repository.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Upload an RPM to this repository.</span>
 
 <span class="sd">        .. warning::</span>
 
@@ -291,7 +288,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="YumRepository.upload_metadata"><a class="viewcode-back" href="../../../../../../api/yum.html#pubtools.pulplib.YumRepository.upload_metadata">[docs]</a>    <span class="k">def</span> <span class="nf">upload_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_obj</span><span class="p">,</span> <span class="n">metadata_type</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Upload a metadata file to this repository.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Upload a metadata file to this repository.</span>
 
 <span class="sd">        A metadata file is any additional file which will be published alongside,</span>
 <span class="sd">        and referenced from, the repodata ``.xml`` and ``.sqlite`` files when this</span>
@@ -351,7 +348,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="YumRepository.upload_modules"><a class="viewcode-back" href="../../../../../../api/yum.html#pubtools.pulplib.YumRepository.upload_modules">[docs]</a>    <span class="k">def</span> <span class="nf">upload_modules</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_obj</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Upload a modulemd stream to this repository.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Upload a modulemd stream to this repository.</span>
 
 <span class="sd">        All supported documents in the given stream will be imported to this</span>
 <span class="sd">        repository. On current versions of Pulp 2.x, this means only:</span>
@@ -392,7 +389,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_upload_then_import</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="s2">&quot;modulemd&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="YumRepository.upload_comps_xml"><a class="viewcode-back" href="../../../../../../api/yum.html#pubtools.pulplib.YumRepository.upload_comps_xml">[docs]</a>    <span class="k">def</span> <span class="nf">upload_comps_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_obj</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Upload a comps.xml file to this repository.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Upload a comps.xml file to this repository.</span>
 
 <span class="sd">        .. warning::</span>
 
@@ -518,7 +515,7 @@
         <span class="k">return</span> <span class="n">upload</span>
 
 <div class="viewcode-block" id="YumRepository.upload_erratum"><a class="viewcode-back" href="../../../../../../api/yum.html#pubtools.pulplib.YumRepository.upload_erratum">[docs]</a>    <span class="k">def</span> <span class="nf">upload_erratum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">erratum</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Upload an erratum/advisory object to this repository.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Upload an erratum/advisory object to this repository.</span>
 
 <span class="sd">        .. warning::</span>
 
@@ -672,7 +669,7 @@
       &copy;2019, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.3.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 6.0.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
