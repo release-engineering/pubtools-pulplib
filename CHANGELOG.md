@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - n/a
 
+## [2.34.4] - 2023-01-04
+
+- Fixed compatibility issues with `attrs`: `kw_only` kwarg was missing in versions earlier
+  than 18.2 on Python 3
+
 ## [2.34.3] - 2022-12-09
 
 - Fixed dependency issues with `monotonic`: declare the dependency, and only require it
@@ -423,7 +428,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release to PyPI
 
-[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.34.3...HEAD
+[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.34.4...HEAD
+[2.34.4]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.34.3...v2.34.4
 [2.34.3]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.34.2...v2.34.3
 [2.34.2]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.34.1...v2.34.2
 [2.34.1]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.34.0...v2.34.1
