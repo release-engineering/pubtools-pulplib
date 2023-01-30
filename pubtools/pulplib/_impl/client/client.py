@@ -7,10 +7,9 @@ from functools import partial
 from collections import namedtuple
 
 import requests
-import six
 from more_executors import Executors
 from more_executors.futures import f_map, f_flat_map, f_return, f_proxy, f_sequence
-from six.moves import StringIO
+from io import StringIO
 
 from ..page import Page
 from ..criteria import Criteria
@@ -680,7 +679,7 @@ class Client(object):
                 if not data:
                     break
 
-                if isinstance(data, six.text_type):
+                if isinstance(data, str):
                     # if it's unicode, need to encode before calculate checksum
                     data = data.encode("utf-8")
 

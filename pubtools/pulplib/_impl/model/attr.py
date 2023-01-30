@@ -1,5 +1,3 @@
-import six
-
 from pubtools.pulplib._impl import compat_attr as attr
 
 
@@ -56,11 +54,8 @@ def pulp_attrib(
         metadata[PULP2_MUTABLE] = True
 
     if "type" in kwargs:
-        # As a convenience, you may define string types as type=str
-        # on any python version, but what you'll actually get is
-        # whatever's the primary string type (e.g. basestr on py2)
         if kwargs["type"] is str:
-            kwargs["type"] = six.string_types[0]
+            kwargs["type"] = str
 
         # If you haven't defined a validator, you get one automatically
         # for your requested type

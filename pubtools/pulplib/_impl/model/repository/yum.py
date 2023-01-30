@@ -1,6 +1,5 @@
 import re
 
-import six
 from frozenlist2 import frozenlist
 
 from more_executors.futures import f_map, f_proxy, f_return, f_zip, f_flat_map
@@ -239,7 +238,7 @@ class YumRepository(Repository):
         # input could be a plain string, or a file object with 'name' attribute, or
         # a file object without 'name' ... make sure we do something reasonable in
         # all cases.
-        if isinstance(file_obj, six.string_types):
+        if isinstance(file_obj, str):
             name = file_obj
         else:
             # If we don't know what we're uploading we just say it's "an RPM"...
@@ -296,7 +295,7 @@ class YumRepository(Repository):
 
         .. versionadded:: 2.17.0
         """
-        if isinstance(file_obj, six.string_types):
+        if isinstance(file_obj, str):
             name = "%s (%s)" % (file_obj, metadata_type)
         else:
             # If we don't know what we're uploading we just say "<type> metadata"...
@@ -349,7 +348,7 @@ class YumRepository(Repository):
 
         .. versionadded:: 2.17.0
         """
-        if isinstance(file_obj, six.string_types):
+        if isinstance(file_obj, str):
             name = file_obj
         else:
             name = getattr(file_obj, "name", "modulemds")
@@ -402,7 +401,7 @@ class YumRepository(Repository):
 
         .. versionadded:: 2.17.0
         """
-        if isinstance(file_obj, six.string_types):
+        if isinstance(file_obj, str):
             file_name = file_obj
             file_obj = open(file_obj, "rb")
         else:

@@ -1,5 +1,3 @@
-import six
-
 from .base import Unit, PulpObject, unit_type, schemaless_init
 
 from ..attr import pulp_attrib
@@ -348,7 +346,7 @@ class ErratumUnit(Unit):
         pulp_field="pulp_user_metadata.content_types",
         converter=frozenlist_or_none_converter,
         default=None,
-        validator=optional_list_of(six.string_types),
+        validator=optional_list_of(str),
     )
     """A list of content types associated with the advisory.
 

@@ -1,10 +1,8 @@
-import six
-
 from ..compat_attr import validators
 
 instance_of = validators.instance_of
 
-optional_str = instance_of(six.string_types + (type(None),))
+optional_str = instance_of((str,) + (type(None),))
 optional_bool = instance_of((bool, type(None)))
 optional_dict = instance_of((dict, type(None)))
 
