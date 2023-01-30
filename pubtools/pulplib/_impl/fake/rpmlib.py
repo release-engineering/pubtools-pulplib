@@ -17,9 +17,9 @@ except Exception as ex:  # pragma: no cover, pylint: disable=broad-except
 
     def broken(*_args, **_kwargs):
         raise RuntimeError(
-                "kobo.rpmlib is not available\n"
-                + "Hint: consider 'pip install rpm-py-installer'"
-                ) from exception
+            "kobo.rpmlib is not available\n"
+            + "Hint: consider 'pip install rpm-py-installer'"
+        ) from exception
 
     get_rpm_header = broken
     get_header_fields = broken

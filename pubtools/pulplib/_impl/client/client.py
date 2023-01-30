@@ -28,7 +28,7 @@ from .search import search_for_criteria
 from .errors import PulpException
 from .poller import TaskPoller
 from . import retry
-from .humanize_compat import naturalsize
+from humanize import naturalsize
 
 from .ud_mappings import compile_ud_mappings
 from .copy import CopyOptions

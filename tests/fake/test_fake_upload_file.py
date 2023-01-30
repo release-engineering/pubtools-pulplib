@@ -187,12 +187,7 @@ def test_upload_nonexistent_file_raises():
     client = controller.client
     repo1 = client.get_repository("repo1")
 
-    # If file's not found, Python 2 raises IOError and Python 3 raises
-    # FileNotFoundError. The latter one is not defined in Python 2.
-    if sys.version_info < (3,):
-        exception = IOError
-    else:
-        exception = FileNotFoundError
+    exception = FileNotFoundError
     with pytest.raises(exception):
         upload_f = repo1.upload_file("nonexistent_file").result()
 

@@ -2,7 +2,7 @@ from .base import Unit, unit_type
 
 from ..attr import pulp_attrib
 from ... import compat_attr as attr
-from ...compat_frozendict import frozendict
+from frozendict.core import frozendict  # pylint: disable=no-name-in-module
 from ..convert import frozenlist_or_none_sorted_converter, frozendict_or_none_converter
 from ..validate import optional_dict
 

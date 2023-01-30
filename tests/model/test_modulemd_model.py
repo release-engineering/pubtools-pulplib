@@ -1,11 +1,10 @@
-import sys
 import pytest
 
 from pubtools.pulplib import (
     ModulemdUnit,
     ModulemdDefaultsUnit,
 )
-from pubtools.pulplib._impl.compat_frozendict import frozendict
+from frozendict.core import frozendict  # pylint: disable=no-name-in-module
 from frozenlist2 import frozenlist
 
 
@@ -35,11 +34,6 @@ def get_test_values():
     return default_unit, md_unit
 
 
-@pytest.mark.xfail(
-    sys.version_info < (3, 0),
-    reason="The conversion function checks if the value is already a frozendict, which is just "
-    "dict in python2, so profiles and the contents wont be converted",
-)
 def test_convert_profile_value():
     """Profile and the values it contains should be immutable"""
 
@@ -52,10 +46,6 @@ def test_convert_profile_value():
     assert isinstance(md_unit.profiles["default"]["rpms"], frozenlist)
 
 
-@pytest.mark.xfail(
-    sys.version_info < (3, 0),
-    reason="Frozendict falls back to the default dict for Python2, so wont have a hash",
-)
 def test_profiles_have_hash():
     """If two objects are equal, then they must have the same hashcode"""
     default_unit_1, md_unit_1 = get_test_values()
@@ -65,10 +55,6 @@ def test_profiles_have_hash():
     assert hash(md_unit_1) == hash(md_unit_2)
 
 
-@pytest.mark.xfail(
-    sys.version_info < (3, 0),
-    reason="Frozendict falls back to the default dict for Python2, so wont throw exceptions",
-)
 def test_fail_on_modify_profiles():
     """Should fail when the profile attribute is modified"""
     default_unit, md_unit = get_test_values()
