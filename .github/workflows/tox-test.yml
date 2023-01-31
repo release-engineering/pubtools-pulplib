@@ -3,21 +3,7 @@ name: Tox tests
 on: [push, pull_request]
 
 jobs:
-  py36:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Install RPM
-        run: sudo apt-get install -y rpm libkrb5-dev
-      - name: Setup Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.6.15
-      - name: Install Tox
-        run: pip install tox
-      - name: Run Tox
-        run: tox -e py36
-  static:
+  tatic:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
