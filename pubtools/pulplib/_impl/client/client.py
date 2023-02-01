@@ -922,7 +922,18 @@ class Client(object):
         return out
 
     def _do_request(self, **kwargs):
-        return self._session.request(**kwargs)
+        response = self._session.request(**kwargs)
+
+        # Responses normally hold a reference back to their request.
+        # We don't want to do that because our request might point to
+        # large 'bytes' objects (when uploading files) and we want to allow
+        # that to be reclaimed ASAP. If we hold onto this and our caller
+        # has any cycles in play (and in practice they do), we'd be keeping
+        # large chunks of memory pinned until potentially several GC
+        # collections manage to run.
+        response.request = None
+
+        return response
 
     def _do_search(self, url, search):
         LOG.debug("Submitting %s search: %s", url, search)
