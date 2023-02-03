@@ -1,0 +1,83 @@
+#!/usr/bin/env python
+from pubtools.pulplib import Client, FakeController, FileRepository
+import logging
+from argparse import ArgumentParser
+from threading import Thread
+import os
+from time import sleep
+
+log = logging.getLogger("repo_lock")
+
+
+def set_maintenance(client, maintenance_on, msg):
+    lock_name = ["pulplib-lock-example"]
+    maintenance_repo = client.get_repository("redhat-maintenance")
+    with maintenance_repo.lock("update maintenance repo", duration=600):
+        log.info(msg)
+        log.info("Downloading maintenance report")
+        report = client.get_maintenance_report()
+        report = report.result()
+        log.info("Modifying maintenance report")
+        if maintenance_on:
+            report = report.add(
+                lock_name, owner="pulplib-examples",
+                message="lock demonstration"
+            )
+        else:
+            report = report.remove(lock_name)
+        client.set_maintenance(report).result()
+
+
+def make_client(args):
+    auth = None
+    if args.fake:
+        ctrl = FakeController()
+        ctrl.insert_repository(FileRepository(id="redhat-maintenance"))
+        return ctrl.client
+    if args.username:
+        password = args.password
+        if password is None:
+            password = os.environ.get("PULP_PASSWORD")
+        if not password:
+            log.warning("No password provided for %s", args.username)
+        auth = (args.username, args.password)
+
+    return Client(args.url, auth=auth, verify=not args.insecure)
+
+
+def get_args():
+    parser = ArgumentParser(description="Demonstration of Repo Locking")
+    parser.add_argument("--url", help="Pulp server URL")
+    parser.add_argument("--username", help="Pulp username")
+    parser.add_argument(
+        "--password", help="Pulp password (or set PULP_PASSWORD in env)"
+    )
+    parser.add_argument("--insecure", default=False, action="store_true")
+    parser.add_argument("--fake", default=False, action="store_true")
+
+    return parser.parse_args()
+
+
+def main():
+    logging.basicConfig(format="%(message)s", level=logging.INFO)
+    args = get_args()
+    client = make_client(args)
+    add_thread = Thread(
+        target=set_maintenance,
+        args=(client, True, "Adding to redhat-maintenance")
+    )
+    remove_thread = Thread(
+        target=set_maintenance,
+        args=(client, False, "Removing from redhat-maintenance")
+    )
+
+    add_thread.start()
+    sleep(1)
+    remove_thread.start()
+
+    add_thread.join()
+    remove_thread.join()
+
+
+if __name__ == "__main__":
+    main()

@@ -108,3 +108,23 @@ def test_can_insert_orphans():
         attr.evolve(u, unit_id=None, repository_memberships=None) for u in found
     ]
     assert sorted(found_cmp, key=repr) == units
+
+
+def test_get_repo_lock_data_missing():
+    controller = FakeController()
+
+    repo_f = controller.client._get_repo_lock_data("not-a-repo")
+    with pytest.raises(PulpException) as raised:
+        repo_f.result()
+
+    assert "Repository id=not-a-repo not found" in str(raised.value)
+
+
+def test_update_repo_lock_data_missing():
+    controller = FakeController()
+
+    repo_f = controller.client._update_repo_lock_data("not-a-repo", {})
+    with pytest.raises(PulpException) as raised:
+        repo_f.result()
+
+    assert "Repository id=not-a-repo not found" in str(raised.value)

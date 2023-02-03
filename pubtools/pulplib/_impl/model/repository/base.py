@@ -8,6 +8,7 @@ from attr import validators, asdict
 from frozenlist2 import frozenlist
 from more_executors.futures import f_proxy, f_map, f_flat_map
 
+from .repo_lock import RepoLock
 from ..attr import pulp_attrib, PULP2_FIELD, PULP2_MUTABLE
 from ..common import PulpObject, Deletable, DetachedException
 from ..convert import frozenlist_or_none_converter
@@ -594,6 +595,43 @@ class Repository(PulpObject, Deletable):
                 self.id, asdict(options, filter=lambda name, val: val is not None)
             )
         )
+
+    def lock(self, context, duration=None):
+        """
+        Obtain an exclusive advisory lock on this repository.
+
+        Returns a context manager representing the lock, intended to be used
+        via a `with` statement. When the context is entered, the caller will
+        wait until the lock can be acquired (or raise an exception if the lock
+        can't be acquired).
+
+        Only a single :class:`~pubtools.pulplib.Client` is able to hold the lock
+        on a repository at any given time. The lock does not prevent modifications
+        to the repo with the Pulp API, and does not affect other Pulp client
+        implementations or instances of :class:`~pubtools.pulplib.Client` not
+        using the `lock` method.
+
+        Args:
+            context:
+                A short description of the task being carried out with the lock.
+
+                This value will be added to the lock in the repo and may be
+                used for debugging.
+
+            duration
+                Maximum duration of the lock, in seconds.
+
+                This value is used only if this client fails to release the
+                lock (for example, because the current process is killed).
+                In this case, the duration will be used by other clients in
+                order to detect and release stale locks, avoiding a deadlock.
+
+                There is no way to extend the duration of an acquired lock,
+                so the caller should always ensure they request a `duration`
+                high enough to cover the entire expected lifetime of the lock.
+        """
+
+        return RepoLock(self.id, self._client, context, duration)
 
     def remove_content(self, criteria=None, **kwargs):
         """Remove all content of requested types from this repository.

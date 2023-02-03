@@ -11,6 +11,7 @@ from more_executors import Executors
 from more_executors.futures import f_map, f_flat_map, f_return, f_proxy, f_sequence
 from io import StringIO
 
+from ..model.repository.repo_lock import LOCK_CLAIM_STR
 from ..page import Page
 from ..criteria import Criteria
 from ..model import (
@@ -804,6 +805,28 @@ class Client(object):
         return self._task_executor.submit(
             self._do_request, method="POST", url=url, json=body
         )
+
+    def _get_repo_lock_data(self, repo_id):
+        repo_raw_f = self._request_executor.submit(
+            self._do_request,
+            url=os.path.join(self._url, "pulp/api/v2/repositories/%s/" % repo_id),
+            method="GET",
+        )
+        notes_f = f_map(repo_raw_f, lambda data: (data.get("notes") or {}))
+        return f_map(
+            notes_f,
+            lambda notes: {key: notes[key] for key in notes if LOCK_CLAIM_STR in key},
+        )
+
+    def _update_repo_lock_data(self, repo_id, note_delta, await_result=False):
+        update_f = self._request_executor.submit(
+            self._do_request,
+            url=os.path.join(self._url, "pulp/api/v2/repositories/%s/" % repo_id),
+            method="PUT",
+            json={"delta": {"notes": note_delta}},
+        )
+        if await_result:
+            update_f.result()
 
     def _compile_notes(self, repo):
         # Given a repo we're about to publish, calculate and set certain notes

@@ -204,3 +204,11 @@ class FakeController(object):
         """
         with self._state.lock:
             self._state.tasks.append(task)
+
+    @property
+    def repo_lock_history(self):
+        """
+        A list containing all lock actions carried out.
+        Possible actions are: lock, unlock, multi-unlock
+        """
+        return self._state.repo_lock_history

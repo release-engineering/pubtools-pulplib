@@ -31,6 +31,7 @@ from . import units
 Publish = namedtuple("Publish", ["repository", "tasks"])
 Upload = namedtuple("Upload", ["repository", "tasks", "name", "sha256"])
 Sync = namedtuple("Sync", ["repository", "tasks", "sync_config"])
+RepoLockRecord = namedtuple("RepoLockRecord", ["repository", "action"])
 
 
 class FakeClient(object):  # pylint:disable = too-many-instance-attributes
@@ -446,6 +447,50 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
             )
 
         return f_return([task])
+
+    def _get_repo_lock_data(self, repo_id):
+        self._ensure_alive()
+        data = self.search_repository(Criteria.with_id(repo_id)).result().data
+        if len(data) != 1:
+            return f_return_error(PulpException("Repository id=%s not found" % repo_id))
+        with self._state.lock:
+            data = (
+                self._state.repo_locks[repo_id]
+                if repo_id in self._state.repo_locks
+                else {}
+            )
+            return f_return(data)
+
+    # pylint: disable=unused-argument
+    def _update_repo_lock_data(self, repo_id, note_delta, await_result=None):
+        self._ensure_alive()
+        data = self.search_repository(Criteria.with_id(repo_id)).result().data
+        if len(data) != 1:
+            return f_return_error(PulpException("Repository id=%s not found" % repo_id))
+        with self._state.lock:
+
+            data = (
+                self._state.repo_locks[repo_id]
+                if repo_id in self._state.repo_locks
+                else {}
+            )
+            for lock_id in note_delta:
+                data[lock_id] = note_delta[lock_id]
+
+            data = {k: data[k] for k in data if data[k] is not None}
+            self._state.repo_locks[repo_id] = data
+
+            if len(note_delta) == 1:
+                lock_id = list(note_delta)[0]
+                self._state.repo_lock_history.append(
+                    RepoLockRecord(repo_id, "lock" if note_delta[lock_id] else "unlock")
+                )
+            else:
+                # The only time more than one change should be made is when
+                # removing multiple expired locks.
+                self._state.repo_lock_history.append(
+                    RepoLockRecord(repo_id, "multi-unlock")
+                )
 
     def _request_upload(self, name):  # pylint: disable=unused-argument
         # Note: old versions had a bug where this function would always
