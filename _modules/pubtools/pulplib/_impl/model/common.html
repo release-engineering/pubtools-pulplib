@@ -34,7 +34,6 @@
 <span class="kn">import</span> <span class="nn">datetime</span>
 
 <span class="kn">import</span> <span class="nn">jsonschema</span>
-<span class="kn">import</span> <span class="nn">six</span>
 
 <span class="kn">from</span> <span class="nn">more_executors.futures</span> <span class="kn">import</span> <span class="n">f_map</span><span class="p">,</span> <span class="n">f_proxy</span>
 
@@ -135,7 +134,7 @@
             <span class="p">)</span>
 
             <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.from_data invoked with invalid Pulp data&quot;</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span>
-            <span class="n">six</span><span class="o">.</span><span class="n">raise_from</span><span class="p">(</span><span class="n">InvalidDataException</span><span class="p">(</span><span class="n">msg</span><span class="p">),</span> <span class="n">error</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="n">InvalidDataException</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">error</span></div>
 
     <span class="k">def</span> <span class="nf">_to_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Inverse of from_data: serialize a model object back to native Pulp form.</span>
@@ -349,8 +348,8 @@
       &copy;2019, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 6.0.0</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 6.1.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
       
     </div>
 

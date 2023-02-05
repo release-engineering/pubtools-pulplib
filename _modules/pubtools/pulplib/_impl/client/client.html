@@ -39,10 +39,9 @@
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
 
 <span class="kn">import</span> <span class="nn">requests</span>
-<span class="kn">import</span> <span class="nn">six</span>
 <span class="kn">from</span> <span class="nn">more_executors</span> <span class="kn">import</span> <span class="n">Executors</span>
 <span class="kn">from</span> <span class="nn">more_executors.futures</span> <span class="kn">import</span> <span class="n">f_map</span><span class="p">,</span> <span class="n">f_flat_map</span><span class="p">,</span> <span class="n">f_return</span><span class="p">,</span> <span class="n">f_proxy</span><span class="p">,</span> <span class="n">f_sequence</span>
-<span class="kn">from</span> <span class="nn">six.moves</span> <span class="kn">import</span> <span class="n">StringIO</span>
+<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">StringIO</span>
 
 <span class="kn">from</span> <span class="nn">..page</span> <span class="kn">import</span> <span class="n">Page</span>
 <span class="kn">from</span> <span class="nn">..criteria</span> <span class="kn">import</span> <span class="n">Criteria</span>
@@ -61,7 +60,7 @@
 <span class="kn">from</span> <span class="nn">.errors</span> <span class="kn">import</span> <span class="n">PulpException</span>
 <span class="kn">from</span> <span class="nn">.poller</span> <span class="kn">import</span> <span class="n">TaskPoller</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">retry</span>
-<span class="kn">from</span> <span class="nn">.humanize_compat</span> <span class="kn">import</span> <span class="n">naturalsize</span>
+<span class="kn">from</span> <span class="nn">humanize</span> <span class="kn">import</span> <span class="n">naturalsize</span>
 
 <span class="kn">from</span> <span class="nn">.ud_mappings</span> <span class="kn">import</span> <span class="n">compile_ud_mappings</span>
 <span class="kn">from</span> <span class="nn">.copy</span> <span class="kn">import</span> <span class="n">CopyOptions</span>
@@ -712,7 +711,7 @@
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="p">:</span>
                     <span class="k">break</span>
 
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">text_type</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
                     <span class="c1"># if it&#39;s unicode, need to encode before calculate checksum</span>
                     <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
 
@@ -1128,8 +1127,8 @@
       &copy;2019, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 6.0.0</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 6.1.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
       
     </div>
 

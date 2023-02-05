@@ -32,7 +32,6 @@
   <h1>Source code for pubtools.pulplib._impl.model.repository.yum</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">re</span>
 
-<span class="kn">import</span> <span class="nn">six</span>
 <span class="kn">from</span> <span class="nn">frozenlist2</span> <span class="kn">import</span> <span class="n">frozenlist</span>
 
 <span class="kn">from</span> <span class="nn">more_executors.futures</span> <span class="kn">import</span> <span class="n">f_map</span><span class="p">,</span> <span class="n">f_proxy</span><span class="p">,</span> <span class="n">f_return</span><span class="p">,</span> <span class="n">f_zip</span><span class="p">,</span> <span class="n">f_flat_map</span>
@@ -271,7 +270,7 @@
         <span class="c1"># input could be a plain string, or a file object with &#39;name&#39; attribute, or</span>
         <span class="c1"># a file object without &#39;name&#39; ... make sure we do something reasonable in</span>
         <span class="c1"># all cases.</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">string_types</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">name</span> <span class="o">=</span> <span class="n">file_obj</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># If we don&#39;t know what we&#39;re uploading we just say it&#39;s &quot;an RPM&quot;...</span>
@@ -328,7 +327,7 @@
 
 <span class="sd">        .. versionadded:: 2.17.0</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">string_types</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="n">metadata_type</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># If we don&#39;t know what we&#39;re uploading we just say &quot;&lt;type&gt; metadata&quot;...</span>
@@ -381,7 +380,7 @@
 
 <span class="sd">        .. versionadded:: 2.17.0</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">string_types</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">name</span> <span class="o">=</span> <span class="n">file_obj</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;modulemds&quot;</span><span class="p">)</span>
@@ -434,7 +433,7 @@
 
 <span class="sd">        .. versionadded:: 2.17.0</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">string_types</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">file_name</span> <span class="o">=</span> <span class="n">file_obj</span>
             <span class="n">file_obj</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -669,8 +668,8 @@
       &copy;2019, Red Hat.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 6.0.0</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 6.1.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
       
     </div>
 
