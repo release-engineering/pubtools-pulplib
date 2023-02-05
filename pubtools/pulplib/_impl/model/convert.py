@@ -1,21 +1,10 @@
 import datetime
 import functools
 
-import six
 from frozenlist2 import frozenlist
+from frozendict.core import frozendict  # pylint: disable=no-name-in-module
 
 from .attr import PULP2_PY_CONVERTER
-from ..compat_frozendict import frozendict
-
-# Work around http://bugs.python.org/issue7980 which is closed "Won't Fix"
-# for python2:
-#
-# If multiple threads in a process do the first call to strptime at once,
-# a crash can occur. Calling strptime once at import time will avoid that
-# condition.
-#
-# TODO: remove me when py2 support is dropped
-datetime.datetime.strptime("", "")
 
 
 def get_converter(field, value):
@@ -30,7 +19,7 @@ def get_converter(field, value):
 
     # Nothing explicitly defined, but check the types, there may still be
     # some applicable default
-    if field.type is datetime.datetime and isinstance(value, six.string_types):
+    if field.type is datetime.datetime and isinstance(value, str):
         return read_timestamp
 
     return null_convert
@@ -56,7 +45,7 @@ def tolerant_timestamp(value):
     #
     # Since it tolerates failed conversions, this is intended to be combined
     # with a validator.
-    if isinstance(value, six.string_types):
+    if isinstance(value, str):
         try:
             return read_timestamp(value)
         except ValueError:

@@ -5,8 +5,7 @@ import re
 
 from collections import namedtuple
 
-import six
-from six.moves import StringIO
+from io import StringIO, BytesIO
 
 from more_executors.futures import f_return, f_return_error, f_flat_map, f_proxy
 
@@ -328,7 +327,7 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
         return f_proxy(f_return(page))
 
     def get_repository(self, repository_id):
-        if not isinstance(repository_id, six.string_types):
+        if not isinstance(repository_id, str):
             raise TypeError("Invalid argument: id=%s" % id)
 
         data = self.search_repository(Criteria.with_id(repository_id)).result().data
@@ -376,7 +375,7 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
         self, upload_id, file_obj, name="<unknown file>"
     ):  # pylint: disable=unused-argument
         # We keep track of uploaded content as we may need it at import time.
-        buffer = six.BytesIO()
+        buffer = BytesIO()
 
         with self._state.lock:
             self._state.uploads_pending[upload_id] = buffer
@@ -390,7 +389,7 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
                 data = file_obj.read(1024 * 1024)
                 if not data:
                     break
-                if isinstance(data, six.text_type):
+                if isinstance(data, str):
                     data = data.encode("utf-8")
                 buffer.write(data)
                 checksum.update(data)
@@ -476,7 +475,7 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
             # Get the uploaded content we're about to import; though it's not
             # guaranteed to be present (e.g. erratum has no file).
             # If not present, we just use an empty BytesIO.
-            upload_content = self._state.uploads_pending.pop(upload_id, six.BytesIO())
+            upload_content = self._state.uploads_pending.pop(upload_id, BytesIO())
             upload_content.seek(0)
 
             new_units = self._state.unitmaker.make_units(

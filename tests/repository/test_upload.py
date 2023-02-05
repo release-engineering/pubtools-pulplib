@@ -4,7 +4,7 @@ import time
 import pytest
 import json
 
-from six.moves import StringIO
+from io import StringIO
 
 from pubtools.pulplib import (
     Repository,

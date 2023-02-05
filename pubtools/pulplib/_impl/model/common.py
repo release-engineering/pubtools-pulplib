@@ -2,7 +2,6 @@ import logging
 import datetime
 
 import jsonschema
-import six
 
 from more_executors.futures import f_map, f_proxy
 
@@ -103,7 +102,7 @@ class PulpObject(object):
             )
 
             msg = "%s.from_data invoked with invalid Pulp data", cls.__name__
-            six.raise_from(InvalidDataException(msg), error)
+            raise InvalidDataException(msg) from error
 
     def _to_data(self):
         """Inverse of from_data: serialize a model object back to native Pulp form.

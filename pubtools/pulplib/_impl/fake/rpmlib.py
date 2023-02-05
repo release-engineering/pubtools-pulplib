@@ -1,5 +1,3 @@
-import six
-
 try:
     from kobo.rpmlib import (
         get_rpm_header,
@@ -18,13 +16,10 @@ except Exception as ex:  # pragma: no cover, pylint: disable=broad-except
     exception = ex
 
     def broken(*_args, **_kwargs):
-        six.raise_from(
-            RuntimeError(
-                "kobo.rpmlib is not available\n"
-                + "Hint: consider 'pip install rpm-py-installer'"
-            ),
-            exception,
-        )
+        raise RuntimeError(
+            "kobo.rpmlib is not available\n"
+            + "Hint: consider 'pip install rpm-py-installer'"
+        ) from exception
 
     get_rpm_header = broken
     get_header_fields = broken

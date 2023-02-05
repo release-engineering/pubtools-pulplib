@@ -1,12 +1,10 @@
-import sys
-
 import attr
 
 ATTR_VERSION = tuple(int(x) for x in attr.__version__.split(".")[0:2])
 
 # pylint: disable=invalid-name
 
-# Wrappers around attr module to handle some Py2 vs Py3 incompatibilities.
+# Set some defaults when using attr
 
 
 def s(*args, **kwargs):
@@ -30,30 +28,10 @@ def s(*args, **kwargs):
         # don't use the attrs-generated repr by default
         kwargs["repr"] = False
 
-    if "kw_only" in kwargs and (
-        ATTR_VERSION < (18, 2) or sys.version_info < (3,)
-    ):  # pragma: no cover
-        # This is only implemented for Python 3 and only in attrs 18.2 and newer.
-        # attrs will raise if kw_only is provided on Py2 or older version of attrs.
-        del kwargs["kw_only"]
-
     return attr.s(*args, **kwargs)
 
 
-if ATTR_VERSION < (18, 1):  # pragma: no cover
-
-    # older attrs version didn't provide this function yet,
-    # but it's easily added here.
-    def fields_dict(cls):
-        out = {}
-        for field in attr.fields(cls):
-            out[field.name] = field
-        return out
-
-else:
-    fields_dict = attr.fields_dict
-
-
+fields_dict = attr.fields_dict
 ib = attr.ib
 Factory = attr.Factory
 fields = attr.fields

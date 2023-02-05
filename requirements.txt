@@ -1,6 +1,5 @@
 requests
 more-executors>=2.8.1
-six
 PyYAML
 jsonschema
 attrs

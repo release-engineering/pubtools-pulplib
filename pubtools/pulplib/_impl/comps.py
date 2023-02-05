@@ -2,7 +2,7 @@
 
 from xml.parsers import expat
 
-from six import StringIO
+from io import StringIO
 
 
 class BooleanStringIO(StringIO):

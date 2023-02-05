@@ -1,7 +1,6 @@
 import datetime
 
 import attr
-import sys
 import pytest
 
 import pubtools.pulplib
@@ -119,9 +118,6 @@ def default_for_field(field):
         int: 123,
         datetime.datetime: datetime.datetime(2019, 9, 4, 12, 9, 30),
     }
-
-    if sys.version_info.major == 2:
-        value_by_type[basestring] = "test"
 
     if field.name in value_by_name:
         return value_by_name[field.name]

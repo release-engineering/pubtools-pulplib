@@ -2,17 +2,7 @@ import collections
 import re
 import warnings
 
-import six
-
-# Due to below block:
-# pylint: disable=wrong-import-position
-
-try:
-    # python 3
-    Iterable = collections.abc.Iterable  # pylint: disable=invalid-name
-except AttributeError:  # pragma: no cover
-    # python 2
-    Iterable = collections.Iterable  # pylint: disable=invalid-name
+from collections.abc import Iterable
 
 from frozenlist2 import frozenlist
 
@@ -77,7 +67,7 @@ class Criteria(object):
             Criteria
                 criteria for finding objects matching the given ID(s)
         """
-        if isinstance(ids, six.string_types):
+        if isinstance(ids, str):
             return cls.with_field("id", ids)
         return cls.with_field("id", Matcher.in_(ids))
 
@@ -350,7 +340,7 @@ class RegexMatcher(Matcher):
         # It must be a string.
         # Need an explicit check here because re.compile also succeeds
         # on already-compiled regex objects.
-        if not isinstance(pattern, six.string_types):
+        if not isinstance(pattern, str):
             raise TypeError("Regex matcher expected string, got: %s" % repr(pattern))
 
         # Verify that the given value can really be compiled as a regex.
@@ -375,7 +365,7 @@ class EqMatcher(Matcher):
 
 
 def iterable_nonstr_then_frozenlist(values):
-    if isinstance(values, Iterable) and not isinstance(values, six.string_types):
+    if isinstance(values, Iterable) and not isinstance(values, str):
         return frozenlist(values)
     raise ValueError("Must be an iterable: %s" % repr(values))
 
