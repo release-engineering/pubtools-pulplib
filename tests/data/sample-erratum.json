@@ -701,7 +701,8 @@
     "pulp_user_metadata": {
         "content_types": [
             "module"
-        ]
+        ],
+        "container_list": ["redhat/ubi8:latest"]
     },
     "pushcount": "8",
     "reboot_suggested": false,

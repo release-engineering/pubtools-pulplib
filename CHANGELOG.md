@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- n/a
+- Added new container_list attribute for Erratum unit
 
 ## [2.34.5] - 2023-02-07
 

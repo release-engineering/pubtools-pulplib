@@ -689,6 +689,7 @@ def test_can_load_erratum(data_path):
         references=[],
         pkglist=[],
         content_type_id="erratum",
+        container_list=["redhat/ubi8:latest"],
         repository_memberships=[
             "all-rpm-content",
             "rhel-8-for-aarch64-appstream-source-rpms__8_DOT_0",

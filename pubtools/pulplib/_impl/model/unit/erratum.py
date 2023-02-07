@@ -374,6 +374,15 @@ class ErratumUnit(Unit):
     )
     """A list of package collections associated with the advisory."""
 
+    container_list = pulp_attrib(
+        type=list,
+        pulp_field="pulp_user_metadata.container_list",
+        converter=frozenlist_or_none_converter,
+        default=None,
+        validator=optional_list_of(str),
+    )
+    """A list of package collections associated with the advisory."""
+
     content_type_id = pulp_attrib(
         default="erratum", type=str, pulp_field="_content_type_id"
     )
