@@ -954,7 +954,18 @@
         <span class="k">return</span> <span class="n">out</span>
 
     <span class="k">def</span> <span class="nf">_do_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># Responses normally hold a reference back to their request.</span>
+        <span class="c1"># We don&#39;t want to do that because our request might point to</span>
+        <span class="c1"># large &#39;bytes&#39; objects (when uploading files) and we want to allow</span>
+        <span class="c1"># that to be reclaimed ASAP. If we hold onto this and our caller</span>
+        <span class="c1"># has any cycles in play (and in practice they do), we&#39;d be keeping</span>
+        <span class="c1"># large chunks of memory pinned until potentially several GC</span>
+        <span class="c1"># collections manage to run.</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">request</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="n">response</span>
 
     <span class="k">def</span> <span class="nf">_do_search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">search</span><span class="p">):</span>
         <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Submitting </span><span class="si">%s</span><span class="s2"> search: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">search</span><span class="p">)</span>
