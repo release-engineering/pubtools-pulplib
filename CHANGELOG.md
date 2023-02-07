@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - n/a
 
+## [2.34.5] - 2023-02-07
+
+- Removed support for Python 2
+- Reduced memory usage when uploading large files to Pulp
+
 ## [2.34.4] - 2023-01-04
 
 - Fixed compatibility issues with `attrs`: `kw_only` kwarg was missing in versions earlier
@@ -428,7 +433,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release to PyPI
 
-[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.34.4...HEAD
+[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.34.5...HEAD
+[2.34.5]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.34.4...v2.34.5
 [2.34.4]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.34.3...v2.34.4
 [2.34.3]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.34.2...v2.34.3
 [2.34.2]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.34.1...v2.34.2
