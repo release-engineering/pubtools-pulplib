@@ -2,7 +2,13 @@ from .base import Unit, PulpObject, unit_type, schemaless_init
 
 from ..attr import pulp_attrib
 from ... import compat_attr as attr
-from ..validate import optional_bool, optional_list_of, optional_str, instance_of, container_list_validator
+from ..validate import (
+    optional_bool,
+    optional_list_of,
+    optional_str,
+    instance_of,
+    container_list_validator,
+)
 from ..convert import frozenlist_or_none_sorted_converter, frozenlist_or_none_converter
 
 

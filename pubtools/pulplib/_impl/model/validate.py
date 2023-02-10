@@ -28,27 +28,38 @@ class OptionalListValidator(object):
 
 @s(frozen=True, slots=True, hash=True)
 class NamedMappingValidator:
-    mapping = ib(validator=validators.deep_mapping(
-                    value_validator=validators.is_callable(),
-                    key_validator=validators.instance_of(str))
-                 )
+    mapping = ib(
+        validator=validators.deep_mapping(
+            value_validator=validators.is_callable(),
+            key_validator=validators.instance_of(str),
+        ),
+        factory=dict,
+    )
 
     def __call__(self, inst, attr, value):
         validators.instance_of(dict)(inst, attr, value)
-        extra_values = set(value.keys() - self.mapping.keys())
-        missing_values = set(self.mapping.keys() - value.keys())
+        extra_values = set(value.keys() - self.mapping.keys())  # pylint: disable=E1101
+        missing_values = set(
+            self.mapping.keys() - value.keys()  # pylint: disable=E1101
+        )  # pylint: disable=E1101
         if extra_values:
-            raise ValueError("Mapping {name} contains extra values {extra}".format(name=attr.name, extra=extra_values))
+            raise ValueError(
+                "Mapping {name} contains extra values {extra}".format(
+                    name=attr.name, extra=extra_values
+                )
+            )
         if missing_values:
-            raise ValueError("Mapping {name} contains extra values {missing}".format(name=attr.name, missing=missing_values))
+            raise ValueError(
+                "Mapping {name} contains extra values {missing}".format(
+                    name=attr.name, missing=missing_values
+                )
+            )
 
         for key, val in value.items():
-            self.mapping[key](inst, attr, val)
+            self.mapping[key](inst, attr, val)  # pylint: disable=E1136
 
     def __repr__(self):
-        return "<named_mapping_validator {mapping!r}>".format(
-            mapping=self.mapping
-        )
+        return "<named_mapping_validator {mapping!r}>".format(mapping=self.mapping)
 
 
 def named_mapping_validator(mapping):
@@ -74,21 +85,23 @@ class ContainerListValidator(object):
                                 key_validator=validators.instance_of(str),
                                 value_validator=validators.deep_mapping(
                                     key_validator=validators.instance_of(str),
-                                    value_validator=validators.optional(validators.instance_of(str))
-                                )
-                            )
+                                    value_validator=validators.optional(
+                                        validators.instance_of(str)
+                                    ),
+                                ),
+                            ),
                         }
                     ),
-                    #mapping_validator=instance_of(dict)
-                )
+                    # mapping_validator=instance_of(dict)
+                ),
             ),
-            iterable_validator=validators.instance_of(list)
+            iterable_validator=validators.instance_of(list),
         )(inst, attr, value)
 
 
 def container_list_validator():
     return ContainerListValidator()
 
+
 def optional_list_of(elem_types):
     return OptionalListValidator(instance_of(elem_types))
-
