@@ -2,7 +2,7 @@ from .base import Unit, PulpObject, unit_type, schemaless_init
 
 from ..attr import pulp_attrib
 from ... import compat_attr as attr
-from ..validate import optional_bool, optional_list_of, optional_str, instance_of
+from ..validate import optional_bool, optional_list_of, optional_str, instance_of, container_list_validator
 from ..convert import frozenlist_or_none_sorted_converter, frozenlist_or_none_converter
 
 
@@ -379,9 +379,9 @@ class ErratumUnit(Unit):
         pulp_field="pulp_user_metadata.container_list",
         converter=frozenlist_or_none_converter,
         default=None,
-        validator=optional_list_of(str),
+        validator=container_list_validator(),
     )
-    """A list of package collections associated with the advisory."""
+    """A list of container images associated with the advisory."""
 
     content_type_id = pulp_attrib(
         default="erratum", type=str, pulp_field="_content_type_id"
