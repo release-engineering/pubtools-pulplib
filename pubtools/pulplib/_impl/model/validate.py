@@ -1,10 +1,14 @@
 from ..compat_attr import validators, s, ib
 
+from frozenlist2 import frozenlist
+from frozendict.core import frozendict
+
 instance_of = validators.instance_of
 
 optional_str = instance_of((str,) + (type(None),))
 optional_bool = instance_of((bool, type(None)))
 optional_dict = instance_of((dict, type(None)))
+optional_frozendict = instance_of((frozendict, type(None)))
 
 # This is a workaround for the absence of deep_iterable on older attr.
 # Drop it when the legacy environment is no longer required.
@@ -35,9 +39,10 @@ class NamedMappingValidator:
         ),
         factory=dict,
     )
+    type_ = ib(default=dict)
 
     def __call__(self, inst, attr, value):
-        validators.instance_of(dict)(inst, attr, value)
+        validators.instance_of(self.type_)(inst, attr, value)
         extra_values = set(value.keys() - self.mapping.keys())  # pylint: disable=E1101
         missing_values = set(
             self.mapping.keys() - value.keys()  # pylint: disable=E1101
@@ -66,19 +71,22 @@ def named_mapping_validator(mapping):
     return NamedMappingValidator(mapping)
 
 
+def frozen_named_mapping_validator(mapping):
+    return NamedMappingValidator(mapping, frozendict)
+
+
 @s(kw_only=True, frozen=True, slots=True)
 class ContainerListValidator(object):
     def __call__(self, inst, attr, value):
-        print(value)
         if value is None:
             return
-        validators.instance_of(list)(inst, attr, value)
+        validators.instance_of(frozenlist)(inst, attr, value)
         validators.deep_iterable(
             validators.and_(
-                validators.instance_of(dict),
+                validators.instance_of(frozendict),
                 validators.deep_mapping(
                     key_validator=validators.instance_of(str),
-                    value_validator=named_mapping_validator(
+                    value_validator=frozen_named_mapping_validator(
                         {
                             "digest": validators.instance_of(str),
                             "images": validators.deep_mapping(
@@ -92,10 +100,9 @@ class ContainerListValidator(object):
                             ),
                         }
                     ),
-                    # mapping_validator=instance_of(dict)
                 ),
             ),
-            iterable_validator=validators.instance_of(list),
+            iterable_validator=validators.instance_of(frozenlist),
         )(inst, attr, value)
 
 

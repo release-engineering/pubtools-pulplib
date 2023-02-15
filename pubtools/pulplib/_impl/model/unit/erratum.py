@@ -9,7 +9,13 @@ from ..validate import (
     instance_of,
     container_list_validator,
 )
-from ..convert import frozenlist_or_none_sorted_converter, frozenlist_or_none_converter
+from ..convert import (
+    frozenlist_or_none_sorted_converter,
+    frozenlist_or_none_converter,
+    freeze_or_empty,
+)
+
+from frozenlist2 import frozenlist
 
 
 @attr.s(kw_only=True, frozen=True)
@@ -381,10 +387,10 @@ class ErratumUnit(Unit):
     """A list of package collections associated with the advisory."""
 
     container_list = pulp_attrib(
-        type=list,
+        type=frozenlist,
         pulp_field="pulp_user_metadata.container_list",
-        converter=frozenlist_or_none_converter,
-        default=None,
+        converter=freeze_or_empty,
+        default=attr.Factory(frozenlist),
         validator=container_list_validator(),
     )
     """A list of container images associated with the advisory."""
