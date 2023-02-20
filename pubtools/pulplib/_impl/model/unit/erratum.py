@@ -1,3 +1,5 @@
+from frozenlist2 import frozenlist
+
 from .base import Unit, PulpObject, unit_type, schemaless_init
 
 from ..attr import pulp_attrib
@@ -14,8 +16,6 @@ from ..convert import (
     frozenlist_or_none_converter,
     freeze_or_empty,
 )
-
-from frozenlist2 import frozenlist
 
 
 @attr.s(kw_only=True, frozen=True)

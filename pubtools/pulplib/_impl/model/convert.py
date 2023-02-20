@@ -2,7 +2,7 @@ import datetime
 import functools
 
 from frozenlist2 import frozenlist
-from frozendict.core import frozendict
+from frozendict.core import frozendict  # pylint: disable=no-name-in-module
 
 from .attr import PULP2_PY_CONVERTER
 
@@ -120,8 +120,8 @@ def freeze(obj):
             cobj_replacement = {}
 
         if isinstance(cobj_replacement, list):
-            for n, i in enumerate(cobj):
-                stack.insert(0, (i, cobj_replacement, n))
+            for nth, i in enumerate(cobj):
+                stack.insert(0, (i, cobj_replacement, nth))
         elif isinstance(cobj_replacement, dict):
             for key in cobj:
                 stack.insert(0, (cobj[key], cobj_replacement, key))
@@ -148,8 +148,7 @@ def freeze(obj):
 def freeze_or_empty(obj):
     if obj is None:
         return frozenlist([])
-    else:
-        return freeze(obj)
+    return freeze(obj)
 
 
 def unfreeze(obj):
@@ -170,8 +169,8 @@ def unfreeze(obj):
         cobj_replacement = cobj
         if isinstance(cobj, frozenlist):
             cobj_replacement = [None] * len(cobj)
-            for n, i in enumerate(cobj):
-                stack.insert(0, (i, cobj_replacement, n))
+            for nth, i in enumerate(cobj):
+                stack.insert(0, (i, cobj_replacement, nth))
         elif isinstance(cobj, frozendict):
             cobj_replacement = {}
             for key in cobj:

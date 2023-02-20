@@ -1,7 +1,7 @@
-from ..compat_attr import validators, s, ib
-
 from frozenlist2 import frozenlist
-from frozendict.core import frozendict
+
+from frozendict.core import frozendict  # pylint: disable=no-name-in-module
+from ..compat_attr import validators, s, ib
 
 instance_of = validators.instance_of
 
