@@ -63,13 +63,6 @@ class NamedMappingValidator:
         for key, val in value.items():
             self.mapping[key](inst, attr, val)  # pylint: disable=E1136
 
-    def __repr__(self):
-        return "<named_mapping_validator {mapping!r}>".format(mapping=self.mapping)
-
-
-def named_mapping_validator(mapping):
-    return NamedMappingValidator(mapping)
-
 
 def frozen_named_mapping_validator(mapping):
     return NamedMappingValidator(mapping, frozendict)
@@ -78,8 +71,6 @@ def frozen_named_mapping_validator(mapping):
 @s(kw_only=True, frozen=True, slots=True)
 class ContainerListValidator(object):
     def __call__(self, inst, attr, value):
-        if value is None:
-            return
         validators.instance_of(frozenlist)(inst, attr, value)
         validators.deep_iterable(
             validators.and_(

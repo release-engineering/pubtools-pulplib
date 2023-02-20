@@ -30,7 +30,7 @@ def test_upload_erratum(client, requests_mocker):
             )
         ],
         pkglist=[],
-        container_list=[],
+        container_list=None,
     )
 
     # Set up the requests it'll do:
