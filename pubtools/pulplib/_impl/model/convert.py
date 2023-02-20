@@ -149,36 +149,3 @@ def freeze_or_empty(obj):
     if obj is None:
         return frozenlist([])
     return freeze(obj)
-
-
-def unfreeze(obj):
-    """Convert complex object composed of frozendicts and frozenlists to equivalent
-    object composed of dicts and lists.
-    """
-
-    ret = [None]
-    stack = [(obj, ret, 0)]
-    traversal = []
-
-    while stack:
-        cobj, cparent, ckey = stack.pop(0)
-        # cobj_replacement represents unfrozen object. As structure is processed
-        # in post order - leaves are processed first - then it's not possible to
-        # assign proccessed leaf to frozen parent.
-        # To fix that replace parent object with expected unfrozen object
-        cobj_replacement = cobj
-        if isinstance(cobj, frozenlist):
-            cobj_replacement = [None] * len(cobj)
-            for nth, i in enumerate(cobj):
-                stack.insert(0, (i, cobj_replacement, nth))
-        elif isinstance(cobj, frozendict):
-            cobj_replacement = {}
-            for key in cobj:
-                stack.insert(0, (cobj[key], cobj_replacement, key))
-        traversal.insert(0, (cobj_replacement, cparent, ckey))
-
-    for titem in traversal:
-        cobj, cparent, ckey = titem
-        cparent[ckey] = cobj
-
-    return ret[0]
