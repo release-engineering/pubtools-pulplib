@@ -692,38 +692,24 @@ def test_can_load_erratum(data_path):
         references=[],
         pkglist=[],
         content_type_id="erratum",
-        container_list=frozenlist(
-            [
-                frozendict(
-                    {
-                        "e2e/test-operator-container": frozendict(
-                            {
-                                "digest": "sha256:2321a7d13d9fa53f05437663cf2dc217d15f3cda4b67076c941b10f0491cf9d7",
-                                "images": frozendict(
-                                    {
-                                        "docker-image-sha256:06d1c5e4fa6a5d1ff868388f3feadf193d04128b62d1181e37fe4ab8ecda27e1.s390x.tar.gz": frozendict(
-                                            {
-                                                "digest": "sha256:06d1c5e4fa6a5d1ff868388f3feadf193d04128b62d1181e37fe4ab8ecda27e1"
-                                            }
-                                        ),
-                                        "docker-image-sha256:05649a19718fde131372c761d359302ccbe81f9744d2893ac4c826b05d670206.ppc64le.tar.gz": frozendict(
-                                            {
-                                                "digest": "sha256:05649a19718fde131372c761d359302ccbe81f9744d2893ac4c826b05d670206"
-                                            }
-                                        ),
-                                        "docker-image-sha256:c2e3030306f71b94cbffe2d16fcebe6e14f2842ae26789926bcf1afeeecb5859.x86_64.tar.gz": frozendict(
-                                            {
-                                                "digest": "sha256:c2e3030306f71b94cbffe2d16fcebe6e14f2842ae26789926bcf1afeeecb5859"
-                                            }
-                                        ),
-                                    }
-                                ),
-                            }
-                        )
-                    }
-                )
-            ]
-        ),
+        container_list=[
+            {
+                "e2e/test-operator-container": {
+                    "digest": "sha256:2321a7d13d9fa53f05437663cf2dc217d15f3cda4b67076c941b10f0491cf9d7",
+                    "images": {
+                        "s390x": {
+                            "digest": "sha256:06d1c5e4fa6a5d1ff868388f3feadf193d04128b62d1181e37fe4ab8ecda27e1"
+                        },
+                        "ppc64le": {
+                            "digest": "sha256:05649a19718fde131372c761d359302ccbe81f9744d2893ac4c826b05d670206"
+                        },
+                        "x86_64": {
+                            "digest": "sha256:c2e3030306f71b94cbffe2d16fcebe6e14f2842ae26789926bcf1afeeecb5859"
+                        },
+                    },
+                }
+            }
+        ],
         repository_memberships=[
             "all-rpm-content",
             "rhel-8-for-aarch64-appstream-source-rpms__8_DOT_0",
