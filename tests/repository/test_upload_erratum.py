@@ -30,6 +30,7 @@ def test_upload_erratum(client, requests_mocker):
             )
         ],
         pkglist=[],
+        container_list=None,
     )
 
     # Set up the requests it'll do:
@@ -97,7 +98,10 @@ def test_upload_erratum(client, requests_mocker):
             "from": "noreply@example.com",
             "rights": "copyright bob",
             "summary": "A great advisory",
-            "pulp_user_metadata": {"content_types": ["rpm", "module"]},
+            "pulp_user_metadata": {
+                "content_types": ["rpm", "module"],
+                "container_list": [],
+            },
             "references": [
                 {
                     "href": "https://example.com/test-advisory",

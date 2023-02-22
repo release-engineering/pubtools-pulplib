@@ -1,9 +1,21 @@
+from frozenlist2 import frozenlist
+
 from .base import Unit, PulpObject, unit_type, schemaless_init
 
 from ..attr import pulp_attrib
 from ... import compat_attr as attr
-from ..validate import optional_bool, optional_list_of, optional_str, instance_of
-from ..convert import frozenlist_or_none_sorted_converter, frozenlist_or_none_converter
+from ..validate import (
+    optional_bool,
+    optional_list_of,
+    optional_str,
+    instance_of,
+    container_list_validator,
+)
+from ..convert import (
+    frozenlist_or_none_sorted_converter,
+    frozenlist_or_none_converter,
+    freeze_or_empty,
+)
 
 
 @attr.s(kw_only=True, frozen=True)
@@ -373,6 +385,15 @@ class ErratumUnit(Unit):
         validator=optional_list_of(ErratumPackageCollection),
     )
     """A list of package collections associated with the advisory."""
+
+    container_list = pulp_attrib(
+        type=frozenlist,
+        pulp_field="pulp_user_metadata.container_list",
+        converter=freeze_or_empty,
+        default=attr.Factory(frozenlist),
+        validator=container_list_validator(),
+    )
+    """A list of container images associated with the advisory."""
 
     content_type_id = pulp_attrib(
         default="erratum", type=str, pulp_field="_content_type_id"

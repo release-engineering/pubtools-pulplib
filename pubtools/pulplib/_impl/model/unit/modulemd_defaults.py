@@ -4,7 +4,7 @@ from ..attr import pulp_attrib
 from ... import compat_attr as attr
 from frozendict.core import frozendict  # pylint: disable=no-name-in-module
 from ..convert import frozenlist_or_none_sorted_converter, frozendict_or_none_converter
-from ..validate import optional_dict
+from ..validate import optional_frozendict
 
 
 @unit_type("modulemd_defaults")
@@ -28,7 +28,7 @@ class ModulemdDefaultsUnit(Unit):
         type=frozendict,
         pulp_field="profiles",
         default=None,
-        validator=optional_dict,
+        validator=optional_frozendict,
         converter=frozendict_or_none_converter,
     )
     """The profiles of this modulemd defaults unit."""
