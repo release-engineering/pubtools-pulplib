@@ -18,7 +18,7 @@ def test_container_list(data_path):
 
 
 def test_container_list_invalid(data_path):
-    """Provide invalid structure object to container_list attribute."""
+    """Test load of valid errata structure."""
 
     with open(
         os.path.join(data_path, "sample-erratum-invalid-container-list1.json"), "rt"
