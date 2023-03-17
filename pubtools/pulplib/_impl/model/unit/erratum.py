@@ -392,6 +392,7 @@ class ErratumUnit(Unit):
         converter=freeze_or_empty,
         default=attr.Factory(frozenlist),
         validator=container_list_validator(),
+        repr=False,
     )
     """A list of container images associated with the advisory."""
 
