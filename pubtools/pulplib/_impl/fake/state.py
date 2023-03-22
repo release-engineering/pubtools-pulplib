@@ -63,6 +63,10 @@ class FakeState(object):
         self.uuidgen = random.Random()
         self.uuidgen.seed(0)
         self.unitmaker = units.UnitMaker(self.seen_unit_ids)
+        # map of repo id => lock claims.
+        self.repo_locks = {}
+        # list containing lists of the lock state changes
+        self.repo_lock_history = []
 
     def insert_repo_units(self, repo_id, units_to_add):
         # Insert an iterable of units into a specific repo.
