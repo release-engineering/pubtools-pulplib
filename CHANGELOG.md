@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- n/a
+
+## [2.36.0] - 2023-03-23
+
+- Introduced advisory locking API, `Repository.lock`
+- Tweaked `__repr__` implementation for `ErratumUnit`
+
 ## [2.35.0] - 2023-03-01
 
 - Added new container_list attribute for Erratum unit
@@ -435,8 +442,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release to PyPI
 
-[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.35.0...HEAD
-[2.34.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.34.5...v2.35.0
+[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.36.0...HEAD
+[2.36.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.35.0...v2.36.0
+[2.35.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.34.5...v2.35.0
 [2.34.5]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.34.4...v2.34.5
 [2.34.4]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.34.3...v2.34.4
 [2.34.3]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.34.2...v2.34.3
