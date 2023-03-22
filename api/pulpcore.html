@@ -432,6 +432,40 @@ during the sync operation.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="pubtools.pulplib.Repository.lock">
+<span class="sig-name descname"><span class="pre">lock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository/base.html#Repository.lock"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Repository.lock" title="Permalink to this definition">¶</a></dt>
+<dd><p>Obtain an exclusive advisory lock on this repository.</p>
+<p>Returns a context manager representing the lock, intended to be used
+via a <cite>with</cite> statement. When the context is entered, the caller will
+wait until the lock can be acquired (or raise an exception if the lock
+can’t be acquired).</p>
+<p>Only a single <a class="reference internal" href="client.html#pubtools.pulplib.Client" title="pubtools.pulplib.Client"><code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code></a> is able to hold the lock
+on a repository at any given time. The lock does not prevent modifications
+to the repo with the Pulp API, and does not affect other Pulp client
+implementations or instances of <a class="reference internal" href="client.html#pubtools.pulplib.Client" title="pubtools.pulplib.Client"><code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code></a> not
+using the <cite>lock</cite> method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>context</strong> – <p>A short description of the task being carried out with the lock.</p>
+<p>This value will be added to the lock in the repo and may be
+used for debugging.</p>
+</p></li>
+<li><p><strong>duration</strong> – <p>Maximum duration of the lock, in seconds.</p>
+<p>This value is used only if this client fails to release the
+lock (for example, because the current process is killed).
+In this case, the duration will be used by other clients in
+order to detect and release stale locks, avoiding a deadlock.</p>
+<p>There is no way to extend the duration of an acquired lock,
+so the caller should always ensure they request a <cite>duration</cite>
+high enough to cover the entire expected lifetime of the lock.</p>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="pubtools.pulplib.Repository.remove_content">
 <span class="sig-name descname"><span class="pre">remove_content</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">criteria</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/repository/base.html#Repository.remove_content"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Repository.remove_content" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove all content of requested types from this repository.</p>
