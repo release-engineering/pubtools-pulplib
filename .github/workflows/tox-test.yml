@@ -82,7 +82,7 @@ jobs:
         with:
           python-version: 3.8
       - name: Install Tox
-        run: pip install tox
+        run: pip install tox 'virtualenv<20.21.1'
       - name: Run Tox
         run: tox -e py3-bandit-exitzero
   bandit:
@@ -96,6 +96,6 @@ jobs:
         with:
           python-version: 3.8
       - name: Install Tox
-        run: pip install tox
+        run: pip install tox 'virtualenv<20.21.1'
       - name: Run Tox
         run: tox -e py3-bandit
