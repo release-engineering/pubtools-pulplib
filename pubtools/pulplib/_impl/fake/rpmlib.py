@@ -11,14 +11,13 @@ except Exception as ex:  # pragma: no cover, pylint: disable=broad-except
     #
     # Why: because there's no officially supported method of getting RPM bindings
     # in place by "pip install", making the dependency tricky on some environments.
-    # rpm-py-installer can often be used, so we provide that hint as we crash,
+    # rpmdyn can often be used, so we provide that hint as we crash,
     # but it's not appropriate to unconditionally depend on that.
     exception = ex
 
     def broken(*_args, **_kwargs):
         raise RuntimeError(
-            "kobo.rpmlib is not available\n"
-            + "Hint: consider 'pip install rpm-py-installer'"
+            "kobo.rpmlib is not available\nHint: consider 'pip install rpmdyn'"
         ) from exception
 
     get_rpm_header = broken
