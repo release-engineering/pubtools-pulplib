@@ -14,7 +14,7 @@ jobs:
         with:
           python-version: 3.8
       - name: Install Tox
-        run: pip install tox 'virtualenv<20.21.1'
+        run: pip install tox
       - name: Run Tox
         run: tox -e static
   pidiff:
@@ -42,7 +42,7 @@ jobs:
         with:
           python-version: 3.8
       - name: Install Tox
-        run: pip install tox 'virtualenv<20.21.1'
+        run: pip install tox
       - name: Run Tox
         run: tox -e cov
 
@@ -82,7 +82,7 @@ jobs:
         with:
           python-version: 3.8
       - name: Install Tox
-        run: pip install tox 'virtualenv<20.21.1'
+        run: pip install tox
       - name: Run Tox
         run: tox -e py3-bandit-exitzero
   bandit:
@@ -96,6 +96,6 @@ jobs:
         with:
           python-version: 3.8
       - name: Install Tox
-        run: pip install tox 'virtualenv<20.21.1'
+        run: pip install tox
       - name: Run Tox
         run: tox -e py3-bandit

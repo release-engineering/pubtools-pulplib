@@ -3,5 +3,5 @@ requests-mock
 mock
 kobo
 koji
-rpm-py-installer
+rpmdyn
 bandit==1.7.5
