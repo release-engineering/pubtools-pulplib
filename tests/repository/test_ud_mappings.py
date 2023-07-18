@@ -29,12 +29,10 @@ def test_publish_update_mappings(fast_poller, requests_mocker, client, caplog):
                     # Define some mappings so there's a mix of data needing
                     # an update and data needing no update.
                     {
+                        "0.0": [{"filename": "file0", "order": 0}],
                         "1.0": [{"filename": "file1", "order": 3.0}],
                         "3.0": [{"filename": "file3", "order": 1234}],
                         "4.0": [{"filename": "file4", "order": 0}],
-                        "some-other-version": [
-                            {"filename": "whatever-file", "order": "abc", "foo": "bar"}
-                        ],
                     }
                 )
             },
@@ -163,6 +161,7 @@ def test_publish_update_mappings(fast_poller, requests_mocker, client, caplog):
 
     # It should be equal to this:
     assert mapping == {
+        # "0.0": [{"filename": "file0", "order": 0}] was removed
         "1.0": [
             # This file wasn't changed
             {"filename": "file1", "order": 3.0},
@@ -178,11 +177,6 @@ def test_publish_update_mappings(fast_poller, requests_mocker, client, caplog):
         # Also, order field is omitted because none was in the data, but
         # the version and file still must be written.
         "6.0": [{"filename": "file6"}],
-        # This is some unrelated junk which should be left alone during the
-        # update process.
-        "some-other-version": [
-            {"filename": "whatever-file", "foo": "bar", "order": "abc"}
-        ],
     }
 
     # It should have logged that this happened
@@ -209,7 +203,6 @@ def test_publish_update_mappings_noop(fast_poller, requests_mocker, client):
                             {"filename": "file1", "order": 3.0},
                             {"filename": "file2", "order": 6.0},
                         ],
-                        "other": ["whatever"],
                     }
                 )
             },

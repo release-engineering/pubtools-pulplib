@@ -17,19 +17,20 @@ UD_MAPPINGS_NOTE = os.getenv("PULP_UD_MAPPINGS_NOTE") or "ud_file_release_mappin
 class MappingsHelper(object):
     """A wrapper for the raw release mappings dict.
 
-    This wrapper provides a utility function for adding items to the dict
+    This wrapper provides a utility function for adding and removing items from the dict
     while keeping track of whether any changes have been made.
     """
 
     def __init__(self, data):
         self._data = data
+        self.filenames_from_pulp = []  # Files for which the mapping should exist.
         self.changed = False
 
     def set_file_mapping(self, version, filename, order):
         """Ensure a mapping exists in the dict for a given
         version, filename & order.
 
-        order can be None if no specific order is required.
+        Order can be None if no specific order is required.
 
         Sets self.changed to True if any changes occur.
         """
@@ -87,6 +88,19 @@ class MappingsHelper(object):
 
         file_dict["order"] = order
         self.changed = True
+
+    def remove_file_mappings(self):
+        """Remove mappings for filenames that are not in Pulp."""
+        for version in set(self._data):
+            file_list = self._data[version]
+            for i in reversed(range(len(file_list))):
+                if file_list[i].get("filename") not in self.filenames_from_pulp:
+                    del file_list[i]
+                    self.changed = True
+            # Remove empty version fields.
+            if not self._data[version]:
+                del self._data[version]
+                self.changed = True
 
     @property
     def as_json(self):
@@ -164,17 +178,23 @@ def upload_changed_mappings(mappings, repo, repo_url, do_request):
 
 
 def update_mappings_for_files(mappings, file_page):
-    # Updates mappings for every file in a single page, plus all
-    # following pages (async).
+    # Add missing mappings for every file in a single page, plus all
+    # following pages (async). Once all pages have been processed,
+    # obsolete mappings are removed.
     #
     # Returns Future[mappings] once all pages are processed.
 
     for unit in file_page.data:
         version = unit.version
         if version:
+            # Add missing mappings
             mappings.set_file_mapping(version, unit.path, unit.display_order)
+            # Save all the files for which the mapping should exist
+            mappings.filenames_from_pulp.append(unit.path)
 
     if not file_page.next:
+        # All pages have been processed, remove mappings for files which were not listed.
+        mappings.remove_file_mappings()
         # No more files, just return the mappings
         return f_return(mappings)
 
