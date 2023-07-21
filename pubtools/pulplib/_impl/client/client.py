@@ -941,7 +941,11 @@ class Client(object):
     def _new_session(self):
         out = requests.Session()
         for key, value in self._session_kwargs.items():
-            setattr(out, key, value)
+            # Special case for headers update as requests module already populates some defaults
+            if key == "headers":
+                out.headers.update(value)
+            else:
+                setattr(out, key, value)
         return out
 
     def _do_request(self, **kwargs):
