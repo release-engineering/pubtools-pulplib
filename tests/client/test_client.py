@@ -41,6 +41,14 @@ def test_can_construct_with_session_args(requests_mocker):
     client = Client("https://pulp.example.com/", auth=("x", "y"), verify=False)
 
 
+def test_construct_updates_headers(requests_mocker):
+    """A client instance updates the default requests.Session headers."""
+    client = Client("https://pulp.example.com/", headers={"x": "y"})
+
+    # It should contain the passed header, but it should not be the only header
+    assert client._session.headers["x"] == "y" and len(client._session.headers) > 1
+
+
 def test_construct_raises_on_bad_args(requests_mocker):
     """A client instance cannot be constructed with unexpected args."""
     with pytest.raises(TypeError):
