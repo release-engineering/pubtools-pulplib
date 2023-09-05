@@ -332,6 +332,13 @@ class Repository(PulpObject, Deletable):
     .. versionadded:: 2.34.0
     """
 
+    provisioning = pulp_attrib(default=None, type=bool, pulp_field="notes.provisioning")
+    """Flag indicating whether the repository is currently in process of creation
+    and provisioning to other tools outside of Pulp.
+
+    .. versionadded:: 2.37.0
+    """
+
     @distributors.validator
     def _check_repo_id(self, _, value):
         # checks if distributor's repository id is same as the repository it
