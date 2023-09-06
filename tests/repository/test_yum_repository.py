@@ -70,18 +70,20 @@ def test_populate_attrs():
                 "include_in_download_service": "True",
                 "include_in_download_service_preview": "True",
                 "population_sources": ["populate_repo1", "populate_repo2"],
-                "ubi_population": True,
+                "provisioning": True,
                 "ubi_config_version": "fake_ubi_config_version",
+                "ubi_population": True,
             },
             "distributors": [],
         }
     )
-    assert repo.population_sources == ["populate_repo1", "populate_repo2"]
-    assert repo.ubi_population
     assert repo.content_set == "fake_content_set"
-    assert repo.ubi_config_version == "fake_ubi_config_version"
     assert repo.include_in_download_service
     assert repo.include_in_download_service_preview
+    assert repo.population_sources == ["populate_repo1", "populate_repo2"]
+    assert repo.provisioning
+    assert repo.ubi_config_version == "fake_ubi_config_version"
+    assert repo.ubi_population
 
 
 def test_productid_attrs():
