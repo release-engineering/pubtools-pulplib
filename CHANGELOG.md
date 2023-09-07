@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - n/a
 
+## [2.37.0] - 2023-09-07
+
+- Added `provisioning` attribute to `Repository` class
+- Added delete capability for the `ud_file_release_mappings_2` repo note
+- Default headers for `Client` are retained, if not explicitly passed
+
 ## [2.36.1] - 2023-04-04
 
 - Restored compatibility with `attrs<18.2` (earlier dropped in v2.34.5)
@@ -446,7 +452,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release to PyPI
 
-[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.36.1...HEAD
+[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.37.0...HEAD
+[2.37.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.36.1...v2.37.0
 [2.36.1]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.36.0...v2.36.1
 [2.36.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.35.0...v2.36.0
 [2.35.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.34.5...v2.35.0
