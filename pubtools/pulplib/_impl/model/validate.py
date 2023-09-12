@@ -1,33 +1,15 @@
 from frozenlist2 import frozenlist
 
 from frozendict.core import frozendict  # pylint: disable=no-name-in-module
-from ..compat_attr import validators, s, ib
+from ..compat_attr import Factory, validators, s, ib
 
+optional = validators.optional
 instance_of = validators.instance_of
 
-optional_str = instance_of((str,) + (type(None),))
-optional_bool = instance_of((bool, type(None)))
-optional_dict = instance_of((dict, type(None)))
-optional_frozendict = instance_of((frozendict, type(None)))
-
-# This is a workaround for the absence of deep_iterable on older attr.
-# Drop it when the legacy environment is no longer required.
-class OptionalListValidator(object):
-    def __init__(self, member_validator):
-        self.list_validator = instance_of(list)
-        self.member_validator = member_validator
-
-    def __call__(self, inst, attr, value):
-        if value is None:
-            # OK, no more validation
-            return
-
-        # We have a non-None value - it should be a list
-        self.list_validator(inst, attr, value)
-
-        # Validate every element
-        for elem in value:
-            self.member_validator(inst, attr, elem)
+optional_str = optional(instance_of(str))
+optional_bool = optional(instance_of(bool))
+optional_dict = optional(instance_of(dict))
+optional_frozendict = optional(instance_of(frozendict))
 
 
 @s(frozen=True, slots=True, hash=True)
@@ -37,7 +19,7 @@ class NamedMappingValidator:
             value_validator=validators.is_callable(),
             key_validator=validators.instance_of(str),
         ),
-        factory=dict,
+        default=Factory(dict),
     )
     type_ = ib(default=dict)
 
@@ -102,4 +84,6 @@ def container_list_validator():
 
 
 def optional_list_of(elem_types):
-    return OptionalListValidator(instance_of(elem_types))
+    return optional(
+        validators.deep_iterable(instance_of(elem_types), instance_of(list))
+    )
