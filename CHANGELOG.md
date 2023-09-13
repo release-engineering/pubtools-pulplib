@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - n/a
 
+## [2.37.1] - 2023-09-13
+
+- Added backports of `is_callable`, `deep_iterable` and `deep_mapping` validators for `attrs<19.1`
+
 ## [2.37.0] - 2023-09-07
 
 - Added `provisioning` attribute to `Repository` class
@@ -452,7 +456,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release to PyPI
 
-[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.37.0...HEAD
+[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.37.1...HEAD
+[2.37.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.37.0...v2.37.1
 [2.37.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.36.1...v2.37.0
 [2.36.1]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.36.0...v2.36.1
 [2.36.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.35.0...v2.36.0
