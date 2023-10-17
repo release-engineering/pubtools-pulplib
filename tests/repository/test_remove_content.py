@@ -251,6 +251,38 @@ def test_remove_with_criteria(fast_poller, requests_mocker, client):
     }
 
 
+def test_remove_with_limit(fast_poller, requests_mocker, client):
+    """Remove succeeds when given a critria/filter for removal"""
+    repo = Repository(id="some-repo")
+    repo.__dict__["_client"] = client
+
+    requests_mocker.post(
+        "https://pulp.example.com/pulp/api/v2/repositories/some-repo/actions/unassociate/",
+        [
+            {"json": {"spawned_tasks": [{"task_id": "task1"}]}},
+        ],
+    )
+
+    requests_mocker.post(
+        "https://pulp.example.com/pulp/api/v2/tasks/search/",
+        [
+            {"json": [{"task_id": "task1", "state": "finished"}]},
+        ],
+    )
+
+    assert repo.remove_content(type_ids=["type1", "type2"], limit=1).result() == [
+        Task(id="task1", completed=True, succeeded=True)
+    ]
+
+    # It should have included the limit in the post request
+    assert requests_mocker.request_history[0].json() == {
+        "criteria": {
+            "type_ids": ["type1", "type2"],
+            "limit": 1,
+        }
+    }
+
+
 def test_remove_fail_without_type_id(fast_poller, client):
     """Remove fails when a critria is provided without unit type"""
     repo = Repository(id="some-repo")

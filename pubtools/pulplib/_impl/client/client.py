@@ -775,7 +775,7 @@ class Client(object):
             self._do_request, method="POST", url=url, json=body
         )
 
-    def _do_unassociate(self, repo_id, criteria=None):
+    def _do_unassociate(self, repo_id, criteria=None, limit=None):
         url = os.path.join(
             self._url, "pulp/api/v2/repositories/%s/actions/unassociate/" % repo_id
         )
@@ -799,6 +799,9 @@ class Client(object):
                 )
             else:
                 body["criteria"]["filters"] = {"unit": pulp_search.filters}
+
+        if limit:
+            body["criteria"]["limit"] = limit
 
         LOG.debug("Submitting %s unassociate: %s", url, body)
 

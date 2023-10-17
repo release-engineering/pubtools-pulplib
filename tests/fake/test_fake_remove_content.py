@@ -30,6 +30,37 @@ def test_can_remove_empty():
     assert not task.units
 
 
+def test_limited_remove_content():
+    """repo.remove() can remove a limited number of units."""
+    controller = FakeController()
+    client = controller.client
+
+    rpm_units = [
+        RpmUnit(name="gliba", version="1.0", release="1", arch="x86_64"),
+        RpmUnit(name="glibb", version="1.0", release="1", arch="x86_64"),
+        RpmUnit(name="glibc", version="1.0", release="1", arch="x86_64"),
+        RpmUnit(name="glibd", version="1.0", release="1", arch="x86_64"),
+    ]
+
+    repo = YumRepository(id="repo1")
+    controller.insert_repository(repo)
+    controller.insert_units(repo, rpm_units)
+
+    remove_rpms = client.get_repository("repo1").remove_content(
+        type_ids=["rpm"], limit=3
+    )
+
+    assert len(remove_rpms) == 1
+    task = remove_rpms[0]
+
+    # It should have completed successfully
+    assert task.completed
+    assert task.succeeded
+
+    # It should have removed (only) RPM units
+    assert len(task.units) == 3
+
+
 def test_can_remove_content():
     """repo.remove() succeeds and removes expected units inserted via controller."""
     controller = FakeController()
