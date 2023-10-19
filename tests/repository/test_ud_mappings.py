@@ -73,7 +73,6 @@ def test_publish_update_mappings(fast_poller, requests_mocker, client, caplog):
                             "name": "file3",
                             "size": 1,
                             "checksum": "cd293be6cea034bd45a0352775a219ef5dc7825ce55d1f7dae9762d80ce64411",
-                            "pulp_user_metadata": {"version": "3.0"},
                         }
                     },
                 ]
@@ -169,7 +168,7 @@ def test_publish_update_mappings(fast_poller, requests_mocker, client, caplog):
             {"filename": "file5", "order": 4.5},
         ],
         # This wasn't touched because, although the repo has the file, it has no
-        # defined order
+        # defined version or order
         "3.0": [{"filename": "file3", "order": 1234}],
         # This was updated
         "4.0": [{"filename": "file4", "order": -2.0}],

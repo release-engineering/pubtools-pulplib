@@ -185,12 +185,12 @@ def update_mappings_for_files(mappings, file_page):
     # Returns Future[mappings] once all pages are processed.
 
     for unit in file_page.data:
+        # Save all the files for which the mapping should exist
+        mappings.filenames_from_pulp.append(unit.path)
         version = unit.version
         if version:
             # Add missing mappings
             mappings.set_file_mapping(version, unit.path, unit.display_order)
-            # Save all the files for which the mapping should exist
-            mappings.filenames_from_pulp.append(unit.path)
 
     if not file_page.next:
         # All pages have been processed, remove mappings for files which were not listed.
