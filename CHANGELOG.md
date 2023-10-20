@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - n/a
 
+## [2.37.2] - 2023-10-20
+
+- Fixed handling of `ud_file_release_mappings_2` repo note
+
 ## [2.37.1] - 2023-09-13
 
 - Added backports of `is_callable`, `deep_iterable` and `deep_mapping` validators for `attrs<19.1`
@@ -456,7 +460,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release to PyPI
 
-[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.37.1...HEAD
+[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.37.2...HEAD
+[2.37.2]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.37.1...v2.37.2
 [2.37.1]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.37.0...v2.37.1
 [2.37.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.36.1...v2.37.0
 [2.36.1]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.36.0...v2.36.1
