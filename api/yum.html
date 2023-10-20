@@ -155,7 +155,7 @@ worse impact than publishing metadata without the corresponding RPMs).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>file_obj</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>file object</em>) – <p>If it’s a string, then it’s the path of an RPM to upload.</p>
+<li><p><strong>file_obj</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>file object</em>) – <p>If it’s a string, then it’s the path of an RPM to upload.</p>
 <p>Otherwise, it should be a
 <a class="reference external" href="https://docs.python.org/3/glossary.html#term-file-object">file-like object</a>
 pointing at the bytes to upload.
@@ -200,7 +200,7 @@ repo is published.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>file_obj</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>file object</em>) – <p>If it’s a string, then it’s the path of a file to upload.</p>
+<li><p><strong>file_obj</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>file object</em>) – <p>If it’s a string, then it’s the path of a file to upload.</p>
 <p>Otherwise, it should be a
 <a class="reference external" href="https://docs.python.org/3/glossary.html#term-file-object">file-like object</a>
 pointing at the bytes to upload.
@@ -208,7 +208,7 @@ The client takes ownership of this file object; it should
 not be modified elsewhere, and will be closed when upload
 completes.</p>
 </p></li>
-<li><p><strong>metadata_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – <p>Identifies the type of metadata being uploaded.</p>
+<li><p><strong>metadata_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – <p>Identifies the type of metadata being uploaded.</p>
 <p>This is an arbitrary string which will be reproduced in the yum
 repo metadata on publish. The appropriate value depends on the
 type of data being uploaded. For example, <code class="docutils literal notranslate"><span class="pre">&quot;productid&quot;</span></code> should
@@ -249,7 +249,7 @@ repository. On current versions of Pulp 2.x, this means only:</p>
 <p>Attempting to use other document types may result in an error.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>file_obj</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>file object</em>) – <p>If it’s a string, then it’s the path of a modulemd YAML
+<dd class="field-odd"><p><strong>file_obj</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>file object</em>) – <p>If it’s a string, then it’s the path of a modulemd YAML
 file to upload.</p>
 <p>Otherwise, it should be a
 <a class="reference external" href="https://docs.python.org/3/glossary.html#term-file-object">file-like object</a>
@@ -299,7 +299,7 @@ data</em>. It’s recommended to avoid publishing a repository in this state.</p
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>file_obj</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>file object</em>) – <p>If it’s a string, then it’s the path of a comps XML
+<dd class="field-odd"><p><strong>file_obj</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>file object</em>) – <p>If it’s a string, then it’s the path of a comps XML
 file to upload.</p>
 <p>Otherwise, it should be a
 <a class="reference external" href="https://docs.python.org/3/glossary.html#term-file-object">file-like object</a>
@@ -567,7 +567,7 @@ accessed.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pubtools.pulplib.RpmUnit.cdn_published">
 <span class="sig-name descname"><span class="pre">cdn_published</span></span><a class="headerlink" href="#pubtools.pulplib.RpmUnit.cdn_published" title="Permalink to this definition">¶</a></dt>
-<dd><p>Approximate <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a> in UTC at which this RPM first
+<dd><p>Approximate <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a> in UTC at which this RPM first
 became available at <code class="docutils literal notranslate"><span class="pre">cdn_path</span></code>, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if this information is
 unavailable.</p>
 <p>This field is <strong>mutable</strong> and may be set by
@@ -940,7 +940,7 @@ but must be unique within an advisory.</p>
 <dd><p>List of packages within this collection.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)">list</a>[<a class="reference internal" href="#pubtools.pulplib.ErratumPackage" title="pubtools.pulplib.ErratumPackage">ErratumPackage</a>]</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)">list</a>[<a class="reference internal" href="#pubtools.pulplib.ErratumPackage" title="pubtools.pulplib.ErratumPackage">ErratumPackage</a>]</p>
 </dd>
 </dl>
 </dd></dl>
