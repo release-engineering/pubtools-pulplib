@@ -404,7 +404,7 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
 
         return out
 
-    def _do_unassociate(self, repo_id, criteria=None):
+    def _do_unassociate(self, repo_id, criteria=None, limit=None):
         repo_f = self.get_repository(repo_id)
         if repo_f.exception():
             return repo_f
@@ -431,7 +431,9 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
 
             for unit_with_key in units_with_key:
                 unit = unit_with_key["unit"]
-                if match_object(criteria, unit):
+                if match_object(criteria, unit) and (
+                    not limit or len(removed_units) < limit
+                ):
                     removed_units.add(unit)
                 else:
                     kept_keys.add(unit_with_key["key"])

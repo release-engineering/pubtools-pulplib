@@ -652,6 +652,10 @@ class Repository(PulpObject, Deletable):
                 be removed.
                 If criteria is omitted, all the content will be removed.
 
+            limit (None, int)
+                Limit the maximum number of units that will be disassociated by
+                pulp.
+
         Returns:
             Future[list[:class:`~pubtools.pulplib.Task`]]
                 A future which is resolved when content has been removed.
@@ -696,7 +700,13 @@ class Repository(PulpObject, Deletable):
                     Matcher.in_(type_ids),  # Criteria.with_field_in is deprecated
                 )
 
-        return f_proxy(self._client._do_unassociate(self.id, criteria=criteria))
+        return f_proxy(
+            self._client._do_unassociate(
+                self.id,
+                criteria=criteria,
+                limit=kwargs.get("limit"),
+            )
+        )
 
     @classmethod
     def from_data(cls, data):
