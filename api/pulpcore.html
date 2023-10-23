@@ -480,12 +480,16 @@ high enough to cover the entire expected lifetime of the lock.</p>
 <dd><p>Remove all content of requested types from this repository.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>criteria</strong> (<a class="reference internal" href="searching.html#pubtools.pulplib.Criteria" title="pubtools.pulplib.Criteria"><code class="xref py py-class docutils literal notranslate"><span class="pre">Criteria</span></code></a>) – <p>A criteria object used to filter the contents for removal.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>criteria</strong> (<a class="reference internal" href="searching.html#pubtools.pulplib.Criteria" title="pubtools.pulplib.Criteria"><code class="xref py py-class docutils literal notranslate"><span class="pre">Criteria</span></code></a>) – <p>A criteria object used to filter the contents for removal.</p>
 <p>Type IDs must be included in the criteria with any other filters.
 If omitted, filter criteria will be ignored and all the content will
 be removed.
 If criteria is omitted, all the content will be removed.</p>
-</p>
+</p></li>
+<li><p><strong>limit</strong> (<em>None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – Limit the maximum number of units that will be disassociated by
+pulp.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl>

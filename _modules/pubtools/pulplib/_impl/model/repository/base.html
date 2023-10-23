@@ -683,6 +683,10 @@
 <span class="sd">                be removed.</span>
 <span class="sd">                If criteria is omitted, all the content will be removed.</span>
 
+<span class="sd">            limit (None, int)</span>
+<span class="sd">                Limit the maximum number of units that will be disassociated by</span>
+<span class="sd">                pulp.</span>
+
 <span class="sd">        Returns:</span>
 <span class="sd">            Future[list[:class:`~pubtools.pulplib.Task`]]</span>
 <span class="sd">                A future which is resolved when content has been removed.</span>
@@ -727,7 +731,13 @@
                     <span class="n">Matcher</span><span class="o">.</span><span class="n">in_</span><span class="p">(</span><span class="n">type_ids</span><span class="p">),</span>  <span class="c1"># Criteria.with_field_in is deprecated</span>
                 <span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">f_proxy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_do_unassociate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">criteria</span><span class="o">=</span><span class="n">criteria</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="n">f_proxy</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_do_unassociate</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                <span class="n">criteria</span><span class="o">=</span><span class="n">criteria</span><span class="p">,</span>
+                <span class="n">limit</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;limit&quot;</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="p">)</span></div>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
