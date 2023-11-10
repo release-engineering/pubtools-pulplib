@@ -42,7 +42,9 @@ class FileRepository(Repository):
     )
 
     mutable_urls = attr.ib(
-        default=attr.Factory(lambda: frozenlist(["PULP_MANIFEST"])),
+        default=attr.Factory(
+            lambda: frozenlist(["PULP_MANIFEST", "PULP_MANIFEST.asc"])
+        ),
         type=list,
         converter=frozenlist,
     )
