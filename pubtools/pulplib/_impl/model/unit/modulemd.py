@@ -9,7 +9,7 @@ from ..convert import (
     frozenlist_or_none_sorted_converter,
     frozendict_or_none_converter,
 )
-from ..validate import optional_list_of, optional_dict
+from ..validate import optional_list_of, optional_frozendict
 
 
 @attr.s(kw_only=True, frozen=True)
@@ -136,7 +136,7 @@ class ModulemdUnit(Unit):
         type=dict,
         pulp_field="profiles",
         default=None,
-        validator=optional_dict,
+        validator=optional_frozendict,
         converter=frozendict_or_none_converter,
     )
     """The profiles of this modulemd unit."""
