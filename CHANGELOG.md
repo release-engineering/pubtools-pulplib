@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - n/a
 
+## [2.38.1] - 2023-12-14
+
+- Added `PULP_MANIFEST.asc` to `mutable_urls` of `FileRepository`
+- Fixed `validator` for `ModulemdUnit.profiles`
+
 ## [2.38.0] - 2023-10-23
 
 - Added `limit` option for `Repository.remove_content()` method
@@ -464,7 +469,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release to PyPI
 
-[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.38.0...HEAD
+[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.38.1...HEAD
+[2.38.1]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.38.0...v2.38.1
 [2.38.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.37.2...v2.38.0
 [2.37.2]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.37.1...v2.37.2
 [2.37.1]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.37.0...v2.37.1
