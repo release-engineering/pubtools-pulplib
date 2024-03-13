@@ -278,7 +278,7 @@ class Client(object):
                 Each page will contain a collection of
                 :class:`~pubtools.pulplib.Repository` objects.
         """
-        search_options = {"distributors": True}
+        search_options = {"distributors": True, "importers": True}
         return self._search(
             Repository, "repositories", criteria=criteria, search_options=search_options
         )
@@ -1054,3 +1054,80 @@ class Client(object):
         return self._task_executor.submit(
             self._do_request, method="POST", url=url, json=body
         )
+
+    def create_repository(self, repo):
+        """Create a repository with initial data provided in the
+           argument. Importer for repository is automatically associated
+           if available. If repository already exists, warning is logged.
+           After repository has been successfully created or if repository already exists,
+           it is checked if expected and current repository configuration values are
+           correct.
+
+        Args:
+            repo (:class:`~pubtools.pulplib.Repository`)
+                A repository object used for creation.
+
+        Returns:
+            Future[Repository]
+                A future which is resolved with a value of ``Repository`` once the
+                repository has been created.
+
+        .. versionadded:: 2.39.0
+        """
+        url = os.path.join(self._url, "pulp/api/v2/repositories/")
+
+        body = repo._to_data()
+        repo_id = body["id"]
+
+        importer = body.pop("importers", [])
+        body["importer_type_id"] = importer[0]["importer_type_id"] if importer else None
+        body["importer_config"] = importer[0]["config"] if importer else None
+
+        def log_existing_repo(exception):
+            if (
+                getattr(exception, "response", None) is not None
+                and exception.response.status_code == 409
+            ):
+                LOG.warning("Repository %s already exists", repo_id)
+                return None
+
+            raise exception
+
+        def check_repo(repo_on_server):
+            try:
+                assert (
+                    repo_on_server == repo
+                ), "Repo exists on server with unexpected values"
+            except AssertionError:
+                if importer:
+                    for attr in ["type_id", "config"]:
+                        expected = getattr(repo.importer, attr)
+                        current = getattr(repo_on_server.importer, attr)
+                        if expected != current:
+                            LOG.error(
+                                "Repository %s contains wrong importer %s\n"
+                                "\t expected: %s\n"
+                                "\t current: %s\n",
+                                repo_id,
+                                attr,
+                                expected,
+                                current,
+                            )
+                LOG.exception(
+                    "Repository %s exists on server and contains unexpected values",
+                    repo_id,
+                )
+                raise
+
+            return f_return(repo_on_server)
+
+        LOG.debug("Creating repository %s", repo_id)
+        out = self._request_executor.submit(
+            self._do_request, method="POST", url=url, json=body
+        )
+
+        out = f_map(out, error_fn=log_existing_repo)
+        out = f_flat_map(out, lambda _: self.get_repository(repo_id))
+        out = f_flat_map(out, check_repo)
+
+        return f_proxy(out)

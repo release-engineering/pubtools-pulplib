@@ -651,3 +651,12 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
             self._state.sync_history.append(Sync(repo_f.result(), [task], sync_config))
 
         return f_return([task])
+
+    def create_repository(self, repo):
+        with self._state.lock:
+            if repo.id not in [
+                existing_repo.id for existing_repo in self._state.repositories
+            ]:
+                self._state.repositories.append(repo)
+
+        return self.get_repository(repo.id)

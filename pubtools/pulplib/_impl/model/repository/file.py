@@ -4,13 +4,23 @@ import logging
 from attr import validators
 from frozenlist2 import frozenlist
 
-from .base import Repository, SyncOptions, repo_type
+from .base import Repository, SyncOptions, repo_type, Importer
 from ...model.unit import FileUnit
 from ..attr import pulp_attrib
 from ... import compat_attr as attr
 
 
 LOG = logging.getLogger("pubtools.pulplib")
+
+
+@attr.s(kw_only=True, frozen=True)
+class FileImporter(Importer):
+    type_id = pulp_attrib(
+        default="iso_importer", type=str, pulp_field="importer_type_id"
+    )
+    """
+    Specific importer_type_id for File repositories.
+    """
 
 
 @attr.s(kw_only=True, frozen=True)
@@ -48,6 +58,19 @@ class FileRepository(Repository):
         type=list,
         converter=frozenlist,
     )
+
+    importer = pulp_attrib(
+        default=FileImporter(),
+        type=FileImporter,
+        pulp_field="importers",
+        pulp_py_converter=FileImporter._from_data,
+        py_pulp_converter=FileImporter._to_data,
+    )
+    """
+    An object of :class:`~pubtools.pulplib.FileImporter` that is associated with the repository.
+
+    .. versionadded:: 2.39.0 
+    """
 
     def upload_file(self, file_obj, relative_url=None, **kwargs):
         """Upload a file to this repository.

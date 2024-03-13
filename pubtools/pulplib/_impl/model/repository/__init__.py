@@ -1,4 +1,4 @@
-from .base import Repository, PublishOptions, SyncOptions
+from .base import Repository, PublishOptions, SyncOptions, Importer
 from .container import ContainerImageRepository, ContainerSyncOptions
-from .yum import YumRepository, YumSyncOptions
-from .file import FileRepository, FileSyncOptions
+from .yum import YumRepository, YumSyncOptions, YumImporter
+from .file import FileRepository, FileSyncOptions, FileImporter

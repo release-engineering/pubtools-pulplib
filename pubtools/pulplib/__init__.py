@@ -31,5 +31,8 @@ from ._impl.model import (
     Task,
     MaintenanceReport,
     MaintenanceEntry,
+    Importer,
+    YumImporter,
+    FileImporter,
 )
 from ._impl.fake import FakeController

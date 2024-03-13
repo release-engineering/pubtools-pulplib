@@ -9,6 +9,9 @@ from .repository import (
     FileSyncOptions,
     ContainerSyncOptions,
     YumSyncOptions,
+    Importer,
+    FileImporter,
+    YumImporter,
 )
 from .unit import (
     Unit,

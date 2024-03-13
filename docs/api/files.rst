@@ -14,6 +14,8 @@ Repository
 .. autoclass:: pubtools.pulplib.FileSyncOptions()
    :members:
 
+.. autoclass:: pubtools.pulplib.FileImporter()
+   :members:
 
 Units
 -----

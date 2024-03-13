@@ -139,15 +139,3 @@ class Unit(PulpObject):
             )
 
         return out
-
-
-def schemaless_init(cls, data):
-    # Construct and return an instance of (attrs-using) cls from
-    # pulp data, where data in pulp has no schema at all (and hence
-    # every field could possibly be missing).
-    kwargs = {}
-    for key in [fld.name for fld in attr.fields(cls)]:
-        if key in data:
-            kwargs[key] = data[key]
-
-    return cls(**kwargs)

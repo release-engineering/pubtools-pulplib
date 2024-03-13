@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- n/a
+- Added `Client.create_repository()` method
 
 ## [2.38.1] - 2023-12-14
 
