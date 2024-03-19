@@ -309,7 +309,7 @@
 <span class="sd">                Each page will contain a collection of</span>
 <span class="sd">                :class:`~pubtools.pulplib.Repository` objects.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">search_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;distributors&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+        <span class="n">search_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;distributors&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;importers&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_search</span><span class="p">(</span>
             <span class="n">Repository</span><span class="p">,</span> <span class="s2">&quot;repositories&quot;</span><span class="p">,</span> <span class="n">criteria</span><span class="o">=</span><span class="n">criteria</span><span class="p">,</span> <span class="n">search_options</span><span class="o">=</span><span class="n">search_options</span>
         <span class="p">)</span></div>
@@ -1084,7 +1084,84 @@
         <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Syncing repository </span><span class="si">%s</span><span class="s2"> with feed </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">repo_id</span><span class="p">,</span> <span class="n">sync_options</span><span class="p">[</span><span class="s2">&quot;feed&quot;</span><span class="p">])</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task_executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_do_request</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">body</span>
-        <span class="p">)</span></div>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="Client.create_repository"><a class="viewcode-back" href="../../../../../api/client.html#pubtools.pulplib.Client.create_repository">[docs]</a>    <span class="k">def</span> <span class="nf">create_repository</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repo</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a repository with initial data provided in the</span>
+<span class="sd">           argument. Importer for repository is automatically associated</span>
+<span class="sd">           if available. If repository already exists, warning is logged.</span>
+<span class="sd">           After repository has been successfully created or if repository already exists,</span>
+<span class="sd">           it is checked if expected and current repository configuration values are</span>
+<span class="sd">           correct.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            repo (:class:`~pubtools.pulplib.Repository`)</span>
+<span class="sd">                A repository object used for creation.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Future[Repository]</span>
+<span class="sd">                A future which is resolved with a value of ``Repository`` once the</span>
+<span class="sd">                repository has been created.</span>
+
+<span class="sd">        .. versionadded:: 2.39.0</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_url</span><span class="p">,</span> <span class="s2">&quot;pulp/api/v2/repositories/&quot;</span><span class="p">)</span>
+
+        <span class="n">body</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">_to_data</span><span class="p">()</span>
+        <span class="n">repo_id</span> <span class="o">=</span> <span class="n">body</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
+
+        <span class="n">importer</span> <span class="o">=</span> <span class="n">body</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;importers&quot;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="n">body</span><span class="p">[</span><span class="s2">&quot;importer_type_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">importer</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;importer_type_id&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">importer</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">body</span><span class="p">[</span><span class="s2">&quot;importer_config&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">importer</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;config&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">importer</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="k">def</span> <span class="nf">log_existing_repo</span><span class="p">(</span><span class="n">exception</span><span class="p">):</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="nb">getattr</span><span class="p">(</span><span class="n">exception</span><span class="p">,</span> <span class="s2">&quot;response&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="ow">and</span> <span class="n">exception</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">409</span>
+            <span class="p">):</span>
+                <span class="n">LOG</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Repository </span><span class="si">%s</span><span class="s2"> already exists&quot;</span><span class="p">,</span> <span class="n">repo_id</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+            <span class="k">raise</span> <span class="n">exception</span>
+
+        <span class="k">def</span> <span class="nf">check_repo</span><span class="p">(</span><span class="n">repo_on_server</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="p">(</span>
+                    <span class="n">repo_on_server</span> <span class="o">==</span> <span class="n">repo</span>
+                <span class="p">),</span> <span class="s2">&quot;Repo exists on server with unexpected values&quot;</span>
+            <span class="k">except</span> <span class="ne">AssertionError</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">importer</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;type_id&quot;</span><span class="p">,</span> <span class="s2">&quot;config&quot;</span><span class="p">]:</span>
+                        <span class="n">expected</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">repo</span><span class="o">.</span><span class="n">importer</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+                        <span class="n">current</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">repo_on_server</span><span class="o">.</span><span class="n">importer</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">expected</span> <span class="o">!=</span> <span class="n">current</span><span class="p">:</span>
+                            <span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                                <span class="s2">&quot;Repository </span><span class="si">%s</span><span class="s2"> contains wrong importer </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span>
+                                <span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> expected: </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span>
+                                <span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> current: </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+                                <span class="n">repo_id</span><span class="p">,</span>
+                                <span class="n">attr</span><span class="p">,</span>
+                                <span class="n">expected</span><span class="p">,</span>
+                                <span class="n">current</span><span class="p">,</span>
+                            <span class="p">)</span>
+                <span class="n">LOG</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span>
+                    <span class="s2">&quot;Repository </span><span class="si">%s</span><span class="s2"> exists on server and contains unexpected values&quot;</span><span class="p">,</span>
+                    <span class="n">repo_id</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="k">raise</span>
+
+            <span class="k">return</span> <span class="n">f_return</span><span class="p">(</span><span class="n">repo_on_server</span><span class="p">)</span>
+
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating repository </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">repo_id</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_do_request</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">body</span>
+        <span class="p">)</span>
+
+        <span class="n">out</span> <span class="o">=</span> <span class="n">f_map</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">error_fn</span><span class="o">=</span><span class="n">log_existing_repo</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">f_flat_map</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">_</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_repository</span><span class="p">(</span><span class="n">repo_id</span><span class="p">))</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">f_flat_map</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">check_repo</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">f_proxy</span><span class="p">(</span><span class="n">out</span><span class="p">)</span></div></div>
 </pre></div>
 
           </div>

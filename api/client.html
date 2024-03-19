@@ -412,6 +412,35 @@ of common return values.</p>
 </div>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="pubtools.pulplib.Client.create_repository">
+<span class="sig-name descname"><span class="pre">create_repository</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">repo</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/client.html#Client.create_repository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Client.create_repository" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Create a repository with initial data provided in the</dt><dd><p>argument. Importer for repository is automatically associated
+if available. If repository already exists, warning is logged.
+After repository has been successfully created or if repository already exists,
+it is checked if expected and current repository configuration values are
+correct.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>repo</strong> (<a class="reference internal" href="pulpcore.html#pubtools.pulplib.Repository" title="pubtools.pulplib.Repository"><code class="xref py py-class docutils literal notranslate"><span class="pre">Repository</span></code></a>) – A repository object used for creation.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Future[Repository]</dt><dd><p>A future which is resolved with a value of <code class="docutils literal notranslate"><span class="pre">Repository</span></code> once the
+repository has been created.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.39.0.</span></p>
+</div>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">

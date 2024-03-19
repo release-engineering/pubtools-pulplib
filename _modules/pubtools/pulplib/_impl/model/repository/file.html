@@ -35,13 +35,23 @@
 <span class="kn">from</span> <span class="nn">attr</span> <span class="kn">import</span> <span class="n">validators</span>
 <span class="kn">from</span> <span class="nn">frozenlist2</span> <span class="kn">import</span> <span class="n">frozenlist</span>
 
-<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">Repository</span><span class="p">,</span> <span class="n">SyncOptions</span><span class="p">,</span> <span class="n">repo_type</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">Repository</span><span class="p">,</span> <span class="n">SyncOptions</span><span class="p">,</span> <span class="n">repo_type</span><span class="p">,</span> <span class="n">Importer</span>
 <span class="kn">from</span> <span class="nn">...model.unit</span> <span class="kn">import</span> <span class="n">FileUnit</span>
 <span class="kn">from</span> <span class="nn">..attr</span> <span class="kn">import</span> <span class="n">pulp_attrib</span>
 <span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">compat_attr</span> <span class="k">as</span> <span class="n">attr</span>
 
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;pubtools.pulplib&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="FileImporter"><a class="viewcode-back" href="../../../../../../api/files.html#pubtools.pulplib.FileImporter">[docs]</a><span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">FileImporter</span><span class="p">(</span><span class="n">Importer</span><span class="p">):</span>
+    <span class="n">type_id</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;iso_importer&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;importer_type_id&quot;</span>
+    <span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Specific importer_type_id for File repositories.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="FileSyncOptions"><a class="viewcode-back" href="../../../../../../api/files.html#pubtools.pulplib.FileSyncOptions">[docs]</a><span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -79,6 +89,19 @@
         <span class="nb">type</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span>
         <span class="n">converter</span><span class="o">=</span><span class="n">frozenlist</span><span class="p">,</span>
     <span class="p">)</span>
+
+    <span class="n">importer</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">FileImporter</span><span class="p">(),</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">FileImporter</span><span class="p">,</span>
+        <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;importers&quot;</span><span class="p">,</span>
+        <span class="n">pulp_py_converter</span><span class="o">=</span><span class="n">FileImporter</span><span class="o">.</span><span class="n">_from_data</span><span class="p">,</span>
+        <span class="n">py_pulp_converter</span><span class="o">=</span><span class="n">FileImporter</span><span class="o">.</span><span class="n">_to_data</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An object of :class:`~pubtools.pulplib.FileImporter` that is associated with the repository.</span>
+
+<span class="sd">    .. versionadded:: 2.39.0 </span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="FileRepository.upload_file"><a class="viewcode-back" href="../../../../../../api/files.html#pubtools.pulplib.FileRepository.upload_file">[docs]</a>    <span class="k">def</span> <span class="nf">upload_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_obj</span><span class="p">,</span> <span class="n">relative_url</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Upload a file to this repository.</span>

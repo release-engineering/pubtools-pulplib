@@ -34,12 +34,22 @@
 <span class="kn">from</span> <span class="nn">frozenlist2</span> <span class="kn">import</span> <span class="n">frozenlist</span>
 
 <span class="kn">from</span> <span class="nn">more_executors.futures</span> <span class="kn">import</span> <span class="n">f_map</span><span class="p">,</span> <span class="n">f_proxy</span><span class="p">,</span> <span class="n">f_return</span><span class="p">,</span> <span class="n">f_zip</span><span class="p">,</span> <span class="n">f_flat_map</span>
-<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">Repository</span><span class="p">,</span> <span class="n">SyncOptions</span><span class="p">,</span> <span class="n">repo_type</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">Repository</span><span class="p">,</span> <span class="n">SyncOptions</span><span class="p">,</span> <span class="n">repo_type</span><span class="p">,</span> <span class="n">Importer</span>
 <span class="kn">from</span> <span class="nn">..attr</span> <span class="kn">import</span> <span class="n">pulp_attrib</span>
 <span class="kn">from</span> <span class="nn">..common</span> <span class="kn">import</span> <span class="n">DetachedException</span>
 <span class="kn">from</span> <span class="nn">...model.unit</span> <span class="kn">import</span> <span class="n">RpmUnit</span>
 <span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">compat_attr</span> <span class="k">as</span> <span class="n">attr</span><span class="p">,</span> <span class="n">comps</span>
 <span class="kn">from</span> <span class="nn">...criteria</span> <span class="kn">import</span> <span class="n">Criteria</span><span class="p">,</span> <span class="n">Matcher</span>
+
+
+<div class="viewcode-block" id="YumImporter"><a class="viewcode-back" href="../../../../../../api/yum.html#pubtools.pulplib.YumImporter">[docs]</a><span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">YumImporter</span><span class="p">(</span><span class="n">Importer</span><span class="p">):</span>
+    <span class="n">type_id</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;yum_importer&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;importer_type_id&quot;</span>
+    <span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Specific importer_type_id for Yum repositories.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="YumSyncOptions"><a class="viewcode-back" href="../../../../../../api/yum.html#pubtools.pulplib.YumSyncOptions">[docs]</a><span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -133,6 +143,19 @@
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;notes.ubi_config_version&quot;</span>
     <span class="p">)</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Version of UBI config that should be used for population of this repository.&quot;&quot;&quot;</span>
+
+    <span class="n">importer</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">YumImporter</span><span class="p">(),</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">YumImporter</span><span class="p">,</span>
+        <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;importers&quot;</span><span class="p">,</span>
+        <span class="n">pulp_py_converter</span><span class="o">=</span><span class="n">YumImporter</span><span class="o">.</span><span class="n">_from_data</span><span class="p">,</span>
+        <span class="n">py_pulp_converter</span><span class="o">=</span><span class="n">YumImporter</span><span class="o">.</span><span class="n">_to_data</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An object of :class:`~pubtools.pulplib.YumImporter` that is associated with the repository.</span>
+
+<span class="sd">    .. versionadded:: 2.39.0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="YumRepository.get_binary_repository"><a class="viewcode-back" href="../../../../../../api/yum.html#pubtools.pulplib.YumRepository.get_binary_repository">[docs]</a>    <span class="k">def</span> <span class="nf">get_binary_repository</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Find and return the binary repository relating to this repository.</span>

@@ -265,6 +265,18 @@
         <span class="n">delete_f</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">_delete_resource</span><span class="p">(</span><span class="n">resource_type</span><span class="p">,</span> <span class="n">resource_id</span><span class="p">)</span>
         <span class="n">delete_f</span> <span class="o">=</span> <span class="n">f_map</span><span class="p">(</span><span class="n">delete_f</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__detach</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">f_proxy</span><span class="p">(</span><span class="n">delete_f</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">schemaless_init</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+    <span class="c1"># Construct and return an instance of (attrs-using) cls from</span>
+    <span class="c1"># pulp data, where data in pulp has no schema at all (and hence</span>
+    <span class="c1"># every field could possibly be missing).</span>
+    <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="n">fld</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">fld</span> <span class="ow">in</span> <span class="n">attr</span><span class="o">.</span><span class="n">fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">)]:</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
 
           </div>
