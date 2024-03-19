@@ -27,6 +27,8 @@ Repository
 .. autoclass:: pubtools.pulplib.SyncOptions()
    :members:
 
+.. autoclass:: pubtools.pulplib.Importer()
+   :members:
 
 Units
 -----

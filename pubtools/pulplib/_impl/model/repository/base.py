@@ -8,10 +8,11 @@ from attr import validators, asdict
 from frozenlist2 import frozenlist
 from more_executors.futures import f_proxy, f_map, f_flat_map
 
+from frozendict.core import frozendict  # pylint: disable=no-name-in-module
 from .repo_lock import RepoLock
 from ..attr import pulp_attrib, PULP2_FIELD, PULP2_MUTABLE
 from ..common import PulpObject, Deletable, DetachedException
-from ..convert import frozenlist_or_none_converter
+from ..convert import frozenlist_or_none_converter, frozendict_or_none_converter
 from ..distributor import Distributor
 from ...criteria import Criteria, Matcher
 from ...schema import load_schema
@@ -19,6 +20,7 @@ from ... import compat_attr as attr
 from ...hooks import pm
 from ...util import dict_put, lookup, ABSENT
 
+from ..common import schemaless_init
 
 LOG = logging.getLogger("pubtools.pulplib")
 
@@ -33,6 +35,44 @@ def repo_type(pulp_type):
         return klass
 
     return decorate
+
+
+@attr.s(kw_only=True, frozen=True)
+class Importer(PulpObject):
+    """
+    Importer is a pulp object that needs to be associated with repository
+    in order to successfully sync or upload content to it.
+    """
+
+    type_id = pulp_attrib(default=None, type=str, pulp_field="importer_type_id")
+    """
+    Type id of the importer.
+    """
+    config = pulp_attrib(
+        default=attr.Factory(frozendict),
+        type=frozendict,
+        converter=frozendict_or_none_converter,
+        pulp_field="config",
+    )
+    """
+    Configuration dictionary of the importer.
+    """
+
+    @classmethod
+    def _from_data(cls, data):
+        # Convert from raw list/dict as provided in Pulp responses into model.
+        if isinstance(data, list):
+            return cls._from_data(data[0]) if data else schemaless_init(cls, data)
+
+        return schemaless_init(cls, data)
+
+    def _to_data(self):
+        return [
+            {
+                "importer_type_id": self.type_id,
+                "config": self.config,
+            }
+        ]
 
 
 @attr.s(kw_only=True, frozen=True)
@@ -249,7 +289,7 @@ class Repository(PulpObject, Deletable):
         default=attr.Factory(frozenlist),
         type=list,
         pulp_field="notes.signatures",
-        pulp_py_converter=lambda sigs: sigs.split(","),
+        pulp_py_converter=lambda sigs: sigs.split(",") if sigs else [],
         py_pulp_converter=",".join,
         converter=lambda keys: frozenlist([k.strip() for k in keys]),
     )
@@ -337,6 +377,19 @@ class Repository(PulpObject, Deletable):
     and provisioning to other tools outside of Pulp.
 
     .. versionadded:: 2.37.0
+    """
+
+    importer = pulp_attrib(
+        default=Importer(),
+        type=Importer,
+        pulp_field="importers",
+        pulp_py_converter=Importer._from_data,
+        py_pulp_converter=Importer._to_data,
+    )
+    """
+    An object of :class:`~pubtools.pulplib.Importer` that is associated with the repository.
+
+    .. versionadded:: 2.39.0
     """
 
     @distributors.validator

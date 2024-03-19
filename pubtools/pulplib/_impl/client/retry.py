@@ -29,8 +29,8 @@ class PulpRetryPolicy(RetryPolicy):
 
         exception = future.exception()
         if exception and getattr(exception, "response", None) is not None:
-            # if returned status code is 404, never retry on that
-            if exception.response.status_code == 404:
+            # if returned status code is 404 or 409, never retry on that
+            if exception.response.status_code in (404, 409):
                 return False
 
         if exception and retry:

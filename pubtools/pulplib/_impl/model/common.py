@@ -234,3 +234,15 @@ class Deletable(WithClient):
         delete_f = client._delete_resource(resource_type, resource_id)
         delete_f = f_map(delete_f, self.__detach)
         return f_proxy(delete_f)
+
+
+def schemaless_init(cls, data):
+    # Construct and return an instance of (attrs-using) cls from
+    # pulp data, where data in pulp has no schema at all (and hence
+    # every field could possibly be missing).
+    kwargs = {}
+    for key in [fld.name for fld in attr.fields(cls)]:
+        if key in data:
+            kwargs[key] = data[key]
+
+    return cls(**kwargs)

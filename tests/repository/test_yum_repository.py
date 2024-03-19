@@ -1,6 +1,8 @@
 import pytest
+import logging
+import requests
 
-from pubtools.pulplib import Repository, YumRepository, DetachedException
+from pubtools.pulplib import Repository, YumRepository, DetachedException, YumImporter
 
 
 def test_from_data_gives_yum_repository():
@@ -57,6 +59,24 @@ def test_from_data_skip_rsync_repodata():
         }
     )
     assert repo.skip_rsync_repodata
+
+
+def test_from_data_importer():
+    repo = Repository.from_data(
+        {
+            "id": "my-repo",
+            "notes": {"_repo-type": "rpm-repo"},
+            "importers": [
+                {
+                    "importer_type_id": "yum_importer",
+                    "config": {"foo": "bar"},
+                }
+            ],
+        }
+    )
+
+    assert repo.importer.type_id == "yum_importer"
+    assert repo.importer.config == {"foo": "bar"}
 
 
 def test_populate_attrs():
@@ -193,3 +213,169 @@ def test_related_repositories_detached_client():
 
     with pytest.raises(DetachedException):
         repo_binary_test.get_binary_repository()
+
+
+def test_create_repository(client, requests_mocker):
+    repo = YumRepository(id="yum_repo_new")
+
+    # create request
+    requests_mocker.post(
+        "https://pulp.example.com/pulp/api/v2/repositories/",
+        json={},
+    )
+
+    # repo search request
+    requests_mocker.post(
+        "https://pulp.example.com/pulp/api/v2/repositories/search/",
+        json=[
+            {
+                "id": "yum_repo_new",
+                "notes": {"_repo-type": "rpm-repo"},
+                "importers": [
+                    {
+                        "importer_type_id": "yum_importer",
+                        "config": {},
+                    }
+                ],
+            }
+        ],
+    )
+
+    out = client.create_repository(repo)
+    # check return value of create_repository() call
+    assert out.result() == repo
+
+    hist = requests_mocker.request_history
+    # there should be exactly 2 requests sent - create and search
+    assert len(hist) == 2
+
+    create_query = hist[0].json()
+    # check id of repository sent in request body
+    assert create_query["id"] == "yum_repo_new"
+    # check importer data sent in request body that
+    # are automatically added for yum repository
+    assert create_query["importer_type_id"] == "yum_importer"
+    assert create_query["importer_config"] == {}
+
+    # check the search request for created repo
+    search_query = hist[1].json()
+    assert search_query == {
+        "criteria": {
+            "skip": 0,
+            "limit": 2000,
+            "filters": {"id": {"$eq": "yum_repo_new"}},
+        },
+        "distributors": True,
+        "importers": True,
+    }
+
+
+def test_create_repository_already_exists(client, requests_mocker, caplog):
+    repo = YumRepository(id="yum_repo_existing")
+
+    requests_mocker.post(
+        "https://pulp.example.com/pulp/api/v2/repositories/",
+        status_code=409,
+        text="Conflict 409 status",
+    )
+
+    # repo search request
+    requests_mocker.post(
+        "https://pulp.example.com/pulp/api/v2/repositories/search/",
+        json=[
+            {
+                "id": "yum_repo_existing",
+                "notes": {"_repo-type": "rpm-repo"},
+                "importers": [
+                    {
+                        "importer_type_id": "yum_importer",
+                        "config": {},
+                    }
+                ],
+            }
+        ],
+    )
+
+    with caplog.at_level(logging.WARNING):
+        out = client.create_repository(repo)
+        # check return value of create_repository() call
+        assert out.result() == repo
+
+        hist = requests_mocker.request_history
+        # there should be 2 request sent - attempt to create and search for repo,
+        # 409 status is never retried
+        assert len(hist) == 2
+
+        query = hist[0].json()
+        # check id of repository sent in request body
+        assert query["id"] == "yum_repo_existing"
+        # check importer data sent in request body that
+        # are automatically added for yum repository
+        assert query["importer_type_id"] == "yum_importer"
+        assert query["importer_config"] == {}
+        # check logged information about existing repository
+        assert "Repository yum_repo_existing already exists" in caplog.text
+
+        # check the search request for existing repo
+        search_query = hist[1].json()
+        assert search_query == {
+            "criteria": {
+                "skip": 0,
+                "limit": 2000,
+                "filters": {"id": {"$eq": "yum_repo_existing"}},
+            },
+            "distributors": True,
+            "importers": True,
+        }
+
+
+def test_create_repository_wrong_data(client, requests_mocker, caplog):
+    repo = YumRepository(
+        id="yum_repo_existing", importer=YumImporter(config={"new": "value"})
+    )
+
+    requests_mocker.post(
+        "https://pulp.example.com/pulp/api/v2/repositories/",
+        status_code=409,
+        text="Conflict 409 status",
+    )
+
+    # repo search request
+    requests_mocker.post(
+        "https://pulp.example.com/pulp/api/v2/repositories/search/",
+        json=[
+            {
+                "id": "yum_repo_existing",
+                "notes": {"_repo-type": "rpm-repo"},
+                "importers": [
+                    {
+                        "importer_type_id": "yum_importer",
+                        "config": {"current": "value"},
+                    }
+                ],
+            }
+        ],
+    )
+    with caplog.at_level(logging.WARNING):
+        with pytest.raises(AssertionError):
+            client.create_repository(repo).result()
+
+        for text in (
+            "Repository yum_repo_existing already exists",
+            "Repository yum_repo_existing contains wrong importer config",
+            "Repository yum_repo_existing exists on server and contains unexpected values",
+        ):
+            assert text in caplog.text
+
+
+def test_create_repository_raises_exception(client, requests_mocker):
+    repo = YumRepository(id="yum_repo")
+
+    requests_mocker.post(
+        "https://pulp.example.com/pulp/api/v2/repositories/",
+        status_code=400,
+        text="Client error 400",
+    )
+
+    with pytest.raises(requests.exceptions.HTTPError):
+        client.create_repository(repo).result()

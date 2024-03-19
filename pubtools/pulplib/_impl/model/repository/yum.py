@@ -3,12 +3,22 @@ import re
 from frozenlist2 import frozenlist
 
 from more_executors.futures import f_map, f_proxy, f_return, f_zip, f_flat_map
-from .base import Repository, SyncOptions, repo_type
+from .base import Repository, SyncOptions, repo_type, Importer
 from ..attr import pulp_attrib
 from ..common import DetachedException
 from ...model.unit import RpmUnit
 from ... import compat_attr as attr, comps
 from ...criteria import Criteria, Matcher
+
+
+@attr.s(kw_only=True, frozen=True)
+class YumImporter(Importer):
+    type_id = pulp_attrib(
+        default="yum_importer", type=str, pulp_field="importer_type_id"
+    )
+    """
+    Specific importer_type_id for Yum repositories.
+    """
 
 
 @attr.s(kw_only=True, frozen=True)
@@ -102,6 +112,19 @@ class YumRepository(Repository):
         default=None, type=str, pulp_field="notes.ubi_config_version"
     )
     """Version of UBI config that should be used for population of this repository."""
+
+    importer = pulp_attrib(
+        default=YumImporter(),
+        type=YumImporter,
+        pulp_field="importers",
+        pulp_py_converter=YumImporter._from_data,
+        py_pulp_converter=YumImporter._to_data,
+    )
+    """
+    An object of :class:`~pubtools.pulplib.YumImporter` that is associated with the repository.
+
+    .. versionadded:: 2.39.0
+    """
 
     def get_binary_repository(self):
         """Find and return the binary repository relating to this repository.

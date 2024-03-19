@@ -14,6 +14,8 @@ Repository
 .. autoclass:: pubtools.pulplib.YumSyncOptions()
    :members:
 
+.. autoclass:: pubtools.pulplib.YumImporter()
+   :members:
 
 Units: RPM
 ----------
