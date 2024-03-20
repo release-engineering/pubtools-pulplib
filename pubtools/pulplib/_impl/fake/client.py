@@ -1,32 +1,31 @@
-import random
 import hashlib
 import json
+import random
 import re
-
 from collections import namedtuple
+from io import BytesIO, StringIO
 
-from io import StringIO, BytesIO
-
-from more_executors.futures import f_return, f_return_error, f_flat_map, f_proxy
+from more_executors.futures import f_flat_map, f_proxy, f_return, f_return_error
 
 from pubtools.pulplib import (
+    CopyOptions,
+    Criteria,
+    Distributor,
+    MaintenanceReport,
     Page,
     PulpException,
-    Criteria,
-    Task,
     Repository,
-    Distributor,
-    Unit,
     RpmUnit,
-    MaintenanceReport,
-    CopyOptions,
+    Task,
+    Unit,
+    YumRepository,
 )
 from pubtools.pulplib._impl.client.client import UploadResult
 from pubtools.pulplib._impl.client.search import search_for_criteria
-from .. import compat_attr as attr
 
-from .match import match_object
+from .. import compat_attr as attr
 from . import units
+from .match import match_object
 
 Publish = namedtuple("Publish", ["repository", "tasks"])
 Upload = namedtuple("Upload", ["repository", "tasks", "name", "sha256"])
@@ -136,9 +135,10 @@ class FakeClient(object):  # pylint:disable = too-many-instance-attributes
 
         # RPM signature filter: if signatures are required, unsigned RPMs are not
         # included in the copy.
-        # Because we don't model this flag on distributor objects and because in
-        # practice it's set to True, we default to True.
-        if options.require_signed_rpms is not False:
+        if (
+            isinstance(to_repository, YumRepository)
+            and options.require_signed_rpms is not None
+        ):
             found = [u for u in found if not isinstance(u, RpmUnit) or u.signing_key]
 
         # Units are being copied to this repo, so that value obviously must appear
