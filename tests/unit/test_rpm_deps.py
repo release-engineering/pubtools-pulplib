@@ -29,7 +29,11 @@ def test_rpm_requires_provides():
                     "release": "1",
                     "epoch": "0",
                     "flags": "LT",
-                }
+                },
+                # We should also expect inclusion of files/scriptlets in requires.
+                {
+                    "name": "/some/script.sh",
+                },
             ],
         }
     )
@@ -42,10 +46,12 @@ def test_rpm_requires_provides():
     provides_item.epoch == "0"
     provides_item.flags == "EQ"
 
-    assert len(unit.requires) == 1
+    assert len(unit.requires) == 2
     requires_item = unit.requires[0]
     requires_item.name == "test-requires"
     requires_item.version == "1.0"
     requires_item.release == "1"
     requires_item.epoch == "0"
     requires_item.flags == "LT"
+    requires_item = unit.requires[1]
+    requires_item.name == "/some/script.sh"

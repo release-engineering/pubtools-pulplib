@@ -1,19 +1,18 @@
 import datetime
 
 from pubtools.pulplib._impl.model.validate import optional_list_of
-from .base import Unit, unit_type
 
-from ..attr import pulp_attrib
-from ..common import schemaless_init
 from ... import compat_attr as attr
+from ..attr import pulp_attrib
+from ..common import PulpObject, schemaless_init
 from ..convert import (
     frozenlist_or_none_converter,
     frozenlist_or_none_sorted_converter,
-    tolerant_timestamp,
     timestamp_converter,
+    tolerant_timestamp,
 )
-from ..validate import optional_str, instance_of
-from ..common import PulpObject
+from ..validate import instance_of, optional_str
+from .base import Unit, unit_type
 
 
 @attr.s(kw_only=True, frozen=True)
@@ -236,6 +235,17 @@ class RpmUnit(Unit):
     )
     """
     List of capabilities that this RPM provides or ``None`` if this information is unavailable.
+    """
+
+    files = pulp_attrib(
+        default=None,
+        type=list,
+        converter=frozenlist_or_none_converter,
+        pulp_field="files.file",
+        validator=optional_list_of(str),
+    )
+    """
+    List of files that this RPM provides or ``None`` if this information is unavailable.
     """
 
     @md5sum.validator
