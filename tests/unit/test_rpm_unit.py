@@ -19,6 +19,12 @@ def test_user_metadata_fields():
                 "cdn_path": "/some/path/to/my.rpm",
                 "cdn_published": "2021-04-01T01:08:26",
             },
+            "files": {
+                "file": [
+                    "/usr/bin/some/script.sh",
+                    "/usr/bin/another/script/provided.py",
+                ],
+            },
         }
     )
 
@@ -32,6 +38,7 @@ def test_user_metadata_fields():
         content_type_id="rpm",
         cdn_path="/some/path/to/my.rpm",
         cdn_published=datetime.datetime(2021, 4, 1, 1, 8, 26),
+        files=["/usr/bin/some/script.sh", "/usr/bin/another/script/provided.py"],
     )
 
 
