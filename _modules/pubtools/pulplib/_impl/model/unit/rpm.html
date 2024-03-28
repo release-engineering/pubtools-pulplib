@@ -32,19 +32,18 @@
 <span></span><span class="kn">import</span> <span class="nn">datetime</span>
 
 <span class="kn">from</span> <span class="nn">pubtools.pulplib._impl.model.validate</span> <span class="kn">import</span> <span class="n">optional_list_of</span>
-<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">Unit</span><span class="p">,</span> <span class="n">unit_type</span>
 
-<span class="kn">from</span> <span class="nn">..attr</span> <span class="kn">import</span> <span class="n">pulp_attrib</span>
-<span class="kn">from</span> <span class="nn">..common</span> <span class="kn">import</span> <span class="n">schemaless_init</span>
 <span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">compat_attr</span> <span class="k">as</span> <span class="n">attr</span>
+<span class="kn">from</span> <span class="nn">..attr</span> <span class="kn">import</span> <span class="n">pulp_attrib</span>
+<span class="kn">from</span> <span class="nn">..common</span> <span class="kn">import</span> <span class="n">PulpObject</span><span class="p">,</span> <span class="n">schemaless_init</span>
 <span class="kn">from</span> <span class="nn">..convert</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">frozenlist_or_none_converter</span><span class="p">,</span>
     <span class="n">frozenlist_or_none_sorted_converter</span><span class="p">,</span>
-    <span class="n">tolerant_timestamp</span><span class="p">,</span>
     <span class="n">timestamp_converter</span><span class="p">,</span>
+    <span class="n">tolerant_timestamp</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">..validate</span> <span class="kn">import</span> <span class="n">optional_str</span><span class="p">,</span> <span class="n">instance_of</span>
-<span class="kn">from</span> <span class="nn">..common</span> <span class="kn">import</span> <span class="n">PulpObject</span>
+<span class="kn">from</span> <span class="nn">..validate</span> <span class="kn">import</span> <span class="n">instance_of</span><span class="p">,</span> <span class="n">optional_str</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">Unit</span><span class="p">,</span> <span class="n">unit_type</span>
 
 
 <div class="viewcode-block" id="RpmDependency"><a class="viewcode-back" href="../../../../../../api/yum.html#pubtools.pulplib.RpmDependency">[docs]</a><span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -267,6 +266,17 @@
     <span class="p">)</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    List of capabilities that this RPM provides or ``None`` if this information is unavailable.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">files</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span>
+        <span class="n">converter</span><span class="o">=</span><span class="n">frozenlist_or_none_converter</span><span class="p">,</span>
+        <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;files.file&quot;</span><span class="p">,</span>
+        <span class="n">validator</span><span class="o">=</span><span class="n">optional_list_of</span><span class="p">(</span><span class="nb">str</span><span class="p">),</span>
+    <span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    List of files that this RPM provides or ``None`` if this information is unavailable.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nd">@md5sum</span><span class="o">.</span><span class="n">validator</span>
