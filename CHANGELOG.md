@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- n/a
+
+## [2.39.0] - 2024-03-28
+
+- Added `RpmUnit.files` attribute
 - Added `Client.create_repository()` method
 
 ## [2.38.1] - 2023-12-14
@@ -469,7 +474,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release to PyPI
 
-[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.38.1...HEAD
+[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.39.0...HEAD
+[2.39.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.38.1...v2.39.0
 [2.38.1]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.38.0...v2.38.1
 [2.38.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.37.2...v2.38.0
 [2.37.2]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.37.1...v2.37.2
