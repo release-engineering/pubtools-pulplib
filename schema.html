@@ -147,7 +147,9 @@ properties:
 
       # Name of content set that is associated with this repository
       content_set:
-        type: string
+        anyOf:
+        - type: &quot;null&quot;
+        - type: string
 
       # Version of ubi config that should be used for population of this repository
       ubi_config_version:

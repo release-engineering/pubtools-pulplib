@@ -35,7 +35,8 @@
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
 
-<span class="kn">from</span> <span class="nn">attr</span> <span class="kn">import</span> <span class="n">validators</span><span class="p">,</span> <span class="n">asdict</span>
+<span class="kn">from</span> <span class="nn">attr</span> <span class="kn">import</span> <span class="n">validators</span><span class="p">,</span> <span class="n">asdict</span><span class="p">,</span> <span class="n">converters</span>
+
 <span class="kn">from</span> <span class="nn">frozenlist2</span> <span class="kn">import</span> <span class="n">frozenlist</span>
 <span class="kn">from</span> <span class="nn">more_executors.futures</span> <span class="kn">import</span> <span class="n">f_proxy</span><span class="p">,</span> <span class="n">f_map</span><span class="p">,</span> <span class="n">f_flat_map</span>
 
@@ -278,8 +279,8 @@
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
         <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;notes.eng_product&quot;</span><span class="p">,</span>
-        <span class="n">pulp_py_converter</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
-        <span class="n">py_pulp_converter</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">pulp_py_converter</span><span class="o">=</span><span class="n">converters</span><span class="o">.</span><span class="n">optional</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span>
+        <span class="n">py_pulp_converter</span><span class="o">=</span><span class="n">converters</span><span class="o">.</span><span class="n">optional</span><span class="p">(</span><span class="nb">str</span><span class="p">),</span>
     <span class="p">)</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;ID of the product to which this repository belongs (if any).&quot;&quot;&quot;</span>
 
