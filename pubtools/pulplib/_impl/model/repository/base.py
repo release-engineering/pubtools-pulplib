@@ -4,7 +4,8 @@ import warnings
 import json
 from functools import partial
 
-from attr import validators, asdict
+from attr import validators, asdict, converters
+
 from frozenlist2 import frozenlist
 from more_executors.futures import f_proxy, f_map, f_flat_map
 
@@ -247,8 +248,8 @@ class Repository(PulpObject, Deletable):
         default=None,
         type=int,
         pulp_field="notes.eng_product",
-        pulp_py_converter=int,
-        py_pulp_converter=str,
+        pulp_py_converter=converters.optional(int),
+        py_pulp_converter=converters.optional(str),
     )
     """ID of the product to which this repository belongs (if any)."""
 
