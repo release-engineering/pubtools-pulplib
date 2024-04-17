@@ -1,14 +1,14 @@
 import pytest
 
 from pubtools.pulplib import (
-    FakeController,
     Criteria,
-    Matcher,
-    RpmUnit,
     ErratumUnit,
+    FakeController,
+    Matcher,
     ModulemdUnit,
-    YumRepository,
     RpmDependency,
+    RpmUnit,
+    YumRepository,
 )
 
 
@@ -31,6 +31,13 @@ def populated_repo(controller):
             arch="x86_64",
             sourcerpm="glibc-5.0-1.el5_11.1.src.rpm",
             provides=[RpmDependency(name="gcc")],
+        ),
+        RpmUnit(
+            name="jq",
+            version="4.0",
+            release="1",
+            arch="x86_64",
+            files=["/some/file", "/another/file", "/yet/another/file", "/script"],
         ),
         ModulemdUnit(
             name="module1", stream="s1", version=1234, context="a1b2", arch="x86_64"
@@ -91,7 +98,7 @@ def test_search_content_default_crit(populated_repo):
     """search_content with default criteria on populated repo finds all units"""
 
     units = list(populated_repo.search_content())
-    assert len(units) == 6
+    assert len(units) == 7
 
 
 def test_search_content_by_type(populated_repo):
@@ -117,6 +124,15 @@ def test_search_content_by_type(populated_repo):
             sourcerpm="glibc-5.0-1.el5_11.1.src.rpm",
             repository_memberships=["repo1"],
             provides=[RpmDependency(name="gcc")],
+        ),
+        RpmUnit(
+            name="jq",
+            version="4.0",
+            release="1",
+            arch="x86_64",
+            repository_memberships=["repo1"],
+            unit_id="23a7711a-8133-2876-37eb-dcd9e87a1613",
+            files=["/some/file", "/another/file", "/yet/another/file", "/script"],
         ),
     ]
 
@@ -156,6 +172,14 @@ def test_search_content_with_fields(populated_repo):
             arch="x86_64",
             repository_memberships=["repo1"],
         ),
+        RpmUnit(
+            name="jq",
+            version="4.0",
+            release="1",
+            arch="x86_64",
+            repository_memberships=["repo1"],
+            unit_id="23a7711a-8133-2876-37eb-dcd9e87a1613",
+        ),
     ]
 
 
@@ -166,7 +190,7 @@ def test_search_erratum_by_type(populated_repo):
     units = list(populated_repo.search_content(crit))
     assert units == [
         ErratumUnit(
-            unit_id="85776e9a-dd84-f39e-7154-5a137a1d5006",
+            unit_id="d71037d1-b83e-90ec-17e0-aa3c03983ca8",
             id="RHBA-1234:56",
             summary="The best advisory",
             repository_memberships=["repo1"],
@@ -207,7 +231,7 @@ def test_search_content_by_unit_type(populated_repo):
     units = list(populated_repo.search_content(crit))
     assert sorted(units) == [
         ModulemdUnit(
-            unit_id="23a7711a-8133-2876-37eb-dcd9e87a1613",
+            unit_id="e6f4590b-9a16-4106-cf6a-659eb4862b21",
             name="module1",
             stream="s1",
             version=1234,
@@ -216,7 +240,7 @@ def test_search_content_by_unit_type(populated_repo):
             repository_memberships=["repo1"],
         ),
         ModulemdUnit(
-            unit_id="e6f4590b-9a16-4106-cf6a-659eb4862b21",
+            unit_id="85776e9a-dd84-f39e-7154-5a137a1d5006",
             name="module2",
             stream="s2",
             version=1234,
@@ -239,7 +263,7 @@ def test_search_content_mixed_fields(populated_repo):
     # Note: sorting different types not natively supported, hence sorting by repr
     assert sorted(units, key=repr) == [
         ModulemdUnit(
-            unit_id="23a7711a-8133-2876-37eb-dcd9e87a1613",
+            unit_id="e6f4590b-9a16-4106-cf6a-659eb4862b21",
             name="module1",
             stream="s1",
             version=1234,
@@ -266,7 +290,7 @@ def test_search_content_subfields(populated_repo):
     crit = Criteria.and_(
         Criteria.with_unit_type(RpmUnit), Criteria.with_field("provides.name", "gcc")
     )
-    units = list(populated_repo.search_content(crit))
+    units = list(populated_repo.search_content(crit).result())
 
     assert units == [
         RpmUnit(
@@ -278,5 +302,28 @@ def test_search_content_subfields(populated_repo):
             sourcerpm="glibc-5.0-1.el5_11.1.src.rpm",
             provides=[RpmDependency(name="gcc")],
             repository_memberships=["repo1"],
+        )
+    ]
+
+
+def test_search_content_files(populated_repo):
+    """
+    search_content using files subfield in attributes that are lists of strings.
+    """
+    crit = Criteria.and_(
+        Criteria.with_unit_type(RpmUnit),
+        Criteria.with_field("files", "/some/file"),
+    )
+    units = list(populated_repo.search_content(crit).result())
+
+    assert units == [
+        RpmUnit(
+            name="jq",
+            version="4.0",
+            release="1",
+            arch="x86_64",
+            repository_memberships=["repo1"],
+            unit_id="23a7711a-8133-2876-37eb-dcd9e87a1613",
+            files=["/some/file", "/another/file", "/yet/another/file", "/script"],
         )
     ]
