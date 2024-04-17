@@ -1,13 +1,13 @@
 import pytest
 
 from pubtools.pulplib import (
-    FakeController,
     Criteria,
-    RpmUnit,
-    ModulemdUnit,
+    FakeController,
     ModulemdDefaultsUnit,
-    YumRepository,
+    ModulemdUnit,
     PulpException,
+    RpmUnit,
+    YumRepository,
 )
 
 
@@ -40,6 +40,9 @@ def populated_units(controller):
             release="1",
             arch="x86_64",
             repository_memberships=["repo1"],
+        ),
+        RpmUnit(
+            name="jq", version="4.0", release="1", arch="x86_64", files=["/some/file"]
         ),
         ModulemdUnit(
             name="module1",
@@ -101,12 +104,12 @@ def test_search_content_all(populated_units, controller):
         ).result()
     ]
     units3 = [u for u in controller.client.search_content().result()]
-    assert len(units1) == 3
-    assert len([u for u in units1 if u.content_type_id == "rpm"]) == 3
+    assert len(units1) == 4
+    assert len([u for u in units1 if u.content_type_id == "rpm"]) == 4
     assert len(units2) == 2
     assert len([u for u in units2 if u.content_type_id == "srpm"]) == 2
     # + two modulemd, one modulemd_defaults
-    assert len(units3) == 8
+    assert len(units3) == 9
 
     assert set(sum([u.repository_memberships for u in units1], [])) == set(
         ["repo1", "repo2"]
@@ -150,12 +153,12 @@ def test_search_content_all_pagination(populated_units, controller):
         ).result()
     ]
     units3 = [u for u in controller.client.search_content().result()]
-    assert len(units1) == 3
-    assert len([u for u in units1 if u.content_type_id == "rpm"]) == 3
+    assert len(units1) == 4
+    assert len([u for u in units1 if u.content_type_id == "rpm"]) == 4
     assert len(units2) == 2
     assert len([u for u in units2 if u.content_type_id == "srpm"]) == 2
     # + two modulemd, one modulemd_defaults
-    assert len(units3) == 8
+    assert len(units3) == 9
 
     assert set(sum([u.repository_memberships for u in units1], [])) == set(
         ["repo1", "repo2"]
