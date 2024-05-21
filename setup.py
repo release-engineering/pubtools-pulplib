@@ -1,4 +1,19 @@
-from setuptools import setup, find_packages
+from setuptools import setup
+
+try:
+    from setuptools import find_namespace_packages
+except ImportError:
+    # Workaround for RHEL-8 RPM packaging that uses setuptools 39.2
+    # find_namespace_packages is supported since setuptools 40.1
+    # Loosely backported from https://github.com/pypa/setuptools/blob/main/setuptools/discovery.py
+    from setuptools import PackageFinder
+
+    class PEP420PackageFinder(PackageFinder):
+        @staticmethod
+        def _looks_like_package(_path):
+            return True
+
+    find_namespace_packages = PEP420PackageFinder.find
 
 
 def get_description():
@@ -22,7 +37,8 @@ def get_requirements():
 setup(
     name="pubtools-pulplib",
     version="2.39.1",
-    packages=find_packages(exclude=["tests"]),
+    packages=find_namespace_packages(where="src"),
+    package_dir={"": "src"},
     package_data={"pubtools.pulplib._impl.schema": ["*.yaml"]},
     url="https://github.com/release-engineering/pubtools-pulplib",
     license="GNU General Public License",
