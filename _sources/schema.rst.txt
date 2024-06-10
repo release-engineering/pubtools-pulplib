@@ -17,28 +17,28 @@ reference.
 Repository
 ----------
 
-.. include:: ../pubtools/pulplib/_impl/schema/repository.yaml
+.. include:: ../src/pubtools/pulplib/_impl/schema/repository.yaml
     :code: yaml
 
 
 Task
 ----
 
-.. include:: ../pubtools/pulplib/_impl/schema/task.yaml
+.. include:: ../src/pubtools/pulplib/_impl/schema/task.yaml
     :code: yaml
 
 
 Unit
 ----
 
-.. include:: ../pubtools/pulplib/_impl/schema/unit.yaml
+.. include:: ../src/pubtools/pulplib/_impl/schema/unit.yaml
     :code: yaml
 
 
 Maintenance
 -----------
 
-.. include:: ../pubtools/pulplib/_impl/schema/maintenance.yaml
+.. include:: ../src/pubtools/pulplib/_impl/schema/maintenance.yaml
     :code: yaml
 
 .. _JSON schema: https://json-schema.org/
