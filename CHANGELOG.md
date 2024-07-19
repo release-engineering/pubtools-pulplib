@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - n/a
 
+## [2.39.2] - 2024-07-19
+
+- Fix source code structure.
+
 ## [2.39.1] - 2024-04-04
 
 - Extra release to PyPI due to inconsistency in release tags
@@ -478,7 +482,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release to PyPI
 
-[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.39.1...HEAD
+[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.39.2...HEAD
+[2.39.2]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.39.1...v2.39.2
 [2.39.1]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.39.0...v2.39.1
 [2.39.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.38.1...v2.39.0
 [2.38.1]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.38.0...v2.38.1
