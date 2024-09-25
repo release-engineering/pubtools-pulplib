@@ -10,7 +10,7 @@ import requests
 from more_executors import Executors
 from more_executors.futures import f_map, f_flat_map, f_return, f_proxy, f_sequence
 from io import StringIO
-
+from ..compat_attr import evolve
 from ..model.repository.repo_lock import LOCK_CLAIM_STR
 from ..page import Page
 from ..criteria import Criteria
@@ -1083,6 +1083,13 @@ class Client(object):
         body["importer_type_id"] = importer[0]["importer_type_id"] if importer else None
         body["importer_config"] = importer[0]["config"] if importer else None
 
+        # re-key distributor dict keys due to pulp API inconsistency
+        for item in body["distributors"]:
+            item["distributor_id"] = item["id"]
+            item["distributor_config"] = item["config"]
+            del item["config"]
+            del item["id"]
+
         def log_existing_repo(exception):
             if (
                 getattr(exception, "response", None) is not None
@@ -1094,25 +1101,58 @@ class Client(object):
             raise exception
 
         def check_repo(repo_on_server):
+            # evolve some fields that don't have to be set before repository creation
+            # but they're typically set automatically after creation call which results in
+            # inequality between `repo_on_server` and `repo`
+            dists = [evolve(item, repo_id=repo_id) for item in repo.distributors]
+            repo_updated = evolve(
+                repo, relative_url=repo_on_server.relative_url, distributors=dists
+            )
             try:
                 assert (
-                    repo_on_server == repo
+                    repo_on_server == repo_updated
                 ), "Repo exists on server with unexpected values"
             except AssertionError:
                 if importer:
-                    for attr in ["type_id", "config"]:
-                        expected = getattr(repo.importer, attr)
-                        current = getattr(repo_on_server.importer, attr)
-                        if expected != current:
-                            LOG.error(
-                                "Repository %s contains wrong importer %s\n"
-                                "\t expected: %s\n"
-                                "\t current: %s\n",
-                                repo_id,
-                                attr,
-                                expected,
-                                current,
+                    self._check_resource(
+                        "importer",
+                        ["type_id", "config"],
+                        repo_updated.importer,
+                        repo_on_server.importer,
+                        repo_updated.id,
+                    )
+
+                extra_dist = set()
+                missing_dist = set()
+                for expected_item in repo_updated.distributors:
+                    for current_item in repo_on_server.distributors:
+                        if expected_item.type_id == current_item.type_id:
+                            self._check_resource(
+                                "distributor",
+                                ["id", "type_id", "last_publish"],
+                                expected_item,
+                                current_item,
+                                repo_updated.id,
                             )
+                            extra_dist.discard(current_item.type_id)
+                            missing_dist.discard(expected_item.type_id)
+                        else:
+                            extra_dist.add(current_item.type_id)
+                            missing_dist.add(expected_item.type_id)
+
+                for item in extra_dist:
+                    LOG.error(
+                        "Repository %s contains unexpected distributor with type: %s",
+                        repo_id,
+                        item,
+                    )
+                for item in missing_dist:
+                    LOG.error(
+                        "Repository %s is missing distributor with type: %s",
+                        repo_id,
+                        item,
+                    )
+
                 LOG.exception(
                     "Repository %s exists on server and contains unexpected values",
                     repo_id,
@@ -1131,3 +1171,22 @@ class Client(object):
         out = f_flat_map(out, check_repo)
 
         return f_proxy(out)
+
+    @staticmethod
+    def _check_resource(
+        resource_type, fields, expected_resource, current_resource, repo_id
+    ):
+        for attr in fields:
+            expected = getattr(expected_resource, attr)
+            current = getattr(current_resource, attr)
+            if expected != current:
+                LOG.error(
+                    "Repository %s contains wrong %s %s\n"
+                    "\t expected: %s\n"
+                    "\t current: %s\n",
+                    repo_id,
+                    resource_type,
+                    attr,
+                    expected,
+                    current,
+                )
