@@ -41,7 +41,7 @@
 <span class="kn">from</span> <span class="nn">more_executors</span> <span class="kn">import</span> <span class="n">Executors</span>
 <span class="kn">from</span> <span class="nn">more_executors.futures</span> <span class="kn">import</span> <span class="n">f_map</span><span class="p">,</span> <span class="n">f_flat_map</span><span class="p">,</span> <span class="n">f_return</span><span class="p">,</span> <span class="n">f_proxy</span><span class="p">,</span> <span class="n">f_sequence</span>
 <span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">StringIO</span>
-
+<span class="kn">from</span> <span class="nn">..compat_attr</span> <span class="kn">import</span> <span class="n">evolve</span>
 <span class="kn">from</span> <span class="nn">..model.repository.repo_lock</span> <span class="kn">import</span> <span class="n">LOCK_CLAIM_STR</span>
 <span class="kn">from</span> <span class="nn">..page</span> <span class="kn">import</span> <span class="n">Page</span>
 <span class="kn">from</span> <span class="nn">..criteria</span> <span class="kn">import</span> <span class="n">Criteria</span>
@@ -1114,6 +1114,13 @@
         <span class="n">body</span><span class="p">[</span><span class="s2">&quot;importer_type_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">importer</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;importer_type_id&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">importer</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="n">body</span><span class="p">[</span><span class="s2">&quot;importer_config&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">importer</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;config&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">importer</span> <span class="k">else</span> <span class="kc">None</span>
 
+        <span class="c1"># re-key distributor dict keys due to pulp API inconsistency</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">body</span><span class="p">[</span><span class="s2">&quot;distributors&quot;</span><span class="p">]:</span>
+            <span class="n">item</span><span class="p">[</span><span class="s2">&quot;distributor_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
+            <span class="n">item</span><span class="p">[</span><span class="s2">&quot;distributor_config&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;config&quot;</span><span class="p">]</span>
+            <span class="k">del</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;config&quot;</span><span class="p">]</span>
+            <span class="k">del</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
+
         <span class="k">def</span> <span class="nf">log_existing_repo</span><span class="p">(</span><span class="n">exception</span><span class="p">):</span>
             <span class="k">if</span> <span class="p">(</span>
                 <span class="nb">getattr</span><span class="p">(</span><span class="n">exception</span><span class="p">,</span> <span class="s2">&quot;response&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
@@ -1125,25 +1132,58 @@
             <span class="k">raise</span> <span class="n">exception</span>
 
         <span class="k">def</span> <span class="nf">check_repo</span><span class="p">(</span><span class="n">repo_on_server</span><span class="p">):</span>
+            <span class="c1"># evolve some fields that don&#39;t have to be set before repository creation</span>
+            <span class="c1"># but they&#39;re typically set automatically after creation call which results in</span>
+            <span class="c1"># inequality between `repo_on_server` and `repo`</span>
+            <span class="n">dists</span> <span class="o">=</span> <span class="p">[</span><span class="n">evolve</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">repo_id</span><span class="o">=</span><span class="n">repo_id</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">repo</span><span class="o">.</span><span class="n">distributors</span><span class="p">]</span>
+            <span class="n">repo_updated</span> <span class="o">=</span> <span class="n">evolve</span><span class="p">(</span>
+                <span class="n">repo</span><span class="p">,</span> <span class="n">relative_url</span><span class="o">=</span><span class="n">repo_on_server</span><span class="o">.</span><span class="n">relative_url</span><span class="p">,</span> <span class="n">distributors</span><span class="o">=</span><span class="n">dists</span>
+            <span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">assert</span> <span class="p">(</span>
-                    <span class="n">repo_on_server</span> <span class="o">==</span> <span class="n">repo</span>
+                    <span class="n">repo_on_server</span> <span class="o">==</span> <span class="n">repo_updated</span>
                 <span class="p">),</span> <span class="s2">&quot;Repo exists on server with unexpected values&quot;</span>
             <span class="k">except</span> <span class="ne">AssertionError</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">importer</span><span class="p">:</span>
-                    <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;type_id&quot;</span><span class="p">,</span> <span class="s2">&quot;config&quot;</span><span class="p">]:</span>
-                        <span class="n">expected</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">repo</span><span class="o">.</span><span class="n">importer</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
-                        <span class="n">current</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">repo_on_server</span><span class="o">.</span><span class="n">importer</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
-                        <span class="k">if</span> <span class="n">expected</span> <span class="o">!=</span> <span class="n">current</span><span class="p">:</span>
-                            <span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                                <span class="s2">&quot;Repository </span><span class="si">%s</span><span class="s2"> contains wrong importer </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span>
-                                <span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> expected: </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span>
-                                <span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> current: </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
-                                <span class="n">repo_id</span><span class="p">,</span>
-                                <span class="n">attr</span><span class="p">,</span>
-                                <span class="n">expected</span><span class="p">,</span>
-                                <span class="n">current</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_check_resource</span><span class="p">(</span>
+                        <span class="s2">&quot;importer&quot;</span><span class="p">,</span>
+                        <span class="p">[</span><span class="s2">&quot;type_id&quot;</span><span class="p">,</span> <span class="s2">&quot;config&quot;</span><span class="p">],</span>
+                        <span class="n">repo_updated</span><span class="o">.</span><span class="n">importer</span><span class="p">,</span>
+                        <span class="n">repo_on_server</span><span class="o">.</span><span class="n">importer</span><span class="p">,</span>
+                        <span class="n">repo_updated</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+                <span class="n">extra_dist</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+                <span class="n">missing_dist</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">expected_item</span> <span class="ow">in</span> <span class="n">repo_updated</span><span class="o">.</span><span class="n">distributors</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">current_item</span> <span class="ow">in</span> <span class="n">repo_on_server</span><span class="o">.</span><span class="n">distributors</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">expected_item</span><span class="o">.</span><span class="n">type_id</span> <span class="o">==</span> <span class="n">current_item</span><span class="o">.</span><span class="n">type_id</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_check_resource</span><span class="p">(</span>
+                                <span class="s2">&quot;distributor&quot;</span><span class="p">,</span>
+                                <span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;type_id&quot;</span><span class="p">,</span> <span class="s2">&quot;last_publish&quot;</span><span class="p">],</span>
+                                <span class="n">expected_item</span><span class="p">,</span>
+                                <span class="n">current_item</span><span class="p">,</span>
+                                <span class="n">repo_updated</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
                             <span class="p">)</span>
+                            <span class="n">extra_dist</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">current_item</span><span class="o">.</span><span class="n">type_id</span><span class="p">)</span>
+                            <span class="n">missing_dist</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">expected_item</span><span class="o">.</span><span class="n">type_id</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">extra_dist</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">current_item</span><span class="o">.</span><span class="n">type_id</span><span class="p">)</span>
+                            <span class="n">missing_dist</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">expected_item</span><span class="o">.</span><span class="n">type_id</span><span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">extra_dist</span><span class="p">:</span>
+                    <span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                        <span class="s2">&quot;Repository </span><span class="si">%s</span><span class="s2"> contains unexpected distributor with type: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="n">repo_id</span><span class="p">,</span>
+                        <span class="n">item</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">missing_dist</span><span class="p">:</span>
+                    <span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                        <span class="s2">&quot;Repository </span><span class="si">%s</span><span class="s2"> is missing distributor with type: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="n">repo_id</span><span class="p">,</span>
+                        <span class="n">item</span><span class="p">,</span>
+                    <span class="p">)</span>
+
                 <span class="n">LOG</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span>
                     <span class="s2">&quot;Repository </span><span class="si">%s</span><span class="s2"> exists on server and contains unexpected values&quot;</span><span class="p">,</span>
                     <span class="n">repo_id</span><span class="p">,</span>
@@ -1161,7 +1201,26 @@
         <span class="n">out</span> <span class="o">=</span> <span class="n">f_flat_map</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">_</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_repository</span><span class="p">(</span><span class="n">repo_id</span><span class="p">))</span>
         <span class="n">out</span> <span class="o">=</span> <span class="n">f_flat_map</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">check_repo</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">f_proxy</span><span class="p">(</span><span class="n">out</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">f_proxy</span><span class="p">(</span><span class="n">out</span><span class="p">)</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_check_resource</span><span class="p">(</span>
+        <span class="n">resource_type</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">expected_resource</span><span class="p">,</span> <span class="n">current_resource</span><span class="p">,</span> <span class="n">repo_id</span>
+    <span class="p">):</span>
+        <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">:</span>
+            <span class="n">expected</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">expected_resource</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+            <span class="n">current</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">current_resource</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">expected</span> <span class="o">!=</span> <span class="n">current</span><span class="p">:</span>
+                <span class="n">LOG</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="s2">&quot;Repository </span><span class="si">%s</span><span class="s2"> contains wrong </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> expected: </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> current: </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">repo_id</span><span class="p">,</span>
+                    <span class="n">resource_type</span><span class="p">,</span>
+                    <span class="n">attr</span><span class="p">,</span>
+                    <span class="n">expected</span><span class="p">,</span>
+                    <span class="n">current</span><span class="p">,</span>
+                <span class="p">)</span></div>
 </pre></div>
 
           </div>
