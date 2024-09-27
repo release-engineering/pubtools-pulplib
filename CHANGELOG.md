@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - n/a
 
+## [2.40.1] - 2024-09-27
+
+- Added support for repository creation with Distributor
+
 ## [2.39.2] - 2024-07-19
 
 - Fix source code structure.
@@ -482,7 +486,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release to PyPI
 
-[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.39.2...HEAD
+[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.40.1...HEAD
+[2.40.1]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.39.2...v2.40.1
 [2.39.2]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.39.1...v2.39.2
 [2.39.1]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.39.0...v2.39.1
 [2.39.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.38.1...v2.39.0
