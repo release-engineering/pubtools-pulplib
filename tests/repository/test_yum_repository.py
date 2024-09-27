@@ -2,7 +2,14 @@ import pytest
 import logging
 import requests
 
-from pubtools.pulplib import Repository, YumRepository, DetachedException, YumImporter
+import pubtools.pulplib._impl.compat_attr as attr
+from pubtools.pulplib import (
+    Repository,
+    YumRepository,
+    DetachedException,
+    YumImporter,
+    Distributor,
+)
 
 
 def test_from_data_gives_yum_repository():
@@ -216,7 +223,16 @@ def test_related_repositories_detached_client():
 
 
 def test_create_repository(client, requests_mocker):
-    repo = YumRepository(id="yum_repo_new")
+    repo = YumRepository(
+        id="yum_repo_new",
+        distributors=[
+            Distributor(
+                id="fake_id",
+                type_id="yum_distributor",
+                relative_url="yum_repo_new/foo/bar",
+            )
+        ],
+    )
 
     # create request
     requests_mocker.post(
@@ -237,13 +253,44 @@ def test_create_repository(client, requests_mocker):
                         "config": {},
                     }
                 ],
+                "distributors": [
+                    {
+                        "id": "fake_id",
+                        "distributor_type_id": "yum_distributor",
+                        "config": {"relative_url": "yum_repo_new/foo/bar"},
+                        "repo_id": "yum_repo_new",
+                    }
+                ],
             }
         ],
     )
 
-    out = client.create_repository(repo)
+    out = client.create_repository(repo).result()
     # check return value of create_repository() call
-    assert out.result() == repo
+    # relative_url wasn't set before request for `repo`
+    assert repo.relative_url is None
+    # but it's set after creation
+    assert out.relative_url == "yum_repo_new/foo/bar"
+
+    # repo_id of distributor isn't set before creation call
+    assert repo.distributors[0].repo_id is None
+    # but it's set after creation
+    assert out.distributors[0].repo_id == "yum_repo_new"
+    # evolve original repo object with new values
+    repo = attr.evolve(
+        repo,
+        relative_url="yum_repo_new/foo/bar",
+        distributors=[
+            Distributor(
+                id="fake_id",
+                type_id="yum_distributor",
+                relative_url="yum_repo_new/foo/bar",
+                repo_id="yum_repo_new",
+            )
+        ],
+    )
+    # and do full assert
+    assert out == repo
 
     hist = requests_mocker.request_history
     # there should be exactly 2 requests sent - create and search
@@ -256,6 +303,14 @@ def test_create_repository(client, requests_mocker):
     # are automatically added for yum repository
     assert create_query["importer_type_id"] == "yum_importer"
     assert create_query["importer_config"] == {}
+    # check distributor data
+    assert len(create_query["distributors"]) == 1
+    assert create_query["distributors"][0]["distributor_id"] == "fake_id"
+    assert create_query["distributors"][0]["distributor_type_id"] == "yum_distributor"
+    assert (
+        create_query["distributors"][0]["distributor_config"]["relative_url"]
+        == "yum_repo_new/foo/bar"
+    )
 
     # check the search request for created repo
     search_query = hist[1].json()
@@ -331,7 +386,12 @@ def test_create_repository_already_exists(client, requests_mocker, caplog):
 
 def test_create_repository_wrong_data(client, requests_mocker, caplog):
     repo = YumRepository(
-        id="yum_repo_existing", importer=YumImporter(config={"new": "value"})
+        id="yum_repo_existing",
+        importer=YumImporter(config={"new": "value"}),
+        distributors=[
+            Distributor(id="test_dist_1", type_id="yum_distributor"),
+            Distributor(id="test_dist_2", type_id="rpm_rsync_distributor"),
+        ],
     )
 
     requests_mocker.post(
@@ -353,6 +413,18 @@ def test_create_repository_wrong_data(client, requests_mocker, caplog):
                         "config": {"current": "value"},
                     }
                 ],
+                "distributors": [
+                    {
+                        "id": "fake_id_1",
+                        "distributor_type_id": "yum_distributor",
+                        "config": {},
+                    },
+                    {
+                        "id": "fake_id_2",
+                        "distributor_type_id": "iso_distributor",
+                        "config": {},
+                    },
+                ],
             }
         ],
     )
@@ -363,6 +435,9 @@ def test_create_repository_wrong_data(client, requests_mocker, caplog):
         for text in (
             "Repository yum_repo_existing already exists",
             "Repository yum_repo_existing contains wrong importer config",
+            "Repository yum_repo_existing contains wrong distributor id",
+            "Repository yum_repo_existing contains unexpected distributor with type: iso_distributor",
+            "Repository yum_repo_existing is missing distributor with type: rpm_rsync_distributor",
             "Repository yum_repo_existing exists on server and contains unexpected values",
         ):
             assert text in caplog.text
