@@ -5,6 +5,34 @@ from xml.parsers import expat
 from io import StringIO
 
 
+# All optional fields in the pulp-rpm comps.xml units
+COMMON_FIELDS = [
+    "description",
+    "translated_description",
+    "display_order",
+    "translated_name",
+    "name",
+]
+UNIT_FIELD_DEFAULTS = {
+    "package_group": (
+        {"default": False, "user_visible": False},
+        [
+            "default_package_names",
+            "optional_package_names",
+            "mandatory_package_names",
+            "default",
+            "user_visible",
+            "langonly",
+            "conditional_package_names",
+        ]
+        + COMMON_FIELDS,
+    ),
+    "package_category": ({}, ["packagegroupids"] + COMMON_FIELDS),
+    "package_environment": ({}, ["group_ids", "options"] + COMMON_FIELDS),
+    "package_langpacks": ({}, ["matches"]),
+}
+
+
 class BooleanStringIO(StringIO):
     """A StringIO which coerces the output value into a boolean."""
 
@@ -356,4 +384,21 @@ def units_for_xml(io):
     modules.
     """
     parser = CompsParser()
-    return parser.parse(io)
+    return fill_unit_field_defaults(parser.parse(io))
+
+
+def fill_unit_field_defaults(units):
+    """
+    Fill in missing comp unit fields with default values.
+
+    Arguments:
+    units (dict)
+        Parsed comps.xml file.
+    """
+
+    for unit in units:
+        defaults, fields = UNIT_FIELD_DEFAULTS[unit["_content_type_id"]]
+        for field in fields:
+            unit[field] = unit.get(field, defaults.get(field))
+
+    return units
