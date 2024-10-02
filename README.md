@@ -5,7 +5,6 @@ A Python client for [Pulp 2.x](https://pulpproject.org/), used by
 [release-engineering](https://github.com/release-engineering) publishing tools.
 
 [![Build Status](https://github.com/release-engineering/pubtools-pulplib/actions/workflows/tox-test.yml/badge.svg)](https://github.com/release-engineering/pubtools-pulplib/actions/workflows/tox-test.yml)
-[![codecov](https://codecov.io/gh/release-engineering/pubtools-pulplib/branch/master/graph/badge.svg?token=CABMY3WeIB)](https://codecov.io/gh/release-engineering/pubtools-pulplib)
 
 - [Source](https://github.com/release-engineering/pubtools-pulplib)
 - [Documentation](https://release-engineering.github.io/pubtools-pulplib/)
