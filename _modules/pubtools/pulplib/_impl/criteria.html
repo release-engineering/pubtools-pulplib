@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>pubtools.pulplib._impl.criteria &#8212; pubtools-pulplib  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=6625fa76" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/alabaster.css?v=1fc5d657" />
     <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=b3ba4146"></script>
     <script src="../../../../_static/doctools.js?v=888ff710"></script>
@@ -29,18 +29,18 @@
           <div class="body" role="main">
             
   <h1>Source code for pubtools.pulplib._impl.criteria</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">collections</span>
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">collections</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
-<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Iterable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterable</span>
 
-<span class="kn">from</span> <span class="nn">frozenlist2</span> <span class="kn">import</span> <span class="n">frozenlist</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">frozenlist2</span><span class="w"> </span><span class="kn">import</span> <span class="n">frozenlist</span>
 
-<span class="kn">from</span> <span class="nn">pubtools.pulplib._impl</span> <span class="kn">import</span> <span class="n">compat_attr</span> <span class="k">as</span> <span class="n">attr</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pubtools.pulplib._impl</span><span class="w"> </span><span class="kn">import</span> <span class="n">compat_attr</span> <span class="k">as</span> <span class="n">attr</span>
 
-<span class="kn">from</span> <span class="nn">.model.unit</span> <span class="kn">import</span> <span class="n">type_ids_for_class</span>
-<span class="kn">from</span> <span class="nn">.model.attr</span> <span class="kn">import</span> <span class="n">PULP2_FIELD</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.model.unit</span><span class="w"> </span><span class="kn">import</span> <span class="n">type_ids_for_class</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.model.attr</span><span class="w"> </span><span class="kn">import</span> <span class="n">PULP2_FIELD</span>
 
 
 <span class="n">FieldNamePair</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span>
@@ -48,7 +48,7 @@
 <span class="p">)</span>
 
 
-<div class="viewcode-block" id="Criteria"><a class="viewcode-back" href="../../../../api/searching.html#pubtools.pulplib.Criteria">[docs]</a><span class="k">class</span> <span class="nc">Criteria</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Criteria"><a class="viewcode-back" href="../../../../api/searching.html#pubtools.pulplib.Criteria">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Criteria</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents a Pulp search criteria.</span>
 
 <span class="sd">    This is an opaque class which is not intended to be created</span>
@@ -89,7 +89,7 @@
     <span class="c1"># exists is undocumented and deprecated, use Matcher.exists() instead</span>
 
 <div class="viewcode-block" id="Criteria.with_id"><a class="viewcode-back" href="../../../../api/searching.html#pubtools.pulplib.Criteria.with_id">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">with_id</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">ids</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">with_id</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">ids</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Args:</span>
 <span class="sd">            ids (str, list[str])</span>
 <span class="sd">                An id or list of ids</span>
@@ -103,7 +103,7 @@
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">with_field</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="n">Matcher</span><span class="o">.</span><span class="n">in_</span><span class="p">(</span><span class="n">ids</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="Criteria.with_field"><a class="viewcode-back" href="../../../../api/searching.html#pubtools.pulplib.Criteria.with_field">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">with_field</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">field_value</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">with_field</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">field_value</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Args:</span>
 <span class="sd">            field_name (str)</span>
 <span class="sd">                The name of a field.</span>
@@ -131,7 +131,7 @@
         <span class="k">return</span> <span class="n">FieldMatchCriteria</span><span class="p">(</span><span class="n">field_name</span><span class="p">,</span> <span class="n">field_value</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Criteria.with_unit_type"><a class="viewcode-back" href="../../../../api/searching.html#pubtools.pulplib.Criteria.with_unit_type">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">with_unit_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">unit_type</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">with_unit_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">unit_type</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Args:</span>
 <span class="sd">            unit_type (class)</span>
 <span class="sd">                A subclass of :class:`~pubtools.pulplib.Unit`.</span>
@@ -200,7 +200,7 @@
         <span class="p">)</span></div>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">with_field_in</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">field_value</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">with_field_in</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">field_value</span><span class="p">):</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
             <span class="s2">&quot;with_field_in is deprecated, use Matcher.in_() instead&quot;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span>
         <span class="p">)</span>
@@ -208,7 +208,7 @@
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">with_field</span><span class="p">(</span><span class="n">field_name</span><span class="p">,</span> <span class="n">Matcher</span><span class="o">.</span><span class="n">in_</span><span class="p">(</span><span class="n">field_value</span><span class="p">))</span>
 
 <div class="viewcode-block" id="Criteria.and_"><a class="viewcode-back" href="../../../../api/searching.html#pubtools.pulplib.Criteria.and_">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">and_</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">criteria</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">and_</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">criteria</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Args:</span>
 <span class="sd">            criteria (list[Criteria])</span>
 <span class="sd">                Any number of criteria.</span>
@@ -220,7 +220,7 @@
         <span class="k">return</span> <span class="n">AndCriteria</span><span class="p">(</span><span class="n">criteria</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Criteria.or_"><a class="viewcode-back" href="../../../../api/searching.html#pubtools.pulplib.Criteria.or_">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">or_</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">criteria</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">or_</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">criteria</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Args:</span>
 <span class="sd">            criteria (list[Criteria])</span>
 <span class="sd">                Any number of criteria.</span>
@@ -232,7 +232,7 @@
         <span class="k">return</span> <span class="n">OrCriteria</span><span class="p">(</span><span class="n">criteria</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Criteria.true"><a class="viewcode-back" href="../../../../api/searching.html#pubtools.pulplib.Criteria.true">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">true</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">true</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            Criteria</span>
@@ -241,7 +241,7 @@
         <span class="k">return</span> <span class="n">TrueCriteria</span><span class="p">()</span></div></div>
 
 
-<div class="viewcode-block" id="Matcher"><a class="viewcode-back" href="../../../../api/searching.html#pubtools.pulplib.Matcher">[docs]</a><span class="k">class</span> <span class="nc">Matcher</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Matcher"><a class="viewcode-back" href="../../../../api/searching.html#pubtools.pulplib.Matcher">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Matcher</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Methods for matching fields within a Pulp search query.</span>
 
 <span class="sd">    Instances of this class are created by the documented class methods,</span>
@@ -252,7 +252,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="Matcher.equals"><a class="viewcode-back" href="../../../../api/searching.html#pubtools.pulplib.Matcher.equals">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">equals</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">equals</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Matcher for a field which must equal exactly the given value.</span>
 
@@ -263,7 +263,7 @@
         <span class="k">return</span> <span class="n">EqMatcher</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Matcher.regex"><a class="viewcode-back" href="../../../../api/searching.html#pubtools.pulplib.Matcher.regex">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">regex</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">pattern</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">regex</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">pattern</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Matcher for a field which must be a string and must match the given</span>
 <span class="sd">        regular expression.</span>
@@ -296,7 +296,7 @@
         <span class="k">return</span> <span class="n">RegexMatcher</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Matcher.exists"><a class="viewcode-back" href="../../../../api/searching.html#pubtools.pulplib.Matcher.exists">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">exists</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">exists</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Matcher for a field which must exist, with no specific value.</span>
 
@@ -310,7 +310,7 @@
         <span class="k">return</span> <span class="n">ExistsMatcher</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Matcher.in_"><a class="viewcode-back" href="../../../../api/searching.html#pubtools.pulplib.Matcher.in_">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">in_</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">in_</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a matcher for a field whose value equals one of the specified</span>
 <span class="sd">        input values.</span>
@@ -332,7 +332,7 @@
         <span class="k">return</span> <span class="n">InMatcher</span><span class="p">(</span><span class="n">values</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Matcher.less_than"><a class="viewcode-back" href="../../../../api/searching.html#pubtools.pulplib.Matcher.less_than">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">less_than</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">less_than</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a matcher for a field whose value is less than the specified input</span>
 <span class="sd">        value.</span>
@@ -355,7 +355,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">LessThanMatcher</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_fn</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_fn</span><span class="p">):</span>
         <span class="c1"># Internal-only: return self with matched value mapped through</span>
         <span class="c1"># the given function. Intended to be overridden in subclasses</span>
         <span class="c1"># to support field conversions between Pulp and Python.</span>
@@ -363,11 +363,11 @@
 
 
 <span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">RegexMatcher</span><span class="p">(</span><span class="n">Matcher</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RegexMatcher</span><span class="p">(</span><span class="n">Matcher</span><span class="p">):</span>
     <span class="n">_pattern</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">()</span>
 
     <span class="nd">@_pattern</span><span class="o">.</span><span class="n">validator</span>
-    <span class="k">def</span> <span class="nf">_check_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">pattern</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">pattern</span><span class="p">):</span>
         <span class="c1"># It must be a string.</span>
         <span class="c1"># Need an explicit check here because re.compile also succeeds</span>
         <span class="c1"># on already-compiled regex objects.</span>
@@ -380,56 +380,56 @@
     <span class="c1"># Note: regex matcher does not implement _map since regex is defined only</span>
     <span class="c1"># in terms of strings, there are no meaningful conversions.</span>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;=~/</span><span class="si">%s</span><span class="s2">/&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pattern</span>
 
 
 <span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">EqMatcher</span><span class="p">(</span><span class="n">Matcher</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EqMatcher</span><span class="p">(</span><span class="n">Matcher</span><span class="p">):</span>
     <span class="n">_value</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">attr</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">fn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;==</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">iterable_nonstr_then_frozenlist</span><span class="p">(</span><span class="n">values</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">iterable_nonstr_then_frozenlist</span><span class="p">(</span><span class="n">values</span><span class="p">):</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">frozenlist</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Must be an iterable: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">repr</span><span class="p">(</span><span class="n">values</span><span class="p">))</span>
 
 
 <span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">InMatcher</span><span class="p">(</span><span class="n">Matcher</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">InMatcher</span><span class="p">(</span><span class="n">Matcher</span><span class="p">):</span>
     <span class="n">_values</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="n">converter</span><span class="o">=</span><span class="n">iterable_nonstr_then_frozenlist</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">attr</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="n">fn</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">])</span>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot; IN </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">)</span>
 
 
 <span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">ExistsMatcher</span><span class="p">(</span><span class="n">Matcher</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ExistsMatcher</span><span class="p">(</span><span class="n">Matcher</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot; EXISTS&quot;</span>
 
 
 <span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">LessThanMatcher</span><span class="p">(</span><span class="n">Matcher</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">LessThanMatcher</span><span class="p">(</span><span class="n">Matcher</span><span class="p">):</span>
     <span class="n">_value</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">attr</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">fn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;&lt;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">coerce_to_matcher</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">coerce_to_matcher</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Matcher</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">value</span>
 
@@ -445,11 +445,11 @@
 
 
 <span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">FieldMatchCriteria</span><span class="p">(</span><span class="n">Criteria</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FieldMatchCriteria</span><span class="p">(</span><span class="n">Criteria</span><span class="p">):</span>
     <span class="n">_field</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">()</span>
     <span class="n">_matcher</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="n">converter</span><span class="o">=</span><span class="n">coerce_to_matcher</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">matcher</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_matcher</span><span class="p">)</span>
         <span class="n">out</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_field</span><span class="p">,</span> <span class="n">matcher</span><span class="p">)</span>
 
@@ -459,17 +459,17 @@
 
 
 <span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">UnitTypeMatchCriteria</span><span class="p">(</span><span class="n">FieldMatchCriteria</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UnitTypeMatchCriteria</span><span class="p">(</span><span class="n">FieldMatchCriteria</span><span class="p">):</span>
     <span class="c1"># This specialization of FieldMatchCriteria is used to match on unit types</span>
     <span class="c1"># while also keeping info on the fields of interest to the user.</span>
     <span class="n">_unit_fields</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">()</span>
 
 
 <span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">AndCriteria</span><span class="p">(</span><span class="n">Criteria</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AndCriteria</span><span class="p">(</span><span class="n">Criteria</span><span class="p">):</span>
     <span class="n">_operands</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operands</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;&lt;empty AND&gt;&quot;</span>
 
@@ -480,10 +480,10 @@
 
 
 <span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">OrCriteria</span><span class="p">(</span><span class="n">Criteria</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">OrCriteria</span><span class="p">(</span><span class="n">Criteria</span><span class="p">):</span>
     <span class="n">_operands</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operands</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;&lt;empty OR&gt;&quot;</span>
 
@@ -493,8 +493,8 @@
         <span class="k">return</span> <span class="s2">&quot;(&quot;</span> <span class="o">+</span> <span class="s2">&quot; OR &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">o</span><span class="p">)</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operands</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span>
 
 
-<span class="k">class</span> <span class="nc">TrueCriteria</span><span class="p">(</span><span class="n">Criteria</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TrueCriteria</span><span class="p">(</span><span class="n">Criteria</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;TRUE&quot;</span>
 </pre></div>
 

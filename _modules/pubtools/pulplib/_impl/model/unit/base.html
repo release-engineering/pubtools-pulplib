@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>pubtools.pulplib._impl.model.unit.base &#8212; pubtools-pulplib  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=6625fa76" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/alabaster.css?v=1fc5d657" />
     <script data-url_root="../../../../../../" id="documentation_options" src="../../../../../../_static/documentation_options.js?v=b3ba4146"></script>
     <script src="../../../../../../_static/doctools.js?v=888ff710"></script>
@@ -29,29 +29,29 @@
           <div class="body" role="main">
             
   <h1>Source code for pubtools.pulplib._impl.model.unit.base</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">re</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 
-<span class="kn">from</span> <span class="nn">..common</span> <span class="kn">import</span> <span class="n">PulpObject</span>
-<span class="kn">from</span> <span class="nn">..attr</span> <span class="kn">import</span> <span class="n">pulp_attrib</span><span class="p">,</span> <span class="n">PULP2_FIELD</span>
-<span class="kn">from</span> <span class="nn">...util</span> <span class="kn">import</span> <span class="n">dict_put</span>
-<span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">compat_attr</span> <span class="k">as</span> <span class="n">attr</span>
-<span class="kn">from</span> <span class="nn">...schema</span> <span class="kn">import</span> <span class="n">load_schema</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..common</span><span class="w"> </span><span class="kn">import</span> <span class="n">PulpObject</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..attr</span><span class="w"> </span><span class="kn">import</span> <span class="n">pulp_attrib</span><span class="p">,</span> <span class="n">PULP2_FIELD</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">...util</span><span class="w"> </span><span class="kn">import</span> <span class="n">dict_put</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">...</span><span class="w"> </span><span class="kn">import</span> <span class="n">compat_attr</span> <span class="k">as</span> <span class="n">attr</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">...schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_schema</span>
 
 
 <span class="n">UNIT_CLASSES</span> <span class="o">=</span> <span class="p">{}</span>
 
 
-<span class="k">def</span> <span class="nf">unit_type</span><span class="p">(</span><span class="n">pulp_type</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">unit_type</span><span class="p">(</span><span class="n">pulp_type</span><span class="p">):</span>
     <span class="c1"># decorator for Unit subclasses, registers against a</span>
     <span class="c1"># particular value of type_id.</span>
-    <span class="k">def</span> <span class="nf">decorate</span><span class="p">(</span><span class="n">klass</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">decorate</span><span class="p">(</span><span class="n">klass</span><span class="p">):</span>
         <span class="n">UNIT_CLASSES</span><span class="p">[</span><span class="n">pulp_type</span><span class="p">]</span> <span class="o">=</span> <span class="n">klass</span>
         <span class="k">return</span> <span class="n">klass</span>
 
     <span class="k">return</span> <span class="n">decorate</span>
 
 
-<span class="k">def</span> <span class="nf">type_ids_for_class</span><span class="p">(</span><span class="n">unit_class</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">type_ids_for_class</span><span class="p">(</span><span class="n">unit_class</span><span class="p">):</span>
     <span class="c1"># Given a concrete Unit subclass, returns those Pulp type id(s)</span>
     <span class="c1"># which may be used to find/load an object of that class.</span>
     <span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
@@ -63,7 +63,7 @@
     <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">class_for_type_id</span><span class="p">(</span><span class="n">type_id</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">class_for_type_id</span><span class="p">(</span><span class="n">type_id</span><span class="p">):</span>
     <span class="c1"># Inverse of type_ids_for_class: given a Pulp type ID,</span>
     <span class="c1"># returns the corresponding Unit class, or None if there is no</span>
     <span class="c1"># corresponding class.</span>
@@ -71,7 +71,7 @@
 
 
 <div class="viewcode-block" id="Unit"><a class="viewcode-back" href="../../../../../../api/pulpcore.html#pubtools.pulplib.Unit">[docs]</a><span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">Unit</span><span class="p">(</span><span class="n">PulpObject</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Unit</span><span class="p">(</span><span class="n">PulpObject</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents a Pulp unit (a single piece of content).</span>
 
 <span class="sd">    .. versionadded:: 1.5.0</span>
@@ -87,7 +87,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
         <span class="c1"># delegate to concrete subclass as needed</span>
         <span class="k">if</span> <span class="bp">cls</span> <span class="ow">is</span> <span class="n">Unit</span><span class="p">:</span>
             <span class="n">type_id</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_content_type_id&quot;</span><span class="p">)</span>
@@ -98,7 +98,7 @@
         <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">Unit</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span><span class="o">.</span><span class="n">from_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_from_task_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_from_task_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
         <span class="c1"># Like from_data, but massages the data from the format used in</span>
         <span class="c1"># task units_successful, which is slightly different from content search.</span>
         <span class="n">unit_data</span> <span class="o">=</span> <span class="p">{}</span>
@@ -109,14 +109,14 @@
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_data</span><span class="p">(</span><span class="n">unit_data</span><span class="p">)</span>
 
     <span class="c1"># A validator shared by various subclasses</span>
-    <span class="k">def</span> <span class="nf">_check_sum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">sumtype</span><span class="p">,</span> <span class="n">length</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_sum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">sumtype</span><span class="p">,</span> <span class="n">length</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^[a-f0-9]{</span><span class="si">%s</span><span class="s2">}$&quot;</span> <span class="o">%</span> <span class="n">length</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Not a valid </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">sumtype</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">_usermeta</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_usermeta</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Returns pulp_user_metadata dict for this unit.</span>
         <span class="n">out</span> <span class="o">=</span> <span class="p">{}</span>
 
@@ -129,7 +129,7 @@
         <span class="k">return</span> <span class="n">out</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pulp_user_metadata&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_usermeta_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_usermeta_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="c1"># Returns the subset of fields on this class which are stored under the</span>
         <span class="c1"># pulp_user_metadata dict. In public API we refer to these as &#39;mutable&#39; fields.</span>
         <span class="k">return</span> <span class="p">[</span>
@@ -139,7 +139,7 @@
         <span class="p">]</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_usermeta_from_kwargs</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_usermeta_from_kwargs</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="c1"># Given kwargs mapping to mutable fields on this unit class, returns a dict</span>
         <span class="c1"># of the form:</span>
         <span class="c1">#</span>

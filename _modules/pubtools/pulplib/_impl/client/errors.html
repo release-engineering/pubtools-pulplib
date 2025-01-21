@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>pubtools.pulplib._impl.client.errors &#8212; pubtools-pulplib  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=6625fa76" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/alabaster.css?v=1fc5d657" />
     <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js?v=b3ba4146"></script>
     <script src="../../../../../_static/doctools.js?v=888ff710"></script>
@@ -29,16 +29,16 @@
           <div class="body" role="main">
             
   <h1>Source code for pubtools.pulplib._impl.client.errors</h1><div class="highlight"><pre>
-<div class="viewcode-block" id="PulpException"><a class="viewcode-back" href="../../../../../api/client.html#pubtools.pulplib.PulpException">[docs]</a><span></span><span class="k">class</span> <span class="nc">PulpException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<div class="viewcode-block" id="PulpException"><a class="viewcode-back" href="../../../../../api/client.html#pubtools.pulplib.PulpException">[docs]</a><span></span><span class="k">class</span><span class="w"> </span><span class="nc">PulpException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when the Pulp server has responded with an unrecoverable error</span>
 <span class="sd">    (generally a failed HTTP response which persisted over several retries).</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="TaskFailedException"><a class="viewcode-back" href="../../../../../api/client.html#pubtools.pulplib.TaskFailedException">[docs]</a><span class="k">class</span> <span class="nc">TaskFailedException</span><span class="p">(</span><span class="n">PulpException</span><span class="p">):</span>
+<div class="viewcode-block" id="TaskFailedException"><a class="viewcode-back" href="../../../../../api/client.html#pubtools.pulplib.TaskFailedException">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TaskFailedException</span><span class="p">(</span><span class="n">PulpException</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when a Pulp task has completed with errors.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">=</span> <span class="n">task</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;The :class:`~pubtools.pulplib.Task` which has failed.</span>
 <span class="sd">        Error details may be accessed from the task.</span>
@@ -47,12 +47,12 @@
         <span class="nb">super</span><span class="p">(</span><span class="n">TaskFailedException</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">task</span><span class="o">.</span><span class="n">error_details</span><span class="p">)</span></div>
 
 
-<span class="k">class</span> <span class="nc">MissingTaskException</span><span class="p">(</span><span class="n">PulpException</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MissingTaskException</span><span class="p">(</span><span class="n">PulpException</span><span class="p">):</span>
     <span class="c1"># this is not public API, this exception should be extremely rare</span>
     <span class="k">pass</span>
 
 
-<span class="k">class</span> <span class="nc">AmbiguousQueryException</span><span class="p">(</span><span class="n">PulpException</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AmbiguousQueryException</span><span class="p">(</span><span class="n">PulpException</span><span class="p">):</span>
     <span class="c1"># not public API</span>
     <span class="k">pass</span>
 </pre></div>
