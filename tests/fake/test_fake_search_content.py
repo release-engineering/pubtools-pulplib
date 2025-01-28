@@ -327,3 +327,12 @@ def test_search_content_files(populated_repo):
             files=["/some/file", "/another/file", "/yet/another/file", "/script"],
         )
     ]
+
+
+def test_search_content_all_type_ids(populated_repo):
+    """search_content with field content_type_ids and []"""
+
+    crit = Criteria.with_field_in("content_type_id", [])
+    units = list(populated_repo.search_content(crit))
+
+    assert len(units) == 7

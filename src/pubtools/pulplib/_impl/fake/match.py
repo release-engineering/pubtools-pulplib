@@ -123,6 +123,8 @@ def match_field_exists(_matcher, field, obj):
 @visit(InMatcher)
 def match_in(matcher, field, obj):
     value = get_field(field, obj)
+    if field == "content_type_id" and not matcher._values:
+        return True
     for elem in matcher._values:
         if elem == value:
             return True
