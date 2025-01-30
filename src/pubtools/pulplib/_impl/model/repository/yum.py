@@ -92,12 +92,16 @@ class YumRepository(Repository):
         type=list,
         converter=frozenlist,
         pulp_field="notes.population_sources",
+        mutable=True,
     )
     """List of repository IDs used to populate this repository
     """
 
     ubi_population = pulp_attrib(
-        default=False, type=bool, pulp_field="notes.ubi_population"
+        default=False,
+        type=bool,
+        pulp_field="notes.ubi_population",
+        mutable=True,
     )
     """Flag indicating whether repo should be populated from population_sources for the purposes of UBI
     """
@@ -109,7 +113,10 @@ class YumRepository(Repository):
     )
 
     ubi_config_version = pulp_attrib(
-        default=None, type=str, pulp_field="notes.ubi_config_version"
+        default=None,
+        type=str,
+        pulp_field="notes.ubi_config_version",
+        mutable=True,
     )
     """Version of UBI config that should be used for population of this repository."""
 
