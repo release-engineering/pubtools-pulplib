@@ -123,12 +123,16 @@
         <span class="nb">type</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span>
         <span class="n">converter</span><span class="o">=</span><span class="n">frozenlist</span><span class="p">,</span>
         <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;notes.population_sources&quot;</span><span class="p">,</span>
+        <span class="n">mutable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;List of repository IDs used to populate this repository</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">ubi_population</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">bool</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;notes.ubi_population&quot;</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">bool</span><span class="p">,</span>
+        <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;notes.ubi_population&quot;</span><span class="p">,</span>
+        <span class="n">mutable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Flag indicating whether repo should be populated from population_sources for the purposes of UBI</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -140,7 +144,10 @@
     <span class="p">)</span>
 
     <span class="n">ubi_config_version</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;notes.ubi_config_version&quot;</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;notes.ubi_config_version&quot;</span><span class="p">,</span>
+        <span class="n">mutable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Version of UBI config that should be used for population of this repository.&quot;&quot;&quot;</span>
 
