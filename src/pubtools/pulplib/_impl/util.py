@@ -1,4 +1,5 @@
 ABSENT = object()
+SUFFIXES = ("k", "M", "G", "T", "P", "E")
 
 
 def lookup(value, key, default=ABSENT):
@@ -47,3 +48,30 @@ def dict_put(out, key, value):
         else:
             # Not the last key, so ensure there's a sub-dict.
             out = out.setdefault(next_key, {})
+
+
+def naturalsize(value):
+    """
+    Format a number of bytes like a human-readable filesize.
+    Uses SI system (metric), so e.g. 10000 B = 10 kB.
+    """
+    base = 1000
+
+    if isinstance(value, str):
+        size_bytes = float(value)
+    else:
+        size_bytes = value
+    abs_bytes = abs(size_bytes)
+
+    if abs_bytes == 1:
+        return f"{size_bytes} Byte"
+    if abs_bytes < base:
+        return f"{int(size_bytes)} Bytes"
+
+    suffix = ""
+    for power, suffix in enumerate(SUFFIXES, 2):
+        unit = base**power
+        if abs_bytes < unit:
+            break
+    size_natural = base * (size_bytes / unit)
+    return f"{size_natural:.1f} {suffix}B"
