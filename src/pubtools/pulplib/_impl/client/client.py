@@ -24,12 +24,11 @@ from ..model import (
     Task,
 )
 from ..log import TimedLogger
-from ..util import dict_put
+from ..util import dict_put, naturalsize
 from .search import search_for_criteria
 from .errors import PulpException
 from .poller import TaskPoller
 from . import retry
-from humanize import naturalsize
 
 from .ud_mappings import compile_ud_mappings
 from .copy import CopyOptions
