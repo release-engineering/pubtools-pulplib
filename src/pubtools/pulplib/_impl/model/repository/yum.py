@@ -113,7 +113,7 @@ class YumRepository(Repository):
     )
 
     ubi_config_version = pulp_attrib(
-        default=None,
+        default="",
         type=str,
         pulp_field="notes.ubi_config_version",
         mutable=True,
