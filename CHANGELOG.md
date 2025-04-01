@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - n/a
 
+## [2.42.1] - 2025-04-01
+
+- Updated default value of `YumRepository.ubi_config_version`
+
 ## [2.42.0] - 2025-03-26
 
 - Fix matching all content when content type id is empty in search criteria
@@ -498,8 +502,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release to PyPI
 
-[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.42.0...HEAD
-[2.42.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.41.1...v2.42.0
+[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.42.1...HEAD
+[2.42.1]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.42.0...v2.42.1
+[2.42.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.41.0...v2.42.0
 [2.41.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.40.1...v2.41.0
 [2.40.1]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.39.2...v2.40.1
 [2.39.2]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.39.1...v2.39.2
