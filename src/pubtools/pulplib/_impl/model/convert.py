@@ -1,5 +1,6 @@
 import datetime
 import functools
+import defusedxml.ElementTree as ET
 
 from frozenlist2 import frozenlist
 from frozendict.core import frozendict  # pylint: disable=no-name-in-module
@@ -71,6 +72,22 @@ def write_timestamp(value):
     if value is None:
         value = datetime.datetime.utcnow()
     return value.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def xml_filelists_converter(value):
+    # Converter for the xml filelists field. Returns a list
+    # of file paths or None if a problem with parsing occurs.
+    try:
+        parsed_filelist = ET.fromstring(value)
+        files = [
+            file.text
+            for file in parsed_filelist.findall("file")
+            if file.get("type") != "dir"
+        ]
+    except ET.ParseError:
+        files = None
+
+    return files
 
 
 def frozenlist_or_none_converter(obj, map_fn=(lambda x: x)):
