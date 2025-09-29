@@ -10,6 +10,7 @@ from ..convert import (
     frozenlist_or_none_sorted_converter,
     timestamp_converter,
     tolerant_timestamp,
+    xml_filelists_converter,
 )
 from ..validate import instance_of, optional_str
 from .base import Unit, unit_type
@@ -248,6 +249,19 @@ class RpmUnit(Unit):
     List of files that this RPM provides or ``None`` if this information is unavailable.
     """
 
+    filelist = pulp_attrib(
+        default=None,
+        type=list,
+        converter=frozenlist_or_none_converter,
+        pulp_field="repodata.filelists",
+        validator=optional_list_of(str),
+        pulp_py_converter=xml_filelists_converter,
+    )
+    """
+    List of files from repodata filelists that this RPM provides or ``None`` if this
+    information is unavailable.
+    """
+
     @md5sum.validator
     def _check_md5(self, _, value):
         self._check_sum(value, "MD5", 32)
@@ -259,3 +273,19 @@ class RpmUnit(Unit):
     @sha256sum.validator
     def _check_sha256(self, _, value):
         self._check_sum(value, "SHA256", 64)
+
+    def get_files(self):
+        """
+        Return a combined list of :attr:`files` and :attr:`filelist`, providing
+        a comprehensive view of all file paths associated with this RPM from both
+        attributes. If no paths are available under neither of the attributes,
+        empty list is returned.
+
+        Returns:
+            frozenlist[str]
+        """
+        files = self.files or []
+        filelist = self.filelist or []
+
+        # Sort and freeze the resulting set
+        return frozenlist_or_none_sorted_converter(set(files) | set(filelist))
