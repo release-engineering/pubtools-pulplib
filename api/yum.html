@@ -635,6 +635,27 @@ unavailable.</p>
 <dd><p>List of files that this RPM provides or <code class="docutils literal notranslate"><span class="pre">None</span></code> if this information is unavailable.</p>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pubtools.pulplib.RpmUnit.filelist">
+<span class="sig-name descname"><span class="pre">filelist</span></span><a class="headerlink" href="#pubtools.pulplib.RpmUnit.filelist" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of files from repodata filelists that this RPM provides or <code class="docutils literal notranslate"><span class="pre">None</span></code> if this
+information is unavailable.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pubtools.pulplib.RpmUnit.get_files">
+<span class="sig-name descname"><span class="pre">get_files</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/model/unit/rpm.html#RpmUnit.get_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.RpmUnit.get_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a combined list of <a class="reference internal" href="#pubtools.pulplib.RpmUnit.files" title="pubtools.pulplib.RpmUnit.files"><code class="xref py py-attr docutils literal notranslate"><span class="pre">files</span></code></a> and <a class="reference internal" href="#pubtools.pulplib.RpmUnit.filelist" title="pubtools.pulplib.RpmUnit.filelist"><code class="xref py py-attr docutils literal notranslate"><span class="pre">filelist</span></code></a>, providing
+a comprehensive view of all file paths associated with this RPM from both
+attributes. If no paths are available under neither of the attributes,
+empty list is returned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>frozenlist[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">

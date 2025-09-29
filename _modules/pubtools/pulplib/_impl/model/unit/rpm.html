@@ -41,6 +41,7 @@
     <span class="n">frozenlist_or_none_sorted_converter</span><span class="p">,</span>
     <span class="n">timestamp_converter</span><span class="p">,</span>
     <span class="n">tolerant_timestamp</span><span class="p">,</span>
+    <span class="n">xml_filelists_converter</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">..validate</span><span class="w"> </span><span class="kn">import</span> <span class="n">instance_of</span><span class="p">,</span> <span class="n">optional_str</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">Unit</span><span class="p">,</span> <span class="n">unit_type</span>
@@ -279,6 +280,19 @@
 <span class="sd">    List of files that this RPM provides or ``None`` if this information is unavailable.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">filelist</span> <span class="o">=</span> <span class="n">pulp_attrib</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span>
+        <span class="n">converter</span><span class="o">=</span><span class="n">frozenlist_or_none_converter</span><span class="p">,</span>
+        <span class="n">pulp_field</span><span class="o">=</span><span class="s2">&quot;repodata.filelists&quot;</span><span class="p">,</span>
+        <span class="n">validator</span><span class="o">=</span><span class="n">optional_list_of</span><span class="p">(</span><span class="nb">str</span><span class="p">),</span>
+        <span class="n">pulp_py_converter</span><span class="o">=</span><span class="n">xml_filelists_converter</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    List of files from repodata filelists that this RPM provides or ``None`` if this</span>
+<span class="sd">    information is unavailable.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="nd">@md5sum</span><span class="o">.</span><span class="n">validator</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_check_md5</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_sum</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s2">&quot;MD5&quot;</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span>
@@ -289,7 +303,23 @@
 
     <span class="nd">@sha256sum</span><span class="o">.</span><span class="n">validator</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_check_sha256</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_check_sum</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s2">&quot;SHA256&quot;</span><span class="p">,</span> <span class="mi">64</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_sum</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s2">&quot;SHA256&quot;</span><span class="p">,</span> <span class="mi">64</span><span class="p">)</span>
+
+<div class="viewcode-block" id="RpmUnit.get_files"><a class="viewcode-back" href="../../../../../../api/yum.html#pubtools.pulplib.RpmUnit.get_files">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_files</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a combined list of :attr:`files` and :attr:`filelist`, providing</span>
+<span class="sd">        a comprehensive view of all file paths associated with this RPM from both</span>
+<span class="sd">        attributes. If no paths are available under neither of the attributes,</span>
+<span class="sd">        empty list is returned.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            frozenlist[str]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">files</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="n">filelist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filelist</span> <span class="ow">or</span> <span class="p">[]</span>
+
+        <span class="c1"># Sort and freeze the resulting set</span>
+        <span class="k">return</span> <span class="n">frozenlist_or_none_sorted_converter</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">files</span><span class="p">)</span> <span class="o">|</span> <span class="nb">set</span><span class="p">(</span><span class="n">filelist</span><span class="p">))</span></div></div>
 </pre></div>
 
           </div>
