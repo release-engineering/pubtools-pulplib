@@ -40,7 +40,7 @@
 <p>This class provides high-level methods for querying a Pulp server and performing
 actions in Pulp.</p>
 <p><strong>Usage of futures:</strong></p>
-<p>Most values are returned as <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a> objects.
+<p>Most values are returned as <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a> objects.
 Returned futures are resolved when:</p>
 <ul class="simple">
 <li><p>a request to Pulp succeeded, if operation is synchronous (e.g. get, search)</p></li>
@@ -65,7 +65,7 @@ the client are promptly shut down.</p>
 <div class="versionadded">
 <p><span class="versionmodified added">New in version 2.1.0.</span></p>
 </div>
-<p>All <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a> objects produced by this client are
+<p>All <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a> objects produced by this client are
 <em>proxy futures</em>, meaning that attribute and method lookups on the objects are
 proxied to the future’s result, blocking as needed.</p>
 <p>This allows the client to be used within blocking code without having to
@@ -96,17 +96,17 @@ task queue.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – URL of a Pulp server, e.g. <a class="reference external" href="https://pulp.example.com/">https://pulp.example.com/</a>.</p></li>
-<li><p><strong>task_throttle</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – Maximum number of queued or running tasks permitted for this client.
+<li><p><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – URL of a Pulp server, e.g. <a class="reference external" href="https://pulp.example.com/">https://pulp.example.com/</a>.</p></li>
+<li><p><strong>task_throttle</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Maximum number of queued or running tasks permitted for this client.
 If more than this number of tasks are running, the client will wait before triggering more.
 This can be used to ensure no single client overwhelms the Pulp server.</p></li>
-<li><p><strong>threads</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – <p>A hint for the number of threads the client should use in order to
+<li><p><strong>threads</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – <p>A hint for the number of threads the client should use in order to
 make concurrent requests to Pulp.</p>
 <p>This number should be considered as more of a scaling factor than
 a precise thread count. The client in practice will use more than
 this number of threads.</p>
 </p></li>
-<li><p><strong>auth</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><em>object</em></a>) – <p>Any of these arguments, if provided, are used to initialize
+<li><p><strong>auth</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><em>object</em></a>) – <p>Any of these arguments, if provided, are used to initialize
 <a class="reference external" href="https://requests.readthedocs.io/en/latest/api/#requests.Session" title="(in Requests v2.32.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">requests.Session</span></code></a> objects used by the client.</p>
 <p>These may be used, for example, to configure the credentials
 for the Pulp server or to use an alternative CA bundle.</p>
@@ -153,7 +153,7 @@ for the Pulp server or to use an alternative CA bundle.</p>
 <dd><p>Get a repository by ID.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>repository_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The ID of the repository to be fetched.</p>
+<dd class="field-odd"><p><strong>repository_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The ID of the repository to be fetched.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
@@ -445,7 +445,7 @@ repository has been created.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="pubtools.pulplib.CopyOptions">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pubtools.pulplib.</span></span><span class="sig-name descname"><span class="pre">CopyOptions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">require_signed_rpms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/copy.html#CopyOptions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.CopyOptions" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pubtools.pulplib.</span></span><span class="sig-name descname"><span class="pre">CopyOptions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">require_signed_rpms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client/copy.html#CopyOptions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.CopyOptions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Options influencing a call to
 <a class="reference internal" href="#pubtools.pulplib.Client.copy_content" title="pubtools.pulplib.Client.copy_content"><code class="xref py py-meth docutils literal notranslate"><span class="pre">copy_content()</span></code></a>.</p>
 <p>Method generated by attrs for class CopyOptions.</p>
