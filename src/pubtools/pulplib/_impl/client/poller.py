@@ -211,8 +211,10 @@ class TaskPoller(object):
         # We've been idle for too long, log a message to confirm we're not dead
         search_url = os.path.join(self.url, "pulp/api/v2/tasks/search/")
         search = {
-            "criteria": {"filters": {"state": {"$in": ["running", "waiting"]}}},
-            "fields": ["state"],
+            "criteria": {
+                "filters": {"state": {"$in": ["running", "waiting"]}},
+                "fields": ["state"],
+            }
         }
 
         response = self.session.post(search_url, json=search)
