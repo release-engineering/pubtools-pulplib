@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - n/a
 
+## [2.43.2] - 2026-01-21
+
+- Extra release due to issues with pypi release
+
 ## [2.43.1] - 2026-01-21
 
 - Fixed search request for `TaskPoller`
@@ -510,7 +514,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release to PyPI
 
-[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.43.1...HEAD
+[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.43.2...HEAD
+[2.43.2]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.43.1...v2.43.2
 [2.43.1]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.43.0...v2.43.1
 [2.43.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.42.1...v2.43.0
 [2.42.1]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.42.0...v2.42.1
