@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - n/a
 
+## [2.43.1] - 2026-01-21
+
+- Fixed search request for `TaskPoller`
+
 ## [2.43.0] - 2025-10-02
 
 - Added `filelist` attr and `get_files()` method  to RpmUnit
@@ -506,7 +510,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release to PyPI
 
-[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.43.0...HEAD
+[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.43.1...HEAD
+[2.43.1]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.43.0...v2.43.1
 [2.43.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.42.1...v2.43.0
 [2.42.1]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.42.0...v2.42.1
 [2.42.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.41.0...v2.42.0
