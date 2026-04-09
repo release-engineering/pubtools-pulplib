@@ -4,7 +4,7 @@ import warnings
 import json
 from functools import partial
 
-from attr import validators, asdict, converters
+from attr import validators, converters
 
 from frozenlist2 import frozenlist
 from more_executors.futures import f_proxy, f_map, f_flat_map
@@ -651,11 +651,16 @@ class Repository(PulpObject, Deletable):
         if not self._client:
             raise DetachedException()
 
-        return f_proxy(
-            self._client._do_sync(
-                self.id, asdict(options, filter=lambda name, val: val is not None)
-            )
-        )
+        # Convert sync options to dict, respecting pulp_field metadata
+        sync_config = {}
+        for field in attr.fields(type(options)):
+            value = getattr(options, field.name)
+            if value is not None:
+                # Use pulp_field if available, otherwise use field name
+                pulp_field = field.metadata.get(PULP2_FIELD, field.name)
+                sync_config[pulp_field] = value
+
+        return f_proxy(self._client._do_sync(self.id, sync_config))
 
     def lock(self, context, duration=None):
         """

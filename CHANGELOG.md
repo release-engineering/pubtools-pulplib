@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- n/a
+### Fixed
+- YumSyncOption's `skip` parameter is now correctly passed to the rhsm-pulp API as `type_skip_list`
 
 ## [2.43.2] - 2026-01-21
 

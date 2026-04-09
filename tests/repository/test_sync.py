@@ -60,7 +60,9 @@ def test_sync_with_options(
     repo = YumRepository(id="some-repo")
     repo.__dict__["_client"] = client
 
-    options = YumSyncOptions(ssl_validation=False, feed="mock://example.com/")
+    options = YumSyncOptions(
+        ssl_validation=False, feed="mock://example.com/", skip=["drpm", "srpm"]
+    )
 
     # It should have succeeded, with the tasks as retrieved from Pulp
     assert repo.sync(options).result() == [
@@ -72,4 +74,6 @@ def test_sync_with_options(
     assert req[0].json()["override_config"] == {
         "ssl_validation": False,
         "feed": "mock://example.com/",
+        # Verify that 'skip' is passed as 'type_skip_list' in the API call
+        "type_skip_list": ["drpm", "srpm"],
     }

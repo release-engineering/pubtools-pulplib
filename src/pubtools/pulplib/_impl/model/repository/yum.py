@@ -43,7 +43,7 @@ class YumSyncOptions(SyncOptions):
     """Count indicating how many old rpm versions to retain.
     """
 
-    skip = pulp_attrib(default=None, type=list)
+    skip = pulp_attrib(default=None, type=list, pulp_field="type_skip_list")
     """List of content types to be skipped during the repository synchronization
     """
 
