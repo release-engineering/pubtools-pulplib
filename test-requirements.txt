@@ -1,7 +1,9 @@
 pytest
+pytest-anyio
 requests-mock
 mock
 kobo
 koji
 rpmdyn
 bandit==1.7.5
+respx

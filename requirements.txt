@@ -8,3 +8,6 @@ frozendict; python_version >= '3.6'
 pubtools>=0.3.0
 monotonic; python_version < '3.3'
 defusedxml
+httpx
+tenacity
+anyio[trio]
