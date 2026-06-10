@@ -26,7 +26,7 @@ def should_retry_request(exception: Exception) -> bool:
     if isinstance(exception, httpx.HTTPStatusError):
         status_code = exception.response.status_code
         # Retry on timeout, rate limiting, and server errors
-        return status_code in (408, 429, 500, 502, 503, 504, 400)
+        return status_code in (408, 429, 500, 502, 503, 504)
 
     if isinstance(exception, (httpx.TimeoutException, httpx.NetworkError)):
         return True

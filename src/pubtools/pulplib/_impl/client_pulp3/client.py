@@ -52,7 +52,7 @@ class Pulp3Client:
         self,
         url: str,
         auth: Optional[tuple] = None,
-        cert: Optional[str] = None,
+        cert: Optional[Union[str, Tuple[str, str]]] = None,
         verify: bool = True,
         timeout: Optional[float] = None,
         max_retries: int = 5,
