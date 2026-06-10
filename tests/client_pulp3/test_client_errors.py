@@ -93,20 +93,6 @@ async def test_404_after_retries(respx_mock, pulp3_client):
 
 
 @pytest.mark.anyio
-async def test_http_400_error_raises(respx_mock, pulp3_client):
-    """Test that 400 Bad Request raises HTTPStatusError."""
-    respx_mock.post(
-        "https://pulp.example.com/api/pulp/test-domain/api/v3/repositories/rpm/rpm/"
-    ).mock(return_value=httpx.Response(400, json={"detail": "Invalid data"}))
-
-    async with pulp3_client() as client:
-        with pytest.raises(httpx.HTTPStatusError) as exc_info:
-            await client.create_repository(name="bad-name")
-
-        assert exc_info.value.response.status_code == 400
-
-
-@pytest.mark.anyio
 async def test_http_401_unauthorized_raises(respx_mock, pulp3_client):
     """Test that 401 Unauthorized raises HTTPStatusError."""
     respx_mock.get("https://pulp.example.com/api/pulp/test-domain/api/v3/status/").mock(

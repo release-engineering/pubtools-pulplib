@@ -3,7 +3,7 @@
 from json import JSONDecodeError
 import logging
 import os
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Union, Tuple
 from urllib.parse import urljoin
 
 import anyio
