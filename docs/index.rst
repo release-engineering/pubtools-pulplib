@@ -8,6 +8,7 @@ A Pulp library for publishing tools.
    :caption: Contents:
 
    api/client
+   api/client_pulp3
    api/pulpcore
    api/yum
    api/files

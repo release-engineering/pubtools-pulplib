@@ -1,4 +1,5 @@
 from ._impl.client import Client, PulpException, TaskFailedException, CopyOptions
+from ._impl.client_pulp3 import Pulp3Client, Pulp3Exception, Pulp3TaskException
 from ._impl.criteria import Criteria, Matcher
 from ._impl.page import Page
 from ._impl.model import (
