@@ -95,6 +95,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/pulpcore.html#pubtools.pulplib.SyncOptions.basic_auth_username">basic_auth_username (pubtools.pulplib.SyncOptions attribute)</a>
 </li>
+      <li><a href="api/client_pulp3.html#pubtools.pulplib.Pulp3Client.build_query_sha256">build_query_sha256() (pubtools.pulplib.Pulp3Client method)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -129,10 +131,10 @@
 </li>
       <li><a href="api/containers.html#pubtools.pulplib.ContainerImageRepository">ContainerImageRepository (class in pubtools.pulplib)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/containers.html#pubtools.pulplib.ContainerSyncOptions">ContainerSyncOptions (class in pubtools.pulplib)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/pulpcore.html#pubtools.pulplib.Repository.content_set">content_set (pubtools.pulplib.Repository attribute)</a>
 </li>
       <li><a href="api/pulpcore.html#pubtools.pulplib.Unit.content_type_id">content_type_id (pubtools.pulplib.Unit attribute)</a>
@@ -151,8 +153,16 @@
 </li>
       <li><a href="api/client.html#pubtools.pulplib.CopyOptions">CopyOptions (class in pubtools.pulplib)</a>
 </li>
-      <li><a href="api/client.html#pubtools.pulplib.Client.create_repository">create_repository() (pubtools.pulplib.Client method)</a>
+      <li><a href="api/client_pulp3.html#pubtools.pulplib.Pulp3Client.create_distribution">create_distribution() (pubtools.pulplib.Pulp3Client method)</a>
 </li>
+      <li><a href="api/client_pulp3.html#pubtools.pulplib.Pulp3Client.create_publication">create_publication() (pubtools.pulplib.Pulp3Client method)</a>
+</li>
+      <li><a href="api/client.html#pubtools.pulplib.Client.create_repository">create_repository() (pubtools.pulplib.Client method)</a>
+
+      <ul>
+        <li><a href="api/client_pulp3.html#pubtools.pulplib.Pulp3Client.create_repository">(pubtools.pulplib.Pulp3Client method)</a>
+</li>
+      </ul></li>
       <li><a href="api/pulpcore.html#pubtools.pulplib.Repository.created">created (pubtools.pulplib.Repository attribute)</a>
 </li>
       <li><a href="api/searching.html#pubtools.pulplib.Criteria">Criteria (class in pubtools.pulplib)</a>
@@ -287,15 +297,17 @@
 </li>
       <li><a href="api/yum.html#pubtools.pulplib.YumRepository.get_debug_repository">get_debug_repository() (pubtools.pulplib.YumRepository method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/yum.html#pubtools.pulplib.RpmUnit.get_files">get_files() (pubtools.pulplib.RpmUnit method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/client.html#pubtools.pulplib.Client.get_maintenance_report">get_maintenance_report() (pubtools.pulplib.Client method)</a>
 </li>
       <li><a href="api/client.html#pubtools.pulplib.Client.get_repository">get_repository() (pubtools.pulplib.Client method)</a>
 </li>
       <li><a href="api/yum.html#pubtools.pulplib.YumRepository.get_source_repository">get_source_repository() (pubtools.pulplib.YumRepository method)</a>
+</li>
+      <li><a href="api/client_pulp3.html#pubtools.pulplib.Pulp3Client.get_status">get_status() (pubtools.pulplib.Pulp3Client method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -397,9 +409,11 @@
         <li><a href="api/yum.html#pubtools.pulplib.RpmUnit.md5sum">(pubtools.pulplib.RpmUnit attribute)</a>
 </li>
       </ul></li>
+      <li><a href="api/maintenance.html#pubtools.pulplib.MaintenanceEntry.message">message (pubtools.pulplib.MaintenanceEntry attribute)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/maintenance.html#pubtools.pulplib.MaintenanceEntry.message">message (pubtools.pulplib.MaintenanceEntry attribute)</a>
+      <li><a href="api/client_pulp3.html#pubtools.pulplib.Pulp3Client.modify_repo_content">modify_repo_content() (pubtools.pulplib.Pulp3Client method)</a>
 </li>
       <li><a href="api/yum.html#pubtools.pulplib.ErratumPackageCollection.module">module (pubtools.pulplib.ErratumPackageCollection attribute)</a>
 </li>
@@ -479,6 +493,8 @@
 </li>
       <li><a href="api/pulpcore.html#pubtools.pulplib.Repository.platform_full_version">platform_full_version (pubtools.pulplib.Repository attribute)</a>
 </li>
+      <li><a href="api/client_pulp3.html#pubtools.pulplib.Pulp3Client.poll_task">poll_task() (pubtools.pulplib.Pulp3Client method)</a>
+</li>
       <li><a href="api/yum.html#pubtools.pulplib.YumRepository.population_sources">population_sources (pubtools.pulplib.YumRepository attribute)</a>
 </li>
       <li><a href="api/pulpcore.html#pubtools.pulplib.Repository.product_versions">product_versions (pubtools.pulplib.Repository attribute)</a>
@@ -491,10 +507,10 @@
       </ul></li>
       <li><a href="api/yum.html#pubtools.pulplib.RpmUnit.provides">provides (pubtools.pulplib.RpmUnit attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/pulpcore.html#pubtools.pulplib.Repository.provisioning">provisioning (pubtools.pulplib.Repository attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/pulpcore.html#pubtools.pulplib.SyncOptions.proxy_host">proxy_host (pubtools.pulplib.SyncOptions attribute)</a>
 </li>
       <li><a href="api/pulpcore.html#pubtools.pulplib.SyncOptions.proxy_password">proxy_password (pubtools.pulplib.SyncOptions attribute)</a>
@@ -508,6 +524,12 @@
       <li><a href="api/testing.html#pubtools.pulplib.FakeController.publish_history">publish_history (pubtools.pulplib.FakeController property)</a>
 </li>
       <li><a href="api/pulpcore.html#pubtools.pulplib.PublishOptions">PublishOptions (class in pubtools.pulplib)</a>
+</li>
+      <li><a href="api/client_pulp3.html#pubtools.pulplib.Pulp3Client">Pulp3Client (class in pubtools.pulplib)</a>
+</li>
+      <li><a href="api/client_pulp3.html#pubtools.pulplib.Pulp3Exception">Pulp3Exception (class in pubtools.pulplib)</a>
+</li>
+      <li><a href="api/client_pulp3.html#pubtools.pulplib.Pulp3TaskException">Pulp3TaskException (class in pubtools.pulplib)</a>
 </li>
       <li><a href="api/client.html#pubtools.pulplib.PulpException">PulpException (class in pubtools.pulplib)</a>
 </li>
@@ -626,6 +648,8 @@
       <li><a href="api/client.html#pubtools.pulplib.Client.search_content">search_content() (pubtools.pulplib.Client method)</a>
 
       <ul>
+        <li><a href="api/client_pulp3.html#pubtools.pulplib.Pulp3Client.search_content">(pubtools.pulplib.Pulp3Client method)</a>
+</li>
         <li><a href="api/pulpcore.html#pubtools.pulplib.Repository.search_content">(pubtools.pulplib.Repository method)</a>
 </li>
       </ul></li>
@@ -891,6 +915,7 @@
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="api/client.html">API: client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/client_pulp3.html">API: client for Pulp 3</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api/pulpcore.html">API: core</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api/yum.html">API: yum</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api/files.html">API: files</a></li>

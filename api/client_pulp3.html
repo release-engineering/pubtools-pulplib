@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>API: client for Pulp 3 &#8212; pubtools-pulplib  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=6625fa76" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=1fc5d657" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=b3ba4146"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="API: core" href="pulpcore.html" />
+    <link rel="prev" title="API: client" href="client.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="api-client-for-pulp-3">
+<h1>API: client for Pulp 3<a class="headerlink" href="#api-client-for-pulp-3" title="Permalink to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="pubtools.pulplib.Pulp3Client">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pubtools.pulplib.</span></span><span class="sig-name descname"><span class="pre">Pulp3Client</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">auth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cert</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.14)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verify</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_retries</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retry_min_wait</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retry_max_wait</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">60.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client_pulp3/client.html#Pulp3Client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Pulp3Client" title="Permalink to this definition">¶</a></dt>
+<dd><p>An async client for the Pulp 3.x API.</p>
+<p>This class provides high-level async methods for querying a Pulp 3 server
+and performing actions in Pulp.</p>
+<p><strong>Usage:</strong></p>
+<p>This client is designed to be used as an async context manager with AnyIO’s
+Trio backend:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">with</span> <span class="n">Pulp3Client</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://pulp.example.com/&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+    <span class="n">repo</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">create_repository</span><span class="p">(</span><span class="s2">&quot;test-repo&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">repo</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p><strong>Backend:</strong></p>
+<p>The client uses:
+- AnyIO with Trio backend for structured concurrency
+- httpx for async HTTP requests
+- Task groups for managing concurrent operations</p>
+<p><strong>Rate Limiting:</strong></p>
+<p>The client supports automatic rate limiting to avoid overwhelming the server.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> – URL of a Pulp 3 server, e.g. <a class="reference external" href="https://pulp.example.com/">https://pulp.example.com/</a></p></li>
+<li><p><strong>auth</strong> – Optional tuple of (username, password) for authentication</p></li>
+<li><p><strong>cert</strong> – Optional path to client certificate file</p></li>
+<li><p><strong>verify</strong> – Whether to verify SSL certificates (default: True)</p></li>
+<li><p><strong>timeout</strong> – Request timeout in seconds (default: 120.0)</p></li>
+<li><p><strong>max_retries</strong> – Maximum retry attempts for failed requests (default: 5)</p></li>
+<li><p><strong>retry_min_wait</strong> – Minimum wait between retries in seconds (default: 1.0)</p></li>
+<li><p><strong>retry_max_wait</strong> – Maximum wait between retries in seconds (default: 60.0)</p></li>
+<li><p><strong>domain</strong> – Pulp domain name (default: from PULP_DOMAIN env or ‘default’)</p></li>
+<li><p><strong>**kwargs</strong> – Additional arguments passed to httpx.AsyncClient</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pubtools.pulplib.Pulp3Client.get_status">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_status</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client_pulp3/client.html#Pulp3Client.get_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Pulp3Client.get_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get Pulp server status.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary containing server status information</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pubtools.pulplib.Pulp3Client.create_repository">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_repository</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client_pulp3/client.html#Pulp3Client.create_repository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Pulp3Client.create_repository" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new repository.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – Repository name</p></li>
+<li><p><strong>**kwargs</strong> – Additional repository attributes (description, retain_repo_versions, etc.)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Created repository data</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pubtools.pulplib.Pulp3Client.poll_task">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">poll_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_href_or_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">poll_interval</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3600.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client_pulp3/client.html#Pulp3Client.poll_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Pulp3Client.poll_task" title="Permalink to this definition">¶</a></dt>
+<dd><p>Poll a task until completion.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>task_href_or_id</strong> – Task href (e.g., ‘/api/pulp/…/tasks/abc/’) or task ID (e.g., ‘abc’)</p></li>
+<li><p><strong>poll_interval</strong> – Seconds between poll attempts (default: 5.0)</p></li>
+<li><p><strong>timeout</strong> – Maximum time to wait in seconds (default: 3600.0 / 1 hour)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Completed task data dictionary</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#pubtools.pulplib.Pulp3TaskException" title="pubtools.pulplib.Pulp3TaskException"><strong>Pulp3TaskException</strong></a> – If task fails or is canceled</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TimeoutError" title="(in Python v3.14)"><strong>TimeoutError</strong></a> – If timeout is exceeded</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pubtools.pulplib.Pulp3Client.create_publication">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_publication</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">repository_href</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client_pulp3/client.html#Pulp3Client.create_publication"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Pulp3Client.create_publication" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a publication for a repository.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>repository_href</strong> – Repository href to publish</p></li>
+<li><p><strong>**kwargs</strong> – Additional publish options</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Task href string (e.g., ‘/api/pulp/…/tasks/abc/’)</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>httpx.HTTPStatusError</strong> – If request fails</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pubtools.pulplib.Pulp3Client.modify_repo_content">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">modify_repo_content</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">repository_href_or_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_content_units</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_content_units</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client_pulp3/client.html#Pulp3Client.modify_repo_content"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Pulp3Client.modify_repo_content" title="Permalink to this definition">¶</a></dt>
+<dd><p>Modify repository content by adding or removing content units.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>repository_href_or_id</strong> – Repository href (e.g., ‘/api/…/repositories/rpm/rpm/abc/’)
+or repository ID (e.g., ‘abc’)</p></li>
+<li><p><strong>add_content_units</strong> – List of content unit hrefs to add (default: None)</p></li>
+<li><p><strong>remove_content_units</strong> – List of content unit hrefs to remove (default: None)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Task href string (e.g., ‘/api/pulp/…/tasks/xyz/’)</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If both add_content_units and remove_content_units are empty</p></li>
+<li><p><strong>httpx.HTTPStatusError</strong> – If request fails</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pubtools.pulplib.Pulp3Client.create_distribution">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_distribution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">repository_href</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client_pulp3/client.html#Pulp3Client.create_distribution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Pulp3Client.create_distribution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a distribution for a repository.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>repository_href</strong> – Repository href to add distribution</p></li>
+<li><p><strong>base_path</strong> – Base path for the distribution (URL path component)</p></li>
+<li><p><strong>name</strong> – Name of the distribution</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Task href string (e.g., ‘/api/pulp/…/tasks/xyz/’)</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>httpx.HTTPStatusError</strong> – If request fails</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pubtools.pulplib.Pulp3Client.build_query_sha256">
+<span class="sig-name descname"><span class="pre">build_query_sha256</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">checksums</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client_pulp3/client.html#Pulp3Client.build_query_sha256"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Pulp3Client.build_query_sha256" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build a Pulp query for searching content by SHA256 checksums.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>checksums</strong> – List of SHA256 checksum strings</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Query string suitable for search_content(), e.g., “(sha256=abc OR sha256=def)”</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">client</span><span class="o">.</span><span class="n">build_query_sha256</span><span class="p">([</span><span class="s2">&quot;abc123&quot;</span><span class="p">,</span> <span class="s2">&quot;def456&quot;</span><span class="p">])</span>
+<span class="go">&#39;(sha256=abc123 OR sha256=def456)&#39;</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method will be refactored/reimplemented to support generic field queries in the future.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pubtools.pulplib.Pulp3Client.search_content">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">search_content</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a></span></span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client_pulp3/client.html#Pulp3Client.search_content"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Pulp3Client.search_content" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search for RPM package content.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query</strong> – Query string (e.g., from build_query_sha256)</p></li>
+<li><p><strong>fields</strong> – Optional list of field names to return (default: all fields)</p></li>
+<li><p><strong>offset</strong> – Offset for pagination (default: 0)</p></li>
+<li><p><strong>limit</strong> – Limit for pagination (default: 1000)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of matching content unit dictionaries</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>httpx.HTTPStatusError</strong> – If request fails</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method currently does not support pagination automatically.
+Use offset/limit in params for manual pagination.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<section id="errors">
+<h2>Errors<a class="headerlink" href="#errors" title="Permalink to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pubtools.pulplib.Pulp3Exception">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pubtools.pulplib.</span></span><span class="sig-name descname"><span class="pre">Pulp3Exception</span></span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client_pulp3/errors.html#Pulp3Exception"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Pulp3Exception" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pubtools.pulplib.Pulp3TaskException">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pubtools.pulplib.</span></span><span class="sig-name descname"><span class="pre">Pulp3TaskException</span></span><a class="reference internal" href="../_modules/pubtools/pulplib/_impl/client_pulp3/errors.html#Pulp3TaskException"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pubtools.pulplib.Pulp3TaskException" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">pubtools-pulplib</a></h1>
+
+
+
+<p class="blurb">A Pulp library for publishing tools</p>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="client.html">API: client</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API: client for Pulp 3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pulpcore.html">API: core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="yum.html">API: yum</a></li>
+<li class="toctree-l1"><a class="reference internal" href="files.html">API: files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="containers.html">API: containers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="maintenance.html">API: maintenance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="searching.html">API: searching</a></li>
+<li class="toctree-l1"><a class="reference internal" href="testing.html">API: testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../schema.html">Schemas</a></li>
+</ul>
+
+
+<hr />
+<ul>
+    
+    <li class="toctree-l1"><a href="https://github.com/release-engineering/pubtools-pulplib">Source</a></li>
+    
+    <li class="toctree-l1"><a href="https://pypi.org/project/pubtools-pulplib">PyPI</a></li>
+    
+    <li class="toctree-l1"><a href="https://release-engineering.github.io/pubtools-pulplib/genindex.html">Index</a></li>
+    
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="client.html" title="previous chapter">API: client</a></li>
+      <li>Next: <a href="pulpcore.html" title="next chapter">API: core</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Red Hat.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+      |
+      <a href="../_sources/api/client_pulp3.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/release-engineering/pubtools-pulplib" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>
