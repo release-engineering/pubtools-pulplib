@@ -61,6 +61,7 @@ async def test_create_distribution_with_repository_href(respx_mock, pulp3_client
         assert isinstance(task_href, str)
         assert task_href == "/pulp/api/v3/tasks/789/"
 
+
 @pytest.mark.anyio
 async def test_get_distribution(respx_mock, pulp3_client):
     """Test getting a distribution by name."""
@@ -70,13 +71,13 @@ async def test_get_distribution(respx_mock, pulp3_client):
         return_value=httpx.Response(
             200,
             json={
-                "count": 1, 
+                "count": 1,
                 "results": [
                     {
                         "base_path": "https://pulp.example.com/production/repo",
                         "fake_data": {},
                     }
-                ]
+                ],
             },
         )
     )
@@ -100,10 +101,7 @@ async def test_get_distribution(respx_mock, pulp3_client):
     ).mock(
         return_value=httpx.Response(
             200,
-            json={
-                "count": 0, 
-                "results": []
-            },
+            json={"count": 0, "results": []},
         )
     )
 
