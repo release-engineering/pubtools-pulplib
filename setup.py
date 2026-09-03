@@ -36,7 +36,7 @@ def get_requirements():
 
 setup(
     name="pubtools-pulplib",
-    version="2.44.0",
+    version="2.45.0",
     packages=find_namespace_packages(where="src"),
     package_dir={"": "src"},
     package_data={"pubtools.pulplib._impl.schema": ["*.yaml"]},
