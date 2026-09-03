@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.45.0] - 2026-09-02
+
 ### Added
 - `get_distribution()` method for pulp3 client
 
@@ -525,7 +527,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release to PyPI
 
-[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.44.0...HEAD
+[Unreleased]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.45.0...HEAD
+[2.45.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.44.0...v2.45.0
 [2.44.0]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.43.3...v2.44.0
 [2.43.3]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.43.2...v2.43.3
 [2.43.2]: https://github.com/release-engineering/pubtools-pulplib/compare/v2.43.1...v2.43.2
