@@ -94,7 +94,7 @@ async def test_get_distribution(respx_mock, pulp3_client):
 
 
 @pytest.mark.anyio
-async def test_get_distribution(respx_mock, pulp3_client):
+async def test_get_distribution_empty_result(respx_mock, pulp3_client):
     """Test getting a distribution by name with empty result."""
     respx_mock.get(
         "https://pulp.example.com/api/pulp/test-domain/api/v3/distributions/rpm/rpm/"

@@ -410,7 +410,7 @@ class Pulp3Client:
         data = await self._request("GET", url, params=params)
         return data.get("results", []) if data else []
 
-    async def get_distribution(self, name: str) -> Dict[str, Any]:
+    async def get_distribution(self, name: str) -> Optional[Dict[str, Any]]:
         """Get a distribution by name.
 
         Args:
@@ -419,8 +419,9 @@ class Pulp3Client:
         Returns:
             Distribution dictionary
         """
+        out = None
         url = "/distributions/rpm/rpm/"
         data = await self._request("GET", url, params={"name": name})
-
-        out = data["results"][0] if data["count"] else None
+        if data:
+            out = data["results"][0] if data.get("count") else None
         return out
