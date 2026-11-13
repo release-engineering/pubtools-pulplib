@@ -14,6 +14,20 @@ from .retry import get_retry_policy
 LOG = logging.getLogger("pubtools.pulplib")
 
 
+class _HttpxInfoToDebug(logging.Filter):
+    """Re-emit httpx INFO records (e.g. 'HTTP Request: …') at DEBUG on our
+    logger so they only appear when pubtools.pulplib is set to DEBUG."""
+
+    def filter(self, record):
+        if record.levelno == logging.INFO:
+            LOG.debug(record.getMessage())
+            return False
+        return True
+
+
+logging.getLogger("httpx").addFilter(_HttpxInfoToDebug())
+
+
 class Pulp3Client:
     """An async client for the Pulp 3.x API.
 
