@@ -5,5 +5,5 @@ mock
 kobo
 koji
 rpmdyn
-bandit==1.7.5
+bandit==1.8.0
 respx

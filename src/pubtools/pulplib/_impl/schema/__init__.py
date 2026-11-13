@@ -16,7 +16,7 @@ def load_schema(basename, definition=None):
     """
 
     filename = os.path.join(os.path.dirname(__file__), "%s.yaml" % basename)
-    with open(filename) as file:
+    with open(filename, encoding="utf-8") as file:
         schema = yaml.safe_load(file)
 
     if definition:
